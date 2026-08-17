@@ -16,8 +16,20 @@
   ],
   "documentTypes": {
     "Actor": {
-      "Player": {}
+      "legado": {},
+      "creature": {}
     },
-    "Item": {}
-  }
+    "Item": {
+      "equipment": {},
+      "armor": {},
+      "weapon": {}
+    }
+  },
+  "languages": [
+    {
+      "lang": "pt-BR",
+      "name": "Português (Brasil)",
+      "path": "lang/pt-BR.json"
+    }
+  ]
 }

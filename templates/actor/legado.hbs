@@ -1,0 +1,42 @@
+<section class="gaia-sheet-content">
+  <header class="sheet-header flexrow">
+    <img src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="64" width="64"/>
+    <h1><input name="name" type="text" value="{{actor.name}}" placeholder="Nome do Personagem"/></h1>
+  </header>
+
+  <div class="sheet-body">
+    <div class="form-group">
+      <label>Legado</label>
+      <input type="text" name="system.legado" value="{{system.legado}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Nível</label>
+      <input type="number" name="system.nivel" value="{{system.nivel}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Vida (Atual / Max)</label>
+      <input type="number" name="system.health.value" value="{{system.health.value}}" />
+      <span> / </span>
+      <input type="number" name="system.health.max" value="{{system.health.max}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Energia (Atual / Max)</label>
+      <input type="number" name="system.energy.value" value="{{system.energy.value}}" />
+      <span> / </span>
+      <input type="number" name="system.energy.max" value="{{system.energy.max}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Deslocamento</label>
+      <input type="number" name="system.movement" value="{{system.movement}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Bloqueio</label>
+      <input type="number" name="system.block" value="{{system.block}}" />
+    </div>
+  </div>
+</section>

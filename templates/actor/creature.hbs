@@ -1,0 +1,47 @@
+<section class="gaia-sheet-content">
+  <header class="sheet-header flexrow">
+    <img src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="64" width="64"/>
+    <h1><input name="name" type="text" value="{{actor.name}}" placeholder="Nome da Criatura"/></h1>
+  </header>
+
+  <div class="sheet-body">
+    <div class="form-group">
+      <label>Nível / ND</label>
+      <input type="number" name="system.nivel" value="{{system.nivel}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Vida (Atual / Max)</label>
+      <input type="number" name="system.health.value" value="{{system.health.value}}" />
+      <span> / </span>
+      <input type="number" name="system.health.max" value="{{system.health.max}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Energia (Atual / Max)</label>
+      <input type="number" name="system.energy.value" value="{{system.energy.value}}" />
+      <span> / </span>
+      <input type="number" name="system.energy.max" value="{{system.energy.max}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Parâmetros Ofensivos</label>
+      <input type="number" name="system.offensiveParameters" value="{{system.offensiveParameters}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Parâmetros Defensivos</label>
+      <input type="number" name="system.defensiveParameters" value="{{system.defensiveParameters}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Brutal</label>
+      <input type="number" name="system.brutal" value="{{system.brutal}}" />
+    </div>
+
+    <div class="form-group">
+      <label>Evocação Mística</label>
+      <input type="number" name="system.mysticalEvocation" value="{{system.mysticalEvocation}}" />
+    </div>
+  </div>
+</section>
