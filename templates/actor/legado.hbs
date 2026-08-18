@@ -1,42 +1,40 @@
-<section class="gaia-sheet-content">
-  <header class="sheet-header flexrow">
-    <img src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="64" width="64"/>
-    <h1><input name="name" type="text" value="{{actor.name}}" placeholder="Nome do Personagem"/></h1>
-  </header>
+<section class="gaia-sheet-content legado-sheet">
+  <div class="sheet-main-layout">
+    {{!-- Coluna / Cabeçalho Principal do Personagem (Parcial) --}}
+    <aside class="sheet-sidebar-header">
+      {{> "systems/gaia-preludio/templates/actor/parts/actor-header.hbs"}}
+    </aside>
 
-  <div class="sheet-body">
-    <div class="form-group">
-      <label>Legado</label>
-      <input type="text" name="system.legado" value="{{system.legado}}" />
-    </div>
+    {{!-- Área Principal do Corpo da Ficha com Abas --}}
+    <main class="sheet-main-body">
+      {{!-- Barra de Navegação das Abas --}}
+      <nav class="sheet-navigation-tabs tabs" data-group="primary">
+        <a class="tab-item active" data-tab="personagem">Personagem</a>
+        <a class="tab-item" data-tab="inventario">Inventário</a>
+        <a class="tab-item" data-tab="biografia">Biografia</a>
+      </nav>
 
-    <div class="form-group">
-      <label>Nível</label>
-      <input type="number" name="system.nivel" value="{{system.nivel}}" />
-    </div>
+      {{!-- Conteúdo das Abas --}}
+      <section class="sheet-tabs-content">
+        {{!-- Aba 1: Personagem (Retrato, Parâmetros, Conhecimentos, Maestrias) --}}
+        <div class="tab personagem active" data-group="primary" data-tab="personagem">
+          {{> "systems/gaia-preludio/templates/actor/parts/actor-personagem.hbs"}}
+        </div>
 
-    <div class="form-group">
-      <label>Vida (Atual / Max)</label>
-      <input type="number" name="system.health.value" value="{{system.health.value}}" />
-      <span> / </span>
-      <input type="number" name="system.health.max" value="{{system.health.max}}" />
-    </div>
+        {{!-- Aba 2: Inventário --}}
+        <div class="tab inventario" data-group="primary" data-tab="inventario">
+          <div class="tab-placeholder">
+            <span>Inventário</span>
+          </div>
+        </div>
 
-    <div class="form-group">
-      <label>Energia (Atual / Max)</label>
-      <input type="number" name="system.energy.value" value="{{system.energy.value}}" />
-      <span> / </span>
-      <input type="number" name="system.energy.max" value="{{system.energy.max}}" />
-    </div>
-
-    <div class="form-group">
-      <label>Deslocamento</label>
-      <input type="number" name="system.movement" value="{{system.movement}}" />
-    </div>
-
-    <div class="form-group">
-      <label>Bloqueio</label>
-      <input type="number" name="system.block" value="{{system.block}}" />
-    </div>
+        {{!-- Aba 3: Biografia --}}
+        <div class="tab biografia" data-group="primary" data-tab="biografia">
+          <div class="tab-placeholder">
+            <span>Biografia e Notas</span>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 </section>

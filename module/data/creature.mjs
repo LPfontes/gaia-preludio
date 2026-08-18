@@ -52,8 +52,8 @@ class creatureDataModel extends actorBaseDataModel {
       // EN: Mystical evocation capability / innate arcane power
       mysticalEvocation: new NumberField({ required: true, integer: true, initial: 0 }),
 
-      // PT: Referências a manuais / livros de monstros (fontes e suplementos)
-      // EN: Monster book / manual references (sources and supplements)
+      // PT: Referências livros de monstros
+      // EN: Monster book references
       monsterBooks: new ArrayField(new StringField({ required: true }), { required: true, initial: [] }),
 
       // PT: Lista de ações, habilidades especiais ou características da criatura

@@ -2,11 +2,11 @@
   "GAIA": {
     "Parameter": {
       "Agility": "Agilidade",
-      "Arcane": "Arcano",
+      "Arcane": "Arcanismo",
       "Brutality": "Brutalidade",
-      "Composure": "Aprumo",
+      "Channeling": "Canalização",
       "Spirit": "Espírito",
-      "Acuity": "Acuidade",
+      "Precision": "Precisão",
       "Vigor": "Vigor",
       "Dexterity": "Destreza"
     },
@@ -110,6 +110,13 @@
       "Equipment": "Ficha de Equipamento",
       "Armor": "Ficha de Armadura",
       "Weapon": "Ficha de Arma"
+    },
+    "RollType":{
+      "Standard":"Padrão",
+      "Advantage":"Aptidão",
+      "Disadvantage":"Inaptidão",
+      "SupAdvantage":"Aptidão Aprimorada",
+      "SupDisadvantage":"Inaptidão Aprimorada"
     }
   }
 }

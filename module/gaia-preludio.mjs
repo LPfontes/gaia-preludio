@@ -17,9 +17,19 @@ import { CreatureSheet } from "./applications/sheets/actor/creature.mjs";
 import { EquipmentSheet } from "./applications/sheets/item/equipment.mjs";
 import { ArmorSheet } from "./applications/sheets/item/armor.mjs";
 import { WeaponSheet } from "./applications/sheets/item/weapon.mjs";
+const { Actors, Items } = foundry.documents.collections;
+const { ActorSheetV2, ItemSheetV2 } = foundry.applications.sheets;
+const { loadTemplates } = foundry.applications.handlebars;
 
-Hooks.once("init", () => {
+Hooks.once("init", async () => {
   console.log("Gaia: Prelúdio | Inicializando o sistema Gaia: Prelúdio...");
+
+  // PT: Pré-carrega templates parciais de Handlebars
+  // EN: Preload Handlebars partial templates
+  await loadTemplates([
+    "systems/gaia-preludio/templates/actor/parts/actor-header.hbs",
+    "systems/gaia-preludio/templates/actor/parts/actor-personagem.hbs"
+  ]);
 
   // PT: Configura os Enums e constantes globais do sistema
   // EN: Configure global system Enums and constants
@@ -47,7 +57,8 @@ Hooks.once("init", () => {
 
   // PT: Registra as fichas de Actor (ApplicationV2)
   // EN: Register Actor sheets (ApplicationV2)
-  Actors.unregisterSheet("core", ActorSheet);
+
+  Actors.unregisterSheet("core", ActorSheetV2);
   Actors.registerSheet("gaia-preludio", /** @type {any} */ (LegadoSheet), {
     types: ["legado"],
     makeDefault: true,
@@ -61,7 +72,7 @@ Hooks.once("init", () => {
 
   // PT: Registra as fichas de Item (ApplicationV2)
   // EN: Register Item sheets (ApplicationV2)
-  Items.unregisterSheet("core", ItemSheet);
+  Items.unregisterSheet("core", ItemSheetV2);
   Items.registerSheet("gaia-preludio", /** @type {any} */ (EquipmentSheet), {
     types: ["equipment"],
     makeDefault: true,

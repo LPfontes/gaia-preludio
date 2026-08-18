@@ -64,6 +64,13 @@ class actorBaseDataModel extends baseDataModel {
       // EN: List of damage resistances (type + amount)
       damageResistance: new ArrayField(
         new SchemaField({
+          type: new StringField({ required: true })
+        }),
+        { required: true, initial: [] }
+      ),
+
+      damageReduction: new ArrayField(
+        new SchemaField({
           type: new StringField({ required: true }),
           value: new NumberField({ required: true, integer: true, initial: 0 })
         }),
@@ -74,8 +81,7 @@ class actorBaseDataModel extends baseDataModel {
       // EN: List of complete damage immunities
       damageImmunity: new ArrayField(
         new SchemaField({
-          type: new StringField({ required: true }),
-          value: new NumberField({ required: true, integer: true, initial: 0 })
+          type: new StringField({ required: true })
         }),
         { required: true, initial: [] }
       ),
@@ -84,8 +90,7 @@ class actorBaseDataModel extends baseDataModel {
       // EN: List of damage vulnerabilities (extra damage taken)
       damageVulnerability: new ArrayField(
         new SchemaField({
-          type: new StringField({ required: true }),
-          value: new NumberField({ required: true, integer: true, initial: 0 })
+          type: new StringField({ required: true })
         }),
         { required: true, initial: [] }
       ),

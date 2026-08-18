@@ -15,14 +15,14 @@ export const GAIA = {};
  * @enum {string}
  */
 GAIA.parameters = {
-  agility: "GAIA.Parameter.Agility",
-  arcane: "GAIA.Parameter.Arcane",
+  precision: "GAIA.Parameter.Precision",
   brutality: "GAIA.Parameter.Brutality",
-  composure: "GAIA.Parameter.Composure",
+  dexterity: "GAIA.Parameter.Dexterity",
+  agility: "GAIA.Parameter.Agility",
+  channeling: "GAIA.Parameter.Channeling",
+  arcane: "GAIA.Parameter.Arcane",
   spirit: "GAIA.Parameter.Spirit",
-  acuity: "GAIA.Parameter.Acuity",
-  vigor: "GAIA.Parameter.Vigor",
-  dexterity: "GAIA.Parameter.Dexterity"
+  vigor: "GAIA.Parameter.Vigor"
 };
 
 /**
@@ -196,3 +196,16 @@ GAIA.equipmentCategories = {
   vestuary: "GAIA.EquipmentCategory.Vestuary",
   rides: "GAIA.EquipmentCategory.Rides"
 };
+/**
+ * PT: Tipos de Rolagem.
+ * EN: Roll Types.
+ * @enum {string}
+ */
+GAIA.rollTypes = {
+  standard:{roll:"1d12",label:"GAIA.RollType.Standard"},
+  advantage:{roll:"2d12kh",label:"GAIA.RollType.Advantage"},
+  disadvantage:{roll:"2d12kl",label:"GAIA.RollType.Disadvantage"},
+  supAdvantage:{roll:"3d12kh",label:"GAIA.RollType.SupAdvantage"},
+  supDisadvantage:{roll:"3d12kl",label:"GAIA.RollType.SupDisadvantage"},
+}
+

@@ -1,0 +1,180 @@
+<div class="gaia-actor-banner">
+  {{!-- 1. Nome e Nível --}}
+  <div class="banner-top-row">
+    <div class="banner-field-card name-field">
+      <span class="field-label">Nome</span>
+      <input type="text" name="name" value="{{actor.name}}" placeholder="Nome do Personagem" />
+    </div>
+
+    <div class="banner-field-card level-field">
+      <span class="field-label">Nível</span>
+      <input type="number" name="system.nivel" value="{{system.nivel}}" min="0" />
+    </div>
+  </div>
+
+  {{!-- 2. Legado --}}
+  <div class="banner-mid-row">
+    <div class="banner-field-card legado-field">
+      <span class="field-label">Legado</span>
+      <input type="text" name="system.legado" value="{{system.legado}}" placeholder="Legado / Origem" />
+    </div>
+  </div>
+
+  {{!-- 3. Vida (Atual / Max) --}}
+  <div class="resource-card health-card">
+    <span class="resource-title">Vida</span>
+    <div class="resource-inputs-row">
+      <div class="stat-input-box">
+        <span class="input-sublabel">atual</span>
+        <input type="number" name="system.health.value" value="{{system.health.value}}" min="0" />
+      </div>
+      <div class="stat-input-box">
+        <span class="input-sublabel">max</span>
+        <input type="number" name="system.health.max" value="{{system.health.max}}" min="0" />
+      </div>
+    </div>
+  </div>
+
+  {{!-- 4. Energia (Atual / Max) --}}
+  <div class="resource-card energy-card">
+    <span class="resource-title">Energia</span>
+    <div class="resource-inputs-row">
+      <div class="stat-input-box">
+        <span class="input-sublabel">atual</span>
+        <input type="number" name="system.energy.value" value="{{system.energy.value}}" min="0" />
+      </div>
+      <div class="stat-input-box">
+        <span class="input-sublabel">max</span>
+        <input type="number" name="system.energy.max" value="{{system.energy.max}}" min="0" />
+      </div>
+    </div>
+  </div>
+
+  {{!-- 5. Escudos de Defesa: Bloqueio e Agilidade --}}
+  <div class="shields-row">
+    {{!-- Bloqueio --}}
+    <div class="shield-card" data-action="rollDefense" data-type="block" role="button" title="Rolar Defesa de Bloqueio">
+      <div class="shield-frame">
+        <div class="shield-content">
+          <span class="shield-title">Bloqueio</span>
+          <span class="shield-input">{{system.block}}</span>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Agilidade --}}
+    <div class="shield-card" data-action="rollDefense" data-type="agility" role="button" title="Rolar Defesa de Agilidade">
+      <div class="shield-frame">
+        <div class="shield-content">
+          <span class="shield-title">Agilidade</span>
+          <span class="shield-value">{{agilityValue}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{!-- 6. Movimento e Iniciativa --}}
+  <div class="move-init-row">
+    {{!-- Movimento --}}
+    <div class="move-card">
+      <span class="move-title">Movimento</span>
+      <span class="move-input" >{{system.movement}}</span>
+    </div>
+
+    {{!-- Iniciativa --}}
+    <div class="init-card" data-action="rollInitiative" role="button" title="Rolar Iniciativa">
+      <span class="init-title">Iniciativa</span>
+      <span class="init-value">{{initiativeValue}}</span>
+      <span class="init-sub">(Agilidade)</span>
+    </div>
+  </div>
+
+  {{!-- 7. Exaustão (5 Pips) --}}
+  <div class="exhaustion-card">
+    <span class="exhaustion-title">Exaustão</span>
+    <div class="exhaustion-pips">
+      {{#each exhaustionPips as |pip|}}
+        <button type="button" class="diamond-pip {{#if pip.active}}active{{/if}}" data-action="setExhaustion" data-value="{{pip.value}}" title="Exaustão nível {{pip.value}}">
+          <i class="fa-solid fa-diamond"></i>
+        </button>
+      {{/each}}
+    </div>
+    <input type="hidden" name="system.exhaustion" value="{{system.exhaustion}}" />
+  </div>
+
+  {{!-- 8. Lista de Estatísticas e Defesas Inferiores --}}
+  <div class="banner-defenses-list">
+    {{!-- Percepção Passiva --}}
+    <div class="defense-item passive-perception-item">
+      <span class="defense-item-label">Percepção passiva</span>
+      <input type="number" class="defense-item-val" name="system.passivePerception" value="{{system.passivePerception}}" min="0" />
+    </div>
+
+    {{!-- Resistência --}}
+    <div class="defense-group">
+      <div class="defense-group-header">
+        <span class="defense-group-title">Resistência</span>
+        <button type="button" class="btn-tag-add" data-action="addResistance" title="Adicionar Resistência">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+      <div class="defense-tags">
+        {{#each system.damageResistance as |res index|}}
+          <div class="defense-tag">
+            <input type="text" name="system.damageResistance.{{index}}.type" value="{{res.type}}" placeholder="Tipo" />
+            <button type="button" class="btn-tag-remove" data-action="removeResistance" data-index="{{index}}" title="Remover">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        {{else}}
+          <span class="empty-placeholder">Nenhuma</span>
+        {{/each}}
+      </div>
+    </div>
+
+    {{!-- Imunidade --}}
+    <div class="defense-group">
+      <div class="defense-group-header">
+        <span class="defense-group-title">Imunidade</span>
+        <button type="button" class="btn-tag-add" data-action="addImmunity" title="Adicionar Imunidade">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+      <div class="defense-tags">
+        {{#each system.damageImmunity as |imm index|}}
+          <div class="defense-tag">
+            <input type="text" name="system.damageImmunity.{{index}}.type" value="{{imm.type}}" placeholder="Tipo" />
+            <button type="button" class="btn-tag-remove" data-action="removeImmunity" data-index="{{index}}" title="Remover">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        {{else}}
+          <span class="empty-placeholder">Nenhuma</span>
+        {{/each}}
+      </div>
+    </div>
+
+    {{!-- Redução --}}
+    <div class="defense-group">
+      <div class="defense-group-header">
+        <span class="defense-group-title">Redução</span>
+        <button type="button" class="btn-tag-add" data-action="addReduction" title="Adicionar Redução">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+      <div class="defense-tags">
+        {{#each system.damageReduction as |red index|}}
+          <div class="defense-tag reduction-tag">
+            <input type="text" class="reduction-type" name="system.damageReduction.{{index}}.type" value="{{red.type}}" placeholder="Tipo" />
+            <input type="number" class="reduction-val" name="system.damageReduction.{{index}}.value" value="{{red.value}}" placeholder="0" />
+            <button type="button" class="btn-tag-remove" data-action="removeReduction" data-index="{{index}}" title="Remover">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        {{else}}
+          <span class="empty-placeholder">Nenhuma</span>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>

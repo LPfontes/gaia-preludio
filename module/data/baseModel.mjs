@@ -6,7 +6,7 @@
  * EN: Root data model defining common properties across all documents.
  */
 
-const { StringField } = foundry.data.fields;
+const { StringField, NumberField, ArrayField, SchemaField } = foundry.data.fields;
 
 /**
  * @extends {foundry.abstract.TypeDataModel<any, any>}
@@ -21,7 +21,22 @@ class baseDataModel extends foundry.abstract.TypeDataModel {
 
       // PT: Descrição ou notas opcionais
       // EN: Optional description or notes
-      description: new StringField({ required: false, initial: "" })
+      description: new StringField({ required: false, initial: "" }),
+
+      // PT: Lista de ações configuradas (ataques, habilidades, magias)
+      // EN: List of configured actions (attacks, abilities, spells)
+      actions: new ArrayField(
+        new SchemaField({
+          name: new StringField({ required: false, initial: "" }),
+          type: new StringField({ required: true, initial: "attack" }),
+          attackFormula: new StringField({ required: false, initial: "" }),
+          damageFormula: new StringField({ required: false, initial: "" }),
+          damageType: new StringField({ required: false, initial: "" }),
+          saveAbility: new StringField({ required: false, initial: "" }),
+          saveDC: new NumberField({ required: false, integer: true, min: 0, initial: 10 })
+        }),
+        { required: true, initial: [] }
+      )
     };
   }
 }
