@@ -1,0 +1,141 @@
+/**
+ * ==============================================================================
+ * DIÁLOGOS GAIA (.gaia-dialog / DialogV2) & DIÁLOGOS BÁSICOS
+ * ==============================================================================
+ */
+.gaia-dialog.dialog-v2,
+.gaia-preludio.dialog-v2 {
+  font-family: var(--gaia-font-medieval);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.gaia-dialog .window-content,
+.gaia-preludio.dialog-v2 .window-content {
+  background: var(--gaia-bg-banner);
+  color: var(--gaia-text-parchment);
+  padding: 6px 6px;
+}
+
+.gaia-roll-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px 4px;
+  font-family: var(--gaia-font-medieval);
+}
+
+.gaia-roll-dialog .form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.dialog-header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 4px;
+}
+
+.gaia-dialog label {
+  color: var(--gaia-text-parchment);
+}
+
+.dialog-stat-title {
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+}
+
+.dialog-stat-badge {
+  font-size: var(--gaia-font-lg);
+  font-weight: 800;
+  color: var(--gaia-purple);
+  background: rgba(88, 28, 135, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--gaia-purple);
+}
+
+.gaia-roll-dialog label {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-roll-dialog label i {
+  color: var(--gaia-purple);
+  width: 14px;
+  text-align: center;
+}
+
+.gaia-roll-dialog .energy-hint {
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-energy-label);
+  font-weight: normal;
+}
+
+.gaia-roll-dialog select,
+.gaia-roll-dialog input[type="number"] {
+  width: 100%;
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: 2px;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-roll-dialog select:focus,
+.gaia-roll-dialog input:focus {
+  border-color: var(--gaia-purple);
+  outline: none;
+  background: var(--gaia-bg-input-focus);
+}
+
+/* ==============================================================================
+ * DIÁLOGO DE CRIAÇÃO / CREATE ACTOR DIALOG
+ * ============================================================================== */
+.gaia-dialog-create-actor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gaia-dialog-create-actor .form-group {
+  display: flex;
+  flex-direction: column;
+  border: none;
+  gap: 4px;
+}
+
+.gaia-dialog-create-actor .form-group label {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  display: block;
+}
+
+.gaia-dialog-create-actor input[type="text"],
+.gaia-dialog-create-actor select {
+  width: 100%;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--gaia-text-parchment);
+  border-radius: 4px;
+  border: 1px solid var(--gaia-border-frame);
+  font-family: inherit;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-create-actor input[type="text"]:focus,
+.gaia-dialog-create-actor select:focus {
+  border-color: var(--gaia-purple);
+  outline: none;
+}

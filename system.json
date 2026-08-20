@@ -16,13 +16,15 @@
   ],
   "documentTypes": {
     "Actor": {
-      "legado": {},
+      "legacy": {},
+      "legacyNpc": {},
       "creature": {}
     },
     "Item": {
       "equipment": {},
       "armor": {},
-      "weapon": {}
+      "weapon": {},
+      "ability": {}
     }
   },
   "languages": [

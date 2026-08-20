@@ -1,0 +1,52 @@
+<div class="gaia-roll-dialog">
+  {{!-- 1. Cabeçalho / Informações do Teste --}}
+  {{#if title}}
+    <div class="dialog-header-info">
+      <span class="dialog-stat-title">{{title}}</span>
+      {{#if statValue}}
+        <span class="dialog-stat-badge">+{{statValue}}</span>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{!-- 2. Tipo de Rolagem (Aptidão / Inaptidão) --}}
+  <div class="form-group">
+    <label for="fitness-select">
+      <i class="fa-solid fa-dice-d12"></i>
+      <strong>{{localize "GAIA.Dialog.RollType"}}</strong>
+    </label>
+    <div class="form-fields">
+      <select id="fitness-select" name="fitness">
+        {{#each rollTypes as |opt|}}
+          <option value="{{opt.key}}" {{#if opt.selected}}selected{{/if}}>{{opt.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+
+  {{!-- 3. Modificador Numérico Situacional --}}
+  <div class="form-group">
+    <label for="modifier-input">
+      <i class="fa-solid fa-plus-minus"></i>
+      <strong>{{localize "GAIA.Dialog.ModifierBonus"}}</strong>
+    </label>
+    <div class="form-fields">
+      <input type="number" id="modifier-input" name="modifier" value="{{modifier}}" placeholder="0" />
+    </div>
+  </div>
+
+  {{!-- 4. Modo de Visibilidade da Rolagem no Chat --}}
+  <div class="form-group">
+    <label for="roll-mode-select">
+      <i class="fa-solid fa-eye"></i>
+      <strong>{{localize "GAIA.Dialog.RollMode"}}</strong>
+    </label>
+    <div class="form-fields">
+      <select id="roll-mode-select" name="rollMode">
+        {{#each rollModes as |opt|}}
+          <option value="{{opt.key}}" {{#if opt.selected}}selected{{/if}}>{{opt.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,534 @@
+/**
+ * ==============================================================================
+ * TABELA DE ARMAMENTO EQUIPADO & INVENTÁRIO (.weapons-table-panel)
+ * ==============================================================================
+ */
+.weapons-table-panel {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 6px;
+  position: relative;
+}
+
+.weapons-table-frame {
+  width: 100%;
+  overflow-x: auto !important;
+}
+
+.weapons-grid-table,
+.gaia-preludio .weapons-grid-table,
+.gaia-sheet-content .weapons-grid-table {
+  background: transparent !important;
+  margin: 0;
+  width: 100%;
+  border-collapse: collapse;
+  border: none !important;
+  font-family: var(--gaia-font-medieval);
+}
+
+.weapons-grid-table thead,
+.gaia-preludio .weapons-grid-table thead,
+.gaia-sheet-content .weapons-grid-table thead {
+  background: transparent !important;
+  border: none !important;
+}
+
+.weapons-grid-table thead th,
+.gaia-preludio .weapons-grid-table thead th,
+.gaia-sheet-content .weapons-grid-table thead th {
+  font-size: var(--gaia-font-base) !important;
+  font-weight: 800 !important;
+  color: var(--gaia-text-parchment) !important;
+  background: transparent !important;
+  border: none !important;
+  text-align: left !important;
+  text-shadow: none !important;
+  letter-spacing: 0.5px;
+  padding: 6px 8px !important;
+}
+
+.weapons-grid-table .col-weapon-name {
+  width: 32%;
+}
+
+.weapons-grid-table .col-weapon-damage {
+  width: 22%;
+}
+
+.weapons-grid-table .col-weapon-range {
+  width: 20%;
+}
+
+.weapons-grid-table .col-weapon-props {
+  width: 26%;
+}
+
+.weapons-grid-table tbody td,
+.gaia-preludio .weapons-grid-table tbody td,
+.gaia-sheet-content .weapons-grid-table tbody td {
+  font-size: var(--gaia-font-sm);
+  color: var(--gaia-text-parchment) !important;
+  background: transparent;
+  padding: 8px 8px;
+  vertical-align: middle;
+  border: none !important;
+  text-shadow: none !important;
+}
+
+.weapons-grid-table .weapon-row,
+.gaia-preludio .weapons-grid-table .weapon-row,
+.gaia-sheet-content .weapons-grid-table .weapon-row {
+  background: transparent !important;
+}
+
+.weapons-grid-table .weapon-row:hover td,
+.gaia-preludio .weapons-grid-table .weapon-row:hover td,
+.gaia-sheet-content .weapons-grid-table .weapon-row:hover td {
+  background: rgba(88, 28, 135, 0.1) !important;
+}
+
+.weapon-name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.weapon-mini-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  object-fit: cover;
+  border: 1px solid var(--gaia-border-frame);
+}
+
+.weapon-name-text {
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  transition: color 0.15s ease;
+}
+
+.weapon-name-cell:hover .weapon-name-text {
+  color: var(--gaia-purple);
+}
+
+.weapons-grid-table tbody tr.empty-row td {
+  padding: 12px 8px;
+}
+
+.blank-line {
+  display: block;
+  width: 90%;
+  height: 1px;
+  background: rgba(140, 115, 85, 0.35);
+  margin: 0 auto;
+}
+
+/*
+ * ==============================================================================
+ tab de inventário
+ */
+ .inventory {
+  height: 100%;
+ }
+
+ .tab-inventory-content {
+  display: block;
+  height: 100%;
+  width: 100%;
+ }
+  
+.inventory-column-container{
+  display: grid;
+  gap: 6px;
+}
+
+.inventory-equipped-items-left-column,
+.inventory-equipped-items-middle-column,
+.inventory-equipped-items-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+}
+
+.inventory-equipped-items-left-column{
+
+}
+
+.inventory-equipped-items-middle-column{
+
+}
+
+.inventory-equipped-items-right-column{
+
+  
+}
+
+.equipped-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.slot-img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 2px;
+}
+
+.slot-img:hover {
+  border-color: var(--gaia-purple);
+  background: rgba(148, 44, 228, 0.2);
+  transform: scale(1.05);
+}
+
+
+.inventory-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--gaia-border-subtle);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+.inventory-tab {
+  font-size: var(--gaia-font-sm);
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--gaia-text-muted);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 2px;
+  transition: all 0.15s ease;
+}
+
+.inventory-tab:hover,
+.inventory-tab.active {
+  color: var(--gaia-text-parchment);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ==============================================================================
+ * ESTRUTURA DIREITA DO INVENTÁRIO
+ * ============================================================================== */
+/* ==============================================================================
+ * ESTRUTURA DIREITA DO INVENTÁRIO (4 TABELAS)
+ * ============================================================================== */
+.inventory-right-column-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.inventory-table-panel {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.inventory-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--gaia-bg-window);
+  border-bottom: 1px solid var(--gaia-border-subtle);
+  padding: 6px 10px;
+}
+
+.inventory-table-title {
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inventory-table-title i {
+  color: var(--gaia-purple, #942ce4);
+  font-size: 0.9em;
+}
+
+.btn-add-item {
+  background: rgba(148, 44, 228, 0.15);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: 4px;
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-add-item:hover {
+  background: rgba(148, 44, 228, 0.4);
+  border-color: var(--gaia-purple);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.inventory-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+}
+
+.inventory-grid-table thead th {
+  background: var(--gaia-bg-window);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-muted);
+  text-align: center;
+  padding: 4px 6px;
+}
+.inventory-grid-table thead {
+  border: none;
+}
+.inventory-grid-table thead th.col-item-name {
+  text-align: left;
+}
+
+.inventory-grid-table tbody tr.item-row {
+  border-bottom: 1px solid var(--gaia-border-subtle);
+  transition: background 0.15s ease;
+}
+
+.inventory-grid-table tbody tr.item-row:hover {
+  background: var(--gaia-bg-window);
+}
+
+.inventory-grid-table tbody td {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  padding: 5px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.inventory-grid-table tbody td.col-item-name {
+  text-align: left;
+}
+
+.inventory-grid-table tbody tr.empty-row td {
+
+  background: var(--gaia-bg-window);
+}
+
+.item-name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.item-mini-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  object-fit: cover;
+  border: 1px solid var(--gaia-border-frame);
+}
+
+.item-name-text {
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  transition: color 0.15s ease;
+}
+
+.item-name-cell:hover .item-name-text {
+  color: var(--gaia-purple);
+}
+
+.col-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn-item-action {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--gaia-text-muted);
+  border-radius: 3px;
+  padding: 2px 5px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.15s ease;
+}
+
+.btn-item-action:hover {
+  color: var(--gaia-text-parchment);
+  background: var(--gaia-bg-window);
+}
+
+.btn-item-action.equipped {
+  color: var(--gaia-purple);
+  background: var(--gaia-bg-window);
+}
+.empty-cell {
+  text-align: center;
+  font-style: italic;
+  color: var(--gaia-text-muted);
+  padding: 10px !important;
+  font-size: var(--gaia-font-base);
+}
+
+/* ==============================================================================
+ * SLOTS DE EQUIPAMENTOS (CLASSES)
+ * ============================================================================== */
+.mounted-item {
+
+}
+
+.left-hand-weapon {
+
+}
+
+.left-hand-ring {
+
+}
+
+.head-item {
+
+}
+
+.neck-item {
+
+}
+
+.torso-item {
+
+}
+
+.back-item {
+
+}
+
+.armor {
+
+}
+
+.legs-item {
+
+}
+
+.feet-item {
+
+}
+
+.back-pack-item {
+
+}
+
+.relic-itens {
+  display: flex;
+  flex-direction: column;
+
+}
+
+.right-hand-weapon {
+
+}
+
+.right-hand-ring {
+
+}
+
+/* ==============================================================================
+ * INPUTS DE CHECKBOX INDIVIDUAIS (IDS)
+ * ============================================================================== */
+#mounted-item {
+
+}
+
+#left-hand-weapon {
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+
+}
+
+#left-hand-ring {
+
+}
+
+#head-item {
+
+}
+
+#neck-item {
+
+}
+
+#torso-item {
+
+}
+
+#back-item {
+
+}
+
+#armor {
+
+}
+
+#legs-item {
+
+}
+
+#feet-item {
+
+}
+
+#back-pack-item {
+
+}
+
+#relic-item-1 {
+
+}
+
+#relic-item-2 {
+
+}
+
+#relic-item-3 {
+
+}
+
+#relic-item-4 {
+
+}
+
+#relic-item-5 {
+
+}
+
+#right-hand-weapon {
+
+}
+
+#right-hand-ring {
+
+}
+
+
+

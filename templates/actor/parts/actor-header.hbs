@@ -12,11 +12,11 @@
     </div>
   </div>
 
-  {{!-- 2. Legado --}}
+  {{!-- 2. Legado / Legacy --}}
   <div class="banner-mid-row">
-    <div class="banner-field-card legado-field">
+    <div class="banner-field-card legacy-field legado-field">
       <span class="field-label">Legado</span>
-      <input type="text" name="system.legado" value="{{system.legado}}" placeholder="Legado / Origem" />
+      <input type="text" name="system.legacy" value="{{#if system.legacy}}{{system.legacy}}{{else}}{{system.legado}}{{/if}}" placeholder="Legado / Origem" />
     </div>
   </div>
 
@@ -28,9 +28,13 @@
         <span class="input-sublabel">atual</span>
         <input type="number" name="system.health.value" value="{{system.health.value}}" min="0" />
       </div>
-      <div class="stat-input-box">
+      <div class="stat-input-box" data-tooltip="{{tooltips.healthMax}}" title="{{tooltips.healthMax}}">
         <span class="input-sublabel">max</span>
         <input type="number" name="system.health.max" value="{{system.health.max}}" min="0" />
+      </div>
+      <div class="stat-input-box">
+        <span class="input-sublabel">pvt</span>
+        <input type="number" name="system.health.temp" value="{{system.health.temp}}" min="0" />
       </div>
     </div>
   </div>
@@ -51,23 +55,46 @@
   </div>
 
   {{!-- 5. Escudos de Defesa: Bloqueio e Agilidade --}}
-  <div class="shields-row">
-    {{!-- Bloqueio --}}
-    <div class="shield-card" data-action="rollDefense" data-type="block" role="button" title="Rolar Defesa de Bloqueio">
-      <div class="shield-frame">
-        <div class="shield-content">
-          <span class="shield-title">Bloqueio</span>
-          <span class="shield-input">{{system.block}}</span>
+  <div class="shields-column">
+    <span class="shield-title">DEFESA</span>
+    <div class="shields-container"> 
+      {{!-- Bloqueio --}}
+      <div class="shield-card" 
+          data-action="rollDefense" 
+          data-type="block" 
+          data-context-action="editField" 
+          data-field="system.block" 
+          data-label="Bloqueio" 
+          data-type-input="number" 
+          data-min="0" 
+          role="button" 
+          data-tooltip="{{tooltips.block}}"
+          title="{{tooltips.block}}&#10;Clique esquerdo: Rolar Defesa | Clique direito: Alterar Bloqueio">
+        <div class="shield-frame">
+          <div class="shield-content">
+            <span class="shield-title">Bloqueio</span>
+            <span class="shield-input">{{system.block}}</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    {{!-- Agilidade --}}
-    <div class="shield-card" data-action="rollDefense" data-type="agility" role="button" title="Rolar Defesa de Agilidade">
-      <div class="shield-frame">
-        <div class="shield-content">
-          <span class="shield-title">Agilidade</span>
-          <span class="shield-value">{{agilityValue}}</span>
+      {{!-- Agilidade --}}
+      <div class="shield-card" 
+          data-action="rollDefense" 
+          data-type="agility" 
+          data-context-action="editField" 
+          data-field="parameter.agility" 
+          data-label="Agilidade" 
+          data-type-input="number" 
+          data-min="0" 
+          data-max="6" 
+          role="button" 
+          title="Clique esquerdo: Rolar Defesa | Clique direito: Alterar Agilidade">
+        <div class="shield-frame">
+          <div class="shield-content">
+            <span class="shield-title">Agilidade</span>
+            <span class="shield-value">{{agilityValue}}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -76,13 +103,30 @@
   {{!-- 6. Movimento e Iniciativa --}}
   <div class="move-init-row">
     {{!-- Movimento --}}
-    <div class="move-card">
+    <div class="move-card" 
+         data-context-action="editField" 
+         data-field="system.movement" 
+         data-label="Movimento" 
+         data-type-input="number" 
+         data-min="0" 
+         role="button" 
+         data-tooltip="{{tooltips.movement}}"
+         title="{{tooltips.movement}}&#10;Clique com botão direito para Alterar Movimento">
       <span class="move-title">Movimento</span>
-      <span class="move-input" >{{system.movement}}</span>
+      <span class="move-input">{{system.movement}}</span>
     </div>
 
     {{!-- Iniciativa --}}
-    <div class="init-card" data-action="rollInitiative" role="button" title="Rolar Iniciativa">
+    <div class="init-card" 
+         data-action="rollInitiative" 
+         data-context-action="editField" 
+         data-field="parameter.agility" 
+         data-label="Iniciativa (Agilidade)" 
+         data-type-input="number" 
+         data-min="0" 
+         data-max="6" 
+         role="button" 
+         title="Clique esquerdo: Rolar Iniciativa | Clique direito: Alterar Agilidade">
       <span class="init-title">Iniciativa</span>
       <span class="init-value">{{initiativeValue}}</span>
       <span class="init-sub">(Agilidade)</span>
@@ -105,7 +149,7 @@
   {{!-- 8. Lista de Estatísticas e Defesas Inferiores --}}
   <div class="banner-defenses-list">
     {{!-- Percepção Passiva --}}
-    <div class="defense-item passive-perception-item">
+    <div class="defense-item passive-perception-item" data-tooltip="{{tooltips.passivePerception}}" title="{{tooltips.passivePerception}}">
       <span class="defense-item-label">Percepção passiva</span>
       <input type="number" class="defense-item-val" name="system.passivePerception" value="{{system.passivePerception}}" min="0" />
     </div>

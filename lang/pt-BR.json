@@ -1,6 +1,90 @@
 {
+  "TYPES": {
+    "Actor": {
+      "legacy": "Legado",
+      "legacyNpc": "Legado (NPC)",
+      "legado": "Legado",
+      "creature": "Criatura",
+      "criatura": "Criatura"
+    },
+    "Item": {
+      "equipment": "Equipamento",
+      "equipamento": "Equipamento",
+      "armor": "Armadura",
+      "armadura": "Armadura",
+      "weapon": "Arma",
+      "arma": "Arma",
+      "ability": "Habilidade"
+    }
+  },
   "GAIA": {
+    "title": {
+      "Abilities": "Habilidades",
+      "Legacy": "Legado",
+      "Weapon": "Armamento",
+      "Bio": "Biografia e Notas",
+      "Mastery": "Maestria",
+      "Skill": "Conhecimento",
+      "Defense": "Defesa",
+      "Armor": "Armadura",
+      "Shield": "Escudo",
+      "Equipment": "Equipamento",
+      "Character": "Personagem",
+      "character": "Personagem",
+      "Inventory": "Inventário",
+      "inventory": "Inventário",
+      "Creature": "Criatura",
+      "AddMastery": "Adicionar Maestria",
+      "RemoveMastery": "Remover Maestria",
+      "EditField": "Editar Campo",
+      "CreateField": "Criar Campo",
+      "ClickToOpenDetailsOf": "Clique para abrir detalhes de",
+      "ClickToChangeImageOf": "Clique para alterar a imagem de"
+
+    },
+    "Creature": {
+      "Name": "Criatura",
+      "NamePlaceholder": "Nome da Criatura",
+      "LevelCR": "Nível / ND",
+      "Health": "Vida (Atual / Max)",
+      "Energy": "Energia (Atual / Max)",
+      "OffensiveParameters": "Parâmetros Ofensivos",
+      "DefensiveParameters": "Parâmetros Defensivos",
+      "Brutal": "Brutal",
+      "MysticalEvocation": "Evocação Mística"
+    },
+    "CreatureType": {
+      "comum": "Comum",
+      "ferais": "Ferais",
+      "veu": "Véu",
+      "naovivo": "Não-Vivo",
+      "elemental": "Elemental",
+      "primas": "Primas",
+      "artifical": "Artifical",
+      "abisssal": "Abissal",
+      "celestial": "Celestial"
+    },
+    "AbilitiesTypes": {
+      "conjuracao": "Conjuração",
+      "ataque_corpo_a_corpo": "Ataque Corpo a Corpo",
+      "ataque_magico": "Ataque Mágico",
+      "ataque_distancia": "Ataque à Distância",
+      "defesa": "Defesa",
+      "suporte": "Suporte",
+      "iniciativa": "Iniciativa",
+      "movimento": "Movimento",
+      "passiva": "Passiva",
+      "foco": "Foco"
+    },
+    "ActionType": {
+      "acaoAtiva": "Ação Ativa",
+      "acaoSimples": "Ação Simples",
+      "acaoRapida": "Ação Rápida",
+      "acaoAcelerada": "Ação Acelerada",
+      "acaoVersatil": "Ação Versátil"
+    },
     "Parameter": {
+      "name": "Parâmetros",
       "Agility": "Agilidade",
       "Arcane": "Arcanismo",
       "Brutality": "Brutalidade",
@@ -11,8 +95,9 @@
       "Dexterity": "Destreza"
     },
     "Knowledge": {
+      "name": "Conhecimentos",
       "Charisma": "Carisma",
-      "MysticKnowledge": "Conhecimento Místico",
+      "MysticKnowledge": "Con. Místico",
       "Exploration": "Exploração",
       "Stealth": "Furtividade",
       "History": "História",
@@ -105,11 +190,13 @@
       "Rides": "Montarias"
     },
     "Sheet": {
+      "Legacy": "Ficha de Legado",
       "Legado": "Ficha de Legado",
       "Creature": "Ficha de Criatura",
       "Equipment": "Ficha de Equipamento",
       "Armor": "Ficha de Armadura",
-      "Weapon": "Ficha de Arma"
+      "Weapon": "Ficha de Arma",
+      "masteryEmptyHint": "Nenhuma maestria adquirida. Clique em + para adicionar."
     },
     "RollType":{
       "Standard":"Padrão",
@@ -117,6 +204,99 @@
       "Disadvantage":"Inaptidão",
       "SupAdvantage":"Aptidão Aprimorada",
       "SupDisadvantage":"Inaptidão Aprimorada"
+    },
+
+    "Inventory": {
+      "Weapons": "Armas",
+      "Armor": "Roupas e Armaduras",
+      "Consumables": "Poções e Consumíveis",
+      "Common": "Itens Comuns",
+      "AddWeapon": "Adicionar Arma",
+      "AddArmor": "Adicionar Armadura",
+      "AddConsumable": "Adicionar Consumível",
+      "AddCommon": "Adicionar Item Comum",
+      "EmptyWeapons": "Nenhuma arma no inventário.",
+      "EmptyArmor": "Nenhuma roupa ou armadura no inventário.",
+      "EmptyConsumables": "Nenhuma poção ou consumível no inventário.",
+      "EmptyCommon": "Nenhum item comum no inventário."
+    },
+    "EquipmentSlot": {
+      "Head": "Cabeça",
+      "Neck": "Pescoço / Amuleto",
+      "Torso": "Torso / Veste",
+      "Armor": "Armadura",
+      "Legs": "Pernas",
+      "Feet": "Pés / Botas",
+      "LeftHand": "Mão Esquerda",
+      "RightHand": "Mão Direita",
+      "LeftRing": "Anel Esquerdo",
+      "RightRing": "Anel Direito",
+      "Back": "Costas",
+      "Backpack": "Mochila",
+      "Mount": "Montaria",
+      "Relic": "Relíquia"
+    },
+    "TableLabels":{
+      "ItemName":"Item",
+      "WeaponName":"Armamento",
+      "WeaponDamage":"Dano",
+      "WeaponRange":"Alcance",
+      "WeaponProperties":"Propriedades",
+      "Block":"Bloqueio",
+      "Category":"Categoria",
+      "Quantity":"Qtd",
+      "Unity":"Espaço",
+      "Price":"Preço",
+      "Actions":"Ações"
+    },
+    "Dialog": {
+      "RollTitle": "Rolagem de {label}",
+      "RollType": "Tipo de Rolagem",
+      "ModifierBonus": "Modificador Bônus",
+      "RollMode": "Modo de Rolagem",
+      "DamageType": "Tipo de Dano",
+      "ReductionValue": "Valor da Redução (RD)",
+      "AgilityDefense": "Defesa com Agilidade",
+      "BlockDefense": "Defesa com Bloqueio",
+      "Initiative": "Iniciativa",
+      "EditField": "Editar Campo",
+      "CreateField": "Criar Campo"
+    },
+    "CreateActor": {
+      "Title": "Criar Novo Personagem / Criatura",
+      "NameLabel": "Nome do Personagem / Criatura:",
+      "NamePlaceholder": "Ex: Eldrin",
+      "DefaultName": "Novo Personagem",
+      "TypeLabel": "Tipo de Ficha:",
+      "TypeLegacy": "Legado (Jogador)",
+      "TypeCreature": "Criatura",
+      "TypeNpc": "Legado (NPC)",
+      "Submit": "Criar Personagem",
+      "TabGeneral": "Identificação",
+      "TabParameters": "Parâmetros",
+      "TabKnowledge": "Conhecimentos",
+      "TabVitals": "Vida & Energia",
+      "AwakeningRulesTitle": "Regras de Despertar Inicial",
+      "AwakeningIntro": "Todo personagem inicia com 1 Nível de Despertar, que representa o início de sua jornada em Auroria. Esse Nível de Despertar inicial lhe concede:",
+      "AwakeningParamTitle": "Distribuição de Parâmetros:",
+      "AwakeningParam": "7 pontos em seus Parâmetros para serem distribuídos. Você pode distribuir, no máximo, 2 pontos num mesmo Parâmetro.",
+      "AwakeningParamHint": "Parâmetros disponíveis: Agilidade, Arcanismo, Brutalidade, Canalização, Destreza, Espírito, Precisão e Vigor.",
+      "AwakeningKnowledgeTitle": "Distribuição de Conhecimentos:",
+      "AwakeningKnowledge": "7 pontos em seus Conhecimentos para serem distribuídos. Você pode distribuir, no máximo, 2 pontos em um mesmo Conhecimento.",
+      "AwakeningKnowledgeHint": "Conhecimentos disponíveis: Carisma, Conhecimento Místico, Exploração, Furtividade, História, Intimidação, Intuição, Medicina, Percepção, Performance, Religião, Sobrevivência, Tecnologia e Treinamento Animal.",
+      "AwakeningVitalsTitle": "Cálculo de Vida & Energia:",
+      "AwakeningHP": "30 + 1d6 (ou 3) + o seu total de pontos distribuídos em Vigor como Pontos de Vida.",
+      "AwakeningEnergy": "5 Pontos de Energia.",
+      "PointsRemaining": "Pontos Restantes:",
+      "PointsDistribute": "Distribuir Parâmetros (Máx 2 cada):",
+      "PointsDistributeKnowledge": "Distribuir Conhecimentos (Máx 2 cada):",
+      "ApplyParameters": "Confirmar e Aplicar",
+      "RollHP": "Rolar 1d6",
+      "FixedHP": "Fixo (3)",
+      "CalculatedHP": "Pontos de Vida (PV):",
+      "RollHPHint": "Definição de PV Inicial (30 + 1d6 ou 3 + Vigor):",
+      "Next": "Avançar",
+      "Previous": "Voltar"
     }
   }
 }

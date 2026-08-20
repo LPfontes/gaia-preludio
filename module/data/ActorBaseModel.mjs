@@ -5,20 +5,20 @@
  * PT: Modelo de dados base para todos os Atores do sistema (Personagens, Legados, Criaturas).
  * EN: Base data model for all Actors in the system (Characters, Legacies, Creatures).
  *
- * PT: Campos herdados de baseDataModel:
- * EN: Inherited fields from baseDataModel:
+ * PT: Campos herdados de BaseDataModel:
+ * EN: Inherited fields from BaseDataModel:
  *   - name (String): Nome do ator / Actor name
  *   - description (String): Descrição / Description
  */
 
-import { baseDataModel } from "./baseModel.mjs";
+import { BaseDataModel } from "./baseModel.mjs";
 
 const { NumberField, ArrayField, SchemaField, StringField } = foundry.data.fields;
 
 /**
- * @extends {baseDataModel}
+ * @extends {BaseDataModel}
  */
-class actorBaseDataModel extends baseDataModel {
+class ActorBaseDataModel extends BaseDataModel {
   /** @override */
   static defineSchema() {
     return {
@@ -33,8 +33,9 @@ class actorBaseDataModel extends baseDataModel {
       // PT: Pontos de vida (atual e máximo)
       // EN: Health points (current and maximum)
       health: new SchemaField({
-        value: new NumberField({ required: true, integer: true, min: 0, initial: 10 }),
-        max: new NumberField({ required: true, integer: true, min: 0, initial: 10 })
+        value: new NumberField({ required: true, integer: true, initial: 30 }),
+        max: new NumberField({ required: true, integer: true, min: 0, initial: 30 }),
+        temp: new NumberField({ required: false, integer: true, min: 0, initial: 0 })
       }),
 
       // PT: Energia / mana / estamina (atual e máximo)
@@ -54,7 +55,7 @@ class actorBaseDataModel extends baseDataModel {
 
       // PT: Percepção passiva do personagem
       // EN: Passive perception of the character
-      passivePerception: new NumberField({ required: true, integer: true, initial: 10 }),
+      passivePerception: new NumberField({ required: true, integer: true, initial: 6 }),
 
       // PT: Lista de itens ou IDs contidos no inventário
       // EN: Inventory item references or IDs
@@ -96,9 +97,16 @@ class actorBaseDataModel extends baseDataModel {
       ),
       // PT: Notas do personagem
       // EN: Character notes
-      notes: new StringField({ required: false, initial: "" })
+      notes: new StringField({ required: false, initial: "" }),
+      parametersBonus: new ArrayField(
+        new SchemaField({
+          attr: new StringField({ required: true }),
+          bonus: new NumberField({ required: true, integer: true, initial: 0 })
+        }),
+        { required: false, initial: [] }
+      )
     };
   }
 }
 
-export { actorBaseDataModel };
+export { ActorBaseDataModel };

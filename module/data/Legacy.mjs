@@ -1,45 +1,32 @@
 /**
  * ==============================================================================
- * LEGADO (LEGACY) DATA MODEL / MODELO DE DADOS DE LEGADO
+ * LEGACY DATA MODEL / MODELO DE DADOS DE LEGADO
  * ==============================================================================
  * PT: Modelo de dados para personagens de Legado / Jogadores, estendendo o modelo base de Actor.
  * EN: Data model for Legacy / Player characters, extending the base Actor model.
- *
- * PT: Campos herdados de actorBaseDataModel e baseDataModel:
- * EN: Inherited fields from actorBaseDataModel and baseDataModel:
- *   - name (String): Nome do personagem / Character name
- *   - description (String): Descrição e biografia / Description and biography
- *   - nivel (Number): Nível do personagem / Character level
- *   - health ({value, max}): Pontos de vida / Health points
- *   - energy ({value, max}): Energia / Energy
- *   - movement (Number): Deslocamento / Movement speed
- *   - block (Number): Bloqueio / Block defense
- *   - passivePerception (Number): Percepção passiva / Passive perception
- *   - inventario (Array<String>): Itens no inventário / Inventory items
- *   - damageResistance, damageImmunity, damageVulnerability
  */
 
-import { actorBaseDataModel } from "./ActorBaseModel.mjs";
+import { ActorBaseDataModel } from "./ActorBaseModel.mjs";
 
 const { NumberField, ArrayField, SchemaField, StringField } = foundry.data.fields;
 
 /**
- * @extends {actorBaseDataModel}
+ * @extends {ActorBaseDataModel}
  */
-class legadoDataModel extends actorBaseDataModel {
+export class LegacyDataModel extends ActorBaseDataModel {
   /** @override */
   static defineSchema() {
     return {
-      // PT: Inclui todos os campos herdados do modelo base de ator
-      // EN: Includes all fields inherited from the parent actor base model
       ...super.defineSchema(),
-      
+
       // PT: Identificador / Legado do personagem
       // EN: Legacy identifier / subtype of the character
-      legado: new StringField({ required: true, initial: "" }),
-      // PT:Quantidade de exaustões
-      // EN: Number of exaustion entries
+      legacy: new StringField({ required: true, initial: "" }),
+
+      // PT: Quantidade de exaustões (0 a 6)
+      // EN: Number of exhaustion entries (0 to 6)
       exhaustion: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
+
       // PT: Lista de parâmetros / atributos base do personagem (nome/chave e valor)
       // EN: List of character base parameters / attributes (name/key and value)
       parameters: new ArrayField(
@@ -65,9 +52,30 @@ class legadoDataModel extends actorBaseDataModel {
       masteries: new ArrayField(
         new StringField({ required: true }),
         { required: true, initial: [] }
+      ),
+      languages: new ArrayField(
+        new StringField({ required: true }),
+        { required: true, initial: [] }
       )
     };
   }
 }
+export class LegacyNpcDataModel extends LegacyDataModel {
+  /** @override */
+  static defineSchema() {
+    return {
+      ...super.defineSchema(),
+      difficulty: new StringField({ required: true }),
+      powerPoints: new NumberField({ required: true, integer: true, initial: 0 }),
+      // PT: Parâmetros ofensivos da criatura (bônus de ataque / poder de ataque)
+      // EN: Offensive parameters of the creature (attack bonus / offensive power)
+      offensiveParameters: new NumberField({ required: true, initial: 0, integer: true }),
 
-export { legadoDataModel };
+      // PT: Parâmetros defensivos da criatura (bônus de defesa / esquiva)
+      // EN: Defensive parameters of the creature (defense bonus / evasion)
+      defensiveParameters: new NumberField({ required: true, initial: 0, integer: true }),
+    };
+  }
+}
+
+export { LegacyNpcDataModel as LegacyNPCDataModel };

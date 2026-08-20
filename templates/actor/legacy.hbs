@@ -1,0 +1,45 @@
+<section class="gaia-sheet-content legacy-sheet legado-sheet">
+  <div class="sheet-main-layout">
+    {{!-- Coluna / Cabeçalho Principal do Personagem (Parcial) --}}
+    <aside class="sheet-sidebar-header">
+      {{> "systems/gaia-preludio/templates/actor/parts/actor-header.hbs"}}
+    </aside>
+
+    {{!-- Área Principal do Corpo da Ficha com Abas --}}
+    <main class="sheet-main-body">
+      {{!-- Barra de Navegação das Abas --}}
+      <nav class="sheet-navigation-tabs tabs" data-group="primary">
+        <a class="tab-item active" data-action="tab" data-group="primary" data-tab="personagem">{{localize "GAIA.title.Character"}}</a>
+        <a class="tab-item" data-action="tab" data-group="primary" data-tab="inventory">{{localize "GAIA.title.Inventory"}}</a>
+        <a class="tab-item" data-action="tab" data-group="primary" data-tab="biografia">{{localize "GAIA.title.Bio"}}</a>
+        <a class="tab-item" data-action="tab" data-group="primary" data-tab="abilities">{{localize "GAIA.title.Abilities"}}</a>
+      </nav>
+
+      {{!-- Conteúdo das Abas --}}
+      <section class="sheet-tabs-content">
+        {{!-- Aba 1: Personagem (Retrato, Parâmetros, Conhecimentos, Maestrias) --}}
+        <div class="tab personagem active" data-group="primary" data-tab="personagem">
+          {{> "systems/gaia-preludio/templates/actor/parts/actor-personagem.hbs"}}
+        </div>
+
+        {{!-- Aba 2: Inventário --}}
+        <div class="tab inventory" data-group="primary" data-tab="inventory">
+          <div class="tab-inventory-content">
+            {{> "systems/gaia-preludio/templates/actor/parts/inventory.hbs"}}
+          </div>
+        </div>
+        <div class="tab abilities" data-group="primary" data-tab="abilities">
+          <div class="tab-abilities-content">
+            {{> "systems/gaia-preludio/templates/actor/parts/abilities.hbs"}}
+          </div>
+        </div>
+        {{!-- Aba 3: Biografia --}}
+        <div class="tab biografia" data-group="primary" data-tab="biografia">
+          <div class="tab-bio-content">
+            {{> "systems/gaia-preludio/templates/actor/parts/bio.hbs"}}
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</section>

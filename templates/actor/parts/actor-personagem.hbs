@@ -1,99 +1,105 @@
 <div class="personagem-tab-content">
-  {{!-- 1. Seção Superior: Imagem/Retrato à esquerda + Parâmetros à direita --}}
+  {{!-- 1. Seção Superior: Imagem/Retrato à esquerda + Parâmetros em 1 coluna à direita --}}
   <div class="personagem-top-grid">
     {{!-- Retrato Grande do Personagem --}}
     <div class="portrait-box">
-      <img class="character-portrait" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" alt="{{actor.name}}" />
+      <img class="character-portrait" src="{{actor.img}}" data-action="editImage" data-edit="img" title="{{localize 'GAIA.title.ClickToChangeImageOf' actor.name}}" alt="{{actor.name}}" />
     </div>
 
-    {{!-- Painel de Parâmetros (8 Parâmetros divididos em 2 colunas de 4) --}}
+    {{!-- Painel de Parâmetros (8 Parâmetros em 1 coluna) --}}
     <div class="parameters-panel">
-      <h3 class="panel-main-title">Parâmetros</h3>
-      <div class="parameters-columns-grid">
-        {{!-- Coluna 1: Precisão, Brutalidade, Destreza, Agilidade --}}
-        <div class="stat-pips-column">
-          {{#each parametersCol1 as |param|}}
-            <div class="pip-stat-row">
-              <span class="pip-stat-label" data-action="rollParameter" data-key="{{param.key}}" title="Rolar {{param.label}}">
-                <img class="stat-roll-icon" src="icons/svg/d12-grey.svg" alt="d12" />
-                {{param.label}}
-              </span>
-              <div class="pips-bar">
-                {{#each param.pips as |pip|}}
-                  <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setParameterPip" data-param="{{param.key}}" data-value="{{pip.value}}" title="{{param.label}} {{pip.value}}">
-                    <i class="fa-solid fa-diamond"></i>
-                  </button>
-                {{/each}}
-              </div>
+      <h3 class="panel-main-title">{{localize "GAIA.Parameter.name"}}</h3>
+      <div class="stat-pips-column">
+        {{#each parameters as |param|}}
+          <div class="pip-stat-row">
+            <span class="pip-stat-label" data-action="rollParameter" data-key="{{param.key}}" title="{{localize 'GAIA.Dialog.RollTitle' label=param.label}}">
+              <span class="stat-roll-icon" aria-hidden="true"></span>
+              {{param.label}}
+            </span>
+            <div class="pips-bar">
+              {{#each param.pips as |pip|}}
+                <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setParameterPip" data-param="{{param.key}}" data-value="{{pip.value}}" title="{{localize 'GAIA.Dialog.RollTitle' label=param.label}}">
+                  <i class="fa-solid fa-diamond"></i>
+                </button>
+              {{/each}}
             </div>
-          {{/each}}
-        </div>
-
-        {{!-- Coluna 2: Canalização, Arcanismo, Espírito, Vigor --}}
-        <div class="stat-pips-column">
-          {{#each parametersCol2 as |param|}}
-            <div class="pip-stat-row">
-              <span class="pip-stat-label" data-action="rollParameter" data-key="{{param.key}}" title="Rolar {{param.label}}">
-                <img class="stat-roll-icon" src="icons/svg/d12-grey.svg" alt="d12" />
-                {{param.label}}
-              </span>
-              <div class="pips-bar">
-                {{#each param.pips as |pip|}}
-                  <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setParameterPip" data-param="{{param.key}}" data-value="{{pip.value}}" title="{{param.label}} {{pip.value}}">
-                    <i class="fa-solid fa-diamond"></i>
-                  </button>
-                {{/each}}
-              </div>
-            </div>
-          {{/each}}
-        </div>
+          </div>
+        {{/each}}
       </div>
     </div>
   </div>
-
-  {{!-- 2. Seção Inferior: Conhecimentos à esquerda + Maestrias à direita --}}
+  {{!-- Tabela de Armamentos Equipados --}}
+  <div class="weapons-table-panel">
+    <div class="weapons-table-frame">
+      <table class="weapons-grid-table">
+        <thead>
+          <tr>
+            <th class="col-weapon-name">{{localize "GAIA.TableLabels.WeaponName"}}</th>
+            <th class="col-weapon-damage">{{localize "GAIA.TableLabels.WeaponDamage"}}</th>
+            <th class="col-weapon-range">{{localize "GAIA.TableLabels.WeaponRange"}}</th>
+            <th class="col-weapon-props">{{localize "GAIA.TableLabels.WeaponProperties"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each equippedWeapons as |weapon|}}
+            <tr class="weapon-row">
+              <td class="col-weapon-name" data-action="openItem" data-item-id="{{weapon.id}}" role="button" title="{{localize "GAIA.title.ClickToOpenDetailsOf" weapon.name}}">
+                <div class="weapon-name-cell">
+                  {{#if weapon.img}}
+                    <img class="weapon-mini-icon" src="{{weapon.img}}" alt="{{weapon.name}}" />
+                  {{/if}}
+                  <span class="weapon-name-text">{{weapon.name}}</span>
+                </div>
+              </td>
+              <td class="col-weapon-damage">{{weapon.damage}}</td>
+              <td class="col-weapon-range">{{weapon.range}}</td>
+              <td class="col-weapon-props">{{weapon.properties}}</td>
+            </tr>
+          {{else}}
+            <tr class="weapon-row empty-row">
+              <td class="col-weapon-name"></td>
+              <td class="col-weapon-damage"></td>
+              <td class="col-weapon-range"></td>
+              <td class="col-weapon-props"></td>
+            </tr>
+            <tr class="weapon-row empty-row">
+              <td class="col-weapon-name"></td>
+              <td class="col-weapon-damage"></td>
+              <td class="col-weapon-range"></td>
+              <td class="col-weapon-props"></td>
+            </tr>
+            <tr class="weapon-row empty-row">
+              <td class="col-weapon-name"></td>
+              <td class="col-weapon-damage"></td>
+              <td class="col-weapon-range"></td>
+              <td class="col-weapon-props"></td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {{!-- Seção Inferior: Conhecimentos em 1 coluna à esquerda + Maestrias à direita --}}
   <div class="personagem-bottom-grid">
-    {{!-- Painel de Conhecimentos (14 Conhecimentos divididos em 2 colunas de 7) --}}
+    {{!-- Painel de Conhecimentos (14 Conhecimentos em 1 coluna) --}}
     <div class="knowledge-panel">
-      <h3 class="panel-main-title">Conhecimentos</h3>
-      <div class="knowledge-columns-grid">
-        {{!-- Coluna 1: Carisma, Con. Místico, Exploração, Furtividade, História, Intimidação, Intuição --}}
-        <div class="stat-pips-column">
-          {{#each knowledgeCol1 as |know|}}
-            <div class="pip-stat-row">
-              <span class="pip-stat-label" data-action="rollKnowledge" data-key="{{know.key}}" title="Rolar {{know.label}}">
-                <img class="stat-roll-icon" src="icons/svg/d12-grey.svg" alt="d12" />
-                {{know.label}}
-              </span>
-              <div class="pips-bar">
-                {{#each know.pips as |pip|}}
-                  <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setKnowledgePip" data-knowledge="{{know.key}}" data-value="{{pip.value}}" title="{{know.label}} {{pip.value}}">
-                    <i class="fa-solid fa-diamond"></i>
-                  </button>
-                {{/each}}
-              </div>
+      <h3 class="panel-main-title">{{localize "GAIA.Knowledge.name"}}</h3>
+      <div class="stat-pips-column">
+        {{#each knowledge as |know|}}
+          <div class="pip-stat-row">
+            <span class="pip-stat-label" data-action="rollKnowledge" data-key="{{know.key}}" title="{{localize "GAIA.Dialog.RollTitle" label=know.label}}">
+              <span class="stat-roll-icon" aria-hidden="true"></span>
+              {{know.label}}
+            </span>
+            <div class="pips-bar">
+              {{#each know.pips as |pip|}}
+                <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setKnowledgePip" data-knowledge="{{know.key}}" data-value="{{pip.value}}" title="{{know.label}} {{pip.value}}">
+                  <i class="fa-solid fa-diamond"></i>
+                </button>
+              {{/each}}
             </div>
-          {{/each}}
-        </div>
-
-        {{!-- Coluna 2: Medicina, Percepção, Performance, Religião, Sobrevivência, Tecnologia, Vontade --}}
-        <div class="stat-pips-column">
-          {{#each knowledgeCol2 as |know|}}
-            <div class="pip-stat-row">
-              <span class="pip-stat-label" data-action="rollKnowledge" data-key="{{know.key}}" title="Rolar {{know.label}}">
-                <img class="stat-roll-icon" src="icons/svg/d12-grey.svg" alt="d12" />
-                {{know.label}}
-              </span>
-              <div class="pips-bar">
-                {{#each know.pips as |pip|}}
-                  <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setKnowledgePip" data-knowledge="{{know.key}}" data-value="{{pip.value}}" title="{{know.label}} {{pip.value}}">
-                    <i class="fa-solid fa-diamond"></i>
-                  </button>
-                {{/each}}
-              </div>
-            </div>
-          {{/each}}
-        </div>
+          </div>
+        {{/each}}
       </div>
     </div>
 
@@ -101,7 +107,7 @@
     <div class="masteries-panel">
       <div class="masteries-header">
         <h3 class="panel-main-title">Maestrias</h3>
-        <button type="button" class="btn-add-mastery" data-action="addMastery" title="Adicionar Maestria">
+        <button type="button" class="btn-add-mastery" data-action="addMastery" title="{{localize "GAIA.title.AddMastery"}}">
           <i class="fa-solid fa-plus"></i>
         </button>
       </div>
@@ -110,14 +116,16 @@
         {{#each unlockedMasteries as |mastery index|}}
           <div class="mastery-item">
             <span class="mastery-name">{{mastery.label}}</span>
-            <button type="button" class="btn-remove-mastery" data-action="removeMastery" data-index="{{index}}" title="Remover Maestria">
+            <button type="button" class="btn-remove-mastery" data-action="removeMastery" data-index="{{index}}" title="{{localize "GAIA.title.RemoveMastery"}}">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
         {{else}}
-          <span class="empty-masteries-hint">Nenhuma maestria adquirida. Clique em + para adicionar.</span>
+          <span class="empty-masteries-hint">{{localize "GAIA.Sheet.masteryEmptyHint"}}</span>
         {{/each}}
       </div>
     </div>
   </div>
+
+  
 </div>

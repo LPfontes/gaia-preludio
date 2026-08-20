@@ -1,0 +1,34 @@
+<form class="gaia-roll-dialog defense-trait-form">
+  {{#if title}}
+    <div class="dialog-header-info">
+      <span class="dialog-stat-title">{{title}}</span>
+    </div>
+  {{/if}}
+
+  {{!-- 1. Seleção do Tipo de Dano --}}
+  <div class="form-group">
+    <label for="damage-type-select">
+      <i class="fa-solid fa-shield-halved"></i>
+      <strong>{{localize "GAIA.Dialog.DamageType"}}</strong>
+    </label>
+    <div class="form-fields">
+      <select id="damage-type-select" name="damageType">
+        {{#each damageTypes as |dt|}}
+          <option value="{{dt.key}}">{{dt.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+
+  {{#if isReduction}}
+    <div class="form-group">
+      <label for="reduction-value-input">
+        <i class="fa-solid fa-arrow-down-short-wide"></i>
+        <strong>{{localize "GAIA.Dialog.ReductionValue"}}</strong>
+      </label>
+      <div class="form-fields">
+        <input type="number" id="reduction-value-input" name="value" value="1" min="1" />
+      </div>
+    </div>
+  {{/if}}
+</form>

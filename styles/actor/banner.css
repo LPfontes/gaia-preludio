@@ -1,0 +1,483 @@
+/**
+ * ==============================================================================
+ * FLÂMULA / BANNER LATERAL (.gaia-actor-banner)
+ * ==============================================================================
+ */
+.gaia-actor-banner {
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 10px 10px 120px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 5;
+  /* Recorte discreto de flâmula na parte inferior */
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 95%, 0% 100%);
+}
+
+/* Estilo geral de inputs */
+.gaia-actor-banner input {
+  font-family: inherit;
+  color: var(--gaia-text-parchment);
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 2px 4px;
+}
+
+.gaia-actor-banner input:focus {
+  background: var(--gaia-bg-input-focus);
+  border-color: white;
+  outline: none;
+}
+
+/* 1. Nome, Nível e Legado */
+.banner-top-row {
+  display: flex;
+  gap: 6px;
+}
+
+.banner-mid-row {
+  display: flex;
+}
+
+.banner-field-card {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 3px 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.banner-field-card .field-label {
+  font-size: var(--gaia-font-xs);
+  font-weight: 700;
+  color: var(--gaia-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.banner-field-card input {
+  font-size: var(--gaia-font-2xl);
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.banner-field-card.name-field {
+  flex: 3;
+}
+
+.banner-field-card.level-field {
+  flex: 1;
+}
+
+.banner-field-card.level-field input {
+  text-align: center;
+}
+
+.banner-field-card.legacy-field,
+.banner-field-card.legado-field {
+  width: 100%;
+}
+
+/* 2. Recursos: Vida e Energia */
+.resource-card {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.resource-card.health-card {
+  border-top: 5px solid var(--gaia-health);
+}
+
+.resource-card.energy-card {
+  border-top: 5px solid var(--gaia-energy);
+}
+
+.resource-card .resource-title {
+  font-size: var(--gaia-font-md);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.health-card .resource-title {
+  color: var(--gaia-health-label);
+}
+
+.energy-card .resource-title {
+  color: var(--gaia-energy-label);
+}
+
+.resource-inputs-row {
+  display: flex;
+  gap: 6px;
+}
+
+.stat-input-box {
+  flex: 1;
+  padding: 2px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-input-box .input-sublabel {
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+}
+
+.stat-input-box input {
+  width: 100%;
+  text-align: center;
+  font-size: var(--gaia-font-2xl);
+  font-weight: bold;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.stat-input-box input:hover {
+  color: var(--gaia-purple);
+}
+
+/* 3. Escudos de Defesa (Bloqueio & Agilidade) */
+.shields-column {
+  display: flex;
+  gap: 6px;
+  flex-direction: column;
+}
+
+.shields-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.shield-card {
+  flex: 1;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  /* Formato de brasão / escudo medieval */
+  border-radius: 6px 6px 16px 16px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.shield-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gaia-purple);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.shield-frame {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.shield-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.shield-title {
+  font-size: var(--gaia-font-md);
+  font-weight: 700;
+  color: var(--gaia-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.shield-input {
+  width: 45px;
+  text-align: center;
+  font-size: var(--gaia-font-xl);
+  font-weight: bold;
+  border: none;
+  background: transparent;
+}
+
+.shield-value {
+  font-size: var(--gaia-font-xl);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+}
+
+/* 4. Movimento e Iniciativa */
+.move-init-row {
+  display: flex;
+  gap: 8px;
+}
+
+.move-card {
+  flex: 1;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.move-icon {
+  font-size: var(--gaia-font-3xl);
+  color: var(--gaia-text-muted);
+}
+
+.move-title {
+  font-size: var(--gaia-font-md);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+}
+
+.move-input {
+  width: 45px;
+  text-align: center;
+  font-size: var(--gaia-font-2xl);
+  font-weight: bold;
+  border: none;
+  background: transparent;
+}
+
+.init-card {
+  flex: 1;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.init-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gaia-purple);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.init-title {
+  font-size: var(--gaia-font-xs);
+  font-weight: 700;
+  color: var(--gaia-gold);
+  text-transform: uppercase;
+}
+
+.init-value {
+  font-size: var(--gaia-font-xl);
+  font-weight: bold;
+  line-height: 1.1;
+}
+
+.init-sub {
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+}
+
+/* 5. Exaustão (5 Diamantes) */
+.exhaustion-card {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.exhaustion-title {
+  font-size: var(--gaia-font-xs);
+  font-weight: 700;
+  color: var(--gaia-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.exhaustion-pips {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.diamond-pip {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--gaia-font-2xl);
+  color: var(--gaia-text-parchment);
+  opacity: 0.5;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  line-height: 1;
+}
+
+.diamond-pip:hover {
+  transform: scale(1.15);
+  opacity: 0.7;
+  color: var(--gaia-text-parchment);
+  outline: none;
+  box-shadow: none;
+}
+
+.diamond-pip.active {
+  opacity: 1;
+  color: var(--gaia-purple);
+  transform: scale(1.1);
+  outline: none;
+  box-shadow: none;
+}
+
+/* 6. Defesas & Percepção Inferiores */
+.banner-defenses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.defense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--gaia-border-subtle);
+}
+
+.defense-item-label {
+  font-size: var(--gaia-font-md);
+  font-weight: 700;
+  color: var(--gaia-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.defense-item-val {
+  width: 40px;
+  text-align: center;
+  font-size: var(--gaia-font-md);
+  font-weight: bold;
+}
+
+.defense-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.defense-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.defense-group-title {
+  font-size: var(--gaia-font-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--gaia-text-muted);
+}
+
+.btn-tag-add {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-frame);
+  color: var(--gaia-text-muted);
+  border-radius: 2px;
+  padding: 1px 4px;
+  font-size: var(--gaia-font-2xs);
+  cursor: pointer;
+}
+
+.btn-tag-add:hover {
+  background: var(--gaia-bg-box-hover);
+  color: var(--gaia-text-parchment);
+  border-color: var(--gaia-border-gold);
+}
+
+.defense-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.defense-tag {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  padding: 1px 4px;
+  gap: 3px;
+}
+
+.defense-tag input {
+  font-size: var(--gaia-font-md);
+  width: 50px;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.defense-tag.reduction-tag .reduction-type {
+  width: 40px;
+}
+
+.defense-tag.reduction-tag .reduction-val {
+  width: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.btn-tag-remove {
+  background: transparent;
+  border: none;
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  padding: 0;
+  font-size: var(--gaia-font-xs);
+  line-height: 1;
+}
+
+.btn-tag-remove:hover {
+  color: var(--gaia-health-label);
+}
+
+.empty-placeholder {
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+  font-style: italic;
+}

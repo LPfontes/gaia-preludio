@@ -1,0 +1,310 @@
+/**
+ * ==============================================================================
+ * ABA PERSONAGEM (.personagem-tab-content)
+ * ==============================================================================
+ */
+.personagem-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  padding: 8px;
+}
+
+.panel-main-title {
+  font-size: var(--gaia-font-md);
+  font-weight: 800;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 0 0 8px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--gaia-border-subtle);
+}
+
+/* --- 1. SEÇÃO SUPERIOR (RETRATO + PARÂMETROS) --- */
+.personagem-top-grid {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.portrait-box {
+  width: 200px;
+  height: 250px;
+  flex-shrink: 0;
+  background: #0d0c0b;
+  border: 2px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  overflow: hidden !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.character-portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.character-portrait:hover {
+  transform: scale(1.03);
+}
+
+.parameters-panel {
+  flex: 1;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 8px 12px;
+}
+
+.parameters-columns-grid {
+  display: flex;
+  gap: 20px;
+}
+
+/* --- COLUNA DE PIPS (PARÂMETROS / CONHECIMENTOS) --- */
+.stat-pips-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pip-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 4px;
+  border-radius: 2px;
+  transition: background 0.15s ease;
+  gap: 6px;
+}
+
+.pip-stat-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.pip-stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--gaia-font-xl);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  text-transform: capitalize;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.stat-roll-icon {
+  width: 18px;
+  height: 18px;
+  border: none;
+  background-color: currentColor;
+  -webkit-mask: url("/icons/dice/d12black.svg") no-repeat center / contain;
+  mask: url("/icons/dice/d12black.svg") no-repeat center / contain;
+  display: inline-block;
+  opacity: 0.8;
+  transform: scale(1.4);
+  margin-top: 5px;
+  transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+}
+
+.pip-stat-label:hover {
+  color: var(--gaia-purple);
+}
+
+.pip-stat-label:hover .stat-roll-icon {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.pips-bar {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.diamond-pip-stat {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  opacity: 0.5;
+  transition: transform 0.15s ease, opacity 0.15s ease, color 0.15s ease;
+  line-height: 1;
+}
+
+.diamond-pip-stat:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
+  color: var(--gaia-text-parchment);
+  outline: none;
+  box-shadow: none;
+}
+
+.diamond-pip-stat.active {
+  opacity: 1;
+  color: var(--gaia-purple);
+  transform: scale(1.05);
+  outline: none;
+  box-shadow: none;
+}
+
+/* --- 2. SEÇÃO INFERIOR (CONHECIMENTOS + MAESTRIAS) --- */
+.personagem-bottom-grid {
+  display: flex;
+  gap: 8px;
+}
+
+.knowledge-panel {
+  flex: 2;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 8px 8px;
+}
+
+.knowledge-columns-grid {
+  display: flex;
+  gap: 8px;
+}
+
+/* --- PAINEL DE MAESTRIAS --- */
+.masteries-panel {
+  flex: 1;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 8px 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.masteries-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--gaia-border-subtle);
+  padding-bottom: 4px;
+}
+
+.masteries-header .panel-main-title {
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.btn-add-mastery {
+  background: transparent;
+  border: 1px solid var(--gaia-border-frame);
+  color: var(--gaia-text-muted);
+  border-radius: var(--gaia-radius);
+  padding: 2px 6px;
+  font-size: var(--gaia-font-xs);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-add-mastery:hover {
+  background: var(--gaia-purple);
+  color: #ffffff;
+  border-color: var(--gaia-purple);
+}
+
+.masteries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto !important;
+  max-height: 500px;
+}
+
+.mastery-item {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 3px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mastery-name {
+  font-size: var(--gaia-font-md);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+}
+
+.btn-remove-mastery {
+  background: transparent;
+  border: none;
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  padding: 0;
+  font-size: var(--gaia-font-md);
+  line-height: 1;
+}
+
+.btn-remove-mastery:hover {
+  color: var(--gaia-health-label);
+}
+
+.empty-masteries-hint {
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+  font-style: italic;
+  text-align: center;
+}
+.tab-bio-content {
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  padding: 8px;
+  min-height: 450px;
+}
+
+.bio-content {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 420px;
+}
+
+.bio-notes-textarea {
+  width: 100%;
+  flex: 1;
+  min-height: 600px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
+  font-family: inherit;
+  font-size: var(--gaia-font-md);
+  line-height: 1.5;
+  padding: 10px;
+  resize: vertical;
+  outline: none;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bio-notes-textarea:focus {
+  border-color: var(--gaia-purple);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5), 0 0 6px rgba(155, 89, 182, 0.4);
+}

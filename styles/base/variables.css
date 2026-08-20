@@ -1,0 +1,49 @@
+/**
+ * ==============================================================================
+ * GAIA: PRELÚDIO - DESIGN TOKENS & VARIABLES / VARIÁVEIS & TEMA
+ * ==============================================================================
+ * PT: Estilo visual simples e medieval (tons de pergaminho escuro, ferro e couro).
+ * EN: Simple medieval visual style (dark parchment, iron, and leather tones).
+ */
+
+:root {
+  /* --- ESCALA DE TAMANHOS DE FONTE (FONT SIZES) --- */
+  --gaia-font-2xs: 10px;   /* Subtítulos menores, sub-rótulos e dicas */
+  --gaia-font-xs: 11px;    /* Rótulos e títulos de caixas/seções (uppercase) */
+  --gaia-font-sm: 12px;    /* Rótulos secundários, tags de defesa */
+  --gaia-font-md: 14px;    /* Títulos de recursos e valores secundários */
+  --gaia-font-base: 16px;  /* Textos de inputs regulares */
+  --gaia-font-lg: 17px;    /* Valores de inputs médios */
+  --gaia-font-xl: 18px;    /* Valores de destaque (escudos, iniciativa) */
+  --gaia-font-2xl: 20px;   /* Valores principais, inputs numéricos em destaque */
+  --gaia-font-3xl: 48px;   /* Ícones e símbolos maiores */
+
+  /* --- CORES MEDIEVAIS (TEMA PERGAMINHO ESCURO / COURO) --- */
+  --gaia-bg-window: #e7d8be;
+  --gaia-bg-banner: #e7d8be;
+  --gaia-bg-box: transparent;
+  --gaia-bg-box-hover: #38332e5e;
+  --gaia-bg-input: #151312;
+  --gaia-bg-input-focus: #ffffff86;
+
+  /* --- BORDAS & MOLDURAS --- */
+  --gaia-border-frame: #574c43;
+  --gaia-border-gold: #8c7355;
+  --gaia-border-subtle: rgba(140, 115, 85, 0.25);
+
+  /* --- TIPOGRAFIA --- */
+  --gaia-font-medieval: "Cinzel", "Signika", Georgia, serif;
+  --gaia-text-parchment: #000000;
+  --gaia-text-muted: #505050;
+  --gaia-text-dim: #f0f0f0;
+
+  /* --- RECURSOS (VIDA, ENERGIA & ATRIBUTOS) --- */
+  --gaia-health: #b91c1c;
+  --gaia-health-label: #dc2626;
+  --gaia-energy: #2563eb;
+  --gaia-energy-label: #3b82f6;
+  --gaia-purple: #942ce4;
+
+  /* --- RAIO & DETALHES --- */
+  --gaia-radius: 4px;
+}

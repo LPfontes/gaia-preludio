@@ -6,7 +6,7 @@
  * EN: Data models for Items: Base Equipment, Armor, and Weapon.
  */
 
-const { NumberField, ArrayField, SchemaField, StringField } = foundry.data.fields;
+const { NumberField, ArrayField, SchemaField, StringField, BooleanField } = foundry.data.fields;
 
 /**
  * PT: Modelo de dados base para todos os tipos de equipamentos e itens comuns.
@@ -35,7 +35,14 @@ export class EquipmentBaseDataModel extends foundry.abstract.TypeDataModel {
 
       // PT: Unidades / peso / espaço ocupado pelo item
       // EN: Units / weight / inventory slots occupied by the item
-      unity: new NumberField({ required: true, initial: 1, min: 0 })
+      unity: new NumberField({ required: true, initial: 1, min: 0 }),
+      // PT: Indica se o item está equipado
+      // EN: Indicates if the item is equipped
+      equipped: new BooleanField({ required: true, initial: false }),
+      // PT: Quantidade do item
+      // EN: Quantity of the item
+      quantity: new NumberField({ required: true, initial: 1, integer: true, min: 1 })
+
     };
   }
 }
@@ -104,3 +111,4 @@ export class WeaponDataModel extends EquipmentBaseDataModel {
     };
   }
 }
+

@@ -14,8 +14,15 @@ export async function flowRoll(formula, data = {}, options = {}) {
   return roll;
 }
 
-export async function flowParameter(parameter, fitness) {
+export async function flowParameter(parameter, fitness, modifier = 0) {
   const dice = GAIA.rollTypes[fitness]?.roll ?? GAIA.rollTypes[fitness] ?? "1d12";
+  const mod = Number(modifier) || 0;
+  if (mod !== 0) {
+    return await flowRoll(`${dice} + @parameter + @modifier`, {
+      parameter: parameter?.value ?? 0,
+      modifier: mod
+    });
+  }
   return await flowRoll(`${dice} + @parameter`, { parameter: parameter?.value ?? 0 });
 }
 

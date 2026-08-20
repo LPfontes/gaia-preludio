@@ -1,0 +1,321 @@
+/**
+ * ==============================================================================
+ * GUIA DO DESPERTAR / AWAKENING GUIDE WIZARD
+ * ==============================================================================
+ */
+.gaia-dialog-awakening-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--gaia-font-medieval, inherit);
+}
+
+.gaia-dialog-intro-box {
+  border: 1px solid var(--gaia-border-subtle, #5c4d3c);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: var(--gaia-font-base);
+  line-height: 1.4;
+}
+
+.gaia-dialog-intro-box p {
+  margin: 0;
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-dialog-intro-box i {
+  color: var(--gaia-purple);
+  margin-right: 4px;
+}
+
+.gaia-dialog-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.gaia-dialog-tab-btn {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: var(--gaia-font-base);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.gaia-dialog-tab-btn:hover {
+  background: rgba(88, 28, 135, 0.3);
+  border-color: var(--gaia-purple);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-dialog-tab-btn.active {
+  background: var(--gaia-purple);
+  outline: none;
+  box-shadow: none;
+}
+
+.gaia-dialog-tab-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gaia-dialog-tab-pane {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gaia-dialog-tab-pane.active {
+  display: flex;
+}
+
+.gaia-dialog-hint-box {
+  border: 1px solid var(--gaia-border-subtle, #5c4d3c);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: var(--gaia-font-base);
+  line-height: 1.4;
+}
+
+.gaia-dialog-hint-title {
+  margin: 0 0 6px 0;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-dialog-hint-text {
+  margin: 0 0 8px 0;
+  color: var(--gaia-text-parchment, #e0dacf);
+}
+
+.gaia-dialog-hint-muted {
+  margin: 0;
+  font-style: italic;
+  color: var(--gaia-text-muted);
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-hint-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--gaia-text-parchment, #e0dacf);
+}
+
+/* ==============================================================================
+ * DISTRIBUIDOR DE PARÂMETROS / PARAMETERS DISTRIBUTOR
+ * ============================================================================== */
+.gaia-distributor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(88, 28, 135, 0.2);
+  border: 1px solid var(--gaia-purple);
+  border-radius: 4px;
+  padding: 6px 12px;
+  margin-bottom: 6px;
+}
+
+.gaia-distributor-title {
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-points-tracker {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-points-left {
+  font-weight: 800;
+  padding: 0 4px;
+}
+
+.gaia-points-left.points-depleted {
+  color: #4ade80;
+}
+
+.gaia-params-dist-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+}
+
+.gaia-param-dist-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--gaia-border-frame, #8a7356);
+  border-radius: 4px;
+  padding: 6px 10px;
+  transition: border-color 0.2s;
+}
+
+.gaia-param-dist-card:hover {
+  border-color: var(--gaia-purple);
+}
+
+.gaia-param-dist-label {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-param-dist-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-param-adjust-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(88, 28, 135, 0.4);
+  color: #fff;
+  border: 1px solid var(--gaia-border-frame, #8a7356);
+  border-radius: 3px;
+  font-size: 0.95em;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.gaia-param-adjust-btn.active {
+  background: var(--gaia-purple, #581c87);
+  outline: none;
+  box-shadow: none;
+}
+
+.gaia-param-adjust-btn:hover:not(:disabled) {
+  background: var(--gaia-purple, #581c87);
+}
+
+.gaia-param-adjust-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--gaia-text-muted);
+}
+
+.gaia-param-dist-input {
+  width: 32px;
+  height: 24px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 1em;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--gaia-border-subtle, #5c4d3c);
+  border-radius: 3px;
+  padding: 0;
+  pointer-events: none;
+}
+
+/* ==============================================================================
+ * ROLAGEM DE VIDA / HP ROLLER
+ * ============================================================================== */
+.gaia-vitals-roller-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+
+.gaia-vitals-roller-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gaia-vitals-roller-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.gaia-hp-action-btn {
+  padding: 4px 10px;
+  font-size: var(--gaia-font-base);
+  background: rgba(88, 28, 135, 0.4);
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.gaia-hp-action-btn:hover {
+  background: var(--gaia-purple);
+  border-color: var(--gaia-purple);
+}
+
+.gaia-hp-action-btn.active {
+  background: var(--gaia-purple);
+  border-color: var(--gaia-purple);
+}
+
+.gaia-vitals-result-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-vitals-calculated-hp {
+  font-weight: 600;
+  color: var(--gaia-purple);
+  font-size: var(--gaia-font-base);
+}
+
+/* ==============================================================================
+ * NAVEGAÇÃO DE ETAPAS / WIZARD FOOTER NAVIGATION
+ * ============================================================================== */
+.gaia-dialog-tab-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.gaia-wizard-nav-btn {
+  padding: 5px 12px;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.gaia-wizard-nav-btn:hover {
+  background: var(--gaia-purple);
+  border-color: var(--gaia-purple);
+}

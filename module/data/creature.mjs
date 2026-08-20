@@ -5,8 +5,8 @@
  * PT: Modelo de dados para criaturas e monstros, estendendo o modelo base de Actor.
  * EN: Data model for creatures and monsters, extending the base Actor model.
  *
- * PT: Campos herdados de actorBaseDataModel e baseDataModel:
- * EN: Inherited fields from actorBaseDataModel and baseDataModel:
+ * PT: Campos herdados de ActorBaseDataModel e BaseDataModel:
+ * EN: Inherited fields from ActorBaseDataModel and BaseDataModel:
  *   - name (String): Nome da criatura / Creature name
  *   - description (String): Descrição / Description
  *   - nivel (Number): Nível ou ND / Level or Challenge Rating
@@ -21,21 +21,21 @@
  *   - damageVulnerability (Array<{type, value}>): Vulnerabilidades a dano / Damage vulnerabilities
  */
 
-import { actorBaseDataModel } from "./ActorBaseModel.mjs";
+import { ActorBaseDataModel } from "./ActorBaseModel.mjs";
 
 const { NumberField, ArrayField, StringField } = foundry.data.fields;
 
 /**
- * @extends {actorBaseDataModel}
+ * @extends {ActorBaseDataModel}
  */
-class creatureDataModel extends actorBaseDataModel {
+class CreatureDataModel extends ActorBaseDataModel {
   /** @override */
   static defineSchema() {
     return {
       // PT: Inclui todos os campos do modelo base de Actor
       // EN: Includes all fields inherited from the parent actor base model
       ...super.defineSchema(),
-
+      difficulty: new StringField({ required: true }),
       // PT: Parâmetros ofensivos da criatura (bônus de ataque / poder de ataque)
       // EN: Offensive parameters of the creature (attack bonus / offensive power)
       offensiveParameters: new NumberField({ required: true, initial: 0, integer: true }),
@@ -63,4 +63,4 @@ class creatureDataModel extends actorBaseDataModel {
   }
 }
 
-export { creatureDataModel };
+export { CreatureDataModel };

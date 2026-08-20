@@ -11,7 +11,7 @@ const { StringField, NumberField, ArrayField, SchemaField } = foundry.data.field
 /**
  * @extends {foundry.abstract.TypeDataModel<any, any>}
  */
-class baseDataModel extends foundry.abstract.TypeDataModel {
+class BaseDataModel extends foundry.abstract.TypeDataModel {
   /** @override */
   static defineSchema() {
     return {
@@ -41,4 +41,4 @@ class baseDataModel extends foundry.abstract.TypeDataModel {
   }
 }
 
-export { baseDataModel };
+export { BaseDataModel };

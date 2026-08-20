@@ -207,5 +207,35 @@ GAIA.rollTypes = {
   disadvantage:{roll:"2d12kl",label:"GAIA.RollType.Disadvantage"},
   supAdvantage:{roll:"3d12kh",label:"GAIA.RollType.SupAdvantage"},
   supDisadvantage:{roll:"3d12kl",label:"GAIA.RollType.SupDisadvantage"},
-}
+};
+GAIA.creaturesType = {
+  comum: "GAIA.CreatureType.comum",
+  ferais: "GAIA.CreatureType.ferais",
+  veu: "GAIA.CreatureType.veu",
+  naovivo: "GAIA.CreatureType.naovivo",
+  elemental: "GAIA.CreatureType.elemental",
+  primas: "GAIA.CreatureType.primas",
+  artifical: "GAIA.CreatureType.artifical",
+  abisssal: "GAIA.CreatureType.abisssal",
+  celestial: "GAIA.CreatureType.celestial"
+};
 
+GAIA.abilitiesTypes = {
+  conjuracao: "GAIA.AbilitiesTypes.conjuracao",
+  ataque_corpo_a_corpo: "GAIA.AbilitiesTypes.ataque_corpo_a_corpo",
+  ataque_magico: "GAIA.AbilitiesTypes.ataque_magico",
+  ataque_distancia: "GAIA.AbilitiesTypes.ataque_distancia",
+  defesa: "GAIA.AbilitiesTypes.defesa",
+  suporte: "GAIA.AbilitiesTypes.suporte",
+  iniciativa: "GAIA.AbilitiesTypes.iniciativa",
+  movimento: "GAIA.AbilitiesTypes.movimento",
+  passiva: "GAIA.AbilitiesTypes.passiva",
+  foco: "GAIA.AbilitiesTypes.foco"
+};
+GAIA.actionType = {
+   acaoAtiva: "GAIA.ActionType.acaoAtiva",
+  acaoSimples: "GAIA.ActionType.acaoSimples",
+  acaoRapida: "GAIA.ActionType.acaoRapida",
+  acaoAcelerada: "GAIA.ActionType.acaoAcelerada",
+  acaoVersatil: "GAIA.ActionType.acaoVersatil",
+}

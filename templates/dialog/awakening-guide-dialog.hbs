@@ -1,0 +1,159 @@
+<div class="gaia-dialog-awakening-guide">
+  {{!-- Caixa introdutória --}}
+  <div class="gaia-dialog-intro-box">
+    <p>
+      {{localize "GAIA.CreateActor.AwakeningIntro"}}
+    </p>
+  </div>
+
+  {{!-- Barra de navegação por abas --}}
+  <nav class="gaia-dialog-tabs">
+    <button type="button" class="gaia-dialog-tab-btn active" data-tab="parameters">
+      {{localize "GAIA.CreateActor.TabParameters"}}
+    </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="knowledge">
+      {{localize "GAIA.CreateActor.TabKnowledge"}}
+    </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="vitals">
+      {{localize "GAIA.CreateActor.TabVitals"}}
+    </button>
+  </nav>
+
+  {{!-- Conteúdo das abas --}}
+  <div class="gaia-dialog-tab-body">
+    {{!-- Aba 1: Parâmetros --}}
+    <div class="gaia-dialog-tab-pane active" data-tab="parameters">
+      <div class="gaia-dialog-hint-box">
+        <p class="gaia-dialog-hint-title">
+          {{localize "GAIA.CreateActor.AwakeningParamTitle"}}
+        </p>
+        <p class="gaia-dialog-hint-text">
+          ● {{localize "GAIA.CreateActor.AwakeningParam"}}
+        </p>
+      </div>
+
+      {{!-- Distribuidor Interativo dos 7 Pontos de Parâmetros --}}
+      <div class="gaia-distributor-header">
+        <span class="gaia-distributor-title">
+          {{localize "GAIA.CreateActor.PointsDistribute"}}
+        </span>
+        <span class="gaia-points-tracker">
+          {{localize "GAIA.CreateActor.PointsRemaining"}} <strong class="gaia-points-left">7</strong> / 7
+        </span>
+      </div>
+
+      <div class="gaia-params-dist-grid">
+        {{#each parameters as |param|}}
+          <div class="gaia-param-dist-card">
+            <span class="gaia-param-dist-label">{{param.label}}</span>
+            <div class="gaia-param-dist-controls">
+              <button type="button" class="gaia-param-adjust-btn" data-action="decrease" data-param="{{param.key}}">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+              <input type="text" class="gaia-param-dist-input" data-param="{{param.key}}" value="{{param.value}}" readonly />
+              <button type="button" class="gaia-param-adjust-btn" data-action="increase" data-param="{{param.key}}">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="knowledge">
+          <span>{{localize "GAIA.CreateActor.Next"}}</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    {{!-- Aba 2: Conhecimentos --}}
+    <div class="gaia-dialog-tab-pane" data-tab="knowledge">
+      <div class="gaia-dialog-hint-box">
+        <p class="gaia-dialog-hint-title">
+          {{localize "GAIA.CreateActor.AwakeningKnowledgeTitle"}}
+        </p>
+        <p class="gaia-dialog-hint-text">
+          ● {{localize "GAIA.CreateActor.AwakeningKnowledge"}}
+        </p>
+      </div>
+
+      {{!-- Distribuidor Interativo dos 7 Pontos de Conhecimentos --}}
+      <div class="gaia-distributor-header">
+        <span class="gaia-distributor-title">
+          {{localize "GAIA.CreateActor.PointsDistributeKnowledge"}}
+        </span>
+        <span class="gaia-points-tracker">
+          {{localize "GAIA.CreateActor.PointsRemaining"}} <strong class="gaia-know-points-left">7</strong> / 7
+        </span>
+      </div>
+
+      <div class="gaia-params-dist-grid">
+        {{#each knowledge as |know|}}
+          <div class="gaia-param-dist-card">
+            <span class="gaia-param-dist-label">{{know.label}}</span>
+            <div class="gaia-param-dist-controls">
+              <button type="button" class="gaia-know-adjust-btn gaia-param-adjust-btn" data-action="decrease" data-knowledge="{{know.key}}">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+              <input type="text" class="gaia-know-dist-input gaia-param-dist-input" data-knowledge="{{know.key}}" value="{{know.value}}" readonly />
+              <button type="button" class="gaia-know-adjust-btn gaia-param-adjust-btn" data-action="increase" data-knowledge="{{know.key}}">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="parameters">
+          <i class="fa-solid fa-arrow-left"></i> <span>{{localize "GAIA.CreateActor.Previous"}}</span>
+        </button>
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="vitals">
+          <span>{{localize "GAIA.CreateActor.Next"}}</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    {{!-- Aba 3: Vida & Energia --}}
+    <div class="gaia-dialog-tab-pane" data-tab="vitals">
+      <div class="gaia-dialog-hint-box">
+        <p class="gaia-dialog-hint-title">
+          {{localize "GAIA.CreateActor.AwakeningVitalsTitle"}}
+        </p>
+        <ul class="gaia-dialog-hint-list">
+          <li><strong>Pontos de Vida (PV):</strong> 30 + 1d6 (ou 3) + <span class="gaia-vigor-hint-val">0</span> (Vigor)</li>
+          <li><strong>Pontos de Energia (PE):</strong> {{localize "GAIA.CreateActor.AwakeningEnergy"}}</li>
+        </ul>
+      </div>
+
+      {{!-- Painel de Definição / Rolagem de Vida --}}
+      <div class="gaia-vitals-roller-box">
+        <div class="gaia-vitals-roller-header">
+          <span class="gaia-distributor-title">
+            <i class="fa-solid fa-heart-pulse"></i> {{localize "GAIA.CreateActor.RollHPHint"}}
+          </span>
+          <div class="gaia-vitals-roller-controls">
+            <button type="button" class="gaia-hp-action-btn gaia-roll-hp-btn" data-action="roll">
+              <i class="fa-solid fa-dice-d6"></i> {{localize "GAIA.CreateActor.RollHP"}}
+            </button>
+            <button type="button" class="gaia-hp-action-btn gaia-fixed-hp-btn active" data-action="fixed">
+              {{localize "GAIA.CreateActor.FixedHP"}}
+            </button>
+          </div>
+        </div>
+
+        <div class="gaia-vitals-result-display">
+          <span>{{localize "GAIA.CreateActor.CalculatedHP"}}</span>
+          <strong class="gaia-vitals-calculated-hp">33 PV</strong>
+          <input type="hidden" class="gaia-hp-selected-input" value="33" />
+        </div>
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="knowledge">
+          <i class="fa-solid fa-arrow-left"></i> <span>{{localize "GAIA.CreateActor.Previous"}}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

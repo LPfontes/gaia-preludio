@@ -10,9 +10,10 @@ import { GAIA } from "./helpers/config.mjs";
 import { GaiaActor } from "./documents/actor.mjs";
 import { GaiaItem } from "./documents/item.mjs";
 import { EquipmentBaseDataModel, ArmorDataModel, WeaponDataModel } from "./data/EquipmentModel.mjs";
-import { legadoDataModel } from "./data/Legado.mjs";
-import { creatureDataModel } from "./data/creature.mjs";
-import { LegadoSheet } from "./applications/sheets/actor/legado.mjs";
+import { LegacyDataModel, LegacyNpcDataModel } from "./data/Legacy.mjs";
+import { CreatureDataModel } from "./data/creature.mjs";
+import { AbilityBaseModel } from "./data/abilitiesBaseModel.mjs";
+import { LegacySheet } from "./applications/sheets/actor/legacy.mjs";
 import { CreatureSheet } from "./applications/sheets/actor/creature.mjs";
 import { EquipmentSheet } from "./applications/sheets/item/equipment.mjs";
 import { ArmorSheet } from "./applications/sheets/item/armor.mjs";
@@ -28,7 +29,10 @@ Hooks.once("init", async () => {
   // EN: Preload Handlebars partial templates
   await loadTemplates([
     "systems/gaia-preludio/templates/actor/parts/actor-header.hbs",
-    "systems/gaia-preludio/templates/actor/parts/actor-personagem.hbs"
+    "systems/gaia-preludio/templates/actor/parts/actor-personagem.hbs",
+    "systems/gaia-preludio/templates/actor/parts/inventory.hbs",
+    "systems/gaia-preludio/templates/actor/parts/bio.hbs",
+    "systems/gaia-preludio/templates/actor/parts/abilities.hbs"
   ]);
 
   // PT: Configura os Enums e constantes globais do sistema
@@ -43,8 +47,9 @@ Hooks.once("init", async () => {
   // PT: Registra os DataModels para cada tipo de Actor
   // EN: Register DataModels for each Actor type
   Object.assign(CONFIG.Actor.dataModels, {
-    legado: legadoDataModel,
-    creature: creatureDataModel
+    legacy: LegacyDataModel,
+    legacyNpc: LegacyNpcDataModel,
+    creature: CreatureDataModel
   });
 
   // PT: Registra os DataModels para cada tipo de Item
@@ -52,17 +57,18 @@ Hooks.once("init", async () => {
   Object.assign(CONFIG.Item.dataModels, {
     equipment: EquipmentBaseDataModel,
     armor: ArmorDataModel,
-    weapon: WeaponDataModel
+    weapon: WeaponDataModel,
+    ability: AbilityBaseModel
   });
 
   // PT: Registra as fichas de Actor (ApplicationV2)
   // EN: Register Actor sheets (ApplicationV2)
 
   Actors.unregisterSheet("core", ActorSheetV2);
-  Actors.registerSheet("gaia-preludio", /** @type {any} */ (LegadoSheet), {
-    types: ["legado"],
+  Actors.registerSheet("gaia-preludio", /** @type {any} */ (LegacySheet), {
+    types: ["legacy", "legacyNpc"],
     makeDefault: true,
-    label: "GAIA.Sheet.Legado"
+    label: "GAIA.Sheet.Legacy"
   });
   Actors.registerSheet("gaia-preludio", /** @type {any} */ (CreatureSheet), {
     types: ["creature"],

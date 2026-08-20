@@ -1,0 +1,157 @@
+/**
+ * ==============================================================================
+ * GAIA: PRELÚDIO - BASE LAYOUT & SHEET STRUCTURE / ESTRUTURA BASE DA FICHA
+ * ==============================================================================
+ */
+
+/* Controle de visibilidade das abas */
+.sheet-tabs-content .tab {
+  display: none;
+}
+
+.sheet-tabs-content .tab.active {
+  display: block;
+}
+
+/* ==============================================================================
+ * ESTRUTURA GERAL DA FICHA DE ATOR
+ * ============================================================================== */
+.gaia-preludio.sheet.actor {
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-text-parchment);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  overflow: visible !important;
+}
+
+.gaia-preludio.sheet.actor .window-content {
+  padding: 0;
+  overflow: visible !important;
+  height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+.gaia-preludio.sheet.actor form {
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: visible !important;
+}
+
+.gaia-sheet-content {
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.sheet-main-layout {
+  display: flex;
+  gap: 6px;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  flex: 1;
+  overflow: visible;
+  position: relative;
+}
+
+.sheet-sidebar-header {
+  width: 260px;
+  flex-shrink: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow: visible;
+  padding-right: 2px;
+  position: relative;
+  z-index: 5;
+}
+
+.sheet-main-body {
+  flex: 1;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+}
+
+/* ==============================================================================
+ * NAVEGAÇÃO DE ABAS (.sheet-navigation-tabs)
+ * ============================================================================== */
+.sheet-navigation-tabs {
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  display: flex;
+  padding: 4px;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.sheet-navigation-tabs .tab-item {
+  color: var(--gaia-text-muted);
+  font-size: var(--gaia-font-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.sheet-navigation-tabs .tab-item:hover {
+  color: var(--gaia-text-parchment);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sheet-navigation-tabs .tab-item.active {
+  background: rgba(117, 117, 117, 0.1);
+  text-shadow: 0px 0px 0px var(--gaia-purple);
+}
+
+.sheet-tabs-content {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 6px;
+}
+
+/* Barra de rolagem personalizada temática */
+.sheet-tabs-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sheet-tabs-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.sheet-tabs-content::-webkit-scrollbar-thumb {
+  background: var(--gaia-border-frame);
+  border-radius: 3px;
+}
+
+.sheet-tabs-content::-webkit-scrollbar-thumb:hover {
+  background: var(--gaia-purple);
+}
+
+.tab-placeholder {
+  padding: 40px;
+  text-align: center;
+  color: var(--gaia-text-dim);
+  font-style: italic;
+}
