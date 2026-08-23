@@ -5,9 +5,12 @@ import { prepareLegacySheetContext } from "../../../helpers/actor-context.mjs";
 import {
   promptDefenseTraitDialog,
   promptMasteryDialog,
-  promptEditFieldDialog
+  promptEditFieldDialog,
+  promptRollRequestDialog,
+  promptItemActionDialog
 } from "../../../helpers/dialogs.mjs";
-import { rollStat } from "../../../helpers/stat-rolls.mjs";
+import { rollStat, rollWeaponAttack } from "../../../helpers/stat-rolls.mjs";
+import { GaiaItemBrowser } from "../../item-browser.mjs";
 
 /**
  * ==============================================================================
@@ -20,11 +23,14 @@ import { rollStat } from "../../../helpers/stat-rolls.mjs";
 export class LegacySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static DEFAULT_OPTIONS = {
     classes: ["gaia-preludio", "sheet", "actor"],
-    position: { width: 850, height: 900 },
+    position: { width: 900, height: 900 },
     tag: "form",
     form: {
       submitOnChange: true,
       closeOnSubmit: false
+    },
+    tabGroups: {
+      primary: "personagem"
     },
     actions: {
       setExhaustion: LegacySheet.#onSetExhaustion,
@@ -43,9 +49,22 @@ export class LegacySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       rollDefense: LegacySheet.#onRollDefense,
       rollInitiative: LegacySheet.#onRollInitiative,
       editImage: LegacySheet.#onEditImage,
+      sendPortraitToChat: LegacySheet.#onSendPortraitToChat,
+      showPortraitToPlayers: LegacySheet.#onShowPortraitToPlayers,
       openItem: LegacySheet.#onOpenItem,
+      rollItem: LegacySheet.#onRollItem,
+      rollWeaponAttack: LegacySheet.#onRollWeaponAttack,
+      rollWeapon: LegacySheet.#onRollWeaponAttack,
+      promptItemAction: LegacySheet.#onPromptItemAction,
+      deleteItem: LegacySheet.#onDeleteItem,
+      createAbility: LegacySheet.#onCreateAbility,
+      createItem: LegacySheet.#onCreateItem,
+      toggleEquip: LegacySheet.#onToggleEquip,
+      openItemBrowser: LegacySheet.#onOpenItemBrowser,
       editField: LegacySheet.#onPromptEditField,
-      tab: LegacySheet.#onChangeTab
+      tab: LegacySheet.#onChangeTab,
+      promptRollRequest: LegacySheet.#onPromptRollRequest,
+      promptRollRequestDialog: LegacySheet.#onPromptRollRequest
     }
   };
 
@@ -62,6 +81,8 @@ export class LegacySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   /** @override */
   _onRender(context, options) {
     super._onRender(context, options);
+
+    this.#syncTabs();
 
     // Cancela qualquer ouvinte anterior para evitar duplicação a cada re-render da ficha
     this.#contextMenuController?.abort();
@@ -88,8 +109,51 @@ export class LegacySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         case "clearKnowledgePip":
           LegacySheet.#onClearKnowledgePip.call(this, event, actionElement);
           break;
+        case "sendPortraitToChat":
+          LegacySheet.#onSendPortraitToChat.call(this, event, actionElement);
+          break;
       }
     }, { signal: this.#contextMenuController.signal });
+  }
+
+  /**
+   * Processa o evento de soltar (drop) de um Item na ficha.
+   * @override
+   * @param {DragEvent} event - Evento de arrastar e soltar
+   * @param {object} data - Dados do objeto solto na ficha
+   * @returns {Promise<Document[]|boolean>}
+   */
+  async _onDropItem(event, data) {
+    if (!this.actor.isOwner) return false;
+    const item = await Item.fromDropData(data);
+    if (!item) return false;
+
+    // Se o item já for pertencente a esta mesma ficha, ignora para não duplicar
+    if (item.actor?.id === this.actor.id) return false;
+
+    const itemData = item.toObject();
+    return await this.actor.createEmbeddedDocuments("Item", [itemData]);
+  }
+
+  /**
+   * Trata os dados a serem salvos no formulário, higienizando caminhos de imagem inválidos ou vazios.
+   * @override
+   */
+  _prepareSubmitData(event, form, formData) {
+    if (formData && formData.object && "img" in formData.object) {
+      const img = formData.object.img;
+      if (!img || typeof img !== "string" || !img.trim() || !/\.(png|jpe?g|webp|svg|gif|avif)$/i.test(img)) {
+        delete formData.object.img;
+      }
+    }
+    const submitData = super._prepareSubmitData(event, form, formData);
+    if ("img" in submitData) {
+      const img = submitData.img;
+      if (!img || typeof img !== "string" || !img.trim() || !/\.(png|jpe?g|webp|svg|gif|avif)$/i.test(img)) {
+        delete submitData.img;
+      }
+    }
+    return submitData;
   }
 
   /** @override */
@@ -131,10 +195,10 @@ export class LegacySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     // Se o parâmetro for Agilidade, calcula e atualiza o bônus
     if (paramKey === "agility") {
       const bonusList = [...(this.actor.system.parametersBonus ?? [])];
-      const targetAttr = "movement"; // Atributo que receberá o bônus (ex: movement, health.max, etc.)
+      const targetAttr = "movement"; // Parametro que receberá o bônus (ex: movement, health.max, etc.)
       // Exemplo: 1 de bônus para cada 2 pontos de Agilidade (ex: 2 agilidade = +1, 4 = +2, 6 = +3)
       const calculatedBonus = Math.floor(entry.value / 2);
-      // Procura se já existe um bônus para esse atributo na lista
+      // Procura se já existe um bônus para esse parametro na lista
       let bonusEntry = bonusList.find(b => b.attr === targetAttr);
       if (calculatedBonus > 0) {
         if (bonusEntry) {
@@ -201,10 +265,10 @@ export class LegacySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     await this.actor.update({ "system.knowledge": list });
     if (knowKey === "perception") {
       const bonusList = [...(this.actor.system.parametersBonus ?? [])];
-      const targetAttr = "passivePerception"; // Atributo que receberá o bônus (ex: movement, health.max, etc.)
+      const targetAttr = "passivePerception"; // Parametro que receberá o bônus (ex: movement, health.max, etc.)
       // Exemplo: 1 de bônus para cada 2 pontos de Agilidade (ex: 2 agilidade = +1, 4 = +2, 6 = +3)
       const calculatedBonus = entry.value;
-      // Procura se já existe um bônus para esse atributo na lista
+      // Procura se já existe um bônus para esse Parametro na lista
       let bonusEntry = bonusList.find(b => b.attr === targetAttr);
       if (calculatedBonus > 0) {
         if (bonusEntry) {
@@ -349,9 +413,10 @@ export class LegacySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
    * Abre o FilePicker para alterar o retrato (portrait) do personagem.
    */
   static async #onEditImage(event, target) {
-    const attr = target.dataset.edit || "img";
+    const attr = target.dataset.field || target.dataset.edit || "img";
     const current = foundry.utils.getProperty(this.actor, attr);
-    const fp = new FilePicker({
+    const FilePickerClass = foundry.applications.apps.FilePicker?.implementation || globalThis.FilePicker;
+    const fp = new FilePickerClass({
       type: "image",
       current,
       callback: async (path) => {
@@ -361,6 +426,47 @@ export class LegacySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       left: this.position.left + 10
     });
     return fp.browse();
+  }
+
+  /**
+   * Envia o retrato do personagem (character-portrait) como mensagem no chat.
+   */
+  static async #onSendPortraitToChat(event, target) {
+    event?.preventDefault?.();
+    const actor = this.actor;
+    if (!actor || !actor.img) return;
+
+    const content = `
+      <div class="gaia-chat-card gaia-portrait-chat-card" style="text-align: center; padding: 6px;">
+        <h3 style="margin: 0 0 6px 0; font-family: var(--gaia-font-medieval, 'Cinzel', Georgia, serif); font-size: 1.1em; color: var(--gaia-text-parchment, #000); border-bottom: 1px solid var(--gaia-border-gold, #8c7355); padding-bottom: 4px;">
+          ${actor.name}
+        </h3>
+        <img class="chat-portrait-img" src="${actor.img}" alt="${actor.name}" style="max-width: 100%; max-height: 320px; border-radius: 4px; border: 1px solid var(--gaia-border-frame, #574c43); object-fit: contain; background: rgba(0,0,0,0.1);" />
+      </div>
+    `;
+
+    return await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor }),
+      content
+    });
+  }
+
+  /**
+   * Exibe a imagem do personagem para os jogadores conectados.
+   */
+  static async #onShowPortraitToPlayers(event, target) {
+    event?.preventDefault?.();
+    const actor = this.actor;
+    if (!actor || !actor.img) return;
+
+    const ImagePopoutClass = foundry.applications.apps.ImagePopout?.implementation || globalThis.ImagePopout;
+    const popout = new ImagePopoutClass({
+      src: actor.img,
+      title: actor.name,
+      uuid: actor.uuid
+    });
+    popout.render(true);
+    popout.shareImage();
   }
 
   /**
@@ -398,10 +504,127 @@ export class LegacySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return await promptEditFieldDialog(this.actor, field, options);
   }
   
+  #syncTabs() {
+    this.tabGroups ??= { primary: "personagem" };
+    for (const [group, activeTab] of Object.entries(this.tabGroups)) {
+      if (!activeTab) continue;
+      const elements = this.element.querySelectorAll(`[data-group="${group}"][data-tab]`);
+      for (const el of elements) {
+        el.classList.toggle("active", el.dataset.tab === activeTab);
+      }
+    }
+  }
+
   static #onChangeTab(event, target) {
     const tab = target.dataset.tab;
-    const group = target.dataset.group || "primary";
-    if (tab) this.changeTab(tab, group);
+    const group = target.dataset.group || target.closest("[data-group]")?.dataset.group || "primary";
+    if (tab && group) {
+      this.changeTab(tab, group);
+      this.#syncTabs();
+    }
+  }
+
+  static async #onCreateAbility(event, target) {
+    event.preventDefault();
+    return this.actor.createEmbeddedDocuments("Item", [{
+      name: "Nova Habilidade",
+      type: "ability",
+      system: {
+        cost: "1 PE",
+        typeAction: "acaoAtiva",
+        type: "conjuracao",
+        numberTarget: "1 Alvo",
+        range: "8 metros",
+        quote: "",
+        description: "",
+        subEffects: [],
+        improvements: []
+      }
+    }]);
+  }
+
+  static async #onRollItem(event, target) {
+    event.preventDefault();
+    const itemId = target.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    return item?.roll();
+  }
+
+  static async #onRollWeaponAttack(event, target) {
+    event.preventDefault();
+    const itemId = target.dataset.itemId || target.closest("[data-item-id]")?.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    if (!item) return null;
+    return await rollWeaponAttack(this.actor, item, { event, target });
+  }
+
+  static async #onPromptItemAction(event, target) {
+    event.preventDefault();
+    const itemId = target.dataset.itemId || target.closest("[data-item-id]")?.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    if (!item) return null;
+    return await promptItemActionDialog(this.actor, item, { event, target });
+  }
+
+  static async #onDeleteItem(event, target) {
+    event.preventDefault();
+    const itemId = target.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    return item?.delete();
+  }
+
+  /**
+   * Manipula a criação genérica de itens (Armamento, Armadura, Equipamento, Habilidade, Legado).
+   */
+  static async #onCreateItem(event, target) {
+    event.preventDefault();
+    const type = target.dataset.type || "equipment";
+    const category = target.dataset.category;
+
+    const defaultNames = {
+      weapon: "Novo Armamento",
+      armor: "Nova Armadura",
+      equipment: "Novo Equipamento",
+      ability: "Nova Habilidade",
+      legacy: "Novo Legado"
+    };
+
+    const name = defaultNames[type] || "Novo Item";
+    const itemData = {
+      name,
+      type,
+      system: category ? { category } : {}
+    };
+
+    const [newItem] = await this.actor.createEmbeddedDocuments("Item", [itemData]);
+    newItem?.sheet?.render(true);
+    return newItem;
+  }
+
+  /**
+   * Alterna a propriedade 'equipped' de um item (Equipado / Desequipado).
+   */
+  static async #onToggleEquip(event, target) {
+    event.preventDefault();
+    const itemId = target.dataset.itemId || target.closest("[data-item-id]")?.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    if (item) {
+      const isEquipped = Boolean(item.system?.equipped);
+      await item.update({ "system.equipped": !isEquipped });
+    }
+  }
+
+  /**
+   * Abre o Navegador de Itens e Habilidades com este Ator como alvo para importação.
+   */
+  static #onOpenItemBrowser(event, target) {
+    event.preventDefault();
+    const type = target?.dataset?.type;
+    return GaiaItemBrowser.open(this.actor, { type });
+  }
+
+  static async #onPromptRollRequest(event, target) {
+    return await promptRollRequestDialog();
   }
 }
 

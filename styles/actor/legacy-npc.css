@@ -1,0 +1,117 @@
+/**
+ * ==============================================================================
+ * LEGACY NPC SHEET STYLES / ESTILOS DA FICHA DE LEGADO NPC
+ * ==============================================================================
+ * Estilos para a ficha compacta estilo Criatura/Monstro com atributos do Legado.
+ */
+
+.legacy-npc-sheet {
+  font-family: var(--gaia-font-medieval), Georgia, serif;
+  color: var(--gaia-text-parchment);
+}
+
+.legacy-npc-header-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 10px 10px 40px 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 97%, 0% 100%);
+}
+
+.legacy-npc-sheet .npc-name-card input {
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+}
+
+.legacy-npc-sheet .stat-pip-badge:hover {
+  border-color: var(--gaia-border-gold) !important;
+  background: rgba(140, 115, 85, 0.15) !important;
+  transform: translateY(-1px);
+}
+
+.legacy-npc-header-container .npc-banner-row {
+  display: flex;
+  gap: 10px;
+  
+}
+
+.legacy-npc-header-container .npc-identity-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legacy-npc-header-container .npc-name-card input {
+  width: 100%;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+  background: transparent;
+  border: none;
+}
+
+.legacy-npc-header-container .npc-stats-row {
+  display: flex;
+  gap: 6px;
+}
+
+.legacy-npc-header-container .npc-vitals-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legacy-npc-header-container .npc-vitals-column .resource-card {
+  flex: 1;
+}
+
+.legacy-npc-header-container .creature-stats-cards-row {
+  display: flex;
+  gap: 6px;
+}
+
+.legacy-npc-header-container .creature-defenses-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  align-items: center;
+}
+.bio-text-wrapper{
+  width: 100%;
+}
+
+.legacy-npc-sheet .personagem-bottom-grid {
+  display: flex;
+  gap: 14px;
+}
+.gaia-dialog-legacy-npc-wizard .gaia-dialog-title {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+}
+.legacy-npc-sheet .knowledge-panel {
+  flex: 2;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 10px 12px;
+}
+
+.legacy-npc-sheet .masteries-panel {
+  flex: 1;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 10px 12px;
+}

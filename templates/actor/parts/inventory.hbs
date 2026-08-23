@@ -1,12 +1,11 @@
 <div class="inventory-column-container">
-
   {{!-- 1. TABELA DE ARMAS --}}
   <div class="inventory-table-panel tab-weapons-content">
     <div class="inventory-table-header">
       <h4 class="inventory-table-title">
         {{localize "GAIA.Inventory.Weapons"}}
       </h4>
-      <button type="button" class="btn-add-item" data-action="createItem" data-type="weapon" data-category="weapon" title="{{localize 'GAIA.Inventory.AddWeapon'}}">
+      <button type="button" class="btn-add-item" data-action="openItemBrowser" data-type="weapon" data-category="weapon" title="{{localize 'GAIA.Inventory.AddWeapon'}}">
         <i class="fa-solid fa-plus"></i>
       </button>
     </div>
@@ -24,9 +23,9 @@
           </tr>
         </thead>
         <tbody>
-          {{#each (or inventoryWeapons weapons) as |weapon|}}
+          {{#each inventoryWeapons as |weapon|}}
             <tr class="item-row weapon-row" data-item-id="{{weapon.id}}">
-              <td class="col-item-name" data-action="openItem" data-item-id="{{weapon.id}}" role="button" title="{{localize 'GAIA.title.ClickToOpenDetailsOf' weapon.name}}">
+              <td class="col-item-name" data-action="promptItemAction" data-item-id="{{weapon.id}}" role="button" title="{{weapon.name}}">
                 <div class="item-name-cell">
                   {{#if weapon.img}}
                     <img class="item-mini-icon" src="{{weapon.img}}" alt="{{weapon.name}}" />
@@ -67,7 +66,7 @@
       <h4 class="inventory-table-title">
      {{localize "GAIA.Inventory.Armor"}}
       </h4>
-      <button type="button" class="btn-add-item" data-action="createItem" data-type="armor" data-category="armor" title="{{localize 'GAIA.Inventory.AddArmor'}}">
+      <button type="button" class="btn-add-item" data-action="openItemBrowser" data-type="armor" data-category="armor" title="{{localize 'GAIA.Inventory.AddArmor'}}">
         <i class="fa-solid fa-plus"></i>
       </button>
     </div>
@@ -84,7 +83,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each (or inventoryArmor armors) as |armorItem|}}
+          {{#each inventoryArmor as |armorItem|}}
             <tr class="item-row armor-row" data-item-id="{{armorItem.id}}">
               <td class="col-item-name" data-action="openItem" data-item-id="{{armorItem.id}}" role="button" title="{{localize 'GAIA.title.ClickToOpenDetailsOf' armorItem.name}}">
                 <div class="item-name-cell">
@@ -100,7 +99,7 @@
               <td class="col-item-unity">{{armorItem.unity}}</td>
               <td class="col-item-actions">
                 <button type="button" class="btn-item-action {{#if armorItem.equipped}}equipped{{/if}}" data-action="toggleEquip" data-item-id="{{armorItem.id}}" title="{{#if armorItem.equipped}}{{localize 'GAIA.title.Unequip'}}{{else}}{{localize 'GAIA.title.Equip'}}{{/if}}">
-                  
+                  <i class="fa-solid fa-shield-halved"></i>
                 </button>
                 <button type="button" class="btn-item-action" data-action="openItem" data-item-id="{{armorItem.id}}" title="{{localize 'GAIA.title.EditItem'}}">
                   <i class="fa-solid fa-pen-to-square"></i>
@@ -126,7 +125,7 @@
       <h4 class="inventory-table-title">
         {{localize "GAIA.Inventory.Consumables"}}
       </h4>
-      <button type="button" class="btn-add-item" data-action="createItem" data-type="equipment" data-category="potion" title="{{localize 'GAIA.Inventory.AddConsumable'}}">
+      <button type="button" class="btn-add-item" data-action="openItemBrowser" data-type="equipment" data-category="potion" title="{{localize 'GAIA.Inventory.AddConsumable'}}">
         <i class="fa-solid fa-plus"></i>
       </button>
     </div>
@@ -143,7 +142,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each (or inventoryConsumables consumables) as |consumable|}}
+          {{#each inventoryConsumables as |consumable|}}
             <tr class="item-row consumable-row" data-item-id="{{consumable.id}}">
               <td class="col-item-name" data-action="openItem" data-item-id="{{consumable.id}}" role="button" title="{{localize 'GAIA.title.ClickToOpenDetailsOf' consumable.name}}">
                 <div class="item-name-cell">
@@ -182,7 +181,7 @@
       <h4 class="inventory-table-title">
          {{localize "GAIA.Inventory.Common"}}
       </h4>
-      <button type="button" class="btn-add-item" data-action="createItem" data-type="equipment" data-category="common" title="{{localize 'GAIA.Inventory.AddCommon'}}">
+      <button type="button" class="btn-add-item" data-action="openItemBrowser" data-type="equipment" data-category="common" title="{{localize 'GAIA.Inventory.AddCommon'}}">
         <i class="fa-solid fa-plus"></i>
       </button>
     </div>
@@ -199,7 +198,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each (or inventoryCommon commonItems) as |item|}}
+          {{#each inventoryCommon as |item|}}
             <tr class="item-row common-row" data-item-id="{{item.id}}">
               <td class="col-item-name" data-action="openItem" data-item-id="{{item.id}}" role="button" title="{{localize 'GAIA.title.ClickToOpenDetailsOf' item.name}}">
                 <div class="item-name-cell">

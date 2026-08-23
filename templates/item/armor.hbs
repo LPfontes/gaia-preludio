@@ -1,35 +1,48 @@
 <section class="gaia-sheet-content">
-  <header class="sheet-header flexrow">
-    <img src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
-    <h1><input name="name" type="text" value="{{item.name}}" placeholder="Nome da Armadura"/></h1>
-  </header>
-
-  <div class="sheet-body">
-    <div class="form-group">
-      <label>Bloqueio / Defesa</label>
-      <input type="number" name="system.block" value="{{system.block}}" />
+  <div class="inventory-table-panel tab-weapons-content">
+    <div class="inventory-table-header">
+      <div class="item-header-group">
+        <img class="item-mini-icon" src="{{item.img}}" data-action="editImage" data-edit="img" title="{{item.name}}"/>
+        <h4 class="inventory-table-title">
+          <input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'GAIA.Armor.NamePlaceholder'}}"/>
+        </h4>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Preço</label>
-      <input type="number" name="system.price" value="{{system.price}}" />
+    <div class="weapons-table-frame">
+      <table class="inventory-grid-table">
+        <thead>
+          <tr>
+            <th class="col-armor-block">{{localize "GAIA.Armor.BlockDefense"}}</th>
+            <th class="col-armor-price">{{localize "GAIA.Armor.Price"}}</th>
+            <th class="col-armor-category">{{localize "GAIA.Armor.ArmorType"}}</th>
+            <th class="col-armor-unity">{{localize "GAIA.Armor.Weight"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="item-row">
+            <td class="col-armor-block">
+              <input type="number" name="system.block" value="{{system.block}}" min="0" />
+            </td>
+            <td class="col-armor-price">
+              <input type="number" name="system.price" value="{{system.price}}" min="0" />
+            </td>
+            <td class="col-armor-category">
+              <select name="system.armorType">
+                {{selectOptions config.armorTypes selected=system.armorType localize=true}}
+              </select>
+            </td>
+            <td class="col-armor-unity">
+              <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="form-group">
-      <label>Categoria</label>
-      <select name="system.category">
-        {{selectOptions config.equipmentCategories selected=system.category localize=true}}
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Unidade / Peso</label>
-      <input type="number" name="system.unity" value="{{system.unity}}" />
-    </div>
-
-    <div class="form-group stacked">
-      <label>Descrição</label>
-      <textarea name="system.description">{{system.description}}</textarea>
+    <div class="weapon-description-panel">
+      <label class="description-title">{{localize "GAIA.Armor.Description"}}</label>
+      <textarea name="system.description" class="weapon-description-textarea" placeholder="{{localize 'GAIA.Armor.DescriptionPlaceholder'}}">{{system.description}}</textarea>
     </div>
   </div>
 </section>

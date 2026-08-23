@@ -3,7 +3,18 @@
   <div class="personagem-top-grid">
     {{!-- Retrato Grande do Personagem --}}
     <div class="portrait-box">
-      <img class="character-portrait" src="{{actor.img}}" data-action="editImage" data-edit="img" title="{{localize 'GAIA.title.ClickToChangeImageOf' actor.name}}" alt="{{actor.name}}" />
+      <img class="character-portrait" src="{{actor.img}}" alt="{{actor.name}}" />
+      <div class="portrait-actions-overlay personagem-portrait-actions-overlay">
+        <button type="button" class="portrait-action-btn" data-action="editImage" data-field="img" title="{{localize 'GAIA.title.ChangeImage'}}">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </button>
+        <button type="button" class="portrait-action-btn" data-action="sendPortraitToChat" title="{{localize 'GAIA.title.SendToChat'}}">
+          <i class="fa-solid fa-message"></i>
+        </button>
+        <button type="button" class="portrait-action-btn" data-action="showPortraitToPlayers" title="{{localize 'GAIA.title.ShowToPlayers'}}">
+          <i class="fa-solid fa-eye"></i>
+        </button>
+      </div>
     </div>
 
     {{!-- Painel de Parâmetros (8 Parâmetros em 1 coluna) --}}
@@ -43,7 +54,7 @@
         <tbody>
           {{#each equippedWeapons as |weapon|}}
             <tr class="weapon-row">
-              <td class="col-weapon-name" data-action="openItem" data-item-id="{{weapon.id}}" role="button" title="{{localize "GAIA.title.ClickToOpenDetailsOf" weapon.name}}">
+              <td class="col-weapon-name" data-action="promptItemAction" data-item-id="{{weapon.id}}" role="button" title="{{weapon.name}}">
                 <div class="weapon-name-cell">
                   {{#if weapon.img}}
                     <img class="weapon-mini-icon" src="{{weapon.img}}" alt="{{weapon.name}}" />

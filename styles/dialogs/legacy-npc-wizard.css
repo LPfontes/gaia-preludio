@@ -1,0 +1,382 @@
+/* ==============================================================================
+ * ASSISTENTE DE CRIAÇÃO DE LEGADO NPC / LEGACY NPC CREATION WIZARD
+ * ============================================================================== */
+
+.gaia-dialog-legacy-npc-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+}
+
+.gaia-dialog-legacy-npc-wizard .wizard-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.gaia-dialog-legacy-npc-wizard .col-span-2 {
+  grid-column: span 1;
+}
+
+.gaia-dialog-legacy-npc-wizard .col-span-2.inner-grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.gaia-dialog-legacy-npc-wizard .wizard-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gaia-dialog-legacy-npc-wizard .wizard-field-label {
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+/* Banner de Atributos Calculados em Tempo Real (PV, PE, Pontos de Poder) */
+.gaia-dialog-legacy-npc-wizard .wizard-live-stats-banner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.gaia-dialog-legacy-npc-wizard .live-stat-card {
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-dialog-legacy-npc-wizard .live-stat-card i {
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-legacy-npc-wizard .live-stat-card .stat-details {
+  display: flex;
+  padding: 0 6px;
+  gap: 6px;
+  align-items: center;
+}
+
+.gaia-dialog-legacy-npc-wizard .live-stat-card .lbl {
+  font-size: var(--gaia-font-base);
+  opacity: 0.85;
+}
+
+.gaia-dialog-legacy-npc-wizard .live-stat-card .val {
+  font-size: var(--gaia-font-2xl);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-dialog-legacy-npc-wizard .live-stat-card .sub-lbl {
+  font-size: var(--gaia-font-base);
+  opacity: 0.65;
+}
+
+/* Ajuste de Parâmetros (Etapa 2) */
+.gaia-dialog-legacy-npc-wizard .wizard-parameters-section {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 6px 12px;
+}
+
+.gaia-dialog-legacy-npc-wizard .wizard-parameters-section .section-header-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-dialog-legacy-npc-wizard .wizard-parameters-section .section-title {
+  margin: 0;
+  color: var(--gaia-text-parchment);
+  font-size: var(--gaia-font-base);
+  font-family: var(--gaia-font-medieval);
+}
+
+.gaia-dialog-legacy-npc-wizard .pool-counter-badge {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 4px 8px;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-legacy-npc-wizard .pool-counter-badge.limit-badge {
+  border-color: var(--gaia-purple);
+  color: var(--gaia-purple);
+}
+
+.gaia-dialog-legacy-npc-wizard .parameters-control-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.gaia-dialog-legacy-npc-wizard .param-adjust-card {
+  background: transparent;
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gaia-dialog-legacy-npc-wizard .param-adjust-card .param-name {
+  display: block;
+  font-weight: 700;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-legacy-npc-wizard .param-counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gaia-dialog-legacy-npc-wizard .param-counter-controls input {
+  width: 36px;
+  text-align: center;
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-subtle);
+}
+
+.gaia-dialog-legacy-npc-wizard .btn-param-adjust {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-subtle);
+  cursor: pointer;
+}
+
+.gaia-dialog-legacy-npc-wizard .btn-param-adjust:hover:not(:disabled) {
+  border-color: var(--gaia-purple);
+  opacity: 0.6;
+}
+
+.gaia-dialog-legacy-npc-wizard .btn-param-adjust:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.gaia-dialog-legacy-npc-wizard .wizard-extra-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+/* Card de Compêndio de Características / Habilidades (Etapa 3) */
+.gaia-dialog-legacy-npc-wizard .wizard-features-compendium-card {
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 12px;
+}
+
+.gaia-dialog-legacy-npc-wizard .compendium-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gaia-dialog-legacy-npc-wizard .compendium-header-bar .compendium-title {
+  font-weight: 700;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-legacy-npc-wizard .features-granted-badge {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 3px 8px;
+  font-size: var(--gaia-font-base);
+}
+
+.wizard-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.wizard-rules-list .rule-item {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--gaia-border-frame);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: var(--gaia-font-base);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wizard-rules-list .rule-item i {
+  color: var(--gaia-border-gold, #8c7355);
+}
+
+.wizard-rules-list .rule-item.btn-select-knowledge {
+  width: 100%;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--gaia-border-frame);
+  color: var(--gaia-text-parchment);
+  font-family: inherit;
+  font-size: var(--gaia-font-base);
+  transition: all 0.2s ease-in-out;
+  text-align: left;
+}
+
+.wizard-rules-list .rule-item.btn-select-knowledge:hover {
+  background: rgba(140, 115, 85, 0.25);
+  border-color: var(--gaia-border-gold, #8c7355);
+  box-shadow: 0 0 8px rgba(140, 115, 85, 0.4);
+}
+
+/* Card de Resumo Final (Etapa 3) */
+.gaia-dialog-legacy-npc-wizard .wizard-summary-preview-card {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 8px;
+  margin-top: 12px;
+}
+
+.gaia-dialog-legacy-npc-wizard .summary-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--gaia-border-subtle);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.gaia-dialog-legacy-npc-wizard .summary-creature-name.wizard-summary-name {
+  margin: 0;
+  font-size: var(--gaia-font-lg);
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+}
+
+.gaia-dialog-legacy-npc-wizard .summary-badges {
+  display: flex;
+  gap: 6px;
+}
+
+.gaia-dialog-legacy-npc-wizard .summary-badges .badge {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 2px 6px;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-legacy-npc-wizard .summary-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-legacy-npc-wizard .summary-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ==============================================================================
+ * DIÁLOGO DE SELEÇÃO DE CONHECIMENTOS / KNOWLEDGE SELECTION DIALOG
+ * ============================================================================== */
+.gaia-dialog-knowledge-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+}
+
+.gaia-dialog-knowledge-selection .knowledge-pool-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gaia-border-frame);
+}
+
+.gaia-dialog-knowledge-selection .pool-title {
+  font-size: var(--gaia-font-md);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-dialog-knowledge-selection .pool-badge {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--gaia-border-frame);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-knowledge-selection .knowledge-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 6px;
+}
+
+.gaia-dialog-knowledge-selection .knowledge-alloc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.gaia-dialog-knowledge-selection .knowledge-label {
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+}
+
+.gaia-dialog-knowledge-selection .knowledge-counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gaia-dialog-knowledge-selection .knowledge-counter-controls button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--gaia-border-frame);
+  color: var(--gaia-text-parchment);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.gaia-dialog-knowledge-selection .knowledge-counter-controls button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.gaia-dialog-knowledge-selection .know-val-input {
+  width: 32px;
+  text-align: center;
+  background: transparent;
+  border: 1px solid var(--gaia-border-frame);
+  color: var(--gaia-text-parchment);
+  border-radius: 3px;
+  font-weight: bold;
+}

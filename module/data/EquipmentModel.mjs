@@ -31,7 +31,7 @@ export class EquipmentBaseDataModel extends foundry.abstract.TypeDataModel {
 
       // PT: Categoria do equipamento (weapon, armor, accessory, consumable, etc.)
       // EN: Equipment category (weapon, armor, accessory, consumable, etc.)
-      category: new StringField({ required: true, initial: "other" }),
+      category: new StringField({ required: true, initial: "common" }),
 
       // PT: Unidades / peso / espaço ocupado pelo item
       // EN: Units / weight / inventory slots occupied by the item
@@ -62,7 +62,10 @@ export class ArmorDataModel extends EquipmentBaseDataModel {
 
       // PT: Valor de bloqueio / proteção adicional fornecido pela armadura
       // EN: Defensive block / protection value provided by the armor
-      block: new NumberField({ required: true, integer: true, initial: 0, min: 0 })
+      block: new NumberField({ required: true, integer: true, initial: 0, min: 0 }),
+      // PT: Tipo de armadura
+      // EN: Armor type
+      armorType: new StringField({ required: true, initial: "light" }),
     };
   }
 }
@@ -88,14 +91,14 @@ export class WeaponDataModel extends EquipmentBaseDataModel {
       // EN: Damage information (base value and damage type like slashing, piercing, fire, etc.)
       damageType: new SchemaField({
         value: new NumberField({ required: true, integer: true, initial: 1, min: 0 }),
-        type: new StringField({ required: true, initial: "slashing" })
+        type: new StringField({ required: true, initial: "physical" })
       }),
 
-      // PT: Parâmetro / Atributo utilizado para calcular o teste de ataque
-      // EN: Parameter / Attribute used to calculate the attack roll
+      // PT: Parâmetro utilizado para calcular o teste de ataque
+      // EN: Parameter used to calculate the attack roll
       attackParameter: new SchemaField({
         value: new NumberField({ required: true, integer: true, initial: 0 }),
-        attribute: new StringField({ required: true, initial: "strength" })
+        attribute: new StringField({ required: true, initial: "precision" })
       }),
 
       // PT: Alcance da arma (distância máxima e tipo corpo a corpo/distância)

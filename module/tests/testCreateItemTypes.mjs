@@ -61,6 +61,38 @@ export async function testCreateItemTypes() {
       properties: ["versatile", "heavy"]
     }
   });
+
+  // Ability item – uses AbilityBaseModel matching the template
+  await createItem("ability", {
+    name: "Revitalizar",
+    system: {
+      cost: "1 PE",
+      typeAction: "acaoAtiva",
+      type: "conjuracao",
+      quote: "Você fecha misticamente os ferimentos de um alvo ferido.",
+      description: "Você regenera 1d6 Ponto de Vida de um Alvo dentro de 8 metros. Esse valor é aumentado em 1d6 para cada ponto de Espírito.",
+      numberTarget: "1 Alvo",
+      range: "8 metros",
+      subEffects: [
+        {
+          name: "CONSAGRAR",
+          cost: "2 PE",
+          description: "Remova desse mesmo Alvo: Sangramento ou Envenenado.",
+          note: "Consagrar só pode ser utilizado uma vez por turno."
+        }
+      ],
+      improvements: [
+        {
+          title: "Toque Vital",
+          description: "Após rolar os dados de regeneração de Pontos de Vida dessa habilidade, você poderá selecionar quantos dados quiser para rolá-los novamente, ficando com os novos resultados. Esse efeito só pode ser realizado uma vez por turno."
+        },
+        {
+          title: "Purificador",
+          description: "Reduz em 1 o custo de PE de Consagrar."
+        }
+      ]
+    }
+  });
 }
 
 

@@ -1,0 +1,257 @@
+<div class="gaia-dialog-creature-wizard">
+  {{!-- Cabeçalho do Assistente --}}
+  <div class="gaia-dialog-intro-box">
+    <h3 class="gaia-dialog-title">{{localize "GAIA.CreatureWizard.Title"}}</h3>
+    <p class="gaia-dialog-subtitle">{{localize "GAIA.CreatureWizard.Subtitle"}}</p>
+  </div>
+
+  {{!-- Navegação por Etapas (Tabs) --}}
+  <nav class="gaia-dialog-tabs">
+    <button type="button" class="gaia-dialog-tab-btn active" data-tab="concept">
+      <span class="tab-step">1</span> {{localize "GAIA.CreatureWizard.Step1Tab"}}
+    </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="stats">
+      <span class="tab-step">2</span> {{localize "GAIA.CreatureWizard.Step2Tab"}}
+    </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="features">
+      <span class="tab-step">3</span> {{localize "GAIA.CreatureWizard.Step3Tab"}}
+    </button>
+  </nav>
+
+  {{!-- Corpo das Etapas --}}
+  <div class="gaia-dialog-tab-body">
+
+    {{!-- ==================================================================== --}}
+    {{!-- ETAPA 1: CONCEITO, DIFICULDADE E TAMANHO --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane active" data-tab="concept">
+      
+        
+
+      <div class="wizard-form-grid">
+        {{!-- Nome da Criatura --}}
+        <div class="wizard-field-group col-span-2">
+          <label class="wizard-field-label"> {{localize "GAIA.Creature.Name"}}</label>
+          <input type="text" class="wizard-input-name gaia-input" value="{{initialData.name}}" placeholder="{{localize 'GAIA.Creature.NamePlaceholder'}}" />
+        </div>
+
+        {{!-- Nível da Criatura (ND) --}}
+        <div class="wizard-field-group">
+          <label class="wizard-field-label">{{localize "GAIA.Creature.LevelCR"}}</label>
+          <input type="number" class="wizard-input-level gaia-input" value="{{initialData.level}}" min="0" max="30" />
+        </div>
+
+        {{!-- Dificuldade --}}
+        <div class="wizard-field-group">
+          <label class="wizard-field-label">{{localize "GAIA.Creature.Difficulty"}}</label>
+          <select class="wizard-select-difficulty gaia-select">
+            <option value="Fácil" {{#if (eq initialData.difficulty "Fácil")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Easy"}}</option>
+            <option value="Normal" {{#if (eq initialData.difficulty "Normal")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Normal"}}</option>
+            <option value="Difícil" {{#if (eq initialData.difficulty "Difícil")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Hard"}}</option>
+            <option value="Extrema" {{#if (eq initialData.difficulty "Extrema")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Extreme"}}</option>
+          </select>
+        </div>
+
+        {{!-- Tamanho --}}
+        <div class="wizard-field-group">
+          <label class="wizard-field-label"> {{localize "GAIA.Creature.Size"}}</label>
+          <select class="wizard-select-size gaia-select">
+            <option value="Pequeno" {{#if (eq initialData.size "Pequeno")}}selected{{/if}}>{{localize "GAIA.CreatureSize.Pequeno"}}</option>
+            <option value="Medio" {{#if (or (eq initialData.size "Medio") (eq initialData.size "medium"))}}selected{{/if}}>{{localize "GAIA.CreatureSize.Medio"}}</option>
+            <option value="Grande" {{#if (eq initialData.size "Grande")}}selected{{/if}}>{{localize "GAIA.CreatureSize.Grande"}}</option>
+            <option value="Enorme" {{#if (eq initialData.size "Enorme")}}selected{{/if}}>{{localize "GAIA.CreatureSize.Enorme"}}</option>
+            <option value="Gigante" {{#if (eq initialData.size "Gigante")}}selected{{/if}}>{{localize "GAIA.CreatureSize.Gigante"}}</option>
+          </select>
+        </div>
+
+        {{!-- Tipo de Criatura --}}
+        <div class="wizard-field-group">
+          <label class="wizard-field-label">{{localize "GAIA.Creature.TypesTitle"}}</label>
+          <select class="wizard-select-type gaia-select">
+            <option value="comum" {{#if (eq initialData.creatureType "comum")}}selected{{/if}}>{{localize "GAIA.CreatureType.comum"}}</option>
+            <option value="ferais" {{#if (eq initialData.creatureType "ferais")}}selected{{/if}}>{{localize "GAIA.CreatureType.ferais"}}</option>
+            <option value="veu" {{#if (eq initialData.creatureType "veu")}}selected{{/if}}>{{localize "GAIA.CreatureType.veu"}}</option>
+            <option value="naovivo" {{#if (eq initialData.creatureType "naovivo")}}selected{{/if}}>{{localize "GAIA.CreatureType.naovivo"}}</option>
+          </select>
+        </div>
+      </div>
+
+      {{!-- Card Informativo da Dificuldade --}}
+      <div class="wizard-difficulty-preview-card">
+        <div class="card-title-bar">
+          {{localize "GAIA.CreatureWizard.DifficultyBaseStatsTitle"}}
+        </div>
+        <div class="difficulty-base-stats-grid">
+          <div class="stat-badge"><span class="stat-lbl">PV Base:</span> <strong class="val-pv-base">40</strong></div>
+          <div class="stat-badge"><span class="stat-lbl">PE Base:</span> <strong class="val-pe-base">4</strong></div>
+          <div class="stat-badge"><span class="stat-lbl">Poder Base:</span> <strong class="val-poder-base">2</strong></div>
+          <div class="stat-badge"><span class="stat-lbl">Parâmetros Base:</span> <strong class="val-param-base">3</strong></div>
+          <div class="stat-badge"><span class="stat-lbl">Características:</span> <strong class="val-feat-base">3</strong></div>
+        </div>
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn primary-nav" data-next-tab="stats">
+          {{localize "GAIA.CreatureWizard.NextToStats"}} <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    {{!-- ==================================================================== --}}
+    {{!-- ETAPA 2: ATRIBUTOS & PARÂMETROS --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane" data-tab="stats">
+      
+        
+
+      <div class="wizard-stats-params-grid">
+        {{!-- Resumo Calculado em Tempo Real --}}
+        <div class="wizard-live-stats-banner">
+          <div class="live-stat-card health">
+            
+            <div class="stat-details">
+              <span class="lbl">{{localize "GAIA.Creature.Health"}} (PV)</span>
+              <span class="val wizard-val-hp">136</span>
+              <span class="sub-lbl wizard-sub-hp">(Base 40 + Bônus Nível 96)</span>
+            </div>
+          </div>
+
+          <div class="live-stat-card energy">
+            
+            <div class="stat-details">
+              <span class="lbl">{{localize "GAIA.Creature.Energy"}} (PE)</span>
+              <span class="val wizard-val-pe">10</span>
+              <span class="sub-lbl wizard-sub-pe">(Base 4 + Bônus Nível 6)</span>
+            </div>
+          </div>
+
+          <div class="live-stat-card power">
+            
+            <div class="stat-details">
+              <span class="lbl">{{localize "GAIA.Creature.PowerPoints"}}</span>
+              <span class="val wizard-val-power">4</span>
+              <span class="sub-lbl wizard-sub-power">(Base 2 + Bônus Nível 2)</span>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Distribuição de Parâmetros Ofensivos e Defensivos --}}
+        <div class="wizard-parameters-section">
+          <div class="section-header-box">
+            <h4 class="section-title">{{localize "GAIA.CreatureWizard.ParametersPoolTitle"}}</h4>
+            <span class="pool-counter-badge">
+              {{localize "GAIA.CreatureWizard.PoolAvailable"}}: <strong class="wizard-param-pool-remaining">0</strong> / <span class="wizard-param-pool-total">5</span>
+            </span>
+          </div>
+
+          <div class="parameters-control-grid">
+            {{!-- Parâmetros Ofensivos --}}
+            <div class="param-adjust-card offensive">
+              <div class="param-info">
+                <span class="param-name">{{localize "GAIA.Creature.OffensiveParameters"}}</span>
+              </div>
+              <div class="param-counter-controls">
+                <button type="button" class="btn-param-adjust btn-off-minus"><i class="fa-solid fa-minus"></i></button>
+                <input type="number" class="wizard-input-off-param" value="0" min="0" readonly />
+                <button type="button" class="btn-param-adjust btn-off-plus"><i class="fa-solid fa-plus"></i></button>
+              </div>
+            </div>
+
+            {{!-- Parâmetros Defensivos --}}
+            <div class="param-adjust-card defensive">
+              <div class="param-info">
+                <span class="param-name">{{localize "GAIA.Creature.DefensiveParameters"}}</span>
+              </div>
+              <div class="param-counter-controls">
+                <button type="button" class="btn-param-adjust btn-def-minus"><i class="fa-solid fa-minus"></i></button>
+                <input type="number" class="wizard-input-def-param" value="0" min="0" readonly />
+                <button type="button" class="btn-param-adjust btn-def-plus"><i class="fa-solid fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{!-- Estatísticas Adicionais --}}
+      <div class="wizard-extra-stats-grid">
+        <div class="wizard-field-group">
+          <label class="wizard-field-label"><i class="fa-solid fa-person-running"></i> {{localize "GAIA.Creature.Movement"}} (m)</label>
+          <input type="number" class="wizard-input-movement gaia-input" value="{{initialData.movement}}" min="0" />
+        </div>
+
+        <div class="wizard-field-group">
+          <label class="wizard-field-label"><i class="fa-solid fa-eye"></i> {{localize "GAIA.Creature.PassivePerception"}}</label>
+          <input type="number" class="wizard-input-perception gaia-input" value="{{initialData.passivePerception}}" min="0" />
+        </div>
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="concept">
+          <i class="fa-solid fa-arrow-left"></i> {{localize "GAIA.CreatureWizard.Back"}}
+        </button>
+        <button type="button" class="gaia-wizard-nav-btn primary-nav" data-next-tab="features">
+          {{localize "GAIA.CreatureWizard.NextToFeatures"}} <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    {{!-- ==================================================================== --}}
+    {{!-- ETAPA 3: CARACTERÍSTICAS E LIVRO DOS SERES --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane" data-tab="features">
+      {{!-- Painel do Livro dos Seres / Compêndio --}}
+      <div class="wizard-features-compendium-card">
+        <div class="compendium-header-bar">
+          <div class="compendium-title">
+            {{localize "GAIA.CreatureWizard.MonsterBookTitle"}}
+          </div>
+          <span class="features-granted-badge">
+            {{localize "GAIA.CreatureWizard.FeaturesGranted"}}: <strong class="wizard-val-features-count">3</strong>
+          </span>
+        </div>
+
+        <div class="wizard-field-group" style="margin-top: 10px;">
+          <label class="wizard-field-label">{{localize "GAIA.CreatureWizard.SelectBook"}}</label>
+          <select class="wizard-select-book gaia-select">
+            <option value="livro-base">{{localize "GAIA.CreatureWizard.BookBase"}}</option>
+            <option value="seres-veu">{{localize "GAIA.CreatureWizard.BookVeil"}}</option>
+            <option value="bestiario-ferais">{{localize "GAIA.CreatureWizard.BookFeral"}}</option>
+          </select>
+        </div>
+
+        <div class="compendium-placeholder-box">
+          
+          <p>{{localize "GAIA.CreatureWizard.CompendiumIntegrationNotice"}}</p>
+        </div>
+      </div>
+
+      {{!-- Resumo Final da Criatura --}}
+      <div class="wizard-summary-preview-card">
+        <div class="summary-card-header">
+          <h4 class="summary-creature-name wizard-summary-name">Criatura Sem Nome</h4>
+          <div class="summary-badges">
+            <span class="badge wizard-summary-level">Nível 0</span>
+            <span class="badge wizard-summary-difficulty">Normal</span>
+            <span class="badge wizard-summary-size">Médio</span>
+          </div>
+        </div>
+
+        <div class="summary-card-grid">
+          <div class="summary-item"> <strong>PV:</strong> <span class="wizard-summary-hp">40</span></div>
+          <div class="summary-item"> <strong>PE:</strong> <span class="wizard-summary-pe">4</span></div>
+          <div class="summary-item"> <strong>Poder:</strong> <span class="wizard-summary-power">2</span></div>
+          <div class="summary-item"> <strong>Par. Ofensivo:</strong> <span class="wizard-summary-off">3</span></div>
+          <div class="summary-item"> <strong>Par. Defensivo:</strong> <span class="wizard-summary-def">0</span></div>
+          <div class="summary-item"> <strong>Características:</strong> <span class="wizard-summary-features">3</span></div>
+        </div>
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="stats">
+          <i class="fa-solid fa-arrow-left"></i> {{localize "GAIA.CreatureWizard.Back"}}
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

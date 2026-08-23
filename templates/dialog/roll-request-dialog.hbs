@@ -1,0 +1,103 @@
+<div class="gaia-roll-dialog gaia-roll-request-dialog">
+  <div class="dialog-header-info" style="margin-bottom: 12px; text-align: center;">
+    <span class="dialog-stat-title" style="font-size: 1.1em; font-weight: bold; color: var(--color-highlight, #e67e22);">
+      <i class="fa-solid fa-scroll"></i> {{localize "GAIA.RollRequest.DialogTitle"}}
+    </span>
+  </div>
+
+  {{!-- 1. Categoria do Teste --}}
+  <div class="form-group">
+    <label for="request-category-select">
+      <i class="fa-solid fa-list-check"></i>
+      <strong>{{localize "GAIA.RollRequest.Category"}}</strong>
+    </label>
+    <div class="form-fields">
+      <select id="request-category-select" name="category">
+        <option value="parameters">{{localize "GAIA.RollRequest.CategoryParameter"}}</option>
+        <option value="knowledge">{{localize "GAIA.RollRequest.CategoryKnowledge"}}</option>
+        <option value="defense">{{localize "GAIA.RollRequest.CategoryDefense"}}</option>
+        <option value="destiny">{{localize "GAIA.RollRequest.CategoryDestiny"}}</option>
+      </select>
+    </div>
+  </div>
+
+  {{!-- 2. Parametro / Perícia Específica --}}
+  <div class="form-group" id="group-stat-key">
+    <label for="request-stat-select">
+      <i class="fa-solid fa-bullseye"></i>
+      <strong>{{localize "GAIA.RollRequest.Attribute"}}</strong>
+    </label>
+    <div class="form-fields">
+      <select id="request-stat-select" name="statKey">
+        <optgroup label="{{localize 'GAIA.RollRequest.GroupParameters'}}">
+          {{#each parameters as |param|}}
+            <option value="{{param.key}}">{{param.label}}</option>
+          {{/each}}
+        </optgroup>
+        <optgroup label="{{localize 'GAIA.RollRequest.GroupKnowledge'}}">
+          {{#each knowledge as |know|}}
+            <option value="{{know.key}}">{{know.label}}</option>
+          {{/each}}
+        </optgroup>
+        <optgroup label="{{localize 'GAIA.RollRequest.GroupDefense'}}">
+          <option value="agility">{{localize "GAIA.RollRequest.EvasionAgility"}}</option>
+          <option value="block">{{localize "GAIA.RollRequest.BlockArmor"}}</option>
+        </optgroup>
+      </select>
+    </div>
+  </div>
+
+  {{!-- 3. Nível de Dificuldade (Dif.) --}}
+  <div class="form-group">
+    <label for="request-difficulty-select">
+      <i class="fa-solid fa-gauge-high"></i>
+      <strong>{{localize "GAIA.RollRequest.Difficulty"}}</strong>
+    </label>
+    <div class="form-fields">
+      <select id="request-difficulty-select" name="difficulty">
+        {{#each difficultyLevels as |level|}}
+          <option value="{{level.dc}}" {{#if level.selected}}selected{{/if}}>
+            {{level.label}} (Dif. {{level.dc}})
+          </option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+
+  {{!-- 4. Dificuldade Personalizada --}}
+  <div class="form-group" id="group-custom-dc">
+    <label for="request-custom-dc">
+      <i class="fa-solid fa-calculator"></i>
+      <strong>{{localize "GAIA.RollRequest.CustomDC"}}</strong>
+    </label>
+    <div class="form-fields">
+      <input type="number" id="request-custom-dc" name="customDC" placeholder="{{localize 'GAIA.RollRequest.CustomDCHint'}}" min="1" />
+    </div>
+  </div>
+
+  {{!-- 5. Tipo de Rolagem (Aptidão / Inaptidão) --}}
+  <div class="form-group">
+    <label for="request-fitness-select">
+      <i class="fa-solid fa-dice-d12"></i>
+      <strong>{{localize "GAIA.RollRequest.Fitness"}}</strong>
+    </label>
+    <div class="form-fields">
+      <select id="request-fitness-select" name="fitness">
+        {{#each rollTypes as |opt|}}
+          <option value="{{opt.key}}" {{#if opt.selected}}selected{{/if}}>{{opt.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+
+  {{!-- 6. Instrução / Nota do Narrador --}}
+  <div class="form-group">
+    <label for="request-note-input">
+      <i class="fa-solid fa-comment-dots"></i>
+      <strong>{{localize "GAIA.RollRequest.Note"}}</strong>
+    </label>
+    <div class="form-fields">
+      <input type="text" id="request-note-input" name="note" placeholder="{{localize 'GAIA.RollRequest.NotePlaceholder'}}" />
+    </div>
+  </div>
+</div>

@@ -12,7 +12,7 @@
   flex-direction: column;
   gap: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   width: 100%;
@@ -27,9 +27,9 @@
   font-family: inherit;
   color: var(--gaia-text-parchment);
   background: transparent;
-  border: 1px solid var(--gaia-border-subtle);
   border-radius: 2px;
   padding: 2px 4px;
+  font-size: var(--gaia-font-base);
 }
 
 .gaia-actor-banner input:focus {
@@ -55,22 +55,32 @@
   padding: 3px 6px;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .banner-field-card .field-label {
-  font-size: var(--gaia-font-xs);
+  font-size: var(--gaia-font-base);
   font-weight: 700;
   color: var(--gaia-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.banner-field-card input {
+.banner-field-card input,
+.banner-field-card select {
   font-size: var(--gaia-font-2xl);
   font-weight: 600;
   border: none;
   background: transparent;
   padding: 0;
+  color: var(--gaia-text-parchment);
+  font-family: inherit;
+  outline: none;
+}
+
+.banner-field-card select option {
+  background: var(--gaia-bg-window, #1e1b18);
+  color: var(--gaia-text-parchment, #e0d5c1);
 }
 
 .banner-field-card.name-field {
@@ -138,7 +148,7 @@
 }
 
 .stat-input-box .input-sublabel {
-  font-size: var(--gaia-font-md);
+  font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
   text-transform: uppercase;
 }
@@ -148,6 +158,7 @@
   text-align: center;
   font-size: var(--gaia-font-2xl);
   font-weight: bold;
+  color: var(--gaia-text-parchment);
   border: none;
   background: transparent;
   padding: 0;
@@ -207,7 +218,7 @@
 }
 
 .shield-title {
-  font-size: var(--gaia-font-md);
+  font-size: var(--gaia-font-base);
   font-weight: 700;
   color: var(--gaia-gold);
   text-transform: uppercase;
@@ -236,7 +247,7 @@
   gap: 8px;
 }
 
-.move-card {
+.move-card  , .banner-card{
   flex: 1;
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
@@ -253,15 +264,16 @@
   color: var(--gaia-text-muted);
 }
 
-.move-title {
+.banner-title {
   font-size: var(--gaia-font-md);
   font-weight: 700;
   color: var(--gaia-text-parchment);
   text-transform: uppercase;
 }
 
-.move-input {
+.banner-input {
   width: 45px;
+  color: var(--gaia-text-parchment);
   text-align: center;
   font-size: var(--gaia-font-2xl);
   font-weight: bold;
@@ -291,14 +303,14 @@
 }
 
 .init-title {
-  font-size: var(--gaia-font-xs);
+  font-size: var(--gaia-font-base);
   font-weight: 700;
   color: var(--gaia-gold);
   text-transform: uppercase;
 }
 
 .init-value {
-  font-size: var(--gaia-font-xl);
+  font-size: var(--gaia-font-2xl);
   font-weight: bold;
   line-height: 1.1;
 }
@@ -389,8 +401,10 @@
 .defense-item-val {
   width: 40px;
   text-align: center;
-  font-size: var(--gaia-font-md);
+  font-size: var(--gaia-font-base);
   font-weight: bold;
+  background: transparent;
+  color: var(--gaia-text-parchment);
 }
 
 .defense-group {

@@ -139,3 +139,37 @@
   border-color: var(--gaia-purple);
   outline: none;
 }
+
+/* ==============================================================================
+ * CARTÕES DE CHAT & RESULTADOS DE DADOS (.message-content / .dice-total)
+ * ============================================================================== */
+.chat-message .message-content .dice-roll .dice-result .dice-total,
+.message-content .dice-total,
+.message-content .dice-roll .dice-total {
+  font-family: var(--gaia-font-medieval, 'Cinzel', Georgia, serif);
+  font-size: var(--gaia-font-2xl, 1.4rem);
+  font-weight: 800;
+  color: var(--gaia-text-parchment, #e0d5c1);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--gaia-border-frame, #574c43);
+  border-radius: 4px;
+  padding: 4px 8px;
+  text-align: center;
+  margin: 4px 0;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+.message-content .gaia-weapon-chat-card,
+.message-content .gaia-chat-card {
+  font-family: var(--gaia-font-medieval, 'Cinzel', Georgia, serif);
+  color: var(--gaia-text-parchment, #e0d5c1);
+}
+
+.chat-message .flavor-text,
+.message-header .flavor-text,
+.flavor-text {
+  font-family: var(--gaia-font-medieval, 'Cinzel', Georgia, serif);
+  font-size: var(--gaia-font-base, 1rem);
+  font-weight: 700;
+  margin-bottom: 4px;
+}

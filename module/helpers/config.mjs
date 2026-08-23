@@ -152,6 +152,19 @@ GAIA.weaponTypes = {
 };
 
 /**
+ * PT: Tipos de Armadura.
+ * EN: Armor Types.
+ * @enum {string}
+ */
+GAIA.armorTypes = {
+  robes: "GAIA.ArmorType.Robes",
+  light: "GAIA.ArmorType.Light",
+  medium: "GAIA.ArmorType.Medium",
+  heavy: "GAIA.ArmorType.Heavy",
+  shield: "GAIA.ArmorType.Shield"
+};
+
+/**
  * PT: Tipos de Dano.
  * EN: Damage Types.
  * @enum {string|object}
@@ -179,15 +192,28 @@ GAIA.damageTypes = {
   
 };
 
+GAIA.damageTypesFlat = {
+  physical: "GAIA.DamageType.Physical",
+  fire: "GAIA.DamageType.Fire",
+  wind: "GAIA.DamageType.Wind",
+  water: "GAIA.DamageType.Water",
+  earth: "GAIA.DamageType.Earth",
+  thunder: "GAIA.DamageType.Thunder",
+  ice: "GAIA.DamageType.Ice",
+  neutro: "GAIA.DamageType.Neutro",
+  nature: "GAIA.DamageType.Nature",
+  profane: "GAIA.DamageType.Profane",
+  light: "GAIA.DamageType.Light",
+  dark: "GAIA.DamageType.Dark",
+  immaterial: "GAIA.DamageType.Immaterials"
+};
+
 /**
  * PT: Categorias de Equipamento.
  * EN: Equipment Categories.
  * @enum {string}
  */
 GAIA.equipmentCategories = {
-  weapon: "GAIA.EquipmentCategory.Weapon",
-  armor: "GAIA.EquipmentCategory.Armor",
-  shield: "GAIA.EquipmentCategory.Shield",
   common: "GAIA.EquipmentCategory.Common",
   utilitarian: "GAIA.EquipmentCategory.Utilitarian",
   potion: "GAIA.EquipmentCategory.Potion",
@@ -195,6 +221,14 @@ GAIA.equipmentCategories = {
   vehicle: "GAIA.EquipmentCategory.Vehicle",
   vestuary: "GAIA.EquipmentCategory.Vestuary",
   rides: "GAIA.EquipmentCategory.Rides"
+};
+GAIA.weaponCategories ={
+  light: "GAIA.WeaponCategory.light",
+  heavy: "GAIA.WeaponCategory.heavy",
+  ranged: "GAIA.WeaponCategory.ranged",
+  magical: "GAIA.WeaponCategory.magical",
+  special: "GAIA.WeaponCategory.special",
+  improvized: "GAIA.WeaponCategory.improvized",
 };
 /**
  * PT: Tipos de Rolagem.
@@ -233,9 +267,164 @@ GAIA.abilitiesTypes = {
   foco: "GAIA.AbilitiesTypes.foco"
 };
 GAIA.actionType = {
-   acaoAtiva: "GAIA.ActionType.acaoAtiva",
+  acaoAtiva: "GAIA.ActionType.acaoAtiva",
   acaoSimples: "GAIA.ActionType.acaoSimples",
   acaoRapida: "GAIA.ActionType.acaoRapida",
   acaoAcelerada: "GAIA.ActionType.acaoAcelerada",
-  acaoVersatil: "GAIA.ActionType.acaoVersatil",
-}
+  acaoVersatil: "GAIA.ActionType.acaoVersatil"
+};
+
+/**
+ * PT: Idiomas do sistema Gaia: Prelúdio organizados por categoria (Idiomas Antigos e Idiomas Aurorianos).
+ * EN: Languages of the Gaia: Prelúdio system grouped by category (Ancient Languages and Aurorian Languages).
+ * @enum {object}
+ */
+GAIA.languages = {
+  ancient: {
+    abissal: "GAIA.Language.Abissal",
+    ancestral: "GAIA.Language.Ancestral",
+    celestial: "GAIA.Language.Celestial",
+    mistico: "GAIA.Language.Mistico",
+    primae: "GAIA.Language.Primae",
+    umbral: "GAIA.Language.Umbral"
+  },
+  aurorian: {
+    elfico: "GAIA.Language.Elfico",
+    krash_tar: "GAIA.Language.Krashtar",
+    narzepiano: "GAIA.Language.Narzepiano",
+    oceanico: "GAIA.Language.Oceanico",
+    runnare: "GAIA.Language.Runnare",
+    verto: "GAIA.Language.Verto"
+  }
+};
+
+/**
+ * PT: Mapeamento plano de todos os idiomas para busca rápida, tradução e descrições.
+ * EN: Flat map of all languages for fast lookup, translation, and descriptions.
+ */
+GAIA.allLanguages = {
+  abissal: {
+    label: "GAIA.Language.Abissal",
+    category: "ancient",
+    categoryLabel: "GAIA.LanguageCategory.Ancient",
+    description: "GAIA.LanguageDesc.Abissal"
+  },
+  ancestral: {
+    label: "GAIA.Language.Ancestral",
+    category: "ancient",
+    categoryLabel: "GAIA.LanguageCategory.Ancient",
+    description: "GAIA.LanguageDesc.Ancestral"
+  },
+  celestial: {
+    label: "GAIA.Language.Celestial",
+    category: "ancient",
+    categoryLabel: "GAIA.LanguageCategory.Ancient",
+    description: "GAIA.LanguageDesc.Celestial"
+  },
+  mistico: {
+    label: "GAIA.Language.Mistico",
+    category: "ancient",
+    categoryLabel: "GAIA.LanguageCategory.Ancient",
+    description: "GAIA.LanguageDesc.Mistico"
+  },
+  primae: {
+    label: "GAIA.Language.Primae",
+    category: "ancient",
+    categoryLabel: "GAIA.LanguageCategory.Ancient",
+    description: "GAIA.LanguageDesc.Primae"
+  },
+  umbral: {
+    label: "GAIA.Language.Umbral",
+    category: "ancient",
+    categoryLabel: "GAIA.LanguageCategory.Ancient",
+    description: "GAIA.LanguageDesc.Umbral"
+  },
+  elfico: {
+    label: "GAIA.Language.Elfico",
+    category: "aurorian",
+    categoryLabel: "GAIA.LanguageCategory.Aurorian",
+    description: "GAIA.LanguageDesc.Elfico"
+  },
+  krash_tar: {
+    label: "GAIA.Language.Krashtar",
+    category: "aurorian",
+    categoryLabel: "GAIA.LanguageCategory.Aurorian",
+    description: "GAIA.LanguageDesc.Krashtar"
+  },
+  narzepiano: {
+    label: "GAIA.Language.Narzepiano",
+    category: "aurorian",
+    categoryLabel: "GAIA.LanguageCategory.Aurorian",
+    description: "GAIA.LanguageDesc.Narzepiano"
+  },
+  oceanico: {
+    label: "GAIA.Language.Oceanico",
+    category: "aurorian",
+    categoryLabel: "GAIA.LanguageCategory.Aurorian",
+    description: "GAIA.LanguageDesc.Oceanico"
+  },
+  runnare: {
+    label: "GAIA.Language.Runnare",
+    category: "aurorian",
+    categoryLabel: "GAIA.LanguageCategory.Aurorian",
+    description: "GAIA.LanguageDesc.Runnare"
+  },
+  verto: {
+    label: "GAIA.Language.Verto",
+    category: "aurorian",
+    categoryLabel: "GAIA.LanguageCategory.Aurorian",
+    description: "GAIA.LanguageDesc.Verto"
+  }
+};
+
+/**
+ * PT: Níveis de Dificuldade (Dif.) do sistema Gaia: Prelúdio.
+ * EN: Difficulty Levels and DC Ranges for the Gaia: Prelúdio system.
+ * @enum {object}
+ */
+GAIA.difficultyLevels = {
+  simple: {
+    key: "simple",
+    label: "GAIA.DifficultyLevel.Simple",
+    min: 1,
+    max: 3,
+    example: "GAIA.DifficultyExample.Simple"
+  },
+  easy: {
+    key: "easy",
+    label: "GAIA.DifficultyLevel.Easy",
+    min: 4,
+    max: 6,
+    example: "GAIA.DifficultyExample.Easy"
+  },
+  normal: {
+    key: "normal",
+    label: "GAIA.DifficultyLevel.Normal",
+    min: 7,
+    max: 9,
+    example: "GAIA.DifficultyExample.Normal"
+  },
+  elevated: {
+    key: "elevated",
+    label: "GAIA.DifficultyLevel.Elevated",
+    min: 10,
+    max: 12,
+    example: "GAIA.DifficultyExample.Elevated"
+  },
+  hard: {
+    key: "hard",
+    label: "GAIA.DifficultyLevel.Hard",
+    min: 13,
+    max: 15,
+    example: "GAIA.DifficultyExample.Hard"
+  },
+  exceptional: {
+    key: "exceptional",
+    label: "GAIA.DifficultyLevel.Exceptional",
+    min: 16,
+    max: 18,
+    example: "GAIA.DifficultyExample.Exceptional"
+  }
+};
+
+

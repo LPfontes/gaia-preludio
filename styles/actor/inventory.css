@@ -66,7 +66,7 @@
 .weapons-grid-table tbody td,
 .gaia-preludio .weapons-grid-table tbody td,
 .gaia-sheet-content .weapons-grid-table tbody td {
-  font-size: var(--gaia-font-sm);
+  font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment) !important;
   background: transparent;
   padding: 8px 8px;
@@ -104,6 +104,7 @@
 
 .weapon-name-text {
   font-weight: 700;
+  font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
   transition: color 0.15s ease;
 }
@@ -137,6 +138,30 @@
   height: 100%;
   width: 100%;
  }
+
+.inventory-top-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.btn-open-browser {
+  padding: 4px 10px;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  background: var(--gaia-bg-window);
+  color: var(--gaia-text-parchment);
+  border-radius: var(--gaia-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-open-browser:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
   
 .inventory-column-container{
   display: grid;
@@ -152,18 +177,7 @@
 
 }
 
-.inventory-equipped-items-left-column{
 
-}
-
-.inventory-equipped-items-middle-column{
-
-}
-
-.inventory-equipped-items-right-column{
-
-  
-}
 
 .equipped-slot {
   display: flex;
@@ -231,7 +245,7 @@
 }
 
 .inventory-table-panel {
-  background: var(--gaia-bg-box);
+  background: var(--gaia-bg-window);
   border: 1px solid var(--gaia-border-subtle);
   border-radius: 6px;
   overflow: hidden;
@@ -258,13 +272,8 @@
   gap: 8px;
 }
 
-.inventory-table-title i {
-  color: var(--gaia-purple, #942ce4);
-  font-size: 0.9em;
-}
-
 .btn-add-item {
-  background: rgba(148, 44, 228, 0.15);
+  background: var(--gaia-bg-window);
   border: 1px solid var(--gaia-border-frame);
   border-radius: 4px;
   color: var(--gaia-text-parchment);
@@ -278,9 +287,7 @@
 }
 
 .btn-add-item:hover {
-  background: rgba(148, 44, 228, 0.4);
   border-color: var(--gaia-purple);
-  color: #fff;
   transform: translateY(-1px);
 }
 
@@ -309,6 +316,7 @@
 .inventory-grid-table tbody tr.item-row {
   border-bottom: 1px solid var(--gaia-border-subtle);
   transition: background 0.15s ease;
+  background: var(--gaia-bg-window);
 }
 
 .inventory-grid-table tbody tr.item-row:hover {
@@ -340,11 +348,21 @@
 }
 
 .item-mini-icon {
-  width: 20px;
-  height: 20px;
-  border-radius: 3px;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
   object-fit: cover;
   border: 1px solid var(--gaia-border-frame);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.item-mini-icon:hover {
+  transform: scale(1.25);
+  z-index: 10;
+  border-color: var(--gaia-purple, #942ce4);
+  box-shadow: 0 0 12px rgba(148, 44, 228, 0.7);
 }
 
 .item-name-text {
@@ -369,9 +387,8 @@
   border: 1px solid transparent;
   color: var(--gaia-text-muted);
   border-radius: 3px;
-  padding: 2px 5px;
+  padding: 0px 2px;
   cursor: pointer;
-  font-size: 0.75rem;
   transition: all 0.15s ease;
 }
 
@@ -392,73 +409,16 @@
   font-size: var(--gaia-font-base);
 }
 
-/* ==============================================================================
- * SLOTS DE EQUIPAMENTOS (CLASSES)
- * ============================================================================== */
-.mounted-item {
 
-}
-
-.left-hand-weapon {
-
-}
-
-.left-hand-ring {
-
-}
-
-.head-item {
-
-}
-
-.neck-item {
-
-}
-
-.torso-item {
-
-}
-
-.back-item {
-
-}
-
-.armor {
-
-}
-
-.legs-item {
-
-}
-
-.feet-item {
-
-}
-
-.back-pack-item {
-
-}
 
 .relic-itens {
   display: flex;
   flex-direction: column;
 
 }
-
-.right-hand-weapon {
-
-}
-
-.right-hand-ring {
-
-}
-
 /* ==============================================================================
  * INPUTS DE CHECKBOX INDIVIDUAIS (IDS)
  * ============================================================================== */
-#mounted-item {
-
-}
 
 #left-hand-weapon {
   -webkit-transform: scaleX(-1);
@@ -466,68 +426,105 @@
 
 }
 
-#left-hand-ring {
 
+/* ==============================================================================
+ * FICHA DE ARMA EM TABELA (.tab-weapons-content)
+ * ============================================================================== */
+.tab-weapons-content .item-header-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
 }
 
-#head-item {
-
+.tab-weapons-content .inventory-table-title input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--gaia-border-subtle);
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-lg);
+  font-weight: bold;
+  width: 100%;
+  padding: 2px 4px;
 }
 
-#neck-item {
-
+.tab-weapons-content .inventory-table-title input:focus {
+  border-bottom-color: var(--gaia-purple-dark);
+  outline: none;
 }
 
-#torso-item {
+/* Larguras específicas de cada coluna da tabela de arma */
+.tab-weapons-content .col-weapon-type        { width: 25%; }
+.tab-weapons-content .col-weapon-damage      { width: 10%; }
+.tab-weapons-content .col-weapon-damage-type { width: 15%; }
+.tab-weapons-content .col-weapon-attr        { width: 20%; }
+.tab-weapons-content .col-weapon-range       { width: 10%; }
+.tab-weapons-content .col-weapon-price       { width: 10%; }
+.tab-weapons-content .col-weapon-unity       { width: 10%; }
 
+/* Larguras específicas das tabelas de Armadura e Equipamento */
+.tab-weapons-content .col-armor-block        { width: 30%; }
+.tab-weapons-content .col-armor-price        { width: 20%; }
+.tab-weapons-content .col-armor-category     { width: 30%; }
+.tab-weapons-content .col-armor-unity        { width: 20%; }
+
+.tab-weapons-content .col-equip-price        { width: 25%; }
+.tab-weapons-content .col-equip-category     { width: 35%; }
+.tab-weapons-content .col-equip-qty          { width: 20%; }
+.tab-weapons-content .col-equip-unity        { width: 20%; }
+
+.tab-weapons-content .inventory-grid-table td input,
+.tab-weapons-content .inventory-grid-table td select {
+  width: 100%;
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  padding: 4px 6px;
+  font-family: inherit;
+  font-size: var(--gaia-font-base);
+  text-align: center;
 }
 
-#back-item {
-
+.tab-weapons-content .inventory-grid-table td select {
+  text-align-last: center;
 }
 
-#armor {
-
+.weapon-description-panel {
+  padding: 6px;
+  background: var(--gaia-bg-box);
+  border-top: 1px solid var(--gaia-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-#legs-item {
-
+.weapon-description-panel .description-title {
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-#feet-item {
-
+.weapon-description-textarea {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
+  padding: 4px 6px;
+  font-family: inherit;
+  font-size: var(--gaia-font-lg);
+  line-height: 1.4;
+  resize: vertical;
+  outline: none;
+  background: var(--gaia-bg-window);
 }
 
-#back-pack-item {
-
-}
-
-#relic-item-1 {
-
-}
-
-#relic-item-2 {
-
-}
-
-#relic-item-3 {
-
-}
-
-#relic-item-4 {
-
-}
-
-#relic-item-5 {
-
-}
-
-#right-hand-weapon {
-
-}
-
-#right-hand-ring {
-
+.weapon-description-textarea:focus {
+  border-color: var(--gaia-purple-dark);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 5px rgba(148, 44, 228, 0.4);
 }
 
 

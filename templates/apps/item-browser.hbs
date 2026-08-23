@@ -1,0 +1,101 @@
+<div class="gaia-item-browser-content">
+  {{!-- 1. BARRA SUPERIOR DE FILTROS E BUSCA --}}
+  <div class="browser-filter-bar">
+    {{!-- Campo de Busca em Tempo Real --}}
+    <div class="filter-search-box">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="text" class="browser-search-input" placeholder="{{localize 'GAIA.ItemBrowser.SearchPlaceholder'}}" value="{{searchTerm}}" />
+    </div>
+
+    {{!-- Filtro por Tipo de Item --}}
+    <div class="filter-select-box">
+      <label><i class="fa-solid fa-filter"></i> {{localize "GAIA.ItemBrowser.FilterType"}}:</label>
+      <select class="browser-type-select">
+        <option value="all" {{#if (eq selectedType "all")}}selected{{/if}}>{{localize "GAIA.ItemBrowser.AllTypes"}}</option>
+        <option value="weapon" {{#if (eq selectedType "weapon")}}selected{{/if}}>{{localize "GAIA.EquipmentCategory.Weapon"}}</option>
+        <option value="armor" {{#if (eq selectedType "armor")}}selected{{/if}}>{{localize "GAIA.EquipmentCategory.Armor"}}</option>
+        <option value="shield" {{#if (eq selectedType "shield")}}selected{{/if}}>{{localize "GAIA.EquipmentCategory.Shield"}}</option>
+        <option value="common" {{#if (eq selectedType "common")}}selected{{/if}}>{{localize "GAIA.EquipmentCategory.Common"}}</option>
+        <option value="utilitarian" {{#if (eq selectedType "utilitarian")}}selected{{/if}}>{{localize "GAIA.EquipmentCategory.Utilitarian"}}</option>
+        <option value="potion" {{#if (eq selectedType "potion")}}selected{{/if}}>{{localize "GAIA.EquipmentCategory.Potion"}}</option>
+        <option value="toxic" {{#if (eq selectedType "toxic")}}selected{{/if}}>{{localize "GAIA.EquipmentCategory.Toxic"}}</option>
+        <option value="vehicle" {{#if (eq selectedType "vehicle")}}selected{{/if}}>{{localize "GAIA.EquipmentCategory.Vehicle"}}</option>
+        <option value="vestuary" {{#if (eq selectedType "vestuary")}}selected{{/if}}>{{localize "GAIA.EquipmentCategory.Vestuary"}}</option>
+        <option value="rides" {{#if (eq selectedType "rides")}}selected{{/if}}>{{localize "GAIA.EquipmentCategory.Rides"}}</option>
+        <option value="ability" {{#if (eq selectedType "ability")}}selected{{/if}}>{{localize "TYPES.Item.ability"}}</option>
+        <option value="legacy" {{#if (eq selectedType "legacy")}}selected{{/if}}>{{localize "TYPES.Item.legacy"}}</option>
+      </select>
+    </div>
+
+    {{!-- Filtro por Origem (Mundo / Compêndios) --}}
+    <div class="filter-select-box">
+      <label><i class="fa-solid fa-book-bookmark"></i> {{localize "GAIA.ItemBrowser.FilterSource"}}:</label>
+      <select class="browser-source-select">
+        <option value="all" {{#if (eq selectedSource "all")}}selected{{/if}}>{{localize "GAIA.ItemBrowser.AllSources"}}</option>
+        <option value="world" {{#if (eq selectedSource "world")}}selected{{/if}}>{{localize "GAIA.ItemBrowser.WorldItems"}}</option>
+        {{#each compendiums}}
+          <option value="{{this.id}}" {{#if (eq ../selectedSource this.id)}}selected{{/if}}>{{this.title}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+
+  {{!-- Indicador de Contagem de Resultados --}}
+  <div class="browser-results-summary">
+    <span>Exibindo <strong>{{filteredItems.length}}</strong> de {{totalItems}} itens</span>
+    <div class="summary-actions" style="display: flex; align-items: center; gap: 8px;">
+      {{#if targetActor}}
+        <span class="target-actor-badge">
+          <i class="fa-solid fa-user-check"></i> {{localize "GAIA.ItemBrowser.AddingTo"}} <strong>{{targetActor.name}}</strong>
+        </span>
+      {{/if}}
+      <button type="button" class="btn-create-item-browser" data-action="createItem" title="{{localize 'GAIA.ItemBrowser.CreateItem'}}">
+        <i class="fa-solid fa-plus"></i> {{localize "GAIA.ItemBrowser.CreateItem"}}
+      </button>
+    </div>
+  </div>
+
+  {{!-- 2. GRID / LISTA DE CARTÕES DE ITENS --}}
+  <div class="browser-items-container">
+    <div class="browser-items-grid">
+      {{#each filteredItems}}
+        <div class="browser-item-card" data-uuid="{{this.uuid}}">
+          <div class="card-header">
+            <img class="item-img" src="{{this.img}}" alt="{{this.name}}" />
+            <div class="item-title-meta">
+              <h4 class="item-name">{{this.name}}</h4>
+              <div class="item-badges">
+                <span class="badge type-badge">{{this.typeLabel}}</span>
+                <span class="badge source-badge">{{this.sourceLabel}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            {{#if this.description}}
+              <div class="item-desc">{{{this.description}}}</div>
+            {{else}}
+              <div class="item-desc empty">{{localize "GAIA.ItemBrowser.NoDescription"}}</div>
+            {{/if}}
+          </div>
+
+          <div class="card-actions">
+            <button type="button" class="btn-action preview-btn" data-action="previewItem" data-uuid="{{this.uuid}}" title="{{localize 'GAIA.ItemBrowser.PreviewTitle'}}">
+              <i class="fa-solid fa-eye"></i> {{localize "GAIA.ItemBrowser.Preview"}}
+            </button>
+            {{#if ../targetActor}}
+              <button type="button" class="btn-action import-btn" data-action="importItem" data-uuid="{{this.uuid}}" title="{{localize 'GAIA.ItemBrowser.ImportTitle'}}">
+                <i class="fa-solid fa-plus"></i> {{localize "GAIA.ItemBrowser.Import"}}
+              </button>
+            {{/if}}
+          </div>
+        </div>
+      {{else}}
+        <div class="browser-empty-state">
+          <i class="fa-solid fa-box-open fa-3x"></i>
+          <p>{{localize "GAIA.ItemBrowser.EmptyState"}}</p>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>

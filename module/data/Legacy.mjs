@@ -8,7 +8,7 @@
 
 import { ActorBaseDataModel } from "./ActorBaseModel.mjs";
 
-const { NumberField, ArrayField, SchemaField, StringField } = foundry.data.fields;
+const { NumberField, ArrayField, SchemaField, StringField, BooleanField } = foundry.data.fields;
 
 /**
  * @extends {ActorBaseDataModel}
@@ -53,8 +53,38 @@ export class LegacyDataModel extends ActorBaseDataModel {
         new StringField({ required: true }),
         { required: true, initial: [] }
       ),
-      languages: new ArrayField(
-        new StringField({ required: true }),
+      // PT: Informações detalhadas do Legado (Aparência, Altura, Expectativa de Vida e Habilidades)
+      // EN: Detailed Legacy information (Appearance, Height, Life Expectancy, and Legacy Abilities)
+      appearance: new StringField({ required: false, initial: "" }),
+      height: new StringField({ required: false, initial: "" }),
+      lifeExpectancy: new StringField({ required: false, initial: "" }),
+      legacyAbilities: new ArrayField(
+        new SchemaField({
+          name: new StringField({ required: true, initial: "" }),
+          description: new StringField({ required: false, initial: "" }),
+          activeEffect: new SchemaField({
+            text: new StringField({ required: false, initial: "" }),
+            used: new BooleanField({ required: true, initial: false }),
+            recharge: new StringField({ required: true, initial: "full_rest" }),
+            trigger: new SchemaField({
+              event: new StringField({ required: true, initial: "hp_threshold" }),
+              inCombatOnly: new BooleanField({ required: true, initial: true }),
+              hpThresholdPercentage: new NumberField({ required: true, initial: 50, min: 1, max: 100 })
+            }),
+            changes: new ArrayField(
+              new SchemaField({
+                key: new StringField({ required: true, initial: "all_parameters" }),
+                mode: new StringField({ required: true, initial: "ADD" }),
+                value: new NumberField({ required: true, initial: 1 }),
+                allowExceedMax: new BooleanField({ required: true, initial: true })
+              }),
+              { required: true, initial: [] }
+            ),
+            duration: new SchemaField({
+              type: new StringField({ required: true, initial: "end_of_combat" })
+            })
+          })
+        }),
         { required: true, initial: [] }
       )
     };

@@ -1,0 +1,155 @@
+<section class="gaia-sheet-content legacy-npc-sheet creature-sheet">
+  <div class="sheet-main-layout">
+    {{!-- Cabeçalho Compacto do Legado NPC --}}
+    <aside class="sheet-sidebar-header-npc">
+      {{> "systems/gaia-preludio/templates/actor/parts/legacy-npc-header.hbs"}}
+    </aside>
+
+    {{!-- Corpo Principal da Ficha --}}
+    <main class="sheet-main-body">
+      {{!-- Abas de Navegação --}}
+      <nav class="sheet-navigation-tabs tabs" data-group="primary">
+        <a class="tab-item active" data-action="tab" data-group="primary" data-tab="personagem">{{localize "GAIA.Creature.ActionsAndStats"}}</a>
+        <a class="tab-item" data-action="tab" data-group="primary" data-tab="inventory">{{localize "GAIA.title.Inventory"}}</a>
+        <a class="tab-item" data-action="tab" data-group="primary" data-tab="abilities">{{localize "GAIA.title.Abilities"}}</a>
+        <a class="tab-item" data-action="tab" data-group="primary" data-tab="biografia">{{localize "GAIA.title.Bio"}}</a>
+      </nav>
+
+      {{!-- Conteúdo das Abas --}}
+      <section class="sheet-tabs-content">
+        {{!-- ABA 1: Ações & Atributos (Estilo Criatura Compacto) --}}
+        <div class="tab personagem active" data-group="primary" data-tab="personagem">
+          <div class="creature-sheet-body">
+          
+            {{!-- Seção de Ataques & Armas --}}
+            <div class="creature-section attacks-section">
+              <div class="section-header">
+                <h4 class="section-title">{{localize "GAIA.Creature.AttacksTitle"}}</h4>
+                <div class="section-actions">
+                  <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="weapon" data-category="weapon" title="{{localize 'GAIA.Inventory.AddWeapon'}}">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="creature-items-list">
+                {{#each inventoryWeapons as |weapon|}}
+                  <div class="creature-item-card weapon-card" data-item-id="{{weapon.id}}">
+                    <div class="item-card-header">
+                      <img class="item-icon" src="{{weapon.img}}" data-action="promptItemAction" data-item-id="{{weapon.id}}" role="button" alt="{{weapon.name}}" />
+                      <span class="item-name" data-action="promptItemAction" data-item-id="{{weapon.id}}" role="button">{{weapon.name}}</span>
+                      <div class="item-actions">
+                        <button type="button" class="btn-item-icon" data-action="promptItemAction" data-item-id="{{weapon.id}}" title="{{localize 'GAIA.title.SendToChat'}}">
+                          <i class="fa-solid fa-dice-d20"></i>
+                        </button>
+                        <button type="button" class="btn-item-icon" data-action="openItem" data-item-id="{{weapon.id}}" title="{{localize 'GAIA.title.EditItem'}}">
+                          <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button type="button" class="btn-item-icon danger" data-action="deleteItem" data-item-id="{{weapon.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    {{#if weapon.system.description}}
+                      <div class="item-card-body">{{{weapon.system.description}}}</div>
+                    {{/if}}
+                  </div>
+                {{else}}
+                  <div class="empty-section-placeholder">{{localize "GAIA.Creature.EmptyAttacks"}}</div>
+                {{/each}}
+              </div>
+            </div>
+
+            {{!-- Seção de Conhecimentos & Maestrias --}}
+            <div class="creature-section knowledge-section" style="margin-top: 14px;">
+              <div class="personagem-bottom-grid">
+                {{!-- Painel de Conhecimentos (14 Conhecimentos) --}}
+                <div class="knowledge-panel">
+                  <h3 class="panel-main-title">{{localize "GAIA.Knowledge.name"}}</h3>
+                  <div class="stat-pips-column">
+                    {{#each knowledge as |know|}}
+                      <div class="pip-stat-row">
+                        <span class="pip-stat-label" data-action="rollKnowledge" data-key="{{know.key}}" title="{{localize 'GAIA.Dialog.RollTitle' label=know.label}}">
+                          <span class="stat-roll-icon" aria-hidden="true"></span>
+                          {{know.label}}
+                        </span>
+                        <div class="pips-bar">
+                          {{#each know.pips as |pip|}}
+                            <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setKnowledgePip" data-knowledge="{{know.key}}" data-value="{{pip.value}}" title="{{know.label}} {{pip.value}}" data-context-action="clearKnowledgePip">
+                              <i class="fa-solid fa-diamond"></i>
+                            </button>
+                          {{/each}}
+                        </div>
+                      </div>
+                    {{/each}}
+                  </div>
+                </div>
+
+                {{!-- Painel de Maestrias --}}
+                <div class="masteries-panel">
+                  <div class="masteries-header">
+                    <h3 class="panel-main-title">Maestrias</h3>
+                    <button type="button" class="btn-add-mastery" data-action="addMastery" title="{{localize 'GAIA.title.AddMastery'}}">
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </div>
+
+                  <div class="masteries-list">
+                    {{#each unlockedMasteries as |mastery index|}}
+                      <div class="mastery-item">
+                        <span class="mastery-name">{{mastery.label}}</span>
+                        <button type="button" class="btn-remove-mastery" data-action="removeMastery" data-index="{{index}}" title="{{localize 'GAIA.title.RemoveMastery'}}">
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                      </div>
+                    {{else}}
+                      <span class="empty-masteries-hint">{{localize "GAIA.Sheet.masteryEmptyHint"}}</span>
+                    {{/each}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {{!-- ABA 2: INVENTÁRIO --}}
+        <div class="tab inventory" data-group="primary" data-tab="inventory">
+          <div class="tab-inventory-content">
+            {{> "systems/gaia-preludio/templates/actor/parts/inventory.hbs"}}
+          </div>
+        </div>
+
+        {{!-- ABA 3: HABILIDADES --}}
+        <div class="tab abilities" data-group="primary" data-tab="abilities">
+          <div class="tab-abilities-content">
+            {{> "systems/gaia-preludio/templates/actor/parts/abilities.hbs"}}
+          </div>
+        </div>
+
+        {{!-- ABA 4: BIOGRAFIA --}}
+        <div class="tab biografia" data-group="primary" data-tab="biografia">
+          <div class="tab-bio-content creature-bio-container">
+            <div class="portrait-box creature-portrait-box">
+              <img class="character-portrait creature-portrait" src="{{actor.img}}" alt="{{actor.name}}" />
+              <div class="portrait-actions-overlay">
+                <button type="button" class="portrait-action-btn" data-action="editImage" data-field="img" title="{{localize 'GAIA.title.ChangeImage'}}">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button type="button" class="portrait-action-btn" data-action="sendPortraitToChat" title="{{localize 'GAIA.title.SendToChat'}}">
+                  <i class="fa-solid fa-message"></i>
+                </button>
+                <button type="button" class="portrait-action-btn" data-action="showPortraitToPlayers" title="{{localize 'GAIA.title.ShowToPlayers'}}">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="bio-text-wrapper">
+              <h2 class="panel-main-title">{{localize "GAIA.title.Bio"}}</h2>
+              <textarea name="system.notes" class="bio-notes-textarea" placeholder="Biografia e Anotações do NPC...">{{system.notes}}</textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</section>

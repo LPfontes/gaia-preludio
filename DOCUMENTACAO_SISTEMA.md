@@ -20,7 +20,7 @@ O sistema utiliza a API nativa de `DataModel` do Foundry VTT (`foundry.abstract.
   * `attackFormula` (`StringField`): Fórmula de rolagem de ataque.
   * `damageFormula` (`StringField`): Fórmula de rolagem de dano.
   * `damageType` (`StringField`): Tipo de dano causado.
-  * `saveAbility` (`StringField`): Atributo exigido na salvaguarda do alvo.
+  * `saveAbility` (`StringField`): Parametro exigido na salvaguarda do alvo.
   * `saveDC` (`NumberField`, Inteiro, Mín: 0, Padrão: 10): Classe de Dificuldade da salvaguarda.
 
 #### `AbilityBaseModel` (`module/data/abilitiesBaseModel.mjs`)
@@ -80,6 +80,13 @@ O sistema utiliza a API nativa de `DataModel` do Foundry VTT (`foundry.abstract.
   * `value` (`NumberField`, Inteiro, Padrão: 0): Pontos no conhecimento (0 a 6).
 * **`masteries`** (`ArrayField<StringField>`): Chaves das maestrias desbloqueadas.
 * **`languages`** (`ArrayField<StringField>`): Idiomas conhecidos.
+* **`appearance`** (`StringField`): Descrição visual e características físicas do Legado.
+* **`height`** (`StringField`): Faixa ou altura média.
+* **`lifeExpectancy`** (`StringField`): Expectativa de vida em anos ou eras.
+* **`legacyAbilities`** (`ArrayField<SchemaField>`): Lista de Habilidades de Legado.
+  * `name` (`StringField`): Nome da Habilidade.
+  * `description` (`StringField`): Descrição textual.
+  * `activeEffect` (`StringField`): Efeito ativo associado.
 
 #### `LegacyNPCDataModel` / `LegacyNpcDataModel` (`module/data/Legacy.mjs`)
 *Extende `LegacyDataModel`. Modelo para NPCs importantes baseados em Legado.*
@@ -126,13 +133,24 @@ O sistema utiliza a API nativa de `DataModel` do Foundry VTT (`foundry.abstract.
 * **`damageType`** (`SchemaField`): Informações do dano provido pela arma.
   * `value` (`NumberField`, Inteiro, Mín: 0, Padrão: 1): Quantidade/dado de dano base.
   * `type` (`StringField`, Padrão: `"slashing"`): Tipo de dano (`physical`, `fire`, `wind`, `water`, `earth`, `thunder`, `ice`, `neutro`, `nature`, `profane`, `light`, `dark`, `immaterial`).
-* **`attackParameter`** (`SchemaField`): Parâmetro utilizado para a rolagem de ataque.
+* **`attackParameter`** (`SchemaField`): Parametro utilizado para a rolagem de ataque.
   * `value` (`NumberField`, Inteiro, Padrão: 0): Bônus adicional.
-  * `attribute` (`StringField`, Padrão: `"strength"`): Atributo base de ataque.
+  * `attribute` (`StringField`, Padrão: `"precision"`): Parametro base de ataque.
 * **`range`** (`SchemaField`): Alcance da arma.
   * `value` (`NumberField`, Inteiro, Mín: 0, Padrão: 1): Distância máxima.
   * `type` (`StringField`, Padrão: `"melee"`): Categoria de alcance (`melee` ou `ranged`).
 * **`properties`** (`ArrayField<StringField>`): Propriedades especiais (ex: versátil, pesada, arremesso).
+
+#### `LegadoDataModel` (`module/data/LegadoModel.mjs`)
+*Extende `BaseDataModel`. Modelo para itens do tipo Legado (Raça/Ancestralidade).*
+* Campos herdados de `BaseDataModel` (`name`, `description`, `actions`).
+* **`appearance`** (`StringField`): Características visuais e estéticas da ancestralidade/legado.
+* **`height`** (`StringField`): Faixa de altura média do legado.
+* **`lifeExpectancy`** (`StringField`): Expectativa de vida do legado.
+* **`legacyAbilities`** (`ArrayField<SchemaField>`): Lista das Habilidades inerentes ao Legado.
+  * `name` (`StringField`): Nome da Habilidade.
+  * `description` (`StringField`): Descrição textual dos efeitos.
+  * `activeEffect` (`StringField`): Efeito ativo/aplicado da Habilidade.
 
 ---
 
@@ -217,6 +235,17 @@ O cálculo de dano é executado pela função `calculateDamage(damage, target)` 
 3. **Redução de Dano**: Subtrai o valor acumulado de `damageReduction` aplicável.
 4. **Dano Mínimo**: Se o dano resultante for menor que 1 (e o alvo não for imune), o dano final é fixado em **1**.
 
+### 2.6. Fluxo do Navegador de Itens (`GaiaItemBrowser`)
+O Navegador de Itens (`module/applications/item-browser.mjs`) permite buscar, filtrar e importar itens de forma centralizada:
+1. **Varredura**: Indexa todos os itens criados no mundo (`game.items`) e todos os Compêndios do tipo `Item` (`game.packs`).
+2. **Filtros em Tempo Real**:
+   * **Busca Textual**: Filtra por nome ou texto da descrição.
+   * **Tipo de Item**: Filtra por *Armamento*, *Armadura*, *Equipamento*, *Habilidade*, *Legado* ou *Todos*.
+   * **Origem**: Filtra por *Mundo* ou por compêndios específicos.
+3. **Ações**:
+   * **Visualizar (`previewItem`)**: Abre a ficha original do item (`item.sheet.render(true)`).
+   * **Adicionar (`importItem`)**: Adiciona o item selecionado à ficha do ator ativo (`actor.createEmbeddedDocuments("Item", [itemData])`).
+
 ---
 
 ## 3. Catálogo Completo de Funções por Módulo
@@ -276,6 +305,7 @@ O cálculo de dano é executado pela função `calculateDamage(damage, target)` 
 | **`promptMasteryDialog()`** | `async promptMasteryDialog(actor): Promise<void>` | Abre um diálogo agrupado por conhecimentos para o jogador desbloquear uma nova maestria. |
 | **`promptEditFieldDialog()`** | `async promptEditFieldDialog(actor, field, options): Promise<any\|null>` | Exibe diálogo genérico `DialogV2` para alteração interativa de qualquer campo numérico ou textual do ator. |
 | **`promptAwakeningGuideDialog()`** | `async promptAwakeningGuideDialog(actor): Promise<any>` | Exibe a janela com abas do Guia de Despertar Inicial (distribuição de pontos em parâmetros, conhecimentos e definição de PV). |
+| **`promptRollRequestDialog()`** | `async promptRollRequestDialog(): Promise<ChatMessage\|null>` | Exibe janela DialogV2 para o Narrador criar um Pedido de Teste (categoria, atributo, Dificuldade e notas) e postar botão interativo no Chat. |
 
 ---
 
@@ -290,7 +320,12 @@ O cálculo de dano é executado pela função `calculateDamage(damage, target)` 
 | **`maxRoll()`** | `async maxRoll(formula, data): Promise<Roll>` | Avalia uma rolagem com valor máximo maximizado. |
 | **`minRoll()`** | `async minRoll(formula, data): Promise<Roll>` | Avalia uma rolagem com valor mínimo minimizado. |
 | **`defense()`** | `async defense(type, actor, fitness): Promise<Roll>` | Executa um teste de defesa do ator (teste de Agilidade para esquiva ou Bloqueio para armaduras/escudos). |
-| **`calculateDamage()`** | `calculateDamage(damage, target): number` | Lógica central de combate: calcula o dano final reduzido por imunidades, resistências, vulnerabilidades e reduções fixas (mínimo 1 se não imune). |
+| **`calculateDamage()`** | `calculateDamage(damage, target): number` | Executa a lógica de redução, imunidade, resistência e vulnerabilidade de dano no alvo. |
+| **`modifyDieCategory()`** | `modifyDieCategory(dieOrFormula, steps): string\|number` | Aumenta ou reduz a categoria de um dado ou fórmula seguindo a escala: d4 -> d6 -> d8 -> d10 -> d12 -> d20. |
+| **`isCriticalHit()`** | `isCriticalHit(attack, defense, options): object` | Valida se a diferença entre o ataque (Precisão/Canalização) e a Defesa do alvo é >= 10, retornando se foi Acerto Crítico. |
+| **`flowClash()` / `flowEmbate()`** | `flowClash(roll1, roll2): object` | Executa a comparação de um Embate entre dois Alvos, retornando o vencedor (1, 2 ou 0 em empate) e a diferença. |
+| **`flowDifficultyCheck()` / `flowTesteDificuldade()`** | `flowDifficultyCheck(roll, difficulty): object` | Valida se o resultado total de um teste atinge ou supera a Dificuldade (Dif.) estabelecida. |
+| **`flowDestinyCheck()` / `flowTesteDestino()`** | `async flowDestinyCheck(difficulty, options): Promise<object>` | Rola um 1d12 puro (sem modificadores) e compara o resultado com a Dificuldade (Dif.) pré-estabelecida. |
 
 ---
 

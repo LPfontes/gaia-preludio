@@ -1,0 +1,266 @@
+/**
+ * ==============================================================================
+ * NAVEGADOR DE ITENS E HABILIDADES / ITEM BROWSER (.gaia-item-browser-content)
+ * ==============================================================================
+ * Estilos do navegador de itens alinhados ao tema padrão medieval (Pergaminho, Ouro, Couro).
+ */
+
+.gaia-preludio.item-browser .window-content {
+  background: var(--gaia-bg-banner, #e7d8be);
+  color: var(--gaia-text-parchment, #000000);
+  font-family: var(--gaia-font-medieval, "Cinzel", Georgia, serif);
+  padding: 10px;
+}
+
+.gaia-item-browser-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 10px;
+  box-sizing: border-box;
+  color: var(--gaia-text-parchment, #000000);
+  font-family: var(--gaia-font-medieval, "Cinzel", Georgia, serif);
+}
+
+/* 1. Barra de Filtros */
+.browser-filter-bar {
+  display: flex;
+  gap: 12px;
+  background: rgba(87, 76, 67, 0.12);
+  padding: 10px 12px;
+  border-radius: var(--gaia-radius, 4px);
+  border: 1px solid var(--gaia-border-frame, #574c43);
+  align-items: flex-end;
+  flex-wrap: wrap;
+
+}
+
+.filter-search-box {
+  flex: 2;
+  min-width: 220px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter-search-box .search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--gaia-border-gold, #8c7355);
+  font-size: 0.9em;
+}
+
+.filter-search-box .browser-search-input {
+  width: 100%;
+  padding: 6px 10px 6px 34px;
+  background: var(--gaia-bg-input, #151312);
+  border: 1px solid var(--gaia-border-frame, #574c43);
+  border-radius: var(--gaia-radius, 4px);
+  color: #ffffff;
+  font-family: var(--gaia-font-medieval, "Cinzel", Georgia, serif);
+  font-size: var(--gaia-font-sm, 12px);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.filter-search-box .browser-search-input:focus {
+  border-color: var(--gaia-border-gold, #8c7355);
+  box-shadow: 0 0 6px rgba(140, 115, 85, 0.4);
+  outline: none;
+}
+
+.filter-select-box {
+  flex: 1;
+  min-width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-select-box label {
+  font-size: var(--gaia-font-2xs, 10px);
+  font-weight: 700;
+  color: var(--gaia-text-muted, #505050);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-select-box select {
+  width: 100%;
+  padding: 6px 8px;
+  background: transparent;
+  border: 1px solid var(--gaia-border-frame);
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  transition: border-color 0.15s ease;
+}
+
+.filter-select-box select:focus {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+/* Resumo de Resultados */
+.browser-results-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  padding: 4px;
+  font-weight: 600;
+}
+
+.target-actor-badge .btn-create-item-browser {
+  background: rgba(140, 115, 85, 0.15);
+  border: 1px solid var(--gaia-border-frame);
+  color: var(--gaia-text-parchment);
+  padding: 4px 12px;
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+}
+
+
+.btn-create-item-browser:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 2. Container e Grid de Cartões */
+.browser-items-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.browser-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 6px;
+  padding: 6px;
+}
+
+.browser-item-card {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--gaia-border-frame, #574c43);
+  border-radius: var(--gaia-radius, 4px);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.browser-item-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gaia-border-gold, #8c7355);
+  box-shadow: 0 4px 12px rgba(87, 76, 67, 0.25);
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.browser-item-card .card-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.browser-item-card .item-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border: 1px solid var(--gaia-border-frame);
+}
+
+.browser-item-card .item-title-meta {
+  flex: 1;
+  overflow: hidden;
+}
+
+.browser-item-card .item-name {
+  margin: 0 0 4px 0;
+  font-size: var(--gaia-font-base);
+  font-family: var(--gaia-font-medieval);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--gaia-text-parchment);
+}
+
+.browser-item-card .item-badges {
+  display: flex;
+  gap: 4px;
+}
+
+.browser-item-card .badge {
+  font-size: var(--gaia-font-md);
+  padding: 2px 6px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.badge.type-badge {
+  color: var(--gaia-text-parchment);
+}
+
+.badge.source-badge {
+  background: transparent;
+  color: var(--gaia-text-parchment);
+}
+
+.browser-item-card .card-body {
+  margin: 8px 0;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  max-height: 55px;
+  overflow: hidden;
+}
+
+.browser-item-card .card-body .item-desc.empty {
+  font-style: italic;
+  color: var(--gaia-text-parchment);
+}
+
+.browser-item-card .card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.browser-item-card .btn-action {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: var(--gaia-font-base);
+  font-family: var(--gaia-font-medieval);
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn-action.preview-btn {
+  background: var(--gaia-border-frame);
+}
+
+.btn-action.preview-btn:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-action.import-btn {
+ background: var(--gaia-border-frame);
+}
+
+.btn-action.import-btn:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.browser-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+}

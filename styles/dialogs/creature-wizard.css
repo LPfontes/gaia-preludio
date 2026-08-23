@@ -1,0 +1,307 @@
+/* ==============================================================================
+ * ASSISTENTE DE CRIAÇÃO DE CRIATURA / CREATURE CREATION WIZARD
+ * ============================================================================== */
+
+.gaia-dialog-creature-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+}
+
+.gaia-dialog-creature-wizard .wizard-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.gaia-dialog-creature-wizard .col-span-2 {
+  grid-column: span 2;
+}
+
+.gaia-dialog-creature-wizard .wizard-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gaia-dialog-creature-wizard .wizard-field-label {
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-dialog-creature-wizard .gaia-dialog-title {
+  color: var(--gaia-text-parchment);
+  font-size: var(--gaia-font-base);
+  font-family: var(--gaia-font-medieval);
+}
+
+/* Card de Dificuldade Informativo (Etapa 1) */
+.gaia-dialog-creature-wizard .wizard-difficulty-preview-card {
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 8px 12px;
+}
+
+.gaia-dialog-creature-wizard .wizard-difficulty-preview-card .card-title-bar {
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-dialog-creature-wizard .difficulty-base-stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gaia-dialog-creature-wizard .difficulty-base-stats-grid .stat-badge {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 4px 8px;
+  font-size: var(--gaia-font-base);
+}
+
+/* Grid de 2 Colunas para Banner de Stats e Distribuição de Parâmetros */
+.gaia-dialog-creature-wizard .wizard-stats-params-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-items: stretch;
+}
+
+/* Banner de Atributos Calculados em Tempo Real (Etapa 2) */
+.gaia-dialog-creature-wizard .wizard-live-stats-banner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.gaia-dialog-creature-wizard .live-stat-card {
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-dialog-creature-wizard .live-stat-card i {
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-creature-wizard .live-stat-card .stat-details {
+  display: flex;
+  padding: 0 6px;
+  gap: 6px;
+  align-items: center;
+}
+
+.gaia-dialog-creature-wizard .live-stat-card .lbl {
+  font-size: var(--gaia-font-base);
+  opacity: 0.85;
+}
+
+.gaia-dialog-creature-wizard .live-stat-card .val {
+  font-size: var(--gaia-font-2xl);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-dialog-creature-wizard .live-stat-card .sub-lbl {
+  font-size: var(--gaia-font-base);
+  opacity: 0.65;
+}
+
+/* Ajuste de Parâmetros */
+.gaia-dialog-creature-wizard .wizard-parameters-section {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 6px 12px;
+}
+
+.gaia-dialog-creature-wizard .wizard-parameters-section .section-header-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-dialog-creature-wizard .wizard-parameters-section .section-title {
+  margin: 0;
+  color: var(--gaia-text-parchment);
+  font-size: var(--gaia-font-base);
+  font-family: var(--gaia-font-medieval);
+}
+
+.gaia-dialog-creature-wizard .pool-counter-badge {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 4px 8px;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-creature-wizard .parameters-control-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.gaia-dialog-creature-wizard .param-adjust-card {
+  background: transparent;
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gaia-dialog-creature-wizard .param-adjust-card .param-name {
+  display: block;
+  font-weight: 700;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-creature-wizard .param-adjust-card .param-desc {
+  display: block;
+  font-size: var(--gaia-font-base);
+  opacity: 0.7;
+}
+
+.gaia-dialog-creature-wizard .param-counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.gaia-dialog-creature-wizard .summary-creature-name.wizard-summary-name {
+  font-size: var(--gaia-font-lg);
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-text-parchment);
+}
+.gaia-dialog-creature-wizard .param-counter-controls input {
+  width: 36px;
+  text-align: center;
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-subtle);
+}
+
+.gaia-dialog-creature-wizard .btn-param-adjust {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-subtle);
+  cursor: pointer;
+}
+
+.gaia-dialog-creature-wizard .btn-param-adjust:hover:not(:disabled) {
+  border-color: var(--gaia-purple);
+  opacity: 0.6;
+}
+
+.gaia-dialog-creature-wizard .btn-param-adjust:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.gaia-dialog-creature-wizard .wizard-extra-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+/* Etapa 3: Características e Livro dos Seres */
+.gaia-dialog-creature-wizard .wizard-features-compendium-card {
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 12px;
+}
+
+.gaia-dialog-creature-wizard .compendium-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gaia-dialog-creature-wizard .compendium-header-bar .compendium-title {
+  font-weight: 700;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-creature-wizard .features-granted-badge {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 3px 8px;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-creature-wizard .compendium-placeholder-box {
+  margin-top: 12px;
+  padding: 20px;
+  text-align: center;
+  border: 1px dashed var(--gaia-border-subtle);
+  opacity: 0.75;
+}
+
+.gaia-dialog-creature-wizard .compendium-placeholder-box p {
+  margin: 6px 0 0 0;
+  font-size: var(--gaia-font-base);
+}
+
+/* Card de Resumo Final */
+.gaia-dialog-creature-wizard .wizard-summary-preview-card {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 8px;
+}
+
+.gaia-dialog-creature-wizard .summary-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--gaia-border-subtle);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.gaia-dialog-creature-wizard .summary-creature-name {
+  margin: 0;
+  font-size: var(--gaia-font-lg);
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+}
+
+.gaia-dialog-creature-wizard .summary-badges {
+  display: flex;
+  gap: 6px;
+}
+
+.gaia-dialog-creature-wizard .summary-badges .badge {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 2px 6px;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-creature-wizard .summary-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-creature-wizard .summary-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

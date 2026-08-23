@@ -1,0 +1,236 @@
+<div class="gaia-actor-banner gaia-creature-banner">
+  {{!-- 1. Nome, Nível / ND e Dificuldade da Criatura --}}
+  <div class="banner-top-row">
+    <div class="banner-field-card name-field">
+      <span class="field-label">{{localize "GAIA.Creature.Name"}}</span>
+      <input type="text" name="name" value="{{actor.name}}" placeholder="{{localize 'GAIA.Creature.NamePlaceholder'}}" />
+    </div>
+
+    <div class="banner-card stat-card">
+      <span class="banner-title">{{localize "GAIA.Creature.LevelCR"}}</span>
+      <input type="number" name="system.nivel" value="{{system.nivel}}" min="0" class="banner-input" />
+    </div>
+  </div>
+
+  <div class="banner-mid-row" style="display: flex; gap: 6px; align-items: flex-end;">
+    <div class="banner-field-card category-field difficulty-field" style="flex: 1;">
+      <span class="field-label">{{localize "GAIA.Creature.Difficulty"}}</span>
+      <select name="system.difficulty" class="gaia-select">
+        <option value="">-</option>
+        <option value="Fácil" {{#if (eq system.difficulty "Fácil")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Easy"}}</option>
+        <option value="Normal" {{#if (eq system.difficulty "Normal")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Normal"}}</option>
+        <option value="Difícil" {{#if (eq system.difficulty "Difícil")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Hard"}}</option>
+        <option value="Extrema" {{#if (eq system.difficulty "Extrema")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Extreme"}}</option>
+      </select>
+    </div>
+
+    <div class="banner-field-card category-field size-field" style="flex: 1;">
+      <span class="field-label">{{localize "GAIA.Creature.Size"}}</span>
+      <select name="system.size" class="gaia-select">
+        <option value="">-</option>
+        <option value="Pequeno" {{#if (eq system.size "Pequeno")}}selected{{/if}}>{{localize "GAIA.CreatureSize.Pequeno"}}</option>
+        <option value="Medio" {{#if (or (eq system.size "Medio") (eq system.size "medium"))}}selected{{/if}}>{{localize "GAIA.CreatureSize.Medio"}}</option>
+        <option value="Grande" {{#if (eq system.size "Grande")}}selected{{/if}}>{{localize "GAIA.CreatureSize.Grande"}}</option>
+        <option value="Enorme" {{#if (eq system.size "Enorme")}}selected{{/if}}>{{localize "GAIA.CreatureSize.Enorme"}}</option>
+        <option value="Gigante" {{#if (eq system.size "Gigante")}}selected{{/if}}>{{localize "GAIA.CreatureSize.Gigante"}}</option>
+      </select>
+    </div>
+  </div>
+  {{!-- 2. Recursos: Vida (Atual / Max / Temp) e Energia (Atual / Max) --}}
+  <div class="banner-resources-row flexrow">
+    {{!-- Vida --}}
+    <div class="resource-card health-card">
+      <span class="resource-title">{{localize "GAIA.Creature.Health"}}</span>
+      <div class="resource-inputs-row">
+        <div class="stat-input-box">
+          <span class="input-sublabel">{{localize "GAIA.Banner.Current"}}</span>
+          <input type="number" name="system.health.value" value="{{system.health.value}}" min="0" />
+        </div>
+        <div class="stat-input-box" data-tooltip="{{tooltips.healthMax}}" title="{{tooltips.healthMax}}">
+          <span class="input-sublabel">{{localize "GAIA.Banner.Max"}}</span>
+          <input type="number" name="system.health.max" value="{{system.health.max}}" min="0" />
+        </div>
+        <div class="stat-input-box">
+          <span class="input-sublabel">{{localize "GAIA.Banner.TempHP"}}</span>
+          <input type="number" name="system.health.temp" value="{{system.health.temp}}" min="0" />
+        </div>
+      </div>
+    </div>
+
+    {{!-- Energia --}}
+    <div class="resource-card energy-card">
+      <span class="resource-title">{{localize "GAIA.Creature.Energy"}}</span>
+      <div class="resource-inputs-row">
+        <div class="stat-input-box">
+          <span class="input-sublabel">{{localize "GAIA.Banner.Current"}}</span>
+          <input type="number" name="system.energy.value" value="{{system.energy.value}}" min="0" />
+        </div>
+        <div class="stat-input-box">
+          <span class="input-sublabel">{{localize "GAIA.Banner.Max"}}</span>
+          <input type="number" name="system.energy.max" value="{{system.energy.max}}" min="0" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{!-- 3. Atributos de Combate da Criatura (Parâmetros Ofensivos e Defensivos) --}}
+  <div class="creature-stats-cards-row">
+    <div class="banner-card stat-card" 
+         data-action="rollParameter" 
+         data-key="offensiveParameters" 
+         data-context-action="editField" 
+         data-field="system.offensiveParameters" 
+         data-label="{{localize 'GAIA.Creature.OffensiveParameters'}}" 
+         data-type-input="number" 
+         data-min="0" 
+         role="button" 
+         title="{{localize 'GAIA.Dialog.RollTitle' label=(localize 'GAIA.Creature.OffensiveParameters')}}&#10;Clique esquerdo: Rolar Parâmetro | Clique direito: Alterar Valor">
+      <span class="banner-title">{{localize "GAIA.Creature.OffensiveParameters"}}</span>
+      <span class="banner-input">{{system.offensiveParameters}}</span>
+    </div>
+    <div class="banner-card stat-card" 
+         data-action="rollParameter" 
+         data-key="defensiveParameters" 
+         data-context-action="editField" 
+         data-field="system.defensiveParameters" 
+         data-label="{{localize 'GAIA.Creature.DefensiveParameters'}}" 
+         data-type-input="number" 
+         data-min="0" 
+         role="button" 
+         title="{{localize 'GAIA.Dialog.RollTitle' label=(localize 'GAIA.Creature.DefensiveParameters')}}&#10;Clique esquerdo: Rolar Parâmetro | Clique direito: Alterar Valor">
+      <span class="banner-title">{{localize "GAIA.Creature.DefensiveParameters"}}</span>
+      <span class="banner-input">{{system.defensiveParameters}}</span>
+    </div>
+  </div>
+
+  {{!-- 4. Defesa, Movimento e Iniciativa --}}
+  <div class="creature-defenses-row">
+
+    {{!-- Movimento --}}
+    <div class="move-card" 
+         data-context-action="editField" 
+         data-field="system.movement" 
+         data-label="{{localize 'GAIA.Creature.Movement'}}" 
+         data-type-input="number" 
+         data-min="0" 
+         role="button" 
+         title="{{localize 'GAIA.Creature.EditMovementTitle'}}">
+      <span class="banner-title">{{localize "GAIA.Creature.Movement"}}</span>
+      <span class="banner-input">{{system.movement}}</span>
+    </div>
+
+    {{!-- Iniciativa (Parâmetros Defensivos) --}}
+    <div class="init-card" 
+         data-action="rollInitiative" 
+         data-context-action="editField" 
+         data-field="system.defensiveParameters" 
+         data-label="{{localize 'GAIA.Creature.InitiativeDefensive'}}" 
+         data-type-input="number" 
+         data-min="0" 
+         role="button" 
+         title="{{localize 'GAIA.Creature.RollInitiativeTitle'}}">
+      <span class="init-title">{{localize "GAIA.Banner.Initiative"}}</span>
+      <span class="init-value">{{system.defensiveParameters}}</span>
+    </div>
+  </div>
+
+  <div class="creature-stats-cards-row">
+    {{!-- Percepção Passiva --}}
+    <div class="defense-item passive-perception-item">
+      <span class="defense-item-label">{{localize "GAIA.Creature.PassivePerception"}}</span>
+      <input type="number" class="defense-item-val" name="system.passivePerception" value="{{system.passivePerception}}" min="0" />
+    </div>
+  </div>
+
+  {{!-- 5. Defesas Inferiores (Resistência, Imunidade, Vulnerabilidade, Redução) --}}
+  <div class="banner-defenses-list">
+    {{!-- Resistência --}}
+    <div class="defense-group">
+      <div class="defense-group-header">
+        <span class="defense-group-title">{{localize "GAIA.Creature.Resistance"}}</span>
+        <button type="button" class="btn-tag-add" data-action="addResistance" title="{{localize 'GAIA.Creature.AddResistance'}}">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+      <div class="defense-tags">
+        {{#each system.damageResistance as |res index|}}
+          <div class="defense-tag">
+            <input type="text" name="system.damageResistance.{{index}}.type" value="{{res.type}}" placeholder="{{localize 'GAIA.Creature.TypePlaceholder'}}" />
+            <button type="button" class="btn-tag-remove" data-action="removeResistance" data-index="{{index}}" title="{{localize 'GAIA.Generic.Delete'}}">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        {{else}}
+          <span class="empty-placeholder">{{localize "GAIA.Creature.None"}}</span>
+        {{/each}}
+      </div>
+    </div>
+
+    {{!-- Imunidade --}}
+    <div class="defense-group">
+      <div class="defense-group-header">
+        <span class="defense-group-title">{{localize "GAIA.Creature.Immunity"}}</span>
+        <button type="button" class="btn-tag-add" data-action="addImmunity" title="{{localize 'GAIA.Creature.AddImmunity'}}">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+      <div class="defense-tags">
+        {{#each system.damageImmunity as |imm index|}}
+          <div class="defense-tag">
+            <input type="text" name="system.damageImmunity.{{index}}.type" value="{{imm.type}}" placeholder="{{localize 'GAIA.Creature.TypePlaceholder'}}" />
+            <button type="button" class="btn-tag-remove" data-action="removeImmunity" data-index="{{index}}" title="{{localize 'GAIA.Generic.Delete'}}">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        {{else}}
+          <span class="empty-placeholder">{{localize "GAIA.Creature.None"}}</span>
+        {{/each}}
+      </div>
+    </div>
+
+    {{!-- Vulnerabilidade --}}
+    <div class="defense-group">
+      <div class="defense-group-header">
+        <span class="defense-group-title">{{localize "GAIA.Creature.Vulnerability"}}</span>
+        <button type="button" class="btn-tag-add" data-action="addVulnerability" title="{{localize 'GAIA.Creature.AddVulnerability'}}">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+      <div class="defense-tags">
+        {{#each system.damageVulnerability as |vul index|}}
+          <div class="defense-tag">
+            <input type="text" name="system.damageVulnerability.{{index}}.type" value="{{vul.type}}" placeholder="{{localize 'GAIA.Creature.TypePlaceholder'}}" />
+            <button type="button" class="btn-tag-remove" data-action="removeVulnerability" data-index="{{index}}" title="{{localize 'GAIA.Generic.Delete'}}">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        {{else}}
+          <span class="empty-placeholder">{{localize "GAIA.Creature.None"}}</span>
+        {{/each}}
+      </div>
+    </div>
+
+    {{!-- Redução --}}
+    <div class="defense-group">
+      <div class="defense-group-header">
+        <span class="defense-group-title">{{localize "GAIA.Creature.Reduction"}}</span>
+        <button type="button" class="btn-tag-add" data-action="addReduction" title="{{localize 'GAIA.Creature.AddReduction'}}">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+      <div class="defense-tags">
+        {{#each system.damageReduction as |red index|}}
+          <div class="defense-tag reduction-tag">
+            <input type="text" class="reduction-type" name="system.damageReduction.{{index}}.type" value="{{red.type}}" placeholder="{{localize 'GAIA.Creature.TypePlaceholder'}}" />
+            <input type="number" class="reduction-val" name="system.damageReduction.{{index}}.value" value="{{red.value}}" placeholder="0" />
+            <button type="button" class="btn-tag-remove" data-action="removeReduction" data-index="{{index}}" title="{{localize 'GAIA.Generic.Delete'}}">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        {{else}}
+          <span class="empty-placeholder">{{localize "GAIA.Creature.None"}}</span>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>

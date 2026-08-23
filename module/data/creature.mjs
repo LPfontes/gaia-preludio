@@ -36,6 +36,9 @@ class CreatureDataModel extends ActorBaseDataModel {
       // EN: Includes all fields inherited from the parent actor base model
       ...super.defineSchema(),
       difficulty: new StringField({ required: true }),
+      // PT: Tipos de criatura (comum, ferais, veu, naovivo, elemental, primas, etc)
+      // EN: Creature types (comum, ferais, veu, naovivo, elemental, primas, etc)
+      creatureTypes: new ArrayField(new StringField({ required: true }), { required: true, initial: ["comum"] }),
       // PT: Parâmetros ofensivos da criatura (bônus de ataque / poder de ataque)
       // EN: Offensive parameters of the creature (attack bonus / offensive power)
       offensiveParameters: new NumberField({ required: true, initial: 0, integer: true }),
@@ -43,14 +46,6 @@ class CreatureDataModel extends ActorBaseDataModel {
       // PT: Parâmetros defensivos da criatura (bônus de defesa / esquiva)
       // EN: Defensive parameters of the creature (defense bonus / evasion)
       defensiveParameters: new NumberField({ required: true, initial: 0, integer: true }),
-
-      // PT: Modificador / valor brutal para ataques ou proezas físicas
-      // EN: Brutal modifier / value for attacks or feats of physical brute force
-      brutal: new NumberField({ required: true, integer: true, initial: 0 }),
-
-      // PT: Capacidade de evocação mística / poder arcano inato
-      // EN: Mystical evocation capability / innate arcane power
-      mysticalEvocation: new NumberField({ required: true, integer: true, initial: 0 }),
 
       // PT: Referências livros de monstros
       // EN: Monster book references

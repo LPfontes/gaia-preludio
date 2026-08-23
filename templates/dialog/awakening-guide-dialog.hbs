@@ -21,16 +21,17 @@
 
   {{!-- Conteúdo das abas --}}
   <div class="gaia-dialog-tab-body">
-    {{!-- Aba 1: Parâmetros --}}
+   {{!-- ==================================================================== --}}
+    {{!-- ETAPA 1: PARÂMETROS --}}
+    {{!-- ==================================================================== --}}
     <div class="gaia-dialog-tab-pane active" data-tab="parameters">
-      <div class="gaia-dialog-hint-box">
+  
         <p class="gaia-dialog-hint-title">
           {{localize "GAIA.CreateActor.AwakeningParamTitle"}}
         </p>
         <p class="gaia-dialog-hint-text">
           ● {{localize "GAIA.CreateActor.AwakeningParam"}}
         </p>
-      </div>
 
       {{!-- Distribuidor Interativo dos 7 Pontos de Parâmetros --}}
       <div class="gaia-distributor-header">
@@ -66,16 +67,18 @@
       </div>
     </div>
 
-    {{!-- Aba 2: Conhecimentos --}}
+    {{!-- ==================================================================== --}}
+    {{!-- ETAPA 2: CONHECIMENTOS --}}
+    {{!-- ==================================================================== --}}
     <div class="gaia-dialog-tab-pane" data-tab="knowledge">
-      <div class="gaia-dialog-hint-box">
+  
         <p class="gaia-dialog-hint-title">
           {{localize "GAIA.CreateActor.AwakeningKnowledgeTitle"}}
         </p>
         <p class="gaia-dialog-hint-text">
           ● {{localize "GAIA.CreateActor.AwakeningKnowledge"}}
         </p>
-      </div>
+      
 
       {{!-- Distribuidor Interativo dos 7 Pontos de Conhecimentos --}}
       <div class="gaia-distributor-header">
@@ -114,9 +117,10 @@
       </div>
     </div>
 
-    {{!-- Aba 3: Vida & Energia --}}
+    {{!-- ==================================================================== --}}
+    {{!-- ETAPA 3: VIDA E ENERGIA --}}
+    {{!-- ==================================================================== --}}
     <div class="gaia-dialog-tab-pane" data-tab="vitals">
-      <div class="gaia-dialog-hint-box">
         <p class="gaia-dialog-hint-title">
           {{localize "GAIA.CreateActor.AwakeningVitalsTitle"}}
         </p>
@@ -124,7 +128,7 @@
           <li><strong>Pontos de Vida (PV):</strong> 30 + 1d6 (ou 3) + <span class="gaia-vigor-hint-val">0</span> (Vigor)</li>
           <li><strong>Pontos de Energia (PE):</strong> {{localize "GAIA.CreateActor.AwakeningEnergy"}}</li>
         </ul>
-      </div>
+      
 
       {{!-- Painel de Definição / Rolagem de Vida --}}
       <div class="gaia-vitals-roller-box">

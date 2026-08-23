@@ -1,3 +1,113 @@
 <div class="abilities-panel">
-    
+  <div class="abilities-panel-header">
+    <h3 class="abilities-panel-title">
+    </h3>
+    <div class="header-buttons" style="display: flex; gap: 6px;">
+      <button type="button" class="btn-open-browser" data-action="openItemBrowser" data-type="ability" title="{{localize 'GAIA.ItemBrowser.OpenAbilitiesBrowser'}}">
+        {{localize "GAIA.ItemBrowser.OpenAbilitiesBrowser"}}
+      </button>
+    </div>
+  </div>
+
+  <div class="abilities-list-grid">
+    {{#each abilities}}
+    <div class="ability-card-item" data-item-id="{{this.id}}">
+      
+      <!-- MINI CABEÇALHO COM CONTROLES -->
+      <div class="ability-card-controls">
+        <button type="button" class="btn-item-control btn-roll-ability" data-action="rollItem" data-item-id="{{this.id}}" title="{{localize 'GAIA.Ability.SendToChat'}}">
+          <i class="fas fa-comment-alt"></i>
+        </button>
+        <button type="button" class="btn-item-control btn-edit-ability" data-action="openItem" data-item-id="{{this.id}}" title="{{localize 'GAIA.title.EditItem'}}">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button type="button" class="btn-item-control btn-delete-ability" data-action="deleteItem" data-item-id="{{this.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+
+      <!-- TEMPLATE VISUAL DA CARTA DE HABILIDADE DA FICHA DO ATOR -->
+      <div class="gaia-ability-card actor-sheet-card">
+        <div class="ability-card-header">
+          <div class="ability-title-row">
+            <img class="ability-icon" src="{{this.img}}" data-action="openItem" data-item-id="{{this.id}}" title="{{this.name}}"/>
+            <h2 class="ability-name-display" data-action="openItem" data-item-id="{{this.id}}">
+              {{this.name}}
+            </h2>
+          </div>
+          <div class="ability-meta-bar">
+            <div class="meta-row-1">
+              <span class="meta-cost">{{#if this.system.cost}}{{this.system.cost}}{{else}}1 PE{{/if}}</span>
+              <span class="meta-divider">|</span>
+              <span class="meta-action">{{#if this.actionLabel}}{{this.actionLabel}}{{else}}Ação Ativa{{/if}}</span>
+              <span class="meta-divider">|</span>
+              <span class="meta-category">{{#if this.firstType}}{{this.firstType}}{{else}}Conjuração{{/if}}</span>
+              {{#if this.hasAdditionalTypes}}
+                <span class="meta-divider">|</span>
+                <span class="meta-additional-types">{{this.additionalTypes}}</span>
+              {{/if}}
+            </div>
+          </div>
+  
+        </div>
+
+        <div class="ability-card-body">
+          {{#if this.system.quote}}
+          <div class="ability-quote-display">
+            <em>{{this.system.quote}}</em>
+          </div>
+          {{/if}}
+
+          <div class="ability-body-text">
+            {{#if this.system.description}}
+            <p>{{this.system.description}}</p>
+            {{/if}}
+            {{#if this.system.numberTarget}}
+            <span class="tag-target"><strong>{{localize "GAIA.Ability.Target"}}:</strong> {{this.system.numberTarget}}</span>
+            {{/if}}
+            {{#if this.system.range}}
+            <span class="tag-range"><strong>{{localize "GAIA.Ability.Range"}}:</strong> {{this.system.range}}</span>
+            {{/if}}
+          </div>
+
+          {{#if this.system.subEffects.length}}
+          <div class="subeffects-display-section">
+            {{#each this.system.subEffects}}
+            <div class="subeffect-display-block">
+              <div class="subeffect-display-header">
+                <span class="subeffect-title-text">{{this.name}}</span>
+                {{#if this.cost}}<span class="subeffect-cost-text">{{this.cost}}</span>{{/if}}
+              </div>
+              <div class="subeffect-divider"></div>
+              <div class="subeffect-desc-text">{{this.description}}</div>
+              {{#if this.note}}<div class="subeffect-note-text">{{this.note}}</div>{{/if}}
+            </div>
+            {{/each}}
+          </div>
+          {{/if}}
+
+          {{#if this.hasActiveImprovements}}
+          <div class="improvements-display-section">
+            <div class="improvements-divider-title">
+              <span class="dot">•</span>
+              <span class="improvements-title-text">{{localize "GAIA.Ability.Improvements"}}</span>
+              <span class="dot">•</span>
+            </div>
+            <div class="improvements-display-list">
+              {{#each this.activeImprovements}}
+              <div class="improvement-display-item">
+                <strong>{{this.title}}:</strong> {{this.description}}
+              </div>
+              {{/each}}
+            </div>
+          </div>
+          {{/if}}
+
+        </div>
+      </div>
+
+    </div>
+    {{/each}}
+
+  </div>
 </div>

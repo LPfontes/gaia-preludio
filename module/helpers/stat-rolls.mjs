@@ -39,10 +39,10 @@ export function getStatEntry(system, category, key) {
  * @param {string} options.categoryLabel - Rótulo da categoria (ex: "Parâmetro", "Conhecimento")
  * @returns {Promise<Roll | null>} Retorna o objeto Roll avaliado ou null se cancelado
  */
-export async function rollStat(actor, { event, target, type, categoryLabel }) {
+export async function rollStat(actor, { event, target, type, categoryLabel, overrideValue, key: customKey, weaponDamageText } = {}) {
   if (!actor) return null;
 
-  const key = String(target?.dataset?.key || target?.dataset?.type || (type === "initiative" ? "initiative" : "")).toLowerCase();
+  const key = String(customKey || target?.dataset?.key || target?.dataset?.type || (type === "initiative" ? "initiative" : "")).toLowerCase();
   const system = actor.system;
 
   let value = 0;
@@ -60,13 +60,17 @@ export async function rollStat(actor, { event, target, type, categoryLabel }) {
         value = getStatEntry(system, "parameters", "agility").value || Number(system.agility?.value ?? system.agility ?? 0);
         label = game.i18n.localize("GAIA.Dialog.AgilityDefense");
       } else {
-        value = Number(system.block?.value ?? system.block ?? 0);
+        value = Number(system.totalBlock ?? system.block?.value ?? system.block ?? 0);
         label = game.i18n.localize("GAIA.Dialog.BlockDefense");
       }
       break;
     }
     case "initiative": {
-      value = getStatEntry(system, "parameters", "agility").value || Number(system.agility?.value ?? system.agility ?? 0);
+      if (system.defensiveParameters !== undefined && (actor.type === "creature" || actor.type === "legacyNpc")) {
+        value = Number(system.defensiveParameters) || 0;
+      } else {
+        value = getStatEntry(system, "parameters", "agility").value || Number(system.agility?.value ?? system.agility ?? 0);
+      }
       label = game.i18n.localize("GAIA.Dialog.Initiative");
       break;
     }
@@ -75,6 +79,13 @@ export async function rollStat(actor, { event, target, type, categoryLabel }) {
       label = categoryLabel || "";
       break;
     }
+  }
+
+  if (overrideValue !== undefined) {
+    value = Number(overrideValue) || 0;
+  }
+  if (categoryLabel) {
+    label = categoryLabel;
   }
 
   // 2. Define a aptidão padrão por atalho de teclado
@@ -170,7 +181,11 @@ export async function rollStat(actor, { event, target, type, categoryLabel }) {
 
   // 7. Monta o título do card no chat
   const modText = modifier !== 0 ? ` [${modifier > 0 ? "+" : ""}${modifier}]` : "";
-  const flavor = `<strong>${label}${modText}</strong> (${fitnessLabel})`;
+  let flavor = `<strong>${label}${modText}</strong> (${fitnessLabel})`;
+
+  if (weaponDamageText) {
+    flavor += `<div class="weapon-damage-block" style="margin-top: 6px; text-align: center;"><span class="damage-label" style="font-size: 0.8em; font-weight: bold; text-transform: uppercase; color: var(--gaia-text-muted, #888); display: block; margin-bottom: 2px;">Dano da Arma</span><div class="dice-roll"><div class="dice-result"><div class="dice-total">${weaponDamageText}</div></div></div></div>`;
+  }
 
   // 8. Exibe a rolagem formatada no chat do Foundry VTT
   await roll.toMessage(
@@ -190,4 +205,48 @@ export async function rollStat(actor, { event, target, type, categoryLabel }) {
   }
 
   return roll;
+}
+
+/**
+ * Executa a rolagem de ataque de um armamento utilizando o Parâmetro configurado em item.system.attackParameter.attribute.
+ * @param {Actor} actor - Documento do Ator
+ * @param {Item} item - Documento do Item de Arma
+ * @param {object} [options={}] - Opções do evento (event, target)
+ * @returns {Promise<Roll | null>}
+ */
+export async function rollWeaponAttack(actor, item, { event, target } = {}) {
+  if (!actor || !item) return null;
+
+  // Resgata o atributo de ataque configurado na arma (ex: "precision", "brutality", etc.)
+  const attrKey = String(item.system?.attackParameter?.attribute || "precision").toLowerCase();
+  const bonus = Number(item.system?.attackParameter?.value) || 0;
+
+  // Busca o valor base e rótulo do parâmetro no Ator
+  const { value: paramValue, label: paramLabel } = getStatEntry(actor.system, "parameters", attrKey);
+  const totalValue = paramValue + bonus;
+
+  // Formatação do Dano da Arma
+  let damageText = "";
+  const iSys = item.system ?? {};
+  if (iSys.damageType) {
+    if (typeof iSys.damageType === "object") {
+      const dVal = iSys.damageType.value ?? "";
+      const rawType = iSys.damageType.type ?? "";
+      const locKey = CONFIG.GAIA?.damageTypesFlat?.[rawType] ?? CONFIG.GAIA?.damageTypes?.[rawType] ?? rawType;
+      const dType = rawType ? (game.i18n.localize(locKey) || rawType) : "";
+      damageText = dVal !== "" && dType ? `${dVal} ${dType}` : (dVal || dType || "");
+    } else {
+      damageText = String(iSys.damageType);
+    }
+  }
+
+  return await rollStat(actor, {
+    event,
+    target: target ?? { dataset: { key: attrKey } },
+    type: "parameters",
+    key: attrKey,
+    categoryLabel: `${item.name} (${paramLabel})`,
+    overrideValue: totalValue,
+    weaponDamageText: damageText || null
+  });
 }

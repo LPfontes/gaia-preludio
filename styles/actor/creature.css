@@ -1,0 +1,431 @@
+/**
+ * ==============================================================================
+ * FICHA E BANNER DE CRIATURA / CREATURE SHEET (.gaia-creature-sheet)
+ * ==============================================================================
+ * PT: Segue rigorosamente os tokens visuais de variables.css, layout.css e personagem.css.
+ * EN: Strictly follows design tokens from variables.css, layout.css, and personagem.css.
+ */
+
+/* Grid Layout Principal da Ficha de Criatura */
+.gaia-creature-sheet {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 8px;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-text-parchment);
+}
+
+/* Banner de Criatura */
+.gaia-creature-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 10px 10px 40px 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 97%, 0% 100%);
+}
+
+/* Linha de Dificuldade/Categoria no Banner */
+.gaia-creature-banner .banner-mid-row .category-field {
+  width: 100%;
+}
+
+/* Recursos de Criatura (Vida e Energia) */
+.gaia-creature-banner .banner-resources-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.gaia-creature-banner .banner-resources-row .resource-card {
+  flex: 1;
+}
+
+/* Cartões de Parâmetros Ofensivos, Defensivos */
+.creature-stats-cards-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.creature-stats-cards-row .stat-card {
+  flex: 1;
+  text-align: center;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 4px;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gaia-purple);
+  background: rgba(255, 255, 255, 0.04);
+}
+  
+.creature-stats-cards-row .stat-card .field-label {
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.creature-stats-cards-row .stat-card .field-label[data-action] {
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.creature-stats-cards-row .stat-card .field-label[data-action]:hover {
+  color: var(--gaia-purple);
+}
+.creature-stats-cards-row .stat-card .stat-value {
+  font-size: var(--gaia-font-xl);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+}
+.creature-stats-cards-row .stat-card input {
+  width: 100%;
+  text-align: center;
+  font-size: var(--gaia-font-lg);
+  font-weight: bold;
+  border: none;
+  background: transparent;
+  color: var(--gaia-text-parchment);
+}
+
+/* Defesas de Criatura (Bloqueio, Movimento e Percepção Passiva) */
+.creature-defenses-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.creature-defenses-row .shield-card,
+.creature-defenses-row .move-card,
+.creature-defenses-row .init-card,
+.creature-defenses-row .perception-card {
+  width: 100%;
+}
+
+.passive-perception-item {
+  flex: 1;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* ==============================================================================
+ * CORPO DA FICHA DE CRIATURA (.creature-sheet-body)
+ * ============================================================================== */
+.creature-sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  padding: 8px;
+  overflow-y: auto !important;
+}
+
+/* Navegação por Abas (Personagem e Bio) */
+.creature-tabs {
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  display: flex;
+  padding: 4px;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.creature-tabs .tab-link {
+  color: var(--gaia-text-muted);
+  font-size: var(--gaia-font-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.creature-tabs .tab-link:hover {
+  color: var(--gaia-text-parchment);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.creature-tabs .tab-link.active {
+  background: rgba(117, 117, 117, 0.1);
+  color: var(--gaia-text-parchment);
+  text-shadow: 0px 0px 0px var(--gaia-purple);
+}
+
+.sheet-tab-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet-tab-body .tab-content {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sheet-tab-body .tab-content.active {
+  display: flex;
+}
+
+/* ==============================================================================
+ * SEÇÕES E PAINÉIS DE CRIATURA (.creature-section)
+ * ============================================================================== */
+.creature-section {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.creature-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--gaia-border-subtle);
+  padding-bottom: 4px;
+}
+
+.creature-section .section-title {
+  font-size: var(--gaia-font-lg);
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.knowledge-section{
+  border: none;
+}
+.btn-section-add {
+  background: transparent;
+  border: 1px solid var(--gaia-border-frame);
+  color: var(--gaia-text-muted);
+  border-radius: var(--gaia-radius);
+  padding: 2px 6px;
+  font-size: var(--gaia-font-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-section-add:hover {
+  border-color: var(--gaia-purple);
+}
+
+/* Grid de Checkboxes dos Tipos de Criatura */
+.creature-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+  background: var(--gaia-bg-box);
+}
+
+.creature-type-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  user-select: none;
+}
+
+.creature-type-checkbox-label input[type="checkbox"] {
+  accent-color: var(--gaia-purple);
+  cursor: pointer;
+}
+
+/* Lista e Cartões de Itens da Criatura */
+.creature-items-list {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.creature-item-card {
+  background: transparent;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: background 0.15s ease;
+}
+
+.creature-item-card:hover {
+  background: var(--gaia-bg-box-hover);
+}
+
+.creature-item-card .item-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.creature-item-card .item-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 2px;
+  object-fit: cover;
+  border: 1px solid var(--gaia-border-frame);
+  cursor: pointer;
+}
+
+.creature-item-card .item-name {
+  flex: 1;
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+}
+
+.creature-item-card .item-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-item-icon {
+  background: transparent;
+  border: none;
+  color: var(--gaia-text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: var(--gaia-font-base);
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.btn-item-icon:hover {
+  color: var(--gaia-purple);
+}
+
+.btn-item-icon.danger:hover {
+  color: var(--gaia-health-label);
+}
+
+.creature-item-card .item-card-body {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-muted);
+  padding-left: 32px;
+}
+
+.empty-section-placeholder {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  font-style: italic;
+  text-align: center;
+  padding: 6px;
+}
+
+/* ==============================================================================
+ * ABA BIOGRAFIA E ECOLOGIA (.creature-bio-container)
+ * ============================================================================== */
+.creature-bio-container {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 100%;
+}
+
+.creature-portrait-box {
+  width: 100%;
+  height: 300px;
+  flex-shrink: 0;
+  background: #0d0c0b;
+  border: 2px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  overflow: hidden !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.creature-portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.creature-portrait:hover {
+  transform: scale(1.03);
+}
+
+.creature-sheet-body .bio-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.creature-sheet-body .bio-group .bio-label {
+  font-size: var(--gaia-font-lg);
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.creature-sheet-body .bio-group textarea {
+  width: 100%;
+  min-height: 300px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
+  font-family: inherit;
+  font-size: var(--gaia-font-md);
+  line-height: 1.5;
+  padding: 8px;
+  resize: vertical;
+  outline: none;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  --input-placeholder-color: var(--gaia-text-parchment);
+}
+
+.creature-sheet-body .bio-group textarea:focus {
+  border-color: var(--gaia-purple);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5), 0 0 6px rgba(155, 89, 182, 0.4);
+}

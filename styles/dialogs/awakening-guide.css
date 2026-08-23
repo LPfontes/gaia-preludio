@@ -78,7 +78,7 @@
 }
 
 .gaia-dialog-hint-box {
-  border: 1px solid var(--gaia-border-subtle, #5c4d3c);
+  border: 1px solid var(--gaia-border-subtle);
   border-radius: 4px;
   padding: 6px 8px;
   font-size: var(--gaia-font-base);
@@ -95,7 +95,7 @@
 
 .gaia-dialog-hint-text {
   margin: 0 0 8px 0;
-  color: var(--gaia-text-parchment, #e0dacf);
+  color: var(--gaia-text-parchment);
 }
 
 .gaia-dialog-hint-muted {
@@ -110,7 +110,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  color: var(--gaia-text-parchment, #e0dacf);
+  color: var(--gaia-text-parchment);
 }
 
 /* ==============================================================================
@@ -120,11 +120,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(88, 28, 135, 0.2);
-  border: 1px solid var(--gaia-purple);
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
   border-radius: 4px;
   padding: 6px 12px;
-  margin-bottom: 6px;
 }
 
 .gaia-distributor-title {
@@ -152,14 +151,14 @@
 .gaia-params-dist-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px 10px;
+  gap: 6px;
 }
 
 .gaia-param-dist-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid var(--gaia-border-frame, #8a7356);
+  border: 1px solid var(--gaia-border-frame);
   border-radius: 4px;
   padding: 6px 10px;
   transition: border-color 0.2s;
@@ -187,12 +186,10 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  background: rgba(88, 28, 135, 0.4);
-  color: #fff;
-  border: 1px solid var(--gaia-border-frame, #8a7356);
-  border-radius: 3px;
-  font-size: 0.95em;
-  font-weight: bold;
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-frame);
+  font-size: var(--gaia-font-base);
   cursor: pointer;
   line-height: 1;
   transition: all 0.15s ease;
@@ -202,6 +199,7 @@
   background: var(--gaia-purple, #581c87);
   outline: none;
   box-shadow: none;
+  opacity: 0.6;
 }
 
 .gaia-param-adjust-btn:hover:not(:disabled) {
@@ -220,11 +218,10 @@
   width: 32px;
   height: 24px;
   text-align: center;
-  font-weight: 800;
-  font-size: 1em;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--gaia-border-subtle, #5c4d3c);
-  border-radius: 3px;
+  font-size: var(--gaia-font-base);
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-frame);
   padding: 0;
   pointer-events: none;
 }
@@ -251,17 +248,16 @@
 
 .gaia-vitals-roller-controls {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 }
 
 .gaia-hp-action-btn {
   padding: 4px 10px;
   font-size: var(--gaia-font-base);
-  background: rgba(88, 28, 135, 0.4);
+  background: transparent;
   color: var(--gaia-text-parchment);
   border: 1px solid var(--gaia-border-frame);
-  border-radius: 4px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -270,13 +266,13 @@
 }
 
 .gaia-hp-action-btn:hover {
-  background: var(--gaia-purple);
   border-color: var(--gaia-purple);
+  opacity: 0.6;
 }
 
 .gaia-hp-action-btn.active {
-  background: var(--gaia-purple);
-  border-color: var(--gaia-purple);
+  background: transparent;
+  color: var(--gaia-text-parchment);
 }
 
 .gaia-vitals-result-display {
@@ -289,7 +285,7 @@
 
 .gaia-vitals-calculated-hp {
   font-weight: 600;
-  color: var(--gaia-purple);
+  color: var(--gaia-text-parchment);
   font-size: var(--gaia-font-base);
 }
 
@@ -303,7 +299,8 @@
 }
 
 .gaia-wizard-nav-btn {
-  padding: 5px 12px;
+  background: transparent;
+  padding: 6px 12px;
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
   border: 1px solid var(--gaia-border-frame);
@@ -316,6 +313,6 @@
 }
 
 .gaia-wizard-nav-btn:hover {
-  background: var(--gaia-purple);
   border-color: var(--gaia-purple);
+  opacity: 0.6;
 }

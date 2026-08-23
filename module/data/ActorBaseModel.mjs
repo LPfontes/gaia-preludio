@@ -38,13 +38,17 @@ class ActorBaseDataModel extends BaseDataModel {
         temp: new NumberField({ required: false, integer: true, min: 0, initial: 0 })
       }),
 
+      // PT: Tamanho do personagem ou criatura
+      // EN: Size of the character or creature
+      size: new StringField({ required: true, initial: "medium" }),
+
       // PT: Energia / mana / estamina (atual e máximo)
       // EN: Energy / mana / stamina (current and maximum)
       energy: new SchemaField({
         value: new NumberField({ required: true, integer: true, min: 0, initial: 5 }),
         max: new NumberField({ required: true, integer: true, min: 0, initial: 5 })
       }),
-
+      
       // PT: Deslocamento / velocidade de movimento em combate
       // EN: Movement speed / travel displacement in combat
       movement: new NumberField({ required: true, integer: true, min: 0, initial: 6 }),
@@ -94,6 +98,18 @@ class ActorBaseDataModel extends BaseDataModel {
           type: new StringField({ required: true })
         }),
         { required: true, initial: [] }
+      ),
+      // PT: Idiomas do personagem
+      // EN: Languages of the character
+      languages: new ArrayField(
+        new StringField({ required: true }),
+        { required: true, initial: [] }
+      ),
+      // PT: Visão do personagem
+      // EN: Vision of the character
+      vision: new ArrayField(
+        new StringField({ required: true }),
+        { required: true, initial: ["normal"] }
       ),
       // PT: Notas do personagem
       // EN: Character notes

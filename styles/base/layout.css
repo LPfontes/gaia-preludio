@@ -63,16 +63,18 @@
   position: relative;
 }
 
-.sheet-sidebar-header {
-  width: 260px;
+.sheet-sidebar-header,
+.sheet-sidebar-header-npc {
+  width: 300px;
   flex-shrink: 0;
   height: 100%;
   max-height: 100%;
   overflow: visible;
-  padding-right: 2px;
   position: relative;
   z-index: 5;
 }
+
+
 
 .sheet-main-body {
   flex: 1;

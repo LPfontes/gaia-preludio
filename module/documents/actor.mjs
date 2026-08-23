@@ -7,8 +7,8 @@
  *
  * @extends {Actor}
  */
-import { prepareParameterBonuses } from "../helpers/actor-context.mjs";
-import { promptAwakeningGuideDialog } from "../helpers/dialogs.mjs";
+import { prepareParameterBonuses, calculateEquipmentBlockBonus } from "../helpers/actor-context.mjs";
+import { promptAwakeningGuideDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog } from "../helpers/dialogs.mjs";
 
 export class GaiaActor extends Actor {
 
@@ -64,6 +64,11 @@ export class GaiaActor extends Actor {
     const system = this.system;
     // Bônus de Parâmetros
     system.bonusesCalculated = prepareParameterBonuses(this);
+
+    // Bônus de Bloqueio por Equipamentos/Armaduras Equipadas
+    const equipmentBlockBonus = calculateEquipmentBlockBonus(this);
+    system.equipmentBlockBonus = equipmentBlockBonus;
+    system.totalBlock = (Number(system.block) || 0) + equipmentBlockBonus;
 
     this._prepareCharacterData(system);
 
@@ -191,9 +196,13 @@ export class GaiaActor extends Actor {
       ...data
     }, options);
 
-    // Se for um personagem do tipo Legado, abre em seguida o Guia de Despertar Inicial
+    // Triggers standard creation wizard dialogs depending on actor type
     if (result.type === "legacy") {
       promptAwakeningGuideDialog(actor);
+    } else if (result.type === "creature") {
+      promptCreatureWizardDialog(actor);
+    } else if (result.type === "legacyNpc") {
+      promptLegacyNpcWizardDialog(actor);
     }
 
     return actor;

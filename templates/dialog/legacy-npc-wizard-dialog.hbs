@@ -1,0 +1,216 @@
+<div class="gaia-dialog-legacy-npc-wizard">
+  {{!-- Cabeçalho do Assistente --}}
+  <div class="gaia-dialog-intro-box">
+    <h3 class="gaia-dialog-title">{{localize "GAIA.LegacyNpcWizard.Title"}}</h3>
+    <p class="gaia-dialog-subtitle">{{localize "GAIA.LegacyNpcWizard.Subtitle"}}</p>
+  </div>
+
+  {{!-- Navegação por Etapas (Tabs) --}}
+  <nav class="gaia-dialog-tabs">
+    <button type="button" class="gaia-dialog-tab-btn active" data-tab="step1">
+      <span class="tab-step">1</span> {{localize "GAIA.LegacyNpcWizard.Step1Tab"}}
+    </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="step2">
+      <span class="tab-step">2</span> {{localize "GAIA.LegacyNpcWizard.Step2Tab"}}
+    </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="step3">
+      <span class="tab-step">3</span> {{localize "GAIA.LegacyNpcWizard.Step3Tab"}}
+    </button>
+  </nav>
+
+  {{!-- Corpo das Etapas --}}
+  <div class="gaia-dialog-tab-body">
+
+    {{!-- ==================================================================== --}}
+    {{!-- 1º PASSO: LEGADO, IDENTIDADE E NÍVEL DO GRUPO --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane active" data-tab="step1">
+      <div class="wizard-form-grid">
+        <div class="wizard-field-group col-span-2 inner-grid-4">
+          {{!-- Nome do Legado NPC --}}
+          <div class="wizard-field-group col-span-2">
+            <label class="wizard-field-label"> {{localize "GAIA.Creature.Name"}}</label>
+            <input type="text" class="wizard-input-name gaia-input" value="{{initialData.name}}" placeholder="{{localize 'GAIA.LegacyNpcWizard.NamePlaceholder'}}" />
+          </div>
+
+          {{!-- Nome do Legado --}}
+          <div class="wizard-field-group">
+            <label class="wizard-field-label"> {{localize "GAIA.Banner.Legacy"}}</label>
+            <input type="text" class="wizard-input-legacy gaia-input" value="{{initialData.legacy}}" placeholder="{{localize 'GAIA.Banner.LegacyPlaceholder'}}" />
+          </div>
+
+          {{!-- Nível de Despertar do Grupo de Jogadores --}}
+          <div class="wizard-field-group">
+            <label class="wizard-field-label">{{localize "GAIA.LegacyNpcWizard.PartyLevelLabel"}}</label>
+            <input type="number" class="wizard-input-party-level gaia-input" value="{{initialData.level}}" min="0" max="30" />
+          </div>
+
+          {{!-- Seleção de Dificuldade --}}
+          <div class="wizard-field-group">
+            <label class="wizard-field-label"> {{localize "GAIA.Creature.Difficulty"}}</label>
+            <select class="wizard-select-difficulty gaia-select">
+              <option value="Fácil" {{#if (eq initialData.difficulty "Fácil")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Easy"}}</option>
+              <option value="Normal" {{#if (eq initialData.difficulty "Normal")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Normal"}}</option>
+              <option value="Difícil" {{#if (eq initialData.difficulty "Difícil")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Hard"}}</option>
+              <option value="Extrema" {{#if (eq initialData.difficulty "Extrema")}}selected{{/if}}>{{localize "GAIA.DifficultyLevel.Extreme"}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {{!-- Resumo Calculado de Atributos --}}
+      <div class="wizard-live-stats-banner">
+        <div class="live-stat-card health">
+          <div class="stat-details">
+            <span class="lbl">{{localize "GAIA.Creature.Health"}} (PV)</span>
+            <span class="val wizard-val-hp">136</span>
+            <span class="sub-lbl wizard-sub-hp">(Base 40 + Nível 96)</span>
+          </div>
+        </div>
+
+        <div class="live-stat-card energy">
+          <div class="stat-details">
+            <span class="lbl">{{localize "GAIA.Creature.Energy"}} (PE)</span>
+            <span class="val wizard-val-pe">10</span>
+            <span class="sub-lbl wizard-sub-pe">(Base 4 + Nível 6)</span>
+          </div>
+        </div>
+
+        <div class="live-stat-card power">
+          <div class="stat-details">
+            <span class="lbl">{{localize "GAIA.Creature.PowerPoints"}} ({{localize "GAIA.LegacyNpcWizard.Max6"}})</span>
+            <span class="val wizard-val-power">4</span>
+            <span class="sub-lbl wizard-sub-power">(Base 2 + Nível 2)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn primary-nav" data-next-tab="step2">
+          {{localize "GAIA.LegacyNpcWizard.NextToStep2"}} <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    {{!-- ==================================================================== --}}
+    {{!-- 2º PASSO: ATRIBUTOS & DISTRIBUIÇÃO DE PARÂMETROS --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane" data-tab="step2">
+      {{!-- Distribuição de Parâmetros Ofensivos e Defensivos --}}
+      <div class="wizard-parameters-section">
+        <div class="section-header-box">
+          <h4 class="section-title">{{localize "GAIA.LegacyNpcWizard.ParametersTitle"}}</h4>
+          <div class="badges-row" style="display: flex; gap: 6px;">
+            <span class="pool-counter-badge">
+              {{localize "GAIA.CreatureWizard.PoolAvailable"}}: <strong class="wizard-param-pool-remaining">0</strong> / <span class="wizard-param-pool-total">5</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="parameters-control-grid">
+          {{!-- Parâmetros Ofensivos --}}
+          <div class="param-adjust-card offensive">
+            <div class="param-info">
+              <span class="param-name">{{localize "GAIA.Creature.OffensiveParameters"}}</span>
+            </div>
+            <div class="param-counter-controls">
+              <button type="button" class="btn-param-adjust btn-off-minus"><i class="fa-solid fa-minus"></i></button>
+              <input type="number" class="wizard-input-off-param" value="0" min="0" readonly />
+              <button type="button" class="btn-param-adjust btn-off-plus"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+
+          {{!-- Parâmetros Defensivos --}}
+          <div class="param-adjust-card defensive">
+            <div class="param-info">
+              <span class="param-name">{{localize "GAIA.Creature.DefensiveParameters"}}</span>
+            </div>
+            <div class="param-counter-controls">
+              <button type="button" class="btn-param-adjust btn-def-minus"><i class="fa-solid fa-minus"></i></button>
+              <input type="number" class="wizard-input-def-param" value="0" min="0" readonly />
+              <button type="button" class="btn-param-adjust btn-def-plus"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{!-- Outros Atributos --}}
+      <div class="wizard-extra-stats-grid">
+        <div class="wizard-field-group">
+          <label class="wizard-field-label">{{localize "GAIA.Creature.Movement"}} (m)</label>
+          <input type="number" class="wizard-input-movement gaia-input" value="{{initialData.movement}}" min="0" />
+        </div>
+
+        <div class="wizard-field-group">
+          <label class="wizard-field-label">{{localize "GAIA.Creature.PassivePerception"}}</label>
+          <input type="number" class="wizard-input-perception gaia-input" value="{{initialData.passivePerception}}" min="0" />
+        </div>
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="step1">
+           {{localize "GAIA.CreatureWizard.Back"}}
+        </button>
+        <button type="button" class="gaia-wizard-nav-btn primary-nav" data-next-tab="step3">
+          {{localize "GAIA.LegacyNpcWizard.NextToStep3"}} <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    {{!-- ==================================================================== --}}
+    {{!-- 3º PASSO: HABILIDADES DE CAMINHO, MAESTRIAS & RESUMO FINAL --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane" data-tab="step3">
+
+      {{!-- Painel de Habilidades & Conhecimentos Concedidos --}}
+      <div class="wizard-features-compendium-card">
+        <div class="compendium-header-bar">
+          <div class="compendium-title">
+             {{localize "GAIA.LegacyNpcWizard.AbilitiesGrantedTitle"}}
+          </div>
+          <span class="features-granted-badge">
+            {{localize "GAIA.LegacyNpcWizard.UpTo"}} <strong class="wizard-val-abilities-max">3</strong> {{localize "GAIA.title.Abilities"}}
+          </span>
+        </div>
+
+        <div class="wizard-rules-list">
+          <div class="rule-item"> <strong>{{localize "GAIA.LegacyNpcWizard.Enhancements"}}:</strong> <span class="wizard-val-enhancements">-</span></div>
+          <button type="button" class="rule-item btn-select-knowledge" title="Clique para selecionar e distribuir os conhecimentos">
+            <strong><i class="fa-solid fa-brain"></i> {{localize "GAIA.LegacyNpcWizard.KnowledgePoints"}}:</strong>
+            <span class="wizard-val-knowledge">11 Pontos</span>
+            <i class="fa-solid fa-list-check" style="margin-left: auto;"></i>
+          </button>
+          <div class="rule-item"> <strong>{{localize "GAIA.LegacyNpcWizard.InitialMasteries"}}:</strong> <span class="wizard-val-masteries">6 Maestrias</span></div>
+        </div>
+      </div>
+
+      {{!-- Resumo Final da Ficha Legado NPC --}}
+      <div class="wizard-summary-preview-card">
+        <div class="summary-card-header">
+          <h4 class="summary-creature-name wizard-summary-name">Novo Legado NPC</h4>
+          <div class="summary-badges">
+            <span class="badge wizard-summary-legacy">{{localize "GAIA.Banner.Legacy"}}</span>
+            <span class="badge wizard-summary-difficulty">Normal</span>
+            <span class="badge wizard-summary-level">{{localize "GAIA.LegacyNpcWizard.PartyLevelPrefix"}}: 12</span>
+          </div>
+        </div>
+
+        <div class="summary-card-grid">
+          <div class="summary-item"><strong>PV:</strong> <span class="wizard-summary-hp">136</span></div>
+          <div class="summary-item"><strong>PE:</strong> <span class="wizard-summary-pe">10</span></div>
+          <div class="summary-item"><strong>{{localize "GAIA.Creature.PowerPoints"}}:</strong> <span class="wizard-summary-power">4</span> ({{localize "GAIA.LegacyNpcWizard.Max6"}})</div>
+          <div class="summary-item"><strong>{{localize "GAIA.LegacyNpcWizard.OffensiveShort"}}:</strong> <span class="wizard-summary-off">0</span></div>
+          <div class="summary-item"><strong>{{localize "GAIA.LegacyNpcWizard.DefensiveShort"}}:</strong> <span class="wizard-summary-def">0</span></div>
+          <div class="summary-item"><strong>{{localize "GAIA.title.Abilities"}}:</strong> <span class="wizard-summary-abilities">{{localize "GAIA.LegacyNpcWizard.UpTo"}} 3</span></div>
+        </div>
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="step2">
+          <i class="fa-solid fa-arrow-left"></i> {{localize "GAIA.CreatureWizard.Back"}}
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

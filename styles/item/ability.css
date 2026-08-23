@@ -1,0 +1,797 @@
+/**
+ * ==============================================================================
+ * ABILITY ITEM SHEET & CARD STYLES / ESTILOS DA CARTA DE HABILIDADE
+ * ==============================================================================
+ */
+
+.gaia-ability-sheet {
+  padding: 8px;
+  background: #f4ede2;
+  font-family: var(--gaia-font-medieval), Georgia, serif;
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-ability-card {
+  background: #ffffff;
+  border: 2px solid var(--gaia-purple-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 8px;
+  border-radius: 2px;
+  max-width: 600px;
+  color: var(--gaia-purple-dark);
+  position: relative;
+}
+
+/* CABEÇALHO */
+.ability-card-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+
+.ability-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap:8px;
+  margin: 6px 0;
+}
+
+.ability-icon {
+  background-color: var(--gaia-text-parchment);
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border: 1px solid var(--gaia-purple-dark);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ability-name {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  --input-placeholder-color: var(--gaia-text-parchment);
+}
+
+.ability-name input {
+  width: 100%;
+  text-align: center;
+  font-family: var(--gaia-font-medieval), Georgia, serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--gaia-purple-dark);
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  letter-spacing: 0.5px;
+}
+
+.ability-name input:focus {
+  background: #f0f4ff;
+  outline: 1px solid var(--gaia-purple-dark);
+}
+
+.ability-roll-btn {
+  background: transparent;
+  border: 1px solid var(--gaia-purple-dark);
+  border-radius: 4px;
+  color: var(--gaia-purple-dark);
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: var(--gaia-font-base);
+  transition: all 0.2s ease;
+}
+
+.ability-roll-btn:hover {
+  background: var(--gaia-purple);
+  color: #ffffff;
+}
+
+/* BARRA DE METADADOS (PE | AÇÃO NA 1ª LINHA, TIPOS NA 2ª LINHA) */
+.ability-meta-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  margin: 4px 0;
+  border-bottom: 1px solid var(--gaia-text-parchment);
+  padding-bottom: 6px;
+}
+
+.ability-meta-bar .meta-row-1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  gap: 8px;
+}
+
+.ability-meta-bar .meta-row-2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.ability-meta-bar input,
+.ability-meta-bar select {
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  text-align: center;
+}
+
+.meta-item select {
+  cursor: pointer;
+}
+
+.meta-divider {
+  color: var(--gaia-purple-dark);
+  font-weight: normal;
+}
+
+.category-meta,
+.additional-types-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.single-type-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.type-slash {
+  color: var(--gaia-purple-dark);
+  font-weight: bold;
+  margin: 0 2px;
+}
+
+.btn-add-type,
+.btn-remove-type {
+  background: transparent;
+  border: none;
+  color: var(--gaia-purple-dark);
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.btn-add-type:hover {
+  color: var(--gaia-purple);
+  transform: scale(1.2);
+}
+
+.btn-remove-type:hover {
+  color: #b91c1c;
+}
+
+/* CITAÇÃO / FRASE DE EFEITO */
+.ability-quote-field {
+  margin: 10px 0 10px 0;
+}
+
+.ability-quote-field input {
+  width: 100%;
+  font-style: italic;
+  color: var(--gaia-text-parchment);
+  font-size: var(--gaia-font-base);
+  text-align: center;
+  border: none;
+  border-bottom: 1px dashed var(--gaia-color-accent-purple);
+  background: transparent;
+  padding: 4px;
+}
+
+.ability-quote-field input::placeholder {
+  color: var(--gaia-text-parchment);
+}
+
+.ability-quote-field input:focus {
+  background: #faf5ff;
+  border-bottom: 1px solid var(--gaia-color-accent-purple);
+}
+
+/* ALVOS E ALCANCE */
+.ability-targets-range-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  background: #f8f6fd;
+  border: 1px solid #e0d7f3;
+  border-radius: 4px;
+}
+
+.target-field,
+.range-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+}
+
+.target-field label,
+.range-field label {
+  font-weight: bold;
+  white-space: nowrap;
+  color: var(--gaia-text-primary);
+}
+
+.target-field input,
+.range-field input {
+  flex: 1;
+  border: 1px solid #ccc;
+  background: #ffffff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+}
+
+/* EFEITO PRINCIPAL / DESCRIÇÃO */
+.ability-main-description textarea {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid #dcd6e8;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: var(--gaia-font-base);
+  line-height: 1.5;
+  color: var(--gaia-text-primary);
+  resize: vertical;
+  background: #ffffff;
+  font-family: inherit;
+}
+
+/* SUB-EFEITOS (EX: CONSAGRAR) */
+.ability-subeffects-container {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.subeffects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--gaia-text-parchment);
+  padding-bottom: 4px;
+}
+
+.subeffects-title {
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  text-transform: uppercase;
+  color: var(--gaia-text-primary);
+  letter-spacing: 0.5px;
+}
+
+.btn-add-subeffect {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-size: var(--gaia-font-base);
+  cursor: pointer;
+}
+
+.subeffect-block {
+  background: #fbf9ff;
+  border: 1px solid #d4cae8;
+  border-radius: 4px;
+  padding: 6px;
+  margin-bottom: 8px;
+}
+
+.subeffect-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subeffect-name {
+  flex: 1;
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+  text-transform: uppercase;
+  border: none;
+  background: transparent;
+  border-bottom: 1px solid var(--gaia-purple-dark);
+}
+
+.subeffect-cost {
+  width: 70px;
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+  text-align: right;
+  border: none;
+  background: transparent;
+}
+
+.btn-remove-subeffect {
+  background: transparent;
+  color: #b91c1c;
+  border: none;
+  cursor: pointer;
+}
+
+.subeffect-divider {
+  border-top: 1px solid var(--gaia-text-parchment);
+  margin: 6px 0;
+}
+
+.subeffect-desc {
+  width: 100%;
+  min-height: 40px;
+  border: none;
+  background: transparent;
+  font-size: var(--gaia-font-base);
+  line-height: 1.4;
+  resize: vertical;
+  color: var(--gaia-text-primary);
+}
+
+.subeffect-note {
+  width: 100%;
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-primary);
+  border: none;
+  background: transparent;
+  margin-top: 4px;
+}
+
+/* APRIMORAMENTOS */
+.ability-improvements-container {
+  margin-top: 10px;
+}
+
+.improvements-divider-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.improvements-title-text {
+  letter-spacing: 1px;
+}
+
+.btn-add-improvement {
+  background: transparent;
+  border: 1px solid var(--gaia-purple-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gaia-text-primary);
+  font-size: var(--gaia-font-base);
+  cursor: pointer;
+}
+
+.btn-add-improvement:hover {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+}
+
+.improvement-item {
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  background: #f7f6fc;
+  border-left: 3px solid var(--gaia-purple-dark);
+  border-radius: 0 4px 4px 0;
+}
+
+.improvement-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.improvement-active-toggle {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  cursor: pointer;
+}
+
+.improvement-active-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--gaia-purple-dark);
+  margin: 0;
+}
+
+.improvement-letter {
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+  min-width: 22px;
+}
+
+.improvement-title {
+  flex: 1;
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+  border: none;
+  background: transparent;
+}
+
+.btn-remove-improvement {
+  background: transparent;
+  color: #888;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-remove-improvement:hover {
+  color: #b91c1c;
+}
+
+.improvement-desc {
+  width: 100%;
+  min-height: 40px;
+  border: none;
+  background: transparent;
+  font-size: var(--gaia-font-base);
+  line-height: 1.4;
+  resize: vertical;
+  color: var(--gaia-text-primary);
+  margin-top: 4px;
+  padding-left: 28px;
+}
+
+.improvements-empty-hint {
+  text-align: center;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+  font-style: italic;
+  margin: 8px 0;
+}
+
+/* ESTILO DA CARTA RENDERIZADA NO CHAT OU EM MODO LEITURA */
+.gaia-ability-chat-card {
+  background: #ffffff;  
+  border: 2px solid #000000;
+  padding: 8px 10px;
+  font-family: var(--gaia-font-medieval), Georgia, serif;
+  color: var(--gaia-text-primary);
+  border-radius: 2px;
+}
+
+.gaia-ability-chat-card .ability-name {
+  font-size: var(--gaia-font-xl);
+  font-weight: 800;
+  color: var(--gaia-text-primary);
+  text-align: center;
+  text-transform: uppercase;
+  margin: 4px 0;
+}
+
+.gaia-ability-chat-card .ability-meta-bar {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.gaia-ability-chat-card .ability-quote {
+  font-style: italic;
+  color: var(--gaia-purple);
+  font-size: var(--gaia-font-base);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.gaia-ability-chat-card .ability-body {
+  font-size: var(--gaia-font-base);
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+
+.gaia-ability-chat-card .subeffect-chat-block {
+  border-top: 1px solid var(--gaia-text-primary);
+  padding-top: 6px;
+  margin-top: 8px;
+}
+
+.gaia-ability-chat-card .subeffect-chat-title {
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+  text-transform: uppercase;
+}
+
+.gaia-ability-chat-card .improvements-chat-section {
+  margin-top: 12px;
+  border-top: 1px dashed var(--gaia-text-primary);
+  padding-top: 8px;
+}
+
+.gaia-ability-chat-card .improvements-chat-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+  margin-bottom: 6px;
+}
+
+.gaia-ability-chat-card .improvement-chat-item {
+  font-size: var(--gaia-font-base);
+  margin-bottom: 4px;
+}
+
+/* ==============================================================================
+ * PAINEL E GRID DE HABILIDADES NA FICHA DO PERSONAGEM
+ * ============================================================================== */
+
+.abilities-panel {
+  background: var(--gaia-bg-window);
+  border: 1px solid var(--gaia-border-frame);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.abilities-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.abilities-panel-title {
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.abilities-panel-header .header-buttons {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-create-ability {
+  padding: 4px 10px;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-create-ability:hover {
+  box-shadow: 0 2px 6px rgba(148, 44, 228, 0.3);
+}
+
+.abilities-list-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 6px;
+}
+
+.ability-card-item {
+  position: relative;
+  border-radius: var(--gaia-radius);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.ability-card-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+}
+
+.btn-item-control {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border: 1px solid var(--gaia-border-frame);
+  background: var(--gaia-bg-input);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.15s ease;
+}
+
+.btn-item-control:hover {
+  background: var(--gaia-border-gold);
+  border-color: var(--gaia-border-gold);
+}
+
+.btn-delete-ability:hover {
+  background: var(--gaia-health);
+  border-color: var(--gaia-health);
+}
+
+.gaia-ability-card.actor-sheet-card {
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--gaia-bg-window);
+  border: 1px solid var(--gaia-border-gold);
+  border-radius: var(--gaia-radius);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+}
+
+.gaia-ability-card.actor-sheet-card:hover {
+  border-color: var(--gaia-purple-dark);
+  box-shadow: 0 4px 12px rgba(87, 76, 67, 0.2);
+}
+
+.ability-name-display {
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 800;
+  color: var(--gaia-purple-dark);
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+.ability-name-display:hover {
+  color: var(--gaia-purple);
+}
+
+.ability-quote-display {
+  font-style: italic;
+  text-align: center;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-muted);
+  margin-bottom: 8px;
+}
+
+.ability-body-text {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.tag-target,
+.tag-range {
+  display: inline-block;
+  background: rgba(140, 115, 85, 0.12);
+  border: 1px solid var(--gaia-border-gold);
+  color: var(--gaia-text-parchment);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: var(--gaia-font-base);
+  margin-right: 4px;
+  margin-top: 4px;
+}
+
+.subeffects-display-section {
+  margin-top: 10px;
+  border-top: 1px solid var(--gaia-border-subtle);
+  padding-top: 6px;
+}
+
+.subeffect-display-block {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 4px;
+  padding: 6px;
+  margin-bottom: 6px;
+}
+
+.subeffect-display-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-purple-dark);
+}
+
+.subeffect-title-text {
+  text-transform: uppercase;
+}
+
+.subeffect-cost-text {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+  padding: 2px 4px;
+  font-size: var(--gaia-font-base);
+}
+
+.subeffect-divider {
+  height: 1px;
+  background: var(--gaia-border-subtle);
+  margin: 4px 0;
+}
+
+.subeffect-desc-text {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-muted);
+  line-height: 1.35;
+}
+
+.subeffect-note-text {
+  font-size: var(--gaia-font-base);
+  font-style: italic;
+  color: var(--gaia-text-muted);
+  margin-top: 2px;
+}
+
+.improvements-display-section {
+  margin-top: 6px;
+  border-top: 1px dashed var(--gaia-purple-dark);
+  padding-top: 6px;
+}
+
+.improvements-divider-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-purple-dark);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.improvement-display-item {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-muted);
+  margin-bottom: 4px;
+}
+
+.abilities-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 30px;
+  color: var(--gaia-text-muted);
+  font-family: var(--gaia-font-medieval);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}

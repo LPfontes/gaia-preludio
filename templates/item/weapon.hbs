@@ -1,59 +1,64 @@
 <section class="gaia-sheet-content">
-  <header class="sheet-header flexrow">
-    <img src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
-    <h1><input name="name" type="text" value="{{item.name}}" placeholder="Nome da Arma"/></h1>
-  </header>
-
-  <div class="sheet-body">
-    <div class="form-group">
-      <label>Tipo de Arma</label>
-      <select name="system.weaponType">
-        {{selectOptions config.weaponTypes selected=system.weaponType localize=true}}
-      </select>
+  <div class="inventory-table-panel tab-weapons-content">
+    <div class="inventory-table-header">
+      <div class="item-header-group">
+        <img class="item-mini-icon" src="{{item.img}}" data-action="editImage" data-edit="img" title="{{item.name}}"/>
+        <h4 class="inventory-table-title">
+          <input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'GAIA.Weapon.NamePlaceholder'}}"/>
+        </h4>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Dano Base</label>
-      <input type="number" name="system.damageType.value" value="{{system.damageType.value}}" />
+    <div class="weapons-table-frame">
+      <table class="inventory-grid-table">
+        <thead>
+          <tr>
+            <th class="col-weapon-type">{{localize "GAIA.Weapon.Type"}}</th>
+            <th class="col-weapon-damage">{{localize "GAIA.Weapon.BaseDamage"}}</th>
+            <th class="col-weapon-damage-type">{{localize "GAIA.Weapon.DamageType"}}</th>
+            <th class="col-weapon-attr">{{localize "GAIA.Weapon.Attribute"}}</th>
+            <th class="col-weapon-range">{{localize "GAIA.Weapon.Range"}}</th>
+            <th class="col-weapon-price">{{localize "GAIA.Weapon.Price"}}</th>
+            <th class="col-weapon-unity">{{localize "GAIA.Weapon.Weight"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="item-row">
+            <td class="col-weapon-type">
+              <select name="system.weaponType">
+                {{selectOptions config.weaponTypes selected=system.weaponType localize=true}}
+              </select>
+            </td>
+            <td class="col-weapon-damage">
+              <input type="number" name="system.damageType.value" value="{{system.damageType.value}}" min="0" />
+            </td>
+            <td class="col-weapon-damage-type">
+              <select name="system.damageType.type">
+                {{selectOptions config.damageTypesFlat selected=system.damageType.type localize=true}}
+              </select>
+            </td>
+            <td class="col-weapon-attr">
+              <select name="system.attackParameter.attribute">
+                {{selectOptions config.parameters selected=system.attackParameter.attribute localize=true}}
+              </select>
+            </td>
+            <td class="col-weapon-range">
+              <input type="number" name="system.range.value" value="{{system.range.value}}" min="0" />
+            </td>
+            <td class="col-weapon-price">
+              <input type="number" name="system.price" value="{{system.price}}" min="0" />
+            </td>
+            <td class="col-weapon-unity">
+              <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="form-group">
-      <label>Tipo de Dano</label>
-      <input type="text" name="system.damageType.type" value="{{system.damageType.type}}" />
-    </div>
-
-    <div class="form-group">
-      <label>Parâmetro de Ataque (Atributo)</label>
-      <select name="system.attackParameter.attribute">
-        {{selectOptions config.parameters selected=system.attackParameter.attribute localize=true}}
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Alcance</label>
-      <input type="number" name="system.range.value" value="{{system.range.value}}" />
-    </div>
-
-    <div class="form-group">
-      <label>Preço</label>
-      <input type="number" name="system.price" value="{{system.price}}" />
-    </div>
-
-    <div class="form-group">
-      <label>Categoria</label>
-      <select name="system.category">
-        {{selectOptions config.equipmentCategories selected=system.category localize=true}}
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Unidade / Peso</label>
-      <input type="number" name="system.unity" value="{{system.unity}}" />
-    </div>
-
-    <div class="form-group stacked">
-      <label>Descrição</label>
-      <textarea name="system.description">{{system.description}}</textarea>
+    <div class="weapon-description-panel">
+      <label class="description-title">{{localize "GAIA.Weapon.Description"}}</label>
+      <textarea name="system.description" class="weapon-description-textarea" placeholder="{{localize 'GAIA.Weapon.DescriptionPlaceholder'}}">{{system.description}}</textarea>
     </div>
   </div>
 </section>

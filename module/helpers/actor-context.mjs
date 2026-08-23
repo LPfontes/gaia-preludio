@@ -121,8 +121,9 @@ export function resolveEquippedWeapons(actor) {
         if (typeof iSys.damageType === "object") {
           const dVal = iSys.damageType.value ?? "";
           const rawType = iSys.damageType.type ?? "";
-          const dType = rawType ? (game.i18n.localize(CONFIG.GAIA?.damageTypes?.[rawType] ?? rawType) || rawType) : "";
-          damageText = dVal && dType ? `${dVal} ${dType}` : (dVal || dType || "-");
+          const locKey = CONFIG.GAIA?.damageTypesFlat?.[rawType] ?? CONFIG.GAIA?.damageTypes?.[rawType] ?? rawType;
+          const dType = rawType ? (game.i18n.localize(locKey) || rawType) : "";
+          damageText = dVal !== "" && dType ? `${dVal} ${dType}` : (dVal || dType || "-");
         } else {
           damageText = String(iSys.damageType);
         }
@@ -133,8 +134,7 @@ export function resolveEquippedWeapons(actor) {
       if (iSys.range) {
         if (typeof iSys.range === "object") {
           const rVal = iSys.range.value ?? "";
-          const rType = iSys.range.type ? (game.i18n.localize(`GAIA.Range.${iSys.range.type}`) || iSys.range.type) : "";
-          rangeText = rVal && rType ? `${rVal} (${rType})` : (rVal || rType || "-");
+          rangeText = rVal !== "" && rVal !== null ? String(rVal) : "-";
         } else {
           rangeText = String(iSys.range);
         }
@@ -183,9 +183,37 @@ export function prepareParameterBonuses(actor) {
 
   return bonusResults;
 }
+
+/**
+ * Calcula o bônus total de bloqueio fornecido por todos os equipamentos/armaduras equipados no Ator.
+ * @param {Actor} actor - Instância do Ator
+ * @returns {number} Bônus total de bloqueio dos itens equipados
+ */
+export function calculateEquipmentBlockBonus(actor) {
+  if (!actor || !actor.items) return 0;
+  return actor.items.reduce((total, item) => {
+    const isEquipped = Boolean(item.system?.equipped);
+    if (!isEquipped) return total;
+    const blockVal = Number(item.system?.block ?? item.system?.blockBonus ?? 0);
+    return total + (isNaN(blockVal) ? 0 : blockVal);
+  }, 0);
+}
+
 export function getAttrTooltip(actor, attrPath, label = "") {
   const bonusInfo = actor.system?.bonusesCalculated?.[attrPath];
   const cleanLabel = label ? `${label}: ` : "";
+
+  if (attrPath === "block") {
+    const rawBase = Number(foundry.utils.getProperty(actor._source ?? {}, "system.block") ?? actor.system?.block ?? 0);
+    const equipBonus = calculateEquipmentBlockBonus(actor);
+    const paramBonus = bonusInfo?.bonus ?? 0;
+    const total = rawBase + equipBonus + paramBonus;
+    const parts = [`Base: ${rawBase}`];
+    if (equipBonus) parts.push(`Equipamentos: +${equipBonus}`);
+    if (paramBonus) parts.push(`Bônus: ${paramBonus >= 0 ? "+" : ""}${paramBonus}`);
+    parts.push(`Total: ${total}`);
+    return `${cleanLabel}${parts.join(" | ")}`;
+  }
 
   if (bonusInfo) {
     const { original, bonus, total } = bonusInfo;
@@ -243,17 +271,107 @@ export async function prepareLegacySheetContext(sheet, context) {
   // Armamentos Equipados
   context.equippedWeapons = resolveEquippedWeapons(actor);
 
-  // Categorias do Inventário para o Template
+  // Categorias do Inventário e Habilidades para o Template
   const items = actor.items ?? [];
-  context.inventoryWeapons = items.filter(i => (i.type === "weapon" || i.system?.category === "weapon"));
-  context.inventoryArmor = items.filter(i => (i.type === "armor" || ["armor", "vestuary", "shield", "clothing"].includes(i.system?.category)));
-  context.inventoryConsumables = items.filter(i => ["potion", "consumable", "toxic"].includes(i.system?.category));
-  context.inventoryCommon = items.filter(i => i.type !== "ability" && i.type !== "weapon" && i.type !== "armor" && !["weapon", "armor", "vestuary", "shield", "clothing", "potion", "consumable", "toxic"].includes(i.system?.category));
+  const config = /** @type {any} */ (CONFIG).GAIA;
+  context.abilities = items.filter(i => i.type === "ability").map(item => {
+    const rawTypes = Array.isArray(item.system?.types) && item.system.types.length > 0 
+      ? item.system.types 
+      : (item.system?.type ? [item.system.type] : ["conjuracao"]);
+    const localizedTypes = rawTypes.map(t => config?.abilitiesTypes?.[t] ? game.i18n.localize(config.abilitiesTypes[t]) : t);
+    const firstType = localizedTypes[0] || "Conjuração";
+    const additionalTypes = localizedTypes.slice(1).join(" / ");
+    const rawAction = item.system?.typeAction || "acaoAtiva";
+    const actionLabel = config?.actionType?.[rawAction] 
+      ? game.i18n.localize(config.actionType[rawAction]) 
+      : (rawAction || "Ação Ativa");
+
+    const rawImprovements = Array.isArray(item.system?.improvements) ? item.system.improvements : [];
+    const activeImprovements = rawImprovements.filter(imp => typeof imp === "object" && Boolean(imp.active));
+
+    return {
+      id: item.id,
+      name: item.name,
+      img: item.img,
+      system: item.system,
+      firstType,
+      additionalTypes,
+      hasAdditionalTypes: localizedTypes.length > 1,
+      actionLabel,
+      activeImprovements,
+      hasActiveImprovements: activeImprovements.length > 0
+    };
+  });
+
+  const formatItem = (item) => formatInventoryItem(item);
+  context.inventoryWeapons = items.filter(i => (i.type === "weapon" || i.system?.category === "weapon")).map(formatItem);
+  context.inventoryArmor = items.filter(i => (i.type === "armor" || ["armor", "vestuary", "shield", "clothing"].includes(i.system?.category))).map(formatItem);
+  context.inventoryConsumables = items.filter(i => ["potion", "consumable", "toxic"].includes(i.system?.category)).map(formatItem);
+  context.inventoryCommon = items.filter(i => i.type !== "ability" && i.type !== "weapon" && i.type !== "armor" && !["weapon", "armor", "vestuary", "shield", "clothing", "potion", "consumable", "toxic"].includes(i.system?.category)).map(formatItem);
 
   // Loga os dados estruturados da ficha no console (F12)
   console.log(`Gaia: Prelúdio | Estrutura de Contexto da Ficha [${actor.name}]:`, context);
 
   return context;
+}
+
+export function formatInventoryItem(item) {
+  const iSys = item.system ?? {};
+
+  let damageText = "-";
+  if (iSys.damageType) {
+    if (typeof iSys.damageType === "object") {
+      const dVal = iSys.damageType.value ?? "";
+      const rawType = iSys.damageType.type ?? "";
+      const locKey = CONFIG.GAIA?.damageTypesFlat?.[rawType] ?? CONFIG.GAIA?.damageTypes?.[rawType] ?? rawType;
+      const dType = rawType ? (game.i18n.localize(locKey) || rawType) : "";
+      damageText = dVal !== "" && dType ? `${dVal} ${dType}` : (dVal || dType || "-");
+    } else {
+      damageText = String(iSys.damageType);
+    }
+  } else if (iSys.damage) {
+    damageText = String(iSys.damage);
+  }
+
+  let rangeText = "-";
+  if (iSys.range) {
+    if (typeof iSys.range === "object") {
+      const rVal = iSys.range.value ?? "";
+      rangeText = rVal !== "" && rVal !== null ? String(rVal) : "-";
+    } else {
+      rangeText = String(iSys.range);
+    }
+  }
+
+  let propsText = "-";
+  if (Array.isArray(iSys.properties)) {
+    propsText = iSys.properties.length > 0 ? iSys.properties.join(", ") : "-";
+  } else if (iSys.properties) {
+    propsText = String(iSys.properties);
+  }
+
+  const rawCat = iSys.category || item.type;
+  const config = /** @type {any} */ (CONFIG).GAIA;
+  const categoryLabel = config?.equipmentCategories?.[rawCat]
+    ? game.i18n.localize(config.equipmentCategories[rawCat])
+    : (rawCat || "-");
+
+  return {
+    id: item.id,
+    name: item.name,
+    img: item.img,
+    type: item.type,
+    system: iSys,
+    equipped: Boolean(iSys.equipped),
+    quantity: iSys.quantity ?? 1,
+    unity: iSys.unity || "-",
+    price: iSys.price || "-",
+    block: iSys.block ?? "-",
+    damage: damageText,
+    range: rangeText,
+    properties: propsText,
+    categoryLabel
+  };
 }
 
 export { prepareLegacySheetContext as prepareLegadoSheetContext };

@@ -13,7 +13,15 @@
 @import "./actor/banner.css";
 @import "./actor/personagem.css";
 @import "./actor/inventory.css";
+@import "./actor/creature.css";
+@import "./actor/legacy-npc.css";
 
-/* 3. Diálogos (Dialogs) */
+/* 3. Ficha de Item & Habilidades (Item Sheets) */
+@import "./item/ability.css";
+
+/* 4. Diálogos e Aplicativos (Dialogs & Apps) */
 @import "./dialogs/dialogs.css";
 @import "./dialogs/awakening-guide.css";
+@import "./dialogs/creature-wizard.css";
+@import "./dialogs/legacy-npc-wizard.css";
+@import "./apps/item-browser.css";
