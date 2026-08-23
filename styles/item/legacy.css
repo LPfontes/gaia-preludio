@@ -1,0 +1,111 @@
+/**
+ * ==============================================================================
+ * LEGACY ITEM SHEET STYLES / ESTILOS DA FICHA DE ITEM LEGADO
+ * ==============================================================================
+ */
+
+.gaia-preludio.sheet.item.legado .item-header-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-table-frame {
+  background: var(--gaia-bg-box);
+  padding: 4px;
+  border-radius: var(--gaia-radius);
+  border: 1px solid var(--gaia-border-frame);
+}
+
+.gaia-preludio.sheet.item.legado .legacy-abilities-section {
+  padding: 6px;
+  background: var(--gaia-bg-box);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 15px;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-abilities-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-abilities-section .panel-main-title {
+  margin: 0;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-card {
+  border: 1px solid var(--gaia-border-subtle, #444);
+  padding: 10px;
+  margin-bottom: 10px;
+  background: rgba(0, 0, 0, 0.15);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-card:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-title {
+  font-size: var(--gaia-font-base);
+  font-family: var(--gaia-font-medieval);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-controls button {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  color: var(--gaia-text-parchment);
+  padding: 2px 6px;
+  cursor: pointer;
+  font-size: var(--gaia-font-base);
+  transition: all 0.15s ease;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-controls button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-preview-description {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  margin-bottom: 6px;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-preview-effect {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  padding: 4px 8px;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-abilities-section .empty-hint {
+  font-style: italic;
+  color: var(--gaia-text-muted, #888);
+}
+
+.gaia-preludio.sheet.item.legado .legacy-appearance-textarea,
+.gaia-preludio.sheet.item.legado .legacy-description-textarea {
+  min-height: 200px;
+}

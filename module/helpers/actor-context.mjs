@@ -374,4 +374,3 @@ export function formatInventoryItem(item) {
   };
 }
 
-export { prepareLegacySheetContext as prepareLegadoSheetContext };

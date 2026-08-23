@@ -247,9 +247,10 @@
 .inventory-table-panel {
   background: var(--gaia-bg-window);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 6px;
   overflow: hidden;
+  overflow-y: auto;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  padding: 6px;
 }
 
 .inventory-table-header {
@@ -279,7 +280,7 @@
   color: var(--gaia-text-parchment);
   cursor: pointer;
   padding: 2px 8px;
-  font-size: 0.8rem;
+  font-size: var(--gaia-font-base);
   transition: all 0.15s ease;
   display: flex;
   align-items: center;
@@ -326,9 +327,10 @@
 .inventory-grid-table tbody td {
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
-  padding: 5px 6px;
+  padding: 6px 6px;
   text-align: center;
   vertical-align: middle;
+  font-weight: bold;
 }
 
 .inventory-grid-table tbody td.col-item-name {
@@ -430,7 +432,7 @@
 /* ==============================================================================
  * FICHA DE ARMA EM TABELA (.tab-weapons-content)
  * ============================================================================== */
-.tab-weapons-content .item-header-group {
+.item-header-group {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -464,10 +466,11 @@
 .tab-weapons-content .col-weapon-unity       { width: 10%; }
 
 /* Larguras específicas das tabelas de Armadura e Equipamento */
-.tab-weapons-content .col-armor-block        { width: 30%; }
-.tab-weapons-content .col-armor-price        { width: 20%; }
-.tab-weapons-content .col-armor-category     { width: 30%; }
-.tab-weapons-content .col-armor-unity        { width: 20%; }
+.tab-weapons-content .col-armor-block        { width: 20%; }
+.tab-weapons-content .col-armor-price        { width: 15%; }
+.tab-weapons-content .col-armor-category     { width: 25%; }
+.tab-weapons-content .col-armor-requirement  { width: 25%; }
+.tab-weapons-content .col-armor-unity        { width: 15%; }
 
 .tab-weapons-content .col-equip-price        { width: 25%; }
 .tab-weapons-content .col-equip-category     { width: 35%; }
@@ -489,25 +492,31 @@
   text-align-last: center;
 }
 
-.weapon-description-panel {
+.weapon-description-panel,
+.legacy-appearance-panel,
+.legacy-description-panel {
   padding: 6px;
   background: var(--gaia-bg-box);
-  border-top: 1px solid var(--gaia-border-subtle);
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.weapon-description-panel .description-title {
+.weapon-description-panel .description-title,
+.legacy-appearance-panel .description-title,
+.legacy-description-panel .description-title {
   font-family: var(--gaia-font-medieval);
   font-size: var(--gaia-font-base);
   font-weight: bold;
   color: var(--gaia-text-parchment);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
-.weapon-description-textarea {
+.weapon-description-textarea,
+.armor-description-textarea,
+.equipment-description-textarea,
+.legacy-appearance-textarea,
+.legacy-description-textarea {
   width: 100%;
   min-height: 100px;
   border: 1px solid var(--gaia-border-frame);
@@ -515,17 +524,23 @@
   color: var(--gaia-text-parchment);
   padding: 4px 6px;
   font-family: inherit;
-  font-size: var(--gaia-font-lg);
+  font-size: var(--gaia-font-xl);
   line-height: 1.4;
   resize: vertical;
   outline: none;
   background: var(--gaia-bg-window);
 }
 
-.weapon-description-textarea:focus {
+.weapon-description-textarea:focus,
+.armor-description-textarea:focus,
+.equipment-description-textarea:focus,
+.legacy-appearance-textarea:focus,
+.legacy-description-textarea:focus {
   border-color: var(--gaia-purple-dark);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 5px rgba(148, 44, 228, 0.4);
 }
 
+
+  
 
 

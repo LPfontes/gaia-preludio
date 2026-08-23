@@ -66,6 +66,12 @@ export class ArmorDataModel extends EquipmentBaseDataModel {
       // PT: Tipo de armadura
       // EN: Armor type
       armorType: new StringField({ required: true, initial: "light" }),
+      // PT: Requerimento de atributo para equipar a armadura
+      // EN: Attribute requirement to equip the armor
+      requirement: new SchemaField({
+        type: new StringField({ required: true, initial: "vigor" }),
+        value: new NumberField({ required: true, integer: true, initial: 0, min: 0 })
+      })
     };
   }
 }
@@ -110,7 +116,13 @@ export class WeaponDataModel extends EquipmentBaseDataModel {
 
       // PT: Lista de propriedades especiais da arma (ex: versátil, pesada, arremesso)
       // EN: List of special weapon properties (e.g. versatile, heavy, thrown)
-      properties: new ArrayField(new StringField({ required: true }), { required: true, initial: [] })
+      properties: new ArrayField(
+        new SchemaField({
+          name: new StringField({ required: true, initial: "" }),
+          description: new StringField({ required: false, initial: "" })
+        }),
+        { required: true, initial: [] }
+      )
     };
   }
 }

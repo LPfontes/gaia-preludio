@@ -20,7 +20,9 @@ export class WeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       closeOnSubmit: false
     },
     actions: {
-      editImage: WeaponSheet.#onEditImage
+      editImage: WeaponSheet.#onEditImage,
+      addProperty: WeaponSheet.#onAddProperty,
+      removeProperty: WeaponSheet.#onRemoveProperty
     }
   };
 
@@ -44,8 +46,21 @@ export class WeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     const context = await super._prepareContext(options);
     context.item = this.item;
     context.system = this.item.system;
-    const config = (CONFIG).GAIA;
+    const config = (/** @type {any} */ (CONFIG)).GAIA;
     context.config = config;
+
+    const rawProps = this.item.system?.properties ?? [];
+    context.weaponProperties = rawProps.map((prop, index) => {
+      if (typeof prop === "string") {
+        return { name: prop, description: "", index };
+      }
+      return {
+        name: prop.name || "",
+        description: prop.description || "",
+        index
+      };
+    });
+
     return context;
   }
 
@@ -53,15 +68,38 @@ export class WeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     const attr = target.dataset.edit || "img";
     const current = foundry.utils.getProperty(this.item, attr);
     const FilePickerClass = foundry.applications.apps.FilePicker?.implementation || globalThis.FilePicker;
-    const fp = new FilePickerClass({
+    const fpOptions = {
       type: "image",
       current,
       callback: async (path) => {
         await this.item.update({ [attr]: path });
-      },
-      top: this.position.top + 40,
-      left: this.position.left + 10
-    });
+      }
+    };
+    if (Number.isNumeric(this.position?.top)) fpOptions.top = this.position.top + 40;
+    if (Number.isNumeric(this.position?.left)) fpOptions.left = this.position.left + 10;
+
+    const fp = new FilePickerClass(fpOptions);
     return fp.browse();
+  }
+
+  static async #onAddProperty(event, target) {
+    event.preventDefault();
+    const rawList = this.item.system.properties ?? [];
+    const current = Array.isArray(rawList) ? [...rawList] : [];
+    current.push({
+      name: "",
+      description: ""
+    });
+    await this.item.update({ "system.properties": current });
+  }
+
+  static async #onRemoveProperty(event, target) {
+    event.preventDefault();
+    const index = Number(target.dataset.index);
+    if (isNaN(index)) return;
+    const rawList = this.item.system.properties ?? [];
+    const current = Array.isArray(rawList) ? [...rawList] : [];
+    current.splice(index, 1);
+    await this.item.update({ "system.properties": current });
   }
 }

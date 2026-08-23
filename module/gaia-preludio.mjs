@@ -14,14 +14,16 @@ import { EquipmentBaseDataModel, ArmorDataModel, WeaponDataModel } from "./data/
 import { LegacyDataModel, LegacyNpcDataModel } from "./data/Legacy.mjs";
 import { CreatureDataModel } from "./data/creature.mjs";
 import { AbilityBaseModel } from "./data/abilitiesBaseModel.mjs";
-import { LegacySheet } from "./applications/sheets/actor/legacy.mjs";
-import { LegacyNpcSheet } from "./applications/sheets/actor/legacy-npc.mjs";
+import { PathDataModel } from "./data/PathModel.mjs";
+import { CharacterLegacySheet } from "./applications/sheets/actor/character-legacy.mjs";
+import { CharacterLegacyNpcSheet } from "./applications/sheets/actor/character-legacy-npc.mjs";
 import { CreatureSheet } from "./applications/sheets/actor/creature.mjs";
 import { EquipmentSheet } from "./applications/sheets/item/equipment.mjs";
 import { ArmorSheet } from "./applications/sheets/item/armor.mjs";
 import { WeaponSheet } from "./applications/sheets/item/weapon.mjs";
 import { AbilitySheet } from "./applications/sheets/item/ability.mjs";
-import { LegadoSheet } from "./applications/sheets/item/legacy.mjs";
+import { LegacySheet } from "./applications/sheets/item/legacy.mjs";
+import { PathSheet } from "./applications/sheets/item/path.mjs";
 import { GaiaItemBrowser } from "./applications/item-browser.mjs";
 import { promptRollRequestDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog, registerRollRequestListeners } from "./helpers/dialogs.mjs";
 const { Actors, Items } = foundry.documents.collections;
@@ -41,12 +43,15 @@ Hooks.once("init", async () => {
     "systems/gaia-preludio/templates/actor/parts/abilities.hbs",
     "systems/gaia-preludio/templates/item/ability.hbs",
     "systems/gaia-preludio/templates/item/legacy.hbs",
+    "systems/gaia-preludio/templates/item/path.hbs",
     "systems/gaia-preludio/templates/dialog/roll-request-dialog.hbs",
     "systems/gaia-preludio/templates/actor/parts/creature-header.hbs",
     "systems/gaia-preludio/templates/apps/item-browser.hbs",
     "systems/gaia-preludio/templates/actor/parts/legacy-npc-header.hbs",
     "systems/gaia-preludio/templates/dialog/creature-wizard-dialog.hbs",
-    "systems/gaia-preludio/templates/dialog/legacy-npc-wizard-dialog.hbs"
+    "systems/gaia-preludio/templates/dialog/legacy-npc-wizard-dialog.hbs",
+    "systems/gaia-preludio/templates/dialog/legacy-ability-dialog.hbs",
+    "systems/gaia-preludio/templates/dialog/active-effect-dialog.hbs"
   ]);
 
   // PT: Configura os Enums e funções auxiliares globais do sistema
@@ -109,19 +114,21 @@ Hooks.once("init", async () => {
     armor: ArmorDataModel,
     weapon: WeaponDataModel,
     ability: AbilityBaseModel,
-    legacy: LegacyDataModel
+    legacy: LegacyDataModel,
+    path: PathDataModel,
+    caminho: PathDataModel
   });
 
   // PT: Registra as fichas de Actor (ApplicationV2)
   // EN: Register Actor sheets (ApplicationV2)
 
   Actors.unregisterSheet("core", ActorSheetV2);
-  Actors.registerSheet("gaia-preludio", /** @type {any} */ (LegacySheet), {
+  Actors.registerSheet("gaia-preludio", /** @type {any} */ (CharacterLegacySheet), {
     types: ["legacy"],
     makeDefault: true,
     label: "GAIA.Sheet.Legacy"
   });
-  Actors.registerSheet("gaia-preludio", /** @type {any} */ (LegacyNpcSheet), {
+  Actors.registerSheet("gaia-preludio", /** @type {any} */ (CharacterLegacyNpcSheet), {
     types: ["legacyNpc"],
     makeDefault: true,
     label: "GAIA.Sheet.LegacyNpc"
@@ -155,9 +162,14 @@ Hooks.once("init", async () => {
     makeDefault: true,
     label: "GAIA.Sheet.Ability"
   });
-  Items.registerSheet("gaia-preludio", /** @type {any} */ (LegadoSheet), {
+  Items.registerSheet("gaia-preludio", /** @type {any} */ (LegacySheet), {
     types: ["legacy"],
     makeDefault: true,
     label: "GAIA.Sheet.Legacy"
+  });
+  Items.registerSheet("gaia-preludio", /** @type {any} */ (PathSheet), {
+    types: ["path", "caminho"],
+    makeDefault: true,
+    label: "GAIA.Sheet.Path"
   });
 });

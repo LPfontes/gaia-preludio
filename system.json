@@ -25,7 +25,9 @@
       "armor": {},
       "weapon": {},
       "ability": {},
-      "legacy": {}
+      "legacy": {},
+      "path": {},
+      "caminho": {}
     }
   },
   "languages": [

@@ -14,7 +14,9 @@
       "weapon": "Arma",
       "arma": "Arma",
       "ability": "Habilidade",
-      "legacy": "Legado"
+      "legacy": "Legado",
+      "path": "Caminho",
+      "caminho": "Caminho"
     }
   },
   "GAIA": {
@@ -48,6 +50,32 @@
       "Unequip": "Desequipar",
       "ClickToRemove": "Clique para remover",
       "Bio": "Biografia"
+    },
+    "Recharge": {
+      "FullRest": "Descanso Longo",
+      "ShortRest": "Descanso Curto",
+      "Encounter": "Por Encontro / Cena",
+      "Turn": "Por Turno"
+    },
+    "Trigger": {
+      "HpThreshold": "Limite de Vida (%)",
+      "OnAttack": "Ao Efetuar Ataque",
+      "OnDamage": "Ao Sofrer Dano",
+      "Action": "Ação Ativa",
+      "Manual": "Ativação Manual"
+    },
+    "ChangeKey": {
+      "AllParameters": "Todos os Parâmetros (+Bônus)",
+      "Movement": "Movimento",
+      "Health": "Vida Máxima",
+      "Block": "Bloqueio"
+    },
+    "Duration": {
+      "EndOfCombat": "Até o Fim do Combate",
+      "OneRound": "1 Rodada",
+      "OneTurn": "1 Turno",
+      "Instant": "Instantâneo",
+      "Permanent": "Permanente"
     },
     "Range": {
       "melee": "Corpo a Corpo",
@@ -232,7 +260,16 @@
       "Price": "Preço",
       "Weight": "Peso",
       "Description": "Descrição",
-      "DescriptionPlaceholder": "Escreva a descrição detalhada da arma..."
+      "DescriptionPlaceholder": "Escreva a descrição detalhada da arma...",
+      "PropertiesTitle": "Propriedades da Arma",
+      "AddPropertyTitle": "Adicionar Propriedade",
+      "AddPropertyBtn": "Adicionar Propriedade",
+      "PropertyNameLabel": "Nome da Propriedade",
+      "PropertyNamePlaceholder": "Ex: Versátil, Arremesso...",
+      "PropertyDescriptionLabel": "Descrição / Detalhes",
+      "PropertyDescriptionPlaceholder": "Ex: Pode ser usada com duas mãos...",
+      "RemovePropertyTitle": "Remover Propriedade",
+      "EmptyPropertiesHint": "Nenhuma propriedade cadastrada."
     },
     "Legado": {
       "NamePlaceholder": "Nome do Legado",
@@ -247,12 +284,14 @@
       "AbilitiesTitle": "Habilidades de Legado",
       "AddAbilityTitle": "Adicionar Habilidade de Legado",
       "AddAbilityBtn": "Adicionar Habilidade",
+      "AbilityNameLabel": "Nome da Habilidade",
       "AbilityNamePlaceholder": "Nome da Habilidade de Legado",
       "RemoveAbilityTitle": "Remover Habilidade",
       "AbilityDescriptionLabel": "Descrição",
       "AbilityDescriptionPlaceholder": "Descrição da habilidade de legado...",
       "ActiveEffectLabel": "Efeito Ativo",
       "ActiveEffectPlaceholder": "Efeito ativo quando esta habilidade é usada...",
+      "EmptyActiveEffectHint": "Nenhum efeito ativo configurado.",
       "EmptyAbilitiesHint": "Nenhuma habilidade de legado cadastrada."
     },
     "Equipment": {
@@ -266,9 +305,10 @@
     },
     "Armor": {
       "NamePlaceholder": "Nome da Armadura",
-      "BlockDefense": "Bloqueio / Defesa",
+      "BlockDefense": "Bloqueio",
       "Price": "Preço",
-      "ArmorType": "Tipo de Armadura",
+      "ArmorType": "Tipo",
+      "Requirement": "Requerimento",
       "Weight": "Peso",
       "Description": "Descrição",
       "DescriptionPlaceholder": "Escreva a descrição detalhada da armadura..."
@@ -355,6 +395,7 @@
       "improvized":"Improvisado"
     },
     "ArmorType": {
+      "robes": "Robes",
       "Light": "Leve",
       "Medium": "Média",
       "Heavy": "Pesada",
@@ -395,7 +436,28 @@
       "Armor": "Ficha de Armadura",
       "Weapon": "Ficha de Arma",
       "Ability": "Ficha de Habilidade",
+      "Path": "Ficha de Caminho",
       "masteryEmptyHint": "Nenhuma maestria adquirida. Clique em + para adicionar."
+    },
+    "Path": {
+      "NamePlaceholder": "Nome do Caminho",
+      "Category": "Categoria",
+      "CategoryPlaceholder": "Ex: Marcial, Mágico, Elemental...",
+      "Keywords": "Palavras-chave",
+      "KeywordsPlaceholder": "Ex: Marcial, Fogo, Protetor...",
+      "ParameterSuggestions": "Sugestões de Parâmetros",
+      "ParameterSuggestionsPlaceholder": "Ex: Brutalidade, Vigor...",
+      "Specializations": "Especializações",
+      "SpecializationsPlaceholder": "Descreva as especializações deste Caminho...",
+      "AbilitiesCount": "Total de Habilidades",
+      "Description": "Descrição do Caminho",
+      "DescriptionPlaceholder": "Descrição geral e lore deste caminho...",
+      "AbilitiesTitle": "Habilidades do Caminho",
+      "AddAbilityTitle": "Adicionar Habilidade ao Caminho",
+      "AddAbilityBtn": "Adicionar Habilidade",
+      "RemoveAbilityTitle": "Remover Habilidade",
+      "ActiveEffectLabel": "Efeito Ativo",
+      "EmptyAbilitiesHint": "Nenhuma habilidade cadastrada neste Caminho."
     },
     "RollType":{
       "Standard":"Padrão",
@@ -449,6 +511,16 @@
       "Actions":"Ações"
     },
     "Dialog": {
+      "ActiveEffectTitle": "Configurar Efeito Ativo",
+      "ActiveEffectTextLabel": "Texto / Descrição do Efeito",
+      "ActiveEffectTextPlaceholder": "Descreva o efeito quando ativado...",
+      "RechargeLabel": "Frequência de Recarga",
+      "TriggerLabel": "Gatilho de Ativação",
+      "HpThresholdPercentageLabel": "Vida Limite (%)",
+      "InCombatOnlyLabel": "Ativar Apenas em Combate",
+      "ChangeKeyLabel": "Atributo Modificado",
+      "ChangeValueLabel": "Valor do Bônus",
+      "DurationTypeLabel": "Duração do Efeito",
       "RollTitle": "Rolagem de {label}",
       "RollType": "Tipo de Rolagem",
       "ModifierBonus": "Modificador Bônus",

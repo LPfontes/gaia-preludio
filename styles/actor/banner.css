@@ -10,7 +10,7 @@
   padding: 10px 10px 120px 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
   position: relative;
   top: 0;
@@ -52,7 +52,7 @@
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
   border-radius: 2px;
-  padding: 3px 6px;
+  padding: 4px 6px;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -63,7 +63,6 @@
   font-weight: 700;
   color: var(--gaia-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .banner-field-card input,
@@ -123,7 +122,6 @@
   font-size: var(--gaia-font-md);
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .health-card .resource-title {
@@ -180,7 +178,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .shield-card {

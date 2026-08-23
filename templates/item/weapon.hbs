@@ -56,7 +56,53 @@
       </table>
     </div>
 
-    <div class="weapon-description-panel">
+    <div class="weapon-properties-panel" style="margin-top: 15px;">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label class="description-title" style="margin: 0; font-family: var(--gaia-font-medieval); font-size: var(--gaia-font-base); font-weight: bold; color: var(--gaia-text-parchment); text-transform: uppercase;">
+          {{localize "GAIA.Weapon.PropertiesTitle"}}
+        </label>
+        <button type="button" class="btn-add-property" data-action="addProperty" title="{{localize 'GAIA.Weapon.AddPropertyTitle'}}" style="cursor: pointer; padding: 2px 8px; font-size: var(--gaia-font-base);">
+          <i class="fa-solid fa-plus"></i> {{localize "GAIA.Weapon.AddPropertyBtn"}}
+        </button>
+      </div>
+
+      <div class="weapons-table-frame">
+        <table class="inventory-grid-table weapon-properties-table">
+          <thead>
+            <tr>
+              <th style="width: 35%;">{{localize "GAIA.Weapon.PropertyNameLabel"}}</th>
+              <th style="width: 55%;">{{localize "GAIA.Weapon.PropertyDescriptionLabel"}}</th>
+              <th style="width: 10%; text-align: center;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each weaponProperties as |prop index|}}
+              <tr class="item-row">
+                <td>
+                  <input type="text" name="system.properties.{{index}}.name" value="{{prop.name}}" placeholder="{{localize 'GAIA.Weapon.PropertyNamePlaceholder'}}" />
+                </td>
+                <td>
+                  <input type="text" name="system.properties.{{index}}.description" value="{{prop.description}}" placeholder="{{localize 'GAIA.Weapon.PropertyDescriptionPlaceholder'}}" />
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-remove-property" data-action="removeProperty" data-index="{{index}}" title="{{localize 'GAIA.Weapon.RemovePropertyTitle'}}" style="background: transparent; border: none; color: var(--gaia-text-parchment); cursor: pointer;">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            {{else}}
+              <tr>
+                <td colspan="3" class="empty-hint" style="text-align: center; font-style: italic; color: var(--gaia-text-muted); padding: 8px;">
+                  {{localize "GAIA.Weapon.EmptyPropertiesHint"}}
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="weapon-description-panel" style="margin-top: 15px;">
       <label class="description-title">{{localize "GAIA.Weapon.Description"}}</label>
       <textarea name="system.description" class="weapon-description-textarea" placeholder="{{localize 'GAIA.Weapon.DescriptionPlaceholder'}}">{{system.description}}</textarea>
     </div>

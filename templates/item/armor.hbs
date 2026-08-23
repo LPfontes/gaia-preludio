@@ -16,6 +16,7 @@
             <th class="col-armor-block">{{localize "GAIA.Armor.BlockDefense"}}</th>
             <th class="col-armor-price">{{localize "GAIA.Armor.Price"}}</th>
             <th class="col-armor-category">{{localize "GAIA.Armor.ArmorType"}}</th>
+            <th class="col-armor-requirement">{{localize "GAIA.Armor.Requirement"}}</th>
             <th class="col-armor-unity">{{localize "GAIA.Armor.Weight"}}</th>
           </tr>
         </thead>
@@ -32,6 +33,14 @@
                 {{selectOptions config.armorTypes selected=system.armorType localize=true}}
               </select>
             </td>
+            <td class="col-armor-requirement">
+              <div style="display: flex; gap: 4px;">
+                <select name="system.requirement.type" style="flex: 2;">
+                  {{selectOptions config.parameters selected=system.requirement.type localize=true}}
+                </select>
+                <input type="number" name="system.requirement.value" value="{{system.requirement.value}}" min="0" style="flex: 1; text-align: center;" />
+              </div>
+            </td>
             <td class="col-armor-unity">
               <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
             </td>
@@ -42,7 +51,7 @@
 
     <div class="weapon-description-panel">
       <label class="description-title">{{localize "GAIA.Armor.Description"}}</label>
-      <textarea name="system.description" class="weapon-description-textarea" placeholder="{{localize 'GAIA.Armor.DescriptionPlaceholder'}}">{{system.description}}</textarea>
+      <textarea name="system.description" class="armor-description-textarea" placeholder="{{localize 'GAIA.Armor.DescriptionPlaceholder'}}">{{system.description}}</textarea>
     </div>
   </div>
 </section>

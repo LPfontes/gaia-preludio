@@ -1,0 +1,144 @@
+/**
+ * ==============================================================================
+ * PATH ITEM SHEET STYLES / ESTILOS DA FICHA DE ITEM CAMINHO
+ * ==============================================================================
+ */
+
+.gaia-preludio.sheet.item.caminho .path-table-frame {
+  background: var(--gaia-bg-box);
+  padding: 4px;
+  border-radius: var(--gaia-radius);
+  border: 1px solid var(--gaia-border-frame);
+}
+
+.gaia-preludio.sheet.item.caminho .path-specializations-panel,
+.gaia-preludio.sheet.item.caminho .path-description-panel {
+  padding: 6px;
+  background: var(--gaia-bg-box);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 15px;
+}
+
+.gaia-preludio.sheet.item.caminho .path-specializations-panel .description-title,
+.gaia-preludio.sheet.item.caminho .path-description-panel .description-title {
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+}
+
+.gaia-preludio.sheet.item.caminho .path-specializations-textarea,
+.gaia-preludio.sheet.item.caminho .path-description-textarea {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
+  padding: 4px 6px;
+  font-family: inherit;
+  font-size: var(--gaia-font-xl);
+  line-height: 1.4;
+  resize: vertical;
+  outline: none;
+  background: var(--gaia-bg-window);
+}
+
+.gaia-preludio.sheet.item.caminho .path-description-textarea {
+  min-height: 200px;
+}
+
+.gaia-preludio.sheet.item.caminho .path-specializations-textarea:focus,
+.gaia-preludio.sheet.item.caminho .path-description-textarea:focus {
+  border-color: var(--gaia-purple-dark);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 5px rgba(148, 44, 228, 0.4);
+}
+
+.gaia-preludio.sheet.item.caminho .path-abilities-section {
+  padding: 6px;
+  background: var(--gaia-bg-box);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 15px;
+}
+
+.gaia-preludio.sheet.item.caminho .path-abilities-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.gaia-preludio.sheet.item.caminho .path-abilities-section .panel-main-title {
+  margin: 0;
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-card {
+  border: 1px solid var(--gaia-border-subtle, #444);
+  padding: 10px;
+  margin-bottom: 10px;
+  background: rgba(0, 0, 0, 0.15);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-card:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-title {
+  font-size: var(--gaia-font-base);
+  font-family: var(--gaia-font-medieval);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-controls button {
+  background: transparent;
+  border: 1px solid var(--gaia-border-subtle);
+  color: var(--gaia-text-parchment);
+  padding: 2px 6px;
+  cursor: pointer;
+  font-size: var(--gaia-font-base);
+  transition: all 0.15s ease;
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-controls button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-preview-description {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  margin-bottom: 6px;
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-preview-effect {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  padding: 4px 8px;
+}
+
+.gaia-preludio.sheet.item.caminho .path-abilities-section .empty-hint {
+  font-style: italic;
+  color: var(--gaia-text-muted, #888);
+}

@@ -1,19 +1,19 @@
 /**
  * ==============================================================================
- * LEGADO ITEM SHEET / FICHA DE ITEM LEGADO (ApplicationV2)
+ * PATH ITEM SHEET / FICHA DE ITEM CAMINHO (ApplicationV2)
  * ==============================================================================
- * PT: Ficha de item para Legado no sistema Gaia: Prelúdio.
- * EN: Item sheet for Legacy in the Gaia: Prelúdio system.
+ * PT: Ficha de item para Caminhos no sistema Gaia: Prelúdio.
+ * EN: Item sheet for Paths in the Gaia: Prelúdio system.
  */
 
 const { ItemSheetV2 } = foundry.applications.sheets;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 import { promptLegacyAbilityDialog } from "../../../helpers/dialogs.mjs";
 
-export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
+export class PathSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   /** @override */
   static DEFAULT_OPTIONS = {
-    classes: ["gaia-preludio", "sheet", "item", "legado"],
+    classes: ["gaia-preludio", "sheet", "item", "caminho"],
     position: { width: 800, height: "auto" },
     tag: "form",
     form: {
@@ -21,16 +21,16 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       closeOnSubmit: false
     },
     actions: {
-      editImage: LegacySheet.#onEditImage,
-      addLegacyAbility: LegacySheet.#onAddLegacyAbility,
-      editLegacyAbility: LegacySheet.#onEditLegacyAbility,
-      removeLegacyAbility: LegacySheet.#onRemoveLegacyAbility
+      editImage: PathSheet.#onEditImage,
+      addPathAbility: PathSheet.#onAddPathAbility,
+      editPathAbility: PathSheet.#onEditPathAbility,
+      removePathAbility: PathSheet.#onRemovePathAbility
     }
   };
 
   /** @override */
   static PARTS = {
-    main: { template: "systems/gaia-preludio/templates/item/legacy.hbs" }
+    main: { template: "systems/gaia-preludio/templates/item/path.hbs" }
   };
 
   /** @override */
@@ -38,7 +38,7 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     super._onRender(context, options);
     this.element.querySelectorAll("[data-edit='img']").forEach(img => {
       img.addEventListener("click", (event) => {
-        LegacySheet.#onEditImage.call(this, event, img);
+        PathSheet.#onEditImage.call(this, event, img);
       });
     });
   }
@@ -50,8 +50,8 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     context.system = this.item.system;
     context.config = /** @type {any} */ (CONFIG).GAIA;
 
-    const rawAbilities = this.item.system?.legacyAbilities ?? [];
-    context.legacyAbilities = rawAbilities.map((ab) => {
+    const rawAbilities = this.item.system?.abilities ?? [];
+    context.pathAbilities = rawAbilities.map((ab) => {
       const activeEffect = ab.activeEffect;
       let activeEffectText = "";
       if (typeof activeEffect === "string") {
@@ -86,16 +86,17 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     return fp.browse();
   }
 
-  static async #onAddLegacyAbility(event, target) {
+  static async #onAddPathAbility(event, target) {
     event.preventDefault();
     const dialogData = await promptLegacyAbilityDialog();
     if (!dialogData) return;
 
-    const rawList = this.item.system.legacyAbilities ?? [];
+    const rawList = this.item.system.abilities ?? [];
     const current = Array.isArray(rawList) ? [...rawList] : [];
     current.push({
       name: dialogData.name,
       description: dialogData.description,
+      level: 1,
       activeEffect: dialogData.activeEffect ?? {
         text: dialogData.activeEffectText,
         used: false,
@@ -105,15 +106,15 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         duration: { type: "end_of_combat" }
       }
     });
-    await this.item.update({ "system.legacyAbilities": current });
+    await this.item.update({ "system.abilities": current });
   }
 
-  static async #onEditLegacyAbility(event, target) {
+  static async #onEditPathAbility(event, target) {
     event.preventDefault();
     const index = Number(target.dataset.index);
     if (isNaN(index)) return;
 
-    const rawList = this.item.system.legacyAbilities ?? [];
+    const rawList = this.item.system.abilities ?? [];
     const ability = rawList[index];
     if (!ability) return;
 
@@ -131,16 +132,16 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       }
     };
 
-    await this.item.update({ "system.legacyAbilities": current });
+    await this.item.update({ "system.abilities": current });
   }
 
-  static async #onRemoveLegacyAbility(event, target) {
+  static async #onRemovePathAbility(event, target) {
     event.preventDefault();
     const index = Number(target.dataset.index);
     if (isNaN(index)) return;
-    const rawList = this.item.system.legacyAbilities ?? [];
+    const rawList = this.item.system.abilities ?? [];
     const current = Array.isArray(rawList) ? [...rawList] : [];
     current.splice(index, 1);
-    await this.item.update({ "system.legacyAbilities": current });
+    await this.item.update({ "system.abilities": current });
   }
 }

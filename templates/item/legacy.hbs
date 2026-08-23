@@ -1,5 +1,5 @@
 <section class="gaia-sheet-content">
-  <div class="inventory-table-panel tab-weapons-content">
+  <div class="inventory-table-panel tab-legacy-content">
     <div class="inventory-table-header">
       <div class="item-header-group">
         <img class="item-mini-icon" src="{{item.img}}" data-action="editImage" data-edit="img" title="{{item.name}}"/>
@@ -9,20 +9,16 @@
       </div>
     </div>
 
-    <div class="weapons-table-frame">
+    <div class="legacy-table-frame">
       <table class="inventory-grid-table">
         <thead>
           <tr>
-            <th>{{localize "GAIA.Legado.Appearance"}}</th>
             <th>{{localize "GAIA.Legado.Height"}}</th>
             <th>{{localize "GAIA.Legado.LifeExpectancy"}}</th>
           </tr>
         </thead>
         <tbody>
           <tr class="item-row">
-            <td>
-              <input type="text" name="system.appearance" value="{{system.appearance}}" placeholder="{{localize 'GAIA.Legado.AppearancePlaceholder'}}" />
-            </td>
             <td>
               <input type="text" name="system.height" value="{{system.height}}" placeholder="{{localize 'GAIA.Legado.HeightPlaceholder'}}" />
             </td>
@@ -34,40 +30,54 @@
       </table>
     </div>
 
-    <div class="weapon-description-panel" style="margin-top: 15px;">
-      <label class="description-title">{{localize "GAIA.Legado.Description"}}</label>
-      <textarea name="system.description" class="weapon-description-textarea" placeholder="{{localize 'GAIA.Legado.DescriptionPlaceholder'}}">{{system.description}}</textarea>
+    <div class="legacy-appearance-panel">
+      <label class="description-title">{{localize "GAIA.Legado.Appearance"}}</label>
+      <textarea name="system.appearance" class="legacy-appearance-textarea" placeholder="{{localize 'GAIA.Legado.AppearancePlaceholder'}}">{{system.appearance}}</textarea>
     </div>
 
-    <div class="legacy-abilities-section" style="margin-top: 20px;">
-      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 class="panel-main-title" style="margin: 0;">{{localize "GAIA.Legado.AbilitiesTitle"}}</h3>
+    <div class="legacy-description-panel">
+      <label class="description-title">{{localize "GAIA.Legado.Description"}}</label>
+      <textarea name="system.description" class="legacy-description-textarea" placeholder="{{localize 'GAIA.Legado.DescriptionPlaceholder'}}">{{system.description}}</textarea>
+    </div>
+
+    <div class="legacy-abilities-section">
+      <div class="section-header">
+        <h3 class="panel-main-title">{{localize "GAIA.Legado.AbilitiesTitle"}}</h3>
         <button type="button" class="btn-add-ability" data-action="addLegacyAbility" title="{{localize 'GAIA.Legado.AddAbilityTitle'}}">
           <i class="fa-solid fa-plus"></i> {{localize "GAIA.Legado.AddAbilityBtn"}}
         </button>
       </div>
 
-      {{#each system.legacyAbilities as |ability index|}}
-        <div class="legacy-ability-card" style="border: 1px solid var(--color-border, #444); border-radius: 4px; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.15);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <input type="text" name="system.legacyAbilities.{{index}}.name" value="{{ability.name}}" placeholder="{{localize 'GAIA.Legado.AbilityNamePlaceholder'}}" style="font-weight: bold; width: 80%;" />
-            <button type="button" class="btn-remove-ability" data-action="removeLegacyAbility" data-index="{{index}}" title="{{localize 'GAIA.Legado.RemoveAbilityTitle'}}">
-              <i class="fa-solid fa-trash"></i>
-            </button>
+      {{#each legacyAbilities as |ability index|}}
+        <div class="legacy-ability-card">
+          <div class="legacy-ability-header">
+            <h4 class="legacy-ability-title" data-action="editLegacyAbility" data-index="{{index}}" title="Clique para editar">
+              {{ability.name}}
+            </h4>
+            <div class="legacy-ability-controls">
+              <button type="button" class="btn-edit-ability" data-action="editLegacyAbility" data-index="{{index}}" title="Editar Habilidade">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button type="button" class="btn-remove-ability" data-action="removeLegacyAbility" data-index="{{index}}" title="{{localize 'GAIA.Legado.RemoveAbilityTitle'}}">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
           </div>
           
-          <div style="margin-bottom: 8px;">
-            <label style="font-size: 0.85em; font-weight: bold;">{{localize "GAIA.Legado.AbilityDescriptionLabel"}}:</label>
-            <textarea name="system.legacyAbilities.{{index}}.description" rows="2" placeholder="{{localize 'GAIA.Legado.AbilityDescriptionPlaceholder'}}" style="width: 100%; font-size: 0.9em;">{{ability.description}}</textarea>
-          </div>
+          {{#if ability.description}}
+            <div class="legacy-ability-preview-description">
+              {{ability.description}}
+            </div>
+          {{/if}}
 
-          <div>
-            <label style="font-size: 0.85em; font-weight: bold; color: var(--color-highlight, #e67e22);">{{localize "GAIA.Legado.ActiveEffectLabel"}}:</label>
-            <textarea name="system.legacyAbilities.{{index}}.activeEffect.text" rows="2" placeholder="{{localize 'GAIA.Legado.ActiveEffectPlaceholder'}}" style="width: 100%; font-size: 0.9em;">{{#if ability.activeEffect.text}}{{ability.activeEffect.text}}{{else}}{{ability.activeEffect}}{{/if}}</textarea>
-          </div>
+          {{#if ability.activeEffectText}}
+            <div class="legacy-ability-preview-effect">
+              <strong class="active-effect-label">{{localize "GAIA.Legado.ActiveEffectLabel"}}:</strong> {{ability.activeEffectText}}
+            </div>
+          {{/if}}
         </div>
       {{else}}
-        <p class="empty-hint" style="font-style: italic; color: #888;">{{localize "GAIA.Legado.EmptyAbilitiesHint"}}</p>
+        <p class="empty-hint">{{localize "GAIA.Legado.EmptyAbilitiesHint"}}</p>
       {{/each}}
     </div>
   </div>

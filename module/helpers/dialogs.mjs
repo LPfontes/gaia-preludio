@@ -1589,3 +1589,172 @@ export async function promptKnowledgeSelectionDialog(totalPoints = 0, currentKno
   });
 }
 
+/**
+ * Abre caixa de diálogo para criar ou editar uma Habilidade de Legado.
+ * @param {object} [initialData={}] - Dados iniciais da habilidade (name, description, activeEffectText)
+ * @returns {Promise<{name: string, description: string, activeEffectText: string} | null>}
+ */
+export async function promptLegacyAbilityDialog(initialData = {}) {
+  const name = initialData.name || "";
+  const description = initialData.description || "";
+  let activeEffectText = initialData.activeEffectText || "";
+  if (!activeEffectText && initialData.activeEffect) {
+    activeEffectText = typeof initialData.activeEffect === "string" 
+      ? initialData.activeEffect 
+      : (initialData.activeEffect.text || "");
+  }
+
+  let currentActiveEffect = typeof initialData.activeEffect === "object" && initialData.activeEffect
+    ? foundry.utils.deepClone(initialData.activeEffect)
+    : { text: activeEffectText };
+
+  const dialogHtml = await renderTemplate("systems/gaia-preludio/templates/dialog/legacy-ability-dialog.hbs", {
+    name,
+    description,
+    activeEffectText
+  });
+
+  const title = initialData.name ? `Editar: ${initialData.name}` : "Nova Habilidade de Legado";
+
+  const result = await DialogV2.wait({
+    classes: ["gaia-preludio", "gaia-dialog", "legacy-ability-dialog"],
+    window: { title },
+    position: { width: 600, height: "auto" },
+    content: dialogHtml,
+    render: (event, dialog) => {
+      const html = dialog.element;
+      const btnConfig = html.querySelector("[data-action='configActiveEffect']");
+      btnConfig?.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+        const inputEl = html.querySelector("input[name='activeEffectText']");
+        const previewEl = html.querySelector(".active-effect-preview-text");
+        const currentText = inputEl?.value || "";
+        const effectResult = await promptActiveEffectDialog({
+          ...currentActiveEffect,
+          text: currentText
+        });
+        if (effectResult) {
+          currentActiveEffect = effectResult;
+          const textVal = effectResult.text || "";
+          if (inputEl) inputEl.value = textVal;
+          if (previewEl) previewEl.textContent = textVal || (/** @type {any} */ (globalThis.game)?.i18n?.localize("GAIA.Legado.EmptyActiveEffectHint") || "Nenhum efeito ativo configurado.");
+        }
+      });
+    },
+    buttons: [
+      {
+        action: "save",
+        label: "Salvar",
+        icon: "fa-solid fa-floppy-disk",
+        default: true,
+        callback: (event, button, dialog) => {
+          const form = dialog.element.querySelector("form");
+          const data = new FormDataExtended(form).object;
+          const textValue = String(data.activeEffectText || "").trim();
+          return {
+            name: String(data.name || "").trim() || "Nova Habilidade de Legado",
+            description: String(data.description || "").trim(),
+            activeEffectText: textValue,
+            activeEffect: {
+              ...currentActiveEffect,
+              text: textValue
+            }
+          };
+        }
+      },
+      {
+        action: "cancel",
+        label: "Cancelar",
+        icon: "fa-solid fa-xmark",
+        callback: () => null
+      }
+    ],
+    rejectClose: false
+  });
+
+  if (result === "cancel" || !result) return null;
+  return result;
+}
+
+/**
+ * Abre caixa de diálogo para criar ou configurar a estrutura de um Efeito Ativo (activeEffect).
+ * @param {object} [initialData={}] - Dados iniciais do Efeito Ativo
+ * @returns {Promise<object | null>} Objeto de configuração do activeEffect
+ */
+export async function promptActiveEffectDialog(initialData = {}) {
+  const text = typeof initialData === "string" ? initialData : (initialData.text || "");
+  const recharge = initialData.recharge || "full_rest";
+  const triggerEvent = initialData.trigger?.event || "hp_threshold";
+  const inCombatOnly = initialData.trigger?.inCombatOnly ?? true;
+  const hpThresholdPercentage = initialData.trigger?.hpThresholdPercentage ?? 50;
+  
+  const firstChange = Array.isArray(initialData.changes) && initialData.changes[0] ? initialData.changes[0] : {};
+  const changeKey = firstChange.key || "all_parameters";
+  const changeValue = Number(firstChange.value ?? 1);
+  
+  const durationType = initialData.duration?.type || "end_of_combat";
+
+  const dialogHtml = await renderTemplate("systems/gaia-preludio/templates/dialog/active-effect-dialog.hbs", {
+    text,
+    recharge,
+    triggerEvent,
+    inCombatOnly,
+    hpThresholdPercentage,
+    changeKey,
+    changeValue,
+    durationType
+  });
+
+  const result = await DialogV2.wait({
+    classes: ["gaia-preludio", "gaia-dialog", "active-effect-dialog"],
+    window: { title: "Configurar Efeito Ativo" },
+    position: { width: 460, height: "auto" },
+    content: dialogHtml,
+    buttons: [
+      {
+        action: "save",
+        label: "Salvar Efeito",
+        icon: "fa-solid fa-floppy-disk",
+        default: true,
+        callback: (event, button, dialog) => {
+          const form = dialog.element.querySelector("form");
+          const data = new FormDataExtended(form).object;
+          return {
+            text: String(data.text || "").trim(),
+            used: Boolean(initialData.used ?? false),
+            recharge: String(data.recharge || "full_rest"),
+            trigger: {
+              event: String(data.triggerEvent || "hp_threshold"),
+              inCombatOnly: Boolean(data.inCombatOnly),
+              hpThresholdPercentage: Number(data.hpThresholdPercentage || 50)
+            },
+            changes: [
+              {
+                key: String(data.changeKey || "all_parameters"),
+                mode: "ADD",
+                value: Number(data.changeValue ?? 1),
+                allowExceedMax: true
+              }
+            ],
+            duration: {
+              type: String(data.durationType || "end_of_combat")
+            }
+          };
+        }
+      },
+      {
+        action: "cancel",
+        label: "Cancelar",
+        icon: "fa-solid fa-xmark",
+        callback: () => null
+      }
+    ],
+    rejectClose: false
+  });
+
+  if (result === "cancel" || !result) return null;
+  return result;
+}
+
+
+

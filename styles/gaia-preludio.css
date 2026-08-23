@@ -18,6 +18,8 @@
 
 /* 3. Ficha de Item & Habilidades (Item Sheets) */
 @import "./item/ability.css";
+@import "./item/legacy.css";
+@import "./item/path.css";
 
 /* 4. Diálogos e Aplicativos (Dialogs & Apps) */
 @import "./dialogs/dialogs.css";

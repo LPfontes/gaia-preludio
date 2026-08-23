@@ -53,15 +53,17 @@ export class EquipmentSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     const attr = target.dataset.edit || "img";
     const current = foundry.utils.getProperty(this.item, attr);
     const FilePickerClass = foundry.applications.apps.FilePicker?.implementation || globalThis.FilePicker;
-    const fp = new FilePickerClass({
+    const fpOptions = {
       type: "image",
       current,
       callback: async (path) => {
         await this.item.update({ [attr]: path });
-      },
-      top: this.position.top + 40,
-      left: this.position.left + 10
-    });
+      }
+    };
+    if (Number.isNumeric(this.position?.top)) fpOptions.top = this.position.top + 40;
+    if (Number.isNumeric(this.position?.left)) fpOptions.left = this.position.left + 10;
+
+    const fp = new FilePickerClass(fpOptions);
     return fp.browse();
   }
 }

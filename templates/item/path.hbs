@@ -1,0 +1,92 @@
+<section class="gaia-sheet-content">
+  <div class="inventory-table-panel tab-path-content">
+    <div class="inventory-table-header">
+      <div class="item-header-group">
+        <img class="item-mini-icon" src="{{item.img}}" data-action="editImage" data-edit="img" title="{{item.name}}"/>
+        <h4 class="inventory-table-title">
+          <input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'GAIA.Path.NamePlaceholder'}}"/>
+        </h4>
+      </div>
+    </div>
+
+    <div class="path-table-frame">
+      <table class="inventory-grid-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">{{localize "GAIA.Path.Category"}}</th>
+            <th style="width: 30%;">{{localize "GAIA.Path.Keywords"}}</th>
+            <th style="width: 33%;">{{localize "GAIA.Path.ParameterSuggestions"}}</th>
+            <th style="width: 12%;">{{localize "GAIA.Path.AbilitiesCount"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="item-row">
+            <td>
+              <input type="text" name="system.category" value="{{system.category}}" placeholder="{{localize 'GAIA.Path.CategoryPlaceholder'}}" />
+            </td>
+            <td>
+              <input type="text" name="system.keywords" value="{{system.keywords}}" placeholder="{{localize 'GAIA.Path.KeywordsPlaceholder'}}" />
+            </td>
+            <td>
+              <input type="text" name="system.parameterSuggestions" value="{{system.parameterSuggestions}}" placeholder="{{localize 'GAIA.Path.ParameterSuggestionsPlaceholder'}}" />
+            </td>
+            <td style="text-align: center; font-weight: bold; color: var(--gaia-text-parchment);">
+              {{pathAbilities.length}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="path-specializations-panel">
+      <label class="description-title">{{localize "GAIA.Path.Specializations"}}</label>
+      <textarea name="system.specializations" class="path-specializations-textarea" placeholder="{{localize 'GAIA.Path.SpecializationsPlaceholder'}}">{{system.specializations}}</textarea>
+    </div>
+
+    <div class="path-description-panel">
+      <label class="description-title">{{localize "GAIA.Path.Description"}}</label>
+      <textarea name="system.description" class="path-description-textarea" placeholder="{{localize 'GAIA.Path.DescriptionPlaceholder'}}">{{system.description}}</textarea>
+    </div>
+
+    <div class="path-abilities-section">
+      <div class="section-header">
+        <h3 class="panel-main-title">{{localize "GAIA.Path.AbilitiesTitle"}}</h3>
+        <button type="button" class="btn-add-ability" data-action="addPathAbility" title="{{localize 'GAIA.Path.AddAbilityTitle'}}">
+          <i class="fa-solid fa-plus"></i> {{localize "GAIA.Path.AddAbilityBtn"}}
+        </button>
+      </div>
+
+      {{#each pathAbilities as |ability index|}}
+        <div class="path-ability-card">
+          <div class="path-ability-header">
+            <h4 class="path-ability-title" data-action="editPathAbility" data-index="{{index}}" title="Clique para editar">
+              {{ability.name}}
+            </h4>
+            <div class="path-ability-controls">
+              <button type="button" class="btn-edit-ability" data-action="editPathAbility" data-index="{{index}}" title="Editar Habilidade">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button type="button" class="btn-remove-ability" data-action="removePathAbility" data-index="{{index}}" title="{{localize 'GAIA.Path.RemoveAbilityTitle'}}">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          
+          {{#if ability.description}}
+            <div class="path-ability-preview-description">
+              {{ability.description}}
+            </div>
+          {{/if}}
+
+          {{#if ability.activeEffectText}}
+            <div class="path-ability-preview-effect">
+              <strong class="active-effect-label">{{localize "GAIA.Path.ActiveEffectLabel"}}:</strong> {{ability.activeEffectText}}
+            </div>
+          {{/if}}
+        </div>
+      {{else}}
+        <p class="empty-hint">{{localize "GAIA.Path.EmptyAbilitiesHint"}}</p>
+      {{/each}}
+    </div>
+  </div>
+</section>

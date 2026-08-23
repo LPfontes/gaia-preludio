@@ -1,0 +1,30 @@
+<form class="gaia-dialog gaia-dialog-legacy-ability">
+  <div class="form-group">
+    <label>
+      {{localize "GAIA.Legado.AbilityNameLabel"}}
+    </label>
+    <input type="text" name="name" value="{{name}}" placeholder="{{localize 'GAIA.Legado.AbilityNamePlaceholder'}}" required />
+  </div>
+
+  <div class="form-group">
+    <label>
+      {{localize "GAIA.Legado.AbilityDescriptionLabel"}}
+    </label>
+    <textarea name="description" rows="3" placeholder="{{localize 'GAIA.Legado.AbilityDescriptionPlaceholder'}}">{{description}}</textarea>
+  </div>
+
+  <div class="form-group">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <label class="active-effect-label" style="margin-bottom: 0;">
+        {{localize "GAIA.Legado.ActiveEffectLabel"}}
+      </label>
+      <button type="button" class="btn-config-active-effect" data-action="configActiveEffect" title="{{localize 'GAIA.Dialog.ActiveEffectTitle'}}">
+        <i class="fa-solid fa-gear"></i> {{localize "GAIA.Dialog.ActiveEffectTitle"}}
+      </button>
+    </div>
+    <div class="active-effect-preview-text" style="font-size: var(--gaia-font-base); font-style: italic; color: var(--gaia-text-muted); padding: 4px 0;">
+      {{#if activeEffectText}}{{activeEffectText}}{{else}}{{localize "GAIA.Legado.EmptyActiveEffectHint"}}{{/if}}
+    </div>
+    <input type="hidden" name="activeEffectText" value="{{activeEffectText}}" />
+  </div>
+</form>
