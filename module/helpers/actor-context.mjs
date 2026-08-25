@@ -140,12 +140,30 @@ export function resolveEquippedWeapons(actor) {
         }
       }
 
-      // Propriedades
+      // Propriedades e Tooltip (Title)
       let propsText = "-";
+      let propsTitle = "";
       if (Array.isArray(iSys.properties)) {
-        propsText = iSys.properties.length > 0 ? iSys.properties.join(", ") : "-";
+        const names = [];
+        const titles = [];
+        for (const p of iSys.properties) {
+          if (typeof p === "string") {
+            names.push(p);
+            titles.push(p);
+          } else if (p && typeof p === "object") {
+            const name = p.name || p.label || p.title || "";
+            const desc = p.description || "";
+            if (name) {
+              names.push(name);
+              titles.push(desc ? `${name}: ${desc}` : name);
+            }
+          }
+        }
+        propsText = names.length > 0 ? names.join(", ") : "-";
+        propsTitle = titles.join("\n");
       } else if (iSys.properties) {
         propsText = String(iSys.properties);
+        propsTitle = propsText;
       }
 
       return {
@@ -154,7 +172,8 @@ export function resolveEquippedWeapons(actor) {
         img: item.img,
         damage: damageText,
         range: rangeText,
-        properties: propsText
+        properties: propsText,
+        propertiesTitle: propsTitle
       };
     });
 }
@@ -273,33 +292,130 @@ export async function prepareLegacySheetContext(sheet, context) {
 
   // Categorias do Inventário e Habilidades para o Template
   const items = actor.items ?? [];
+  
+  // Coleta as opções de Legado (Itens do tipo 'legacy')
+  const worldLegacies = (game.items?.filter(i => i.type === "legacy") ?? []).map(i => i.name);
+  const actorLegacies = (items.filter(i => i.type === "legacy") ?? []).map(i => i.name);
+  const allLegacies = Array.from(new Set([...worldLegacies, ...actorLegacies])).filter(Boolean);
+
+  if (system.legacy && !allLegacies.includes(system.legacy)) {
+    allLegacies.push(system.legacy);
+  }
+
+  allLegacies.sort((a, b) => a.localeCompare(b));
+
+  const legacySelectOptions = {};
+  for (const name of allLegacies) {
+    legacySelectOptions[name] = name;
+  }
+  context.legacySelectOptions = legacySelectOptions;
+
+  // Busca o item de Legado correspondente ao Legado selecionado para extrair suas habilidades
+  const selectedLegacyName = system.legacy || "";
+  context.selectedLegacyName = selectedLegacyName;
+
+  let legacyItem = null;
+  if (selectedLegacyName) {
+    legacyItem = items.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
+    if (!legacyItem) {
+      legacyItem = game.items?.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
+    }
+  }
+
+  let rawLegacyAbilities = [];
+  if (legacyItem?.system?.legacyAbilities && Array.isArray(legacyItem.system.legacyAbilities)) {
+    rawLegacyAbilities = legacyItem.system.legacyAbilities;
+  } else if (Array.isArray(system.legacyAbilities)) {
+    rawLegacyAbilities = system.legacyAbilities;
+  }
+
   const config = /** @type {any} */ (CONFIG).GAIA;
+
+  context.legacyAbilitiesList = rawLegacyAbilities.map((ab, index) => {
+    const activeEffect = ab.activeEffect;
+    let activeEffectText = "";
+    if (typeof activeEffect === "string") {
+      activeEffectText = activeEffect;
+    } else if (activeEffect && typeof activeEffect === "object") {
+      activeEffectText = typeof activeEffect.text === "string" ? activeEffect.text : "";
+    }
+
+    const rawAction = ab.typeAction || "";
+    const actionTypeLabel = rawAction && config?.actionType?.[rawAction]
+      ? game.i18n.localize(config.actionType[rawAction])
+      : (rawAction || "");
+
+    const rawType = ab.type || ab.typeAbility || "";
+    const typeLabel = rawType && config?.abilitiesTypes?.[rawType]
+      ? game.i18n.localize(config.abilitiesTypes[rawType])
+      : (rawType !== "ability" ? rawType : "");
+
+    return {
+      index,
+      name: ab.name || "Habilidade de Legado",
+      description: ab.description || "",
+      cost: ab.cost || "",
+      typeAction: ab.typeAction || "",
+      actionTypeLabel,
+      typeLabel,
+      activeEffectText
+    };
+  });
   context.abilities = items.filter(i => i.type === "ability").map(item => {
+    const rawCategory = item.system?.category || "";
+    const categoryLabel = rawCategory && config?.abilityCategories?.[rawCategory]
+      ? game.i18n.localize(config.abilityCategories[rawCategory])
+      : (rawCategory || "");
+
     const rawTypes = Array.isArray(item.system?.types) && item.system.types.length > 0 
       ? item.system.types 
-      : (item.system?.type ? [item.system.type] : ["conjuracao"]);
-    const localizedTypes = rawTypes.map(t => config?.abilitiesTypes?.[t] ? game.i18n.localize(config.abilitiesTypes[t]) : t);
-    const firstType = localizedTypes[0] || "Conjuração";
+      : (item.system?.type ? [item.system.type] : []);
+    const localizedTypes = rawTypes.map(t => config?.abilitiesTypes?.[t] ? game.i18n.localize(config.abilitiesTypes[t]) : t).filter(Boolean);
+    const firstType = localizedTypes[0] || "";
     const additionalTypes = localizedTypes.slice(1).join(" / ");
-    const rawAction = item.system?.typeAction || "acaoAtiva";
-    const actionLabel = config?.actionType?.[rawAction] 
+
+    const rawAction = item.system?.typeAction || "";
+    const actionLabel = rawAction && config?.actionType?.[rawAction] 
       ? game.i18n.localize(config.actionType[rawAction]) 
-      : (rawAction || "Ação Ativa");
+      : (rawAction || "");
+
+    const cost = item.system?.cost || "";
+    const metaParts = [cost, actionLabel, categoryLabel, firstType].filter(Boolean);
+    const metaRow1 = metaParts.join(" | ");
 
     const rawImprovements = Array.isArray(item.system?.improvements) ? item.system.improvements : [];
     const activeImprovements = rawImprovements.filter(imp => typeof imp === "object" && Boolean(imp.active));
+
+    const rawSubEffects = Array.isArray(item.system?.subEffects) ? item.system.subEffects : [];
+    const formattedSubEffects = rawSubEffects.map(sub => {
+      const actionTypeRaw = sub.typeAction && config?.actionType?.[sub.typeAction]
+        ? game.i18n.localize(config.actionType[sub.typeAction])
+        : (sub.typeAction || "");
+      const typeRaw = sub.type && config?.abilitiesTypes?.[sub.type]
+        ? game.i18n.localize(config.abilitiesTypes[sub.type])
+        : (sub.type || "");
+      return {
+        ...sub,
+        actionTypeLabel: actionTypeRaw,
+        typeLabel: typeRaw
+      };
+    });
 
     return {
       id: item.id,
       name: item.name,
       img: item.img,
       system: item.system,
+      categoryLabel,
       firstType,
       additionalTypes,
       hasAdditionalTypes: localizedTypes.length > 1,
       actionLabel,
+      cost,
+      metaRow1,
       activeImprovements,
-      hasActiveImprovements: activeImprovements.length > 0
+      hasActiveImprovements: activeImprovements.length > 0,
+      formattedSubEffects
     };
   });
 
@@ -344,10 +460,28 @@ export function formatInventoryItem(item) {
   }
 
   let propsText = "-";
+  let propsTitle = "";
   if (Array.isArray(iSys.properties)) {
-    propsText = iSys.properties.length > 0 ? iSys.properties.join(", ") : "-";
+    const names = [];
+    const titles = [];
+    for (const p of iSys.properties) {
+      if (typeof p === "string") {
+        names.push(p);
+        titles.push(p);
+      } else if (p && typeof p === "object") {
+        const name = p.name || p.label || p.title || "";
+        const desc = p.description || "";
+        if (name) {
+          names.push(name);
+          titles.push(desc ? `${name}: ${desc}` : name);
+        }
+      }
+    }
+    propsText = names.length > 0 ? names.join(", ") : "-";
+    propsTitle = titles.join("\n");
   } else if (iSys.properties) {
     propsText = String(iSys.properties);
+    propsTitle = propsText;
   }
 
   const rawCat = iSys.category || item.type;
@@ -370,6 +504,7 @@ export function formatInventoryItem(item) {
     damage: damageText,
     range: rangeText,
     properties: propsText,
+    propertiesTitle: propsTitle,
     categoryLabel
   };
 }

@@ -107,42 +107,48 @@ export async function promptMasteryDialog(actor) {
     optionsHtml += `</optgroup>`;
   }
 
-  return new Promise(resolve => {
-    new Dialog({
-      title: "Adicionar Maestria",
-      content: `
-        <div style="margin-bottom: 10px;">
-          <label style="display:block; margin-bottom: 4px; font-weight: bold;">Selecione a Maestria:</label>
-          <select id="gaia-mastery-select" style="width: 100%;">
+  const result = await DialogV2.wait({
+    classes: ["gaia-preludio", "gaia-dialog"],
+    window: { title: "Adicionar Maestria" },
+    content: `
+      <form class="gaia-dialog-form">
+        <div class="form-group">
+          <label class="form-label" style="display:block; margin-bottom: 4px; font-weight: bold;">Selecione a Maestria:</label>
+          <select name="mastery" id="gaia-mastery-select" style="width: 100%;">
             ${optionsHtml}
           </select>
         </div>
-      `,
-      buttons: {
-        add: {
-          icon: '<i class="fas fa-check"></i>',
-          label: "Adicionar",
-          callback: async (html) => {
-            const selected = html.find("#gaia-mastery-select").val();
-            if (selected) {
-              const list = [...(actor.system.masteries ?? [])];
-              if (!list.includes(selected)) {
-                list.push(selected);
-                await actor.update({ "system.masteries": list });
-              }
+      </form>
+    `,
+    buttons: [
+      {
+        action: "add",
+        label: "Adicionar",
+        icon: "fas fa-check",
+        default: true,
+        callback: async (event, button, dialog) => {
+          const form = dialog.element.querySelector("form");
+          const data = new FormDataExtended(form).object;
+          const selected = String(data.mastery || "").trim();
+          if (selected) {
+            const list = [...(actor.system.masteries ?? [])];
+            if (!list.includes(selected)) {
+              list.push(selected);
+              await actor.update({ "system.masteries": list });
             }
-            resolve();
           }
-        },
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: "Cancelar",
-          callback: () => resolve()
         }
       },
-      default: "add"
-    }).render(true);
+      {
+        action: "cancel",
+        label: "Cancelar",
+        icon: "fas fa-times"
+      }
+    ],
+    rejectClose: false
   });
+
+  return result;
 }
 
 /**
@@ -792,65 +798,157 @@ export async function promptRollRequestDialog() {
 export function registerRollRequestListeners() {
   Hooks.on("renderChatMessageHTML", (message, html) => {
     const rootEl = html.jquery ? html[0] : html;
+    
+    // 1. Ouvinte para Pedidos de Teste do Narrador (rollRequest)
     const btn = rootEl.querySelector ? rootEl.querySelector("[data-action='rollRequest']") : null;
-    if (!btn) return;
+    if (btn) {
+      btn.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const dataset = btn.dataset;
+        const category = dataset.category || "parameters";
+        const statKey = dataset.statKey || "precision";
+        const dc = Number(dataset.dc) || 9;
+        const fitness = dataset.fitness || "standard";
+        const statLabel = dataset.label || statKey;
 
-    btn.addEventListener("click", async (event) => {
-      event.preventDefault();
-      const dataset = btn.dataset;
-      const category = dataset.category || "parameters";
-      const statKey = dataset.statKey || "precision";
-      const dc = Number(dataset.dc) || 9;
-      const fitness = dataset.fitness || "standard";
-      const statLabel = dataset.label || statKey;
+        const { flowParameter, flowDifficultyCheck, flowDestinyCheck, defense } = await import("./flow.mjs");
+        const { getStatEntry } = await import("./stat-rolls.mjs");
 
-      const { flowParameter, flowDifficultyCheck, flowDestinyCheck, defense } = await import("./flow.mjs");
-      const { getStatEntry } = await import("./stat-rolls.mjs");
+        // Resgata o ator do jogador
+        const actor = game.user.character || canvas.tokens.controlled[0]?.actor;
+        if (!actor) {
+          ui.notifications.warn(game.i18n.localize("GAIA.RollRequest.WarnSelectActor"));
+          return;
+        }
 
-      // Resgata o ator do jogador
-      const actor = game.user.character || canvas.tokens.controlled[0]?.actor;
-      if (!actor) {
-        ui.notifications.warn(game.i18n.localize("GAIA.RollRequest.WarnSelectActor"));
-        return;
-      }
+        let roll = null;
 
-      let roll = null;
+        if (category === "destiny") {
+          const result = await flowDestinyCheck(dc);
+          roll = result.roll;
+        } else if (category === "defense") {
+          roll = await defense(statKey, actor, fitness);
+        } else {
+          const statEntry = getStatEntry(actor.system, category, statKey);
+          roll = await flowParameter({ value: statEntry.value }, fitness);
+        }
 
-      if (category === "destiny") {
-        const result = await flowDestinyCheck(dc);
-        roll = result.roll;
-      } else if (category === "defense") {
-        roll = await defense(statKey, actor, fitness);
-      } else {
-        const statEntry = getStatEntry(actor.system, category, statKey);
-        roll = await flowParameter({ value: statEntry.value }, fitness);
-      }
+        // Valida o resultado contra a Dif. solicitada
+        const check = flowDifficultyCheck(roll, dc);
 
-      // Valida o resultado contra a Dif. solicitada
-      const check = flowDifficultyCheck(roll, dc);
+        const statusColor = check.success ? "#27ae60" : "#c0392b";
+        const outcomeTitle = game.i18n.format(
+          check.success ? "GAIA.RollRequest.OutcomePassed" : "GAIA.RollRequest.OutcomeFailed",
+          { name: actor.name, label: statLabel }
+        );
+        const resultLabelText = game.i18n.localize("GAIA.RollRequest.ResultLabel");
+        const marginLabelText = game.i18n.localize("GAIA.RollRequest.MarginLabel");
 
-      const statusColor = check.success ? "#27ae60" : "#c0392b";
-      const outcomeTitle = game.i18n.format(
-        check.success ? "GAIA.RollRequest.OutcomePassed" : "GAIA.RollRequest.OutcomeFailed",
-        { name: actor.name, label: statLabel }
-      );
-      const resultLabelText = game.i18n.localize("GAIA.RollRequest.ResultLabel");
-      const marginLabelText = game.i18n.localize("GAIA.RollRequest.MarginLabel");
-
-      const outcomeHtml = `
-        <div class="gaia-chat-card" style="border-left: 4px solid ${statusColor}; padding: 8px; background: rgba(0,0,0,0.15); margin-top: 4px;">
-          <div style="font-weight: bold; font-size: 1.05em; color: ${statusColor};">
-            ${outcomeTitle}
+        const outcomeHtml = `
+          <div class="gaia-chat-card" style="border-left: 4px solid ${statusColor}; padding: 8px; background: rgba(0,0,0,0.15); margin-top: 4px;">
+            <div style="font-weight: bold; font-size: 1.05em; color: ${statusColor};">
+              ${outcomeTitle}
+            </div>
+            <div style="font-size: 0.9em; margin-top: 4px;">
+              <strong>${resultLabelText}</strong> ${check.total} vs <strong>Dif. ${dc}</strong> (${marginLabelText} ${check.margin >= 0 ? '+' : ''}${check.margin})
+            </div>
           </div>
-          <div style="font-size: 0.9em; margin-top: 4px;">
-            <strong>${resultLabelText}</strong> ${check.total} vs <strong>Dif. ${dc}</strong> (${marginLabelText} ${check.margin >= 0 ? '+' : ''}${check.margin})
-          </div>
-        </div>
-      `;
+        `;
 
-      await roll.toMessage({
-        speaker: ChatMessage.getSpeaker({ actor }),
-        flavor: outcomeHtml
+        await roll.toMessage({
+          speaker: ChatMessage.getSpeaker({ actor }),
+          flavor: outcomeHtml
+        });
+      });
+    }
+
+    // 2. Ouvinte para Botões de Rolagem de Defesa do Alvo de Ataques (rollTargetDefense)
+    const defenseBtns = rootEl.querySelectorAll ? rootEl.querySelectorAll("[data-action='rollTargetDefense']") : [];
+    defenseBtns.forEach(defBtn => {
+      defBtn.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const defenseType = defBtn.dataset.defenseType || "agility";
+        const targetTokenId = defBtn.dataset.targetTokenId;
+        const targetActorId = defBtn.dataset.targetActorId;
+
+        // Resgata o total do ataque a partir do dataset do botão ou das rolagens da mensagem
+        let attackTotal = Number(defBtn.dataset.attackTotal);
+        if (isNaN(attackTotal) || attackTotal <= 0) {
+          attackTotal = message.rolls?.[0]?.total ?? null;
+        }
+
+        // Procura o Ator do Alvo:
+        // 1. Pelo Token ID na cena ativa
+        // 2. Pelo Actor ID no game.actors
+        // 3. Fallback: pelo token atualmente selecionado/mirado pelo jogador que clicou
+        let targetActor = null;
+        if (targetTokenId && canvas?.tokens) {
+          const token = canvas.tokens.get(targetTokenId);
+          if (token?.actor) targetActor = token.actor;
+        }
+        if (!targetActor && targetActorId) {
+          targetActor = game.actors.get(targetActorId);
+        }
+        if (!targetActor) {
+          const { getSelectedOrTargetToken } = await import("./token-helper.mjs");
+          const token = getSelectedOrTargetToken(null, { notify: true, warnMessage: "Selecione ou mire em um token alvo para rolar a defesa." });
+          targetActor = token?.actor ?? null;
+        }
+
+        if (!targetActor) return;
+
+        // Dispara a rolagem de defesa (Esquiva/Agilidade ou Bloqueio) para o Ator Alvo
+        const { rollStat } = await import("./stat-rolls.mjs");
+        const defenseRoll = await rollStat(targetActor, {
+          event,
+          type: "defense",
+          key: defenseType,
+          categoryLabel: defenseType === "agility" ? "Defesa (Esquiva / Agilidade)" : "Defesa (Bloqueio)"
+        });
+
+        // Se a defesa foi rolada e temos o total do ataque, valida Acerto, Erro, Empate ou Crítico
+        if (defenseRoll && attackTotal !== null && !isNaN(attackTotal)) {
+          const { isCriticalHit } = await import("./flow.mjs");
+          const critResult = isCriticalHit(attackTotal, defenseRoll);
+
+          let outcomeStatus = "";
+
+          switch (true) {
+            case critResult.isCritical:
+              outcomeStatus = "Crítico";
+              break;
+            case critResult.isHit:
+              outcomeStatus = "Acerto";
+              break;
+            case critResult.difference === 0:
+              outcomeStatus = "Empate";
+              break;
+            default:
+              outcomeStatus = "Errou";
+              break;
+          }
+
+          const diffSign = critResult.difference > 0 ? "+" : "";
+          const outcomeHtml = `
+            <div class="gaia-chat-card outcome-card" style="padding: 8px; background: rgba(0,0,0,0.15); margin-top: 6px;">
+              <div style="font-weight: bold; font-size: 1.5em; display: flex; align-items: center; gap: 6px; color: var(--gaia-purple-dark);">
+                ${outcomeStatus}
+              </div>
+              <div style="font-size: 1.2em; margin-top: 6px; color: var(--gaia-text-parchment);">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <strong>Ataque:</strong> ${critResult.attackTotal} vs <strong>Defesa:</strong> ${critResult.defenseTotal}
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-weight: bold;">(Diferença: ${diffSign}${critResult.difference})</div>
+              </div>
+            </div>
+          `;
+
+          await ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor: targetActor }),
+            content: outcomeHtml,
+            style: CONST.CHAT_MESSAGE_STYLES?.OTHER ?? 0
+          });
+        }
       });
     });
   });
@@ -902,7 +1000,9 @@ export async function promptItemActionDialog(actor, item, { event, target } = {}
 
   if (result === "sendChat") {
     return await item.roll?.() ?? null;
-  } else if (result === "rollAttack") {
+  } 
+  
+  if (result === "rollAttack") {
     const { rollWeaponAttack } = await import("./stat-rolls.mjs");
     return await rollWeaponAttack(actor, item, { event, target });
   }
@@ -1739,6 +1839,70 @@ export async function promptActiveEffectDialog(initialData = {}) {
             duration: {
               type: String(data.durationType || "end_of_combat")
             }
+          };
+        }
+      },
+      {
+        action: "cancel",
+        label: "Cancelar",
+        icon: "fa-solid fa-xmark",
+        callback: () => null
+      }
+    ],
+    rejectClose: false
+  });
+
+  if (result === "cancel" || !result) return null;
+  return result;
+}
+
+/**
+ * Exibe modal DialogV2 para criação ou edição de uma Sub-Habilidade.
+ * @param {object} [subEffectData] - Dados atuais da sub-habilidade para edição
+ * @returns {Promise<object|null>}
+ */
+export async function promptSubEffectDialog(subEffectData = {}) {
+  const actionTypeOptions = Object.entries(CONFIG.GAIA?.actionType ?? {}).map(([key, labelKey]) => ({
+    key,
+    label: game.i18n.localize(labelKey),
+    selected: subEffectData.typeAction === key
+  }));
+
+  const abilityTypeOptions = Object.entries(CONFIG.GAIA?.abilitiesTypes ?? {}).map(([key, labelKey]) => ({
+    key,
+    label: game.i18n.localize(labelKey),
+    selected: subEffectData.type === key
+  }));
+
+  const title = subEffectData.name ? `Editar Sub-Habilidade: ${subEffectData.name}` : "Nova Sub-Habilidade";
+
+  const dialogHtml = await renderTemplate("systems/gaia-preludio/templates/dialog/subeffect-dialog.hbs", {
+    subEffect: subEffectData,
+    actionTypeOptions,
+    abilityTypeOptions
+  });
+
+  const result = await DialogV2.wait({
+    classes: ["gaia-preludio", "gaia-dialog", "subeffect-dialog"],
+    window: { title },
+    position: { width: 800, height: "auto" },
+    content: dialogHtml,
+    buttons: [
+      {
+        action: "confirm",
+        label: subEffectData.name ? "Salvar" : "Adicionar",
+        icon: "fa-solid fa-check",
+        default: true,
+        callback: (event, button, dialog) => {
+          const form = dialog.element.querySelector("form");
+          const data = new FormDataExtended(form).object;
+          return {
+            name: String(data.name || "Nova Sub-Habilidade").trim(),
+            typeAction: String(data.typeAction || ""),
+            type: String(data.type || ""),
+            cost: String(data.cost || "").trim(),
+            description: String(data.description || "").trim(),
+            note: String(data.note || "").trim()
           };
         }
       },

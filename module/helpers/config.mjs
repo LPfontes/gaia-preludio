@@ -274,6 +274,12 @@ GAIA.actionType = {
   acaoVersatil: "GAIA.ActionType.acaoVersatil"
 };
 
+GAIA.abilityCategories = {
+  ofensiva: "GAIA.AbilityCategories.ofensiva",
+  defensiva: "GAIA.AbilityCategories.defensiva",
+  auxiliadora: "GAIA.AbilityCategories.auxiliadora"
+};
+
 /**
  * PT: Idiomas do sistema Gaia: Prelúdio organizados por categoria (Idiomas Antigos e Idiomas Aurorianos).
  * EN: Languages of the Gaia: Prelúdio system grouped by category (Ancient Languages and Aurorian Languages).

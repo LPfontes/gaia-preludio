@@ -1,0 +1,42 @@
+<form class="gaia-dialog-form subeffect-dialog-form">
+  <div class="form-group">
+    <input type="text" name="name" value="{{subEffect.name}}" placeholder="Ex: ATAQUE SINCRONIZADO" required autofocus />
+  </div>
+
+  <div class="form-row" style="display: flex; gap: 8px;">
+    <div class="form-group" style="flex: 1;">
+      <label class="form-label">Tipo de Ação:</label>
+      <select name="typeAction">
+        <option value="">-- Selecione a Ação --</option>
+        {{#each actionTypeOptions}}
+          <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-group" style="flex: 1;">
+      <label class="form-label">Tipo de Habilidade:</label>
+      <select name="type">
+        <option value="">-- Selecione o Tipo --</option>
+        {{#each abilityTypeOptions}}
+          <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-group" style="flex: 1;">
+      <label class="form-label">Custo em PE (Opcional):</label>
+      <input type="text" name="cost" value="{{subEffect.cost}}" placeholder="Ex: 1 PE, 2 PE..." />
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Descrição das Regras e Efeitos:</label>
+    <textarea name="description" rows="5" placeholder="Descreva os efeitos detalhados desta sub-habilidade...">{{subEffect.description}}</textarea>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Nota Adicional / Regra Especial (Opcional):</label>
+    <input type="text" name="note" value="{{subEffect.note}}" placeholder="Ex: Válido uma vez por turno..." />
+  </div>
+</form>

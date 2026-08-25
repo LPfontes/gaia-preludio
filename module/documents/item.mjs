@@ -50,15 +50,18 @@ export class GaiaItem extends Item {
 
     if (this.type === "ability") {
       const config = /** @type {any} */ (CONFIG).GAIA;
-      const cost = system.cost || "1 PE";
-      const actionLabel = config?.actionType?.[system.typeAction] ? game.i18n.localize(config.actionType[system.typeAction]) : (system.typeAction || "Ação Ativa");
+      const cost = system.cost || "";
+      const actionLabel = config?.actionType?.[system.typeAction] ? game.i18n.localize(config.actionType[system.typeAction]) : (system.typeAction || "");
+      const categoryLabel = config?.abilityCategories?.[system.category] ? game.i18n.localize(config.abilityCategories[system.category]) : (system.category || "");
       const rawTypes = Array.isArray(system.types) && system.types.length > 0 
         ? system.types 
-        : (system.type ? [system.type] : ["conjuracao"]);
-      const localizedTypes = rawTypes.map(t => config?.abilitiesTypes?.[t] ? game.i18n.localize(config.abilitiesTypes[t]) : t);
-      const firstType = localizedTypes[0] || "Conjuração";
+        : (system.type ? [system.type] : [""]);
+      const localizedTypes = rawTypes.map(t => config?.abilitiesTypes?.[t] ? game.i18n.localize(config.abilitiesTypes[t]) : t).filter(Boolean);
+      const firstType = localizedTypes[0] || "";
       const additionalTypes = localizedTypes.slice(1).join(" / ");
-      const additionalTypesHTML = localizedTypes.length > 1 ? `<div class="meta-row-2">${additionalTypes}</div>` : "";
+      const additionalTypesHTML = localizedTypes.length > 1 ? `${additionalTypes}` : "";
+      const metaParts = [cost, actionLabel, categoryLabel, firstType].filter(Boolean);
+      const metaRow1 = metaParts.join(" | ");
       const quote = system.quote ? `<div class="ability-quote"><em>${system.quote}</em></div>` : "";
       const target = system.numberTarget ? `<div><strong>Alvo:</strong> ${system.numberTarget}</div>` : "";
       const range = system.range ? `<div><strong>Alcance:</strong> ${system.range}</div>` : "";
@@ -98,7 +101,7 @@ export class GaiaItem extends Item {
         <div class="gaia-ability-chat-card">
           <div class="ability-name">${this.name}</div>
           <div class="ability-meta-bar">
-            <div class="meta-row-1">${cost} | ${actionLabel} | ${firstType}</div>
+            <div class="meta-row-1">${metaRow1}</div>
             ${additionalTypesHTML}
           </div>
           ${quote}
@@ -168,6 +171,63 @@ export class GaiaItem extends Item {
       const description = system?.description || "";
       content = `<h3>${this.name}</h3><p>${description}</p>`;
     }
+
+    return ChatMessage.create(/** @type {any} */ ({
+      speaker,
+      content,
+      ...options
+    }));
+  }
+
+  /**
+   * Envia uma Sub-Habilidade específica para o chat.
+   * @param {object|number|string} subEffect - Objeto do sub-efeito ou seu índice na array subEffects
+   * @param {object} [options] - Opções adicionais para a mensagem do chat
+   */
+  async rollSubEffect(subEffect, options = {}) {
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor, item: this });
+    let sub = typeof subEffect === "number" ? this.system?.subEffects?.[subEffect] : subEffect;
+    if (!sub && (typeof subEffect === "string" || typeof subEffect === "number")) {
+      const idx = Number(subEffect);
+      if (!isNaN(idx)) sub = this.system?.subEffects?.[idx];
+    }
+    if (!sub) return null;
+
+    const config = /** @type {any} */ (CONFIG).GAIA;
+    const actionLabel = sub.typeAction && config?.actionType?.[sub.typeAction]
+      ? game.i18n.localize(config.actionType[sub.typeAction])
+      : (sub.typeAction || "");
+    
+    const typeLabel = sub.type && config?.abilitiesTypes?.[sub.type]
+      ? game.i18n.localize(config.abilitiesTypes[sub.type])
+      : (sub.type || "");
+
+    const cost = sub.cost || "";
+    const name = sub.name || "Sub-Habilidade";
+    const description = sub.description || "";
+    const note = sub.note || "";
+
+    const metaParts = [];
+    if (cost) metaParts.push(`<i class="fas fa-bolt"></i> ${cost}`);
+    if (actionLabel) metaParts.push(actionLabel);
+    if (typeLabel) metaParts.push(typeLabel);
+    const metaBar = metaParts.length > 0 ? `<div class="ability-meta-bar"><div class="meta-row-1">${metaParts.join(" | ")}</div></div>` : "";
+
+    const content = `
+      <div class="gaia-ability-chat-card gaia-subeffect-chat-card">
+        <div class="ability-name" style="font-size: 1.1em; color: var(--gaia-purple-dark, #5d1c8f); border-bottom: 1px solid var(--gaia-purple-dark, #5d1c8f); padding-bottom: 2px; margin-bottom: 4px;">
+          ${name}
+        </div>
+        <div class="subeffect-parent-item" style="font-size: 11px; font-weight: 600; color: #666; margin-bottom: 4px;">
+          <i class="fas fa-bookmark" style="font-size: 10px;"></i> ${this.name}
+        </div>
+        ${metaBar}
+        <div class="ability-body" style="margin-top: 6px;">
+          ${description ? `<p>${description}</p>` : ""}
+          ${note ? `<div class="subeffect-chat-note" style="font-size:12px; color:var(--gaia-purple-dark, #5d1c8f); font-weight:600; margin-top:4px;"><i class="fas fa-info-circle"></i> ${note}</div>` : ""}
+        </div>
+      </div>
+    `;
 
     return ChatMessage.create(/** @type {any} */ ({
       speaker,

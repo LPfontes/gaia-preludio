@@ -82,7 +82,7 @@
                   <input type="text" name="system.properties.{{index}}.name" value="{{prop.name}}" placeholder="{{localize 'GAIA.Weapon.PropertyNamePlaceholder'}}" />
                 </td>
                 <td>
-                  <input type="text" name="system.properties.{{index}}.description" value="{{prop.description}}" placeholder="{{localize 'GAIA.Weapon.PropertyDescriptionPlaceholder'}}" />
+                  <textarea name="system.properties.{{index}}.description" placeholder="{{localize 'GAIA.Weapon.PropertyDescriptionPlaceholder'}}" rows="2">{{prop.description}}</textarea>
                 </td>
                 <td style="text-align: center;">
                   <button type="button" class="btn-remove-property" data-action="removeProperty" data-index="{{index}}" title="{{localize 'GAIA.Weapon.RemovePropertyTitle'}}" style="background: transparent; border: none; color: var(--gaia-text-parchment); cursor: pointer;">

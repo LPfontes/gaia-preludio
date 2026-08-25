@@ -11,6 +11,7 @@ const { DialogV2 } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
 const { FormDataExtended } = foundry.applications.ux || foundry.utils;
 import { flowParameter } from "./flow.mjs";
+import { getSelectedOrTargetToken } from "./token-helper.mjs";
 
 /**
  * Função auxiliar para resgatar o valor e o rótulo traduzido de um parâmetro ou conhecimento.
@@ -39,7 +40,7 @@ export function getStatEntry(system, category, key) {
  * @param {string} options.categoryLabel - Rótulo da categoria (ex: "Parâmetro", "Conhecimento")
  * @returns {Promise<Roll | null>} Retorna o objeto Roll avaliado ou null se cancelado
  */
-export async function rollStat(actor, { event, target, type, categoryLabel, overrideValue, key: customKey, weaponDamageText } = {}) {
+export async function rollStat(actor, { event, target, type, categoryLabel, overrideValue, key: customKey, weaponDamageText, defenseButtonsHtml } = {}) {
   if (!actor) return null;
 
   const key = String(customKey || target?.dataset?.key || target?.dataset?.type || (type === "initiative" ? "initiative" : "")).toLowerCase();
@@ -59,9 +60,11 @@ export async function rollStat(actor, { event, target, type, categoryLabel, over
       if (key === "agility") {
         value = getStatEntry(system, "parameters", "agility").value || Number(system.agility?.value ?? system.agility ?? 0);
         label = game.i18n.localize("GAIA.Dialog.AgilityDefense");
+        if (label === "GAIA.Dialog.AgilityDefense") label = "Esquiva (Agilidade)";
       } else {
         value = Number(system.totalBlock ?? system.block?.value ?? system.block ?? 0);
         label = game.i18n.localize("GAIA.Dialog.BlockDefense");
+        if (label === "GAIA.Dialog.BlockDefense") label = "Bloqueio";
       }
       break;
     }
@@ -72,6 +75,7 @@ export async function rollStat(actor, { event, target, type, categoryLabel, over
         value = getStatEntry(system, "parameters", "agility").value || Number(system.agility?.value ?? system.agility ?? 0);
       }
       label = game.i18n.localize("GAIA.Dialog.Initiative");
+      if (label === "GAIA.Dialog.Initiative") label = "Iniciativa";
       break;
     }
     default: {
@@ -181,10 +185,16 @@ export async function rollStat(actor, { event, target, type, categoryLabel, over
 
   // 7. Monta o título do card no chat
   const modText = modifier !== 0 ? ` [${modifier > 0 ? "+" : ""}${modifier}]` : "";
-  let flavor = `<strong>${label}${modText}</strong> (${fitnessLabel})`;
+  const fitnessText = (fitness && fitness !== "standard" && fitnessLabel && fitnessLabel.toLowerCase() !== "padrão" && fitnessLabel.toLowerCase() !== "standard") ? ` (${fitnessLabel})` : "";
+  let flavor = `<strong>${label}${modText}</strong>${fitnessText}`;
 
   if (weaponDamageText) {
     flavor += `<div class="weapon-damage-block" style="margin-top: 6px; text-align: center;"><span class="damage-label" style="font-size: 0.8em; font-weight: bold; text-transform: uppercase; color: var(--gaia-text-muted, #888); display: block; margin-bottom: 2px;">Dano da Arma</span><div class="dice-roll"><div class="dice-result"><div class="dice-total">${weaponDamageText}</div></div></div></div>`;
+  }
+
+  if (defenseButtonsHtml) {
+    const renderedDefenseHtml = typeof defenseButtonsHtml === "function" ? defenseButtonsHtml(roll.total) : defenseButtonsHtml;
+    flavor += renderedDefenseHtml;
   }
 
   // 8. Exibe a rolagem formatada no chat do Foundry VTT
@@ -240,6 +250,42 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
     }
   }
 
+  // Tenta localizar o token do alvo mirado (Target) ou selecionado
+  const targetToken = (typeof getSelectedOrTargetToken === "function" ? getSelectedOrTargetToken(null, { fallbackToCharacter: false }) : null)
+    || Array.from(game.user?.targets ?? [])[0]
+    || null;
+
+  const targetTokenId = targetToken?.id ?? "";
+  const targetActorId = targetToken?.actor?.id ?? "";
+  const targetName = targetToken?.name ?? targetToken?.actor?.name ?? "";
+
+  // Constrói o HTML dos botões de rolar defesa do alvo
+  const defenseButtonsHtml = (attackTotal) => `
+    <div class="weapon-defense-block">
+      <span class="defense-label">
+        <i class="fa-solid fa-shield-halved"></i> Defesa do Alvo ${targetName ? `(${targetName})` : ''}
+      </span>
+      <div style="display: flex; gap: 6px; justify-content: center; width: 100%;" >
+        <button type="button" class="gaia-btn-roll-defense" 
+                data-action="rollTargetDefense" 
+                data-defense-type="agility"
+                data-attack-total="${attackTotal ?? ''}"
+                data-target-token-id="${targetTokenId}"
+                data-target-actor-id="${targetActorId}">
+          Esquiva
+        </button>
+        <button type="button" class="gaia-btn-roll-defense" 
+                data-action="rollTargetDefense" 
+                data-defense-type="block"
+                data-attack-total="${attackTotal ?? ''}"
+                data-target-token-id="${targetTokenId}"
+                data-target-actor-id="${targetActorId}">
+          Bloqueio
+        </button>
+      </div>
+    </div>
+  `;
+
   return await rollStat(actor, {
     event,
     target: target ?? { dataset: { key: attrKey } },
@@ -247,6 +293,7 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
     key: attrKey,
     categoryLabel: `${item.name} (${paramLabel})`,
     overrideValue: totalValue,
-    weaponDamageText: damageText || null
+    weaponDamageText: damageText || null,
+    defenseButtonsHtml
   });
 }

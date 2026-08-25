@@ -16,7 +16,9 @@
   <div class="banner-mid-row">
     <div class="banner-field-card legacy-field legado-field">
       <span class="field-label">{{localize "GAIA.Banner.Legacy"}}</span>
-      <input type="text" name="system.legacy" value="{{#if system.legacy}}{{system.legacy}}{{else}}{{system.legacy}}{{/if}}" placeholder="{{localize 'GAIA.Banner.LegacyPlaceholder'}}" />
+      <select name="system.legacy">
+        {{selectOptions legacySelectOptions selected=system.legacy blank=""}}
+      </select>
     </div>
   </div>
 

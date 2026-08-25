@@ -44,16 +44,26 @@ export class CreatureSheet extends GaiaBaseActorSheet {
     const config = /** @type {any} */ (CONFIG).GAIA;
     context.weapons = this.actor.items.filter((i) => i.type === "weapon");
     context.abilities = this.actor.items.filter((i) => i.type === "ability").map(item => {
+      const rawCategory = item.system?.category || "";
+      const categoryLabel = rawCategory && config?.abilityCategories?.[rawCategory]
+        ? game.i18n.localize(config.abilityCategories[rawCategory])
+        : (rawCategory || "");
+
       const rawTypes = Array.isArray(item.system?.types) && item.system.types.length > 0 
         ? item.system.types 
-        : (item.system?.type ? [item.system.type] : ["conjuracao"]);
-      const localizedTypes = rawTypes.map(t => config?.abilitiesTypes?.[t] ? game.i18n.localize(config.abilitiesTypes[t]) : t);
-      const firstType = localizedTypes[0] || "Conjuração";
+        : (item.system?.type ? [item.system.type] : []);
+      const localizedTypes = rawTypes.map(t => config?.abilitiesTypes?.[t] ? game.i18n.localize(config.abilitiesTypes[t]) : t).filter(Boolean);
+      const firstType = localizedTypes[0] || "";
       const additionalTypes = localizedTypes.slice(1).join(" / ");
-      const rawAction = item.system?.typeAction || "acaoAtiva";
-      const actionLabel = config?.actionType?.[rawAction] 
+
+      const rawAction = item.system?.typeAction || "";
+      const actionLabel = rawAction && config?.actionType?.[rawAction] 
         ? game.i18n.localize(config.actionType[rawAction]) 
-        : (rawAction || "Ação Ativa");
+        : (rawAction || "");
+
+      const cost = item.system?.cost || "";
+      const metaParts = [cost, actionLabel, categoryLabel, firstType].filter(Boolean);
+      const metaRow1 = metaParts.join(" | ");
 
       const rawImprovements = Array.isArray(item.system?.improvements) ? item.system.improvements : [];
       const activeImprovements = rawImprovements.filter(imp => typeof imp === "object" && Boolean(imp.active));
@@ -63,10 +73,13 @@ export class CreatureSheet extends GaiaBaseActorSheet {
         name: item.name,
         img: item.img,
         system: item.system,
+        categoryLabel,
         firstType,
         additionalTypes,
         hasAdditionalTypes: localizedTypes.length > 1,
         actionLabel,
+        cost,
+        metaRow1,
         activeImprovements,
         hasActiveImprovements: activeImprovements.length > 0
       };

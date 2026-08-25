@@ -315,7 +315,6 @@
 }
 
 .inventory-grid-table tbody tr.item-row {
-  border-bottom: 1px solid var(--gaia-border-subtle);
   transition: background 0.15s ease;
   background: var(--gaia-bg-window);
 }
@@ -478,13 +477,19 @@
 .tab-weapons-content .col-equip-unity        { width: 20%; }
 
 .tab-weapons-content .inventory-grid-table td input,
-.tab-weapons-content .inventory-grid-table td select {
+.tab-weapons-content .inventory-grid-table td select,
+.tab-weapons-content .inventory-grid-table td textarea,
+.inventory-grid-table td textarea {
   width: 100%;
-  border: 1px solid var(--gaia-border-frame);
-  border-radius: var(--gaia-radius);
   padding: 4px 6px;
   font-family: inherit;
   font-size: var(--gaia-font-base);
+  text-align: left;
+  resize: vertical;
+  min-height: 40px;
+}
+
+.tab-weapons-content .inventory-grid-table td input {
   text-align: center;
 }
 

@@ -13,7 +13,6 @@
       <table class="inventory-grid-table">
         <thead>
           <tr>
-            <th style="width: 25%;">{{localize "GAIA.Path.Category"}}</th>
             <th style="width: 30%;">{{localize "GAIA.Path.Keywords"}}</th>
             <th style="width: 33%;">{{localize "GAIA.Path.ParameterSuggestions"}}</th>
             <th style="width: 12%;">{{localize "GAIA.Path.AbilitiesCount"}}</th>
@@ -21,9 +20,6 @@
         </thead>
         <tbody>
           <tr class="item-row">
-            <td>
-              <input type="text" name="system.category" value="{{system.category}}" placeholder="{{localize 'GAIA.Path.CategoryPlaceholder'}}" />
-            </td>
             <td>
               <input type="text" name="system.keywords" value="{{system.keywords}}" placeholder="{{localize 'GAIA.Path.KeywordsPlaceholder'}}" />
             </td>
@@ -56,37 +52,42 @@
         </button>
       </div>
 
-      {{#each pathAbilities as |ability index|}}
-        <div class="path-ability-card">
-          <div class="path-ability-header">
-            <h4 class="path-ability-title" data-action="editPathAbility" data-index="{{index}}" title="Clique para editar">
-              {{ability.name}}
-            </h4>
-            <div class="path-ability-controls">
-              <button type="button" class="btn-edit-ability" data-action="editPathAbility" data-index="{{index}}" title="Editar Habilidade">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-              <button type="button" class="btn-remove-ability" data-action="removePathAbility" data-index="{{index}}" title="{{localize 'GAIA.Path.RemoveAbilityTitle'}}">
-                <i class="fa-solid fa-trash"></i>
-              </button>
+      {{#if pathAbilities.length}}
+        {{#each pathAbilityCategories as |group|}}
+          <div class="path-category-group">
+            <div class="path-category-header">
+              <span class="path-category-title">{{group.label}}</span>
+              <span class="path-category-count">{{group.abilities.length}}</span>
+            </div>
+            <div class="path-category-grid">
+              {{#each group.abilities as |ability|}}
+                <div class="path-ability-card" data-action="editPathAbility" data-index="{{ability.index}}" style="cursor: pointer;" title="Clique para abrir a Habilidade (AbilitySheet)">
+                  <div class="path-ability-header">
+                    <div class="path-ability-identity">
+                      <img class="path-ability-icon" src="{{#if ability.img}}{{ability.img}}{{else}}icons/svg/item-bag.svg{{/if}}" title="{{ability.name}}"/>
+                      <div class="path-ability-titles">
+                        <h4 class="path-ability-title">{{ability.name}}</h4>
+                        <div class="path-ability-meta-badges">
+                          {{#if ability.cost}}<span class="badge cost-badge">{{ability.cost}}</span>{{/if}}
+                          {{#if ability.actionTypeLabel}}<span class="badge action-badge">{{ability.actionTypeLabel}}</span>{{/if}}
+                          {{#if ability.typeLabel}}<span class="badge type-badge">{{ability.typeLabel}}</span>{{/if}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="path-ability-controls">
+                      <button type="button" class="btn-remove-ability" data-action="removePathAbility" data-index="{{ability.index}}" title="{{localize 'GAIA.Path.RemoveAbilityTitle'}}">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              {{/each}}
             </div>
           </div>
-          
-          {{#if ability.description}}
-            <div class="path-ability-preview-description">
-              {{ability.description}}
-            </div>
-          {{/if}}
-
-          {{#if ability.activeEffectText}}
-            <div class="path-ability-preview-effect">
-              <strong class="active-effect-label">{{localize "GAIA.Path.ActiveEffectLabel"}}:</strong> {{ability.activeEffectText}}
-            </div>
-          {{/if}}
-        </div>
+        {{/each}}
       {{else}}
-        <p class="empty-hint">{{localize "GAIA.Path.EmptyAbilitiesHint"}}</p>
-      {{/each}}
+        <p class="empty-hint">{{localize "GAIA.Path.EmptyAbilitiesHint"}} (Ou arraste um Item do tipo Habilidade para cá)</p>
+      {{/if}}
     </div>
   </div>
 </section>

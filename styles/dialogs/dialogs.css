@@ -30,6 +30,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
+  width: 100%;
 }
 
 .dialog-header-info {
@@ -218,4 +219,143 @@
   resize: vertical;
   min-height: 65px;
 }
+
+/* ==============================================================================
+ * DIÁLOGO DE SUB-HABILIDADE / SUB-EFFECT DIALOG (.subeffect-dialog)
+ * ============================================================================== */
+.subeffect-dialog .window-content {
+  background: var(--gaia-bg-banner);
+  color: var(--gaia-text-parchment);
+  padding: 12px;
+}
+
+.subeffect-dialog .dialog-content,
+.subeffect-dialog-form {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--gaia-font-base);
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.subeffect-dialog .form-group,
+.subeffect-dialog-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.subeffect-dialog .form-row,
+.subeffect-dialog-form .form-row {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.subeffect-dialog .form-label,
+.subeffect-dialog label,
+.subeffect-dialog-form .form-label {
+  font-family: var(--gaia-font-medieval);
+  font-weight: 700;
+  font-size: var(--gaia-font-base);
+}
+
+.subeffect-dialog input[type="text"],
+.subeffect-dialog select,
+.subeffect-dialog textarea,
+.subeffect-dialog-form input[type="text"],
+.subeffect-dialog-form select,
+.subeffect-dialog-form textarea {
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid var(--gaia-border-frame);
+  font-size: var(--gaia-font-base);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.subeffect-dialog input[type="text"]:focus,
+.subeffect-dialog select:focus,
+.subeffect-dialog textarea:focus,
+.subeffect-dialog-form input[type="text"]:focus,
+.subeffect-dialog-form select:focus,
+.subeffect-dialog-form textarea:focus {
+  box-shadow: 0 0 5px rgba(148, 44, 228, 0.4);
+  outline: none;
+}
+
+.subeffect-dialog textarea,
+.subeffect-dialog-form textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.4;
+  font-family: inherit;
+}
+
+.subeffect-dialog .form-footer,
+.subeffect-dialog-form .form-footer {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.subeffect-dialog button[data-action="confirm"] {
+  background: var(--gaia-purple-dark, #5d1c8f);
+  color: #ffffff;
+  border: 1px solid #4a1573;
+}
+
+.subeffect-dialog button[data-action="confirm"]:hover {
+  background: var(--gaia-purple, #942ce4);
+}
+
+.subeffect-dialog button[data-action="cancel"] {
+  background: transparent;
+  color: var(--gaia-purple-dark, #5d1c8f);
+  border: 1px solid #b8a6cd;
+}
+
+.subeffect-dialog button[data-action="cancel"]:hover {
+  background: rgba(93, 28, 143, 0.1);
+}
+
+/* ==============================================================================
+ * BOTÃO DE DEFESA DO ALVO NO CHAT (.gaia-btn-roll-defense & .weapon-defense-block)
+ * ============================================================================== */
+.weapon-defense-block {
+  margin-top: 8px;
+  text-align: center;
+  border-top: 1px dashed var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  padding-top: 6px;
+}
+
+.weapon-defense-block .defense-label {
+  font-size: var(--gaia-font-xs, 11px);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--gaia-text-muted, #505050);
+  display: block;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.gaia-btn-roll-defense {
+  width: 100%;
+}
+
+.gaia-btn-roll-defense:hover {
+  background: var(--gaia-purple-dark, #5d1c8f);
+  color: #ffffff;
+  border-color: var(--gaia-purple, #942ce4);
+  box-shadow: 0 0 8px rgba(148, 44, 228, 0.5);
+  transform: translateY(-1px);
+}
+
+.gaia-btn-roll-defense:active {
+  transform: translateY(0);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+
 

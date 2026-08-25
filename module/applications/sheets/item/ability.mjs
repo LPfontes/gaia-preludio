@@ -8,12 +8,13 @@
 
 const { ItemSheetV2 } = foundry.applications.sheets;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
+import { promptSubEffectDialog } from "../../../helpers/dialogs.mjs";
 
 export class AbilitySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   /** @override */
   static DEFAULT_OPTIONS = {
     classes: ["gaia-preludio", "sheet", "item", "ability"],
-    position: { width: 640, height: "auto" },
+    position: { width: 800, height: 650 },
     tag: "form",
     form: {
       submitOnChange: true,
@@ -26,14 +27,19 @@ export class AbilitySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       addImprovement: AbilitySheet.#onAddImprovement,
       removeImprovement: AbilitySheet.#onRemoveImprovement,
       addSubEffect: AbilitySheet.#onAddSubEffect,
+      editSubEffect: AbilitySheet.#onEditSubEffect,
       removeSubEffect: AbilitySheet.#onRemoveSubEffect,
+      rollSubEffect: AbilitySheet.#onRollSubEffect,
       rollAbility: AbilitySheet.#onRollAbility
     }
   };
 
   /** @override */
   static PARTS = {
-    main: { template: "systems/gaia-preludio/templates/item/ability.hbs" }
+    main: {
+      template: "systems/gaia-preludio/templates/item/ability.hbs",
+      scrollable: [".gaia-ability-sheet", ".window-content", ".gaia-sheet-content"]
+    }
   };
 
   /** @override */
@@ -68,18 +74,26 @@ export class AbilitySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     });
 
     const rawSubEffects = Array.isArray(context.system.subEffects) ? context.system.subEffects : [];
-    context.formattedSubEffects = rawSubEffects.map((sub, index) => ({
-      index,
-      name: sub.name || "",
-      cost: sub.cost || "",
-      description: sub.description || "",
-      note: sub.note || ""
-    }));
+    context.formattedSubEffects = rawSubEffects.map((sub, index) => {
+      const actionTypeRaw = sub.typeAction ? (config.actionType?.[sub.typeAction] || sub.typeAction) : "";
+      const typeRaw = sub.type ? (config.abilitiesTypes?.[sub.type] || sub.type) : "";
+      return {
+        index,
+        name: sub.name || "Nova Sub-Habilidade",
+        cost: sub.cost || "",
+        typeAction: sub.typeAction || "",
+        actionTypeLabel: actionTypeRaw ? game.i18n.localize(actionTypeRaw) : "",
+        type: sub.type || "",
+        typeLabel: typeRaw ? game.i18n.localize(typeRaw) : "",
+        description: sub.description || "",
+        note: sub.note || ""
+      };
+    });
 
     // Prepara os tipos de habilidade: 1º tipo para a linha 1, tipos adicionais para a linha 2
     const currentTypes = Array.isArray(context.system.types) && context.system.types.length > 0 
       ? context.system.types 
-      : [context.system.type || "conjuracao"];
+      : [context.system.type ?? ""];
     
     const allFormattedTypes = currentTypes.map((val, index) => ({
       index,
@@ -117,6 +131,7 @@ export class AbilitySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     const current = Array.isArray(this.item.system.improvements) ? [...this.item.system.improvements] : [];
     current.push({ title: "Novo Aprimoramento", description: "", active: false });
     await this.item.update({ "system.improvements": current });
+    this.render(true);
   }
 
   static async #onRemoveImprovement(event, target) {
@@ -126,31 +141,53 @@ export class AbilitySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     const current = Array.isArray(this.item.system.improvements) ? [...this.item.system.improvements] : [];
     current.splice(index, 1);
     await this.item.update({ "system.improvements": current });
+    this.render(true);
   }
 
   static async #onAddSubEffect(event, target) {
     event.preventDefault();
+    const result = await promptSubEffectDialog();
+    if (!result) return;
     const current = Array.isArray(this.item.system.subEffects) ? [...this.item.system.subEffects] : [];
-    current.push({ name: "NOVO EFEITO", cost: "1 PE", description: "", note: "" });
+    current.push(result);
     await this.item.update({ "system.subEffects": current });
+    this.render(true);
+  }
+
+  static async #onEditSubEffect(event, target) {
+    event.preventDefault();
+    event.stopPropagation();
+    const index = Number(target.dataset.index);
+    if (isNaN(index)) return;
+    const current = Array.isArray(this.item.system.subEffects) ? [...this.item.system.subEffects] : [];
+    const subEffectData = current[index];
+    if (!subEffectData) return;
+    const result = await promptSubEffectDialog(subEffectData);
+    if (!result) return;
+    current[index] = result;
+    await this.item.update({ "system.subEffects": current });
+    this.render(true);
   }
 
   static async #onRemoveSubEffect(event, target) {
     event.preventDefault();
+    event.stopPropagation();
     const index = Number(target.dataset.index);
     if (isNaN(index)) return;
     const current = Array.isArray(this.item.system.subEffects) ? [...this.item.system.subEffects] : [];
     current.splice(index, 1);
     await this.item.update({ "system.subEffects": current });
+    this.render(true);
   }
 
   static async #onAddType(event, target) {
     event.preventDefault();
     const current = Array.isArray(this.item.system.types) && this.item.system.types.length > 0 
       ? [...this.item.system.types] 
-      : [this.item.system.type || "conjuracao"];
-    current.push("conjuracao");
+      : [this.item.system.type ?? ""];
+    current.push("");
     await this.item.update({ "system.types": current, "system.type": current[0] });
+    this.render(true);
   }
 
   static async #onRemoveType(event, target) {
@@ -159,10 +196,22 @@ export class AbilitySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     if (isNaN(index)) return;
     const current = Array.isArray(this.item.system.types) && this.item.system.types.length > 0 
       ? [...this.item.system.types] 
-      : [this.item.system.type || "conjuracao"];
+      : [this.item.system.type ?? ""];
     if (current.length <= 1) return;
     current.splice(index, 1);
     await this.item.update({ "system.types": current, "system.type": current[0] });
+    this.render(true);
+  }
+
+  static async #onRollSubEffect(event, target) {
+    event.preventDefault();
+    event.stopPropagation();
+    const index = Number(target.dataset.index);
+    if (isNaN(index)) return;
+    const current = Array.isArray(this.item.system.subEffects) ? this.item.system.subEffects : [];
+    const subEffect = current[index];
+    if (!subEffect) return;
+    return this.item.rollSubEffect(subEffect);
   }
 
   static async #onRollAbility(event, target) {

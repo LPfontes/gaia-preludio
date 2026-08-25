@@ -66,7 +66,8 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       showPortraitToPlayers: GaiaBaseActorSheet._onShowPortraitToPlayers,
       tab: GaiaBaseActorSheet._onChangeTab,
       promptRollRequest: GaiaBaseActorSheet._onPromptRollRequest,
-      promptRollRequestDialog: GaiaBaseActorSheet._onPromptRollRequest
+      promptRollRequestDialog: GaiaBaseActorSheet._onPromptRollRequest,
+      rollLegacyAbility: GaiaBaseActorSheet._onRollLegacyAbility
     }
   };
 
@@ -451,6 +452,52 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     });
     popout.render(true);
     popout.shareImage();
+  }
+
+  /**
+   * Envia a habilidade de Legado para o chat.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onRollLegacyAbility(event, target) {
+    event?.preventDefault?.();
+    const index = Number(target.dataset.index);
+    if (isNaN(index)) return;
+
+    const legacyItem = (this.actor.items ?? []).find(i => i.type === "legacy" && i.name.toLowerCase() === (this.actor.system?.legacy || "").toLowerCase())
+      || (game.items ?? []).find(i => i.type === "legacy" && i.name.toLowerCase() === (this.actor.system?.legacy || "").toLowerCase());
+
+    let rawList = legacyItem?.system?.legacyAbilities;
+    if (!rawList || !Array.isArray(rawList)) {
+      rawList = this.actor.system?.legacyAbilities ?? [];
+    }
+
+    const ab = rawList[index];
+    if (!ab) return;
+
+    const activeEffectText = typeof ab.activeEffect === "string" ? ab.activeEffect : (ab.activeEffect?.text || "");
+
+    const content = `
+      <div class="gaia-preludio chat-card item-card legacy-ability-card">
+        <header class="card-header flexrow" style="display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--gaia-purple-dark, #4a2e6b); padding-bottom: 4px; margin-bottom: 6px;">
+          <img src="icons/svg/book.svg" title="${ab.name}" width="32" height="32" style="border: none;"/>
+          <h3 class="item-name" style="margin: 0; font-family: var(--gaia-font-medieval, Georgia, serif); color: var(--gaia-purple-dark, #4a2e6b); font-size: 16px;">${ab.name}</h3>
+        </header>
+        <div class="card-content">
+          ${ab.description ? `<p style="margin-bottom: 6px;">${ab.description}</p>` : ""}
+          ${activeEffectText ? `<p style="color: var(--gaia-purple-dark, #4a2e6b); font-style: italic; margin-top: 4px;"><strong>Efeito:</strong> ${activeEffectText}</p>` : ""}
+        </div>
+        <footer class="card-footer" style="margin-top: 8px; font-size: 11px; font-style: italic; color: #666;">
+          <span>Habilidade de Legado (${this.actor.system?.legacy || "Legado"})</span>
+        </footer>
+      </div>
+    `;
+
+    return await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+      content
+    });
   }
 
   /**

@@ -26,6 +26,8 @@ import { LegacySheet } from "./applications/sheets/item/legacy.mjs";
 import { PathSheet } from "./applications/sheets/item/path.mjs";
 import { GaiaItemBrowser } from "./applications/item-browser.mjs";
 import { promptRollRequestDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog, registerRollRequestListeners } from "./helpers/dialogs.mjs";
+import { createRegion, createRegionShape } from "./helpers/region-helper.mjs";
+import { getSelectedToken, getSelectedTokens, getTargetedTokens, getSelectedOrTargetToken } from "./helpers/token-helper.mjs";
 const { Actors, Items } = foundry.documents.collections;
 const { ActorSheetV2, ItemSheetV2 } = foundry.applications.sheets;
 const { loadTemplates } = foundry.applications.handlebars;
@@ -77,6 +79,12 @@ Hooks.once("init", async () => {
   GAIA.promptAssistenteCriatura = promptCreatureWizardDialog;
   GAIA.promptLegacyNpcWizardDialog = promptLegacyNpcWizardDialog;
   GAIA.promptAssistenteLegadoNPC = promptLegacyNpcWizardDialog;
+  GAIA.createRegion = createRegion;
+  GAIA.createRegionShape = createRegionShape;
+  GAIA.getSelectedToken = getSelectedToken;
+  GAIA.getSelectedTokens = getSelectedTokens;
+  GAIA.getTargetedTokens = getTargetedTokens;
+  GAIA.getSelectedOrTargetToken = getSelectedOrTargetToken;
   GAIA.ItemBrowser = GaiaItemBrowser;
   GAIA.openItemBrowser = (actor = null, options = {}) => GaiaItemBrowser.open(actor, options);
   /** @type {any} */ (CONFIG).GAIA = GAIA;
@@ -115,8 +123,7 @@ Hooks.once("init", async () => {
     weapon: WeaponDataModel,
     ability: AbilityBaseModel,
     legacy: LegacyDataModel,
-    path: PathDataModel,
-    caminho: PathDataModel
+    path: PathDataModel
   });
 
   // PT: Registra as fichas de Actor (ApplicationV2)
@@ -168,7 +175,7 @@ Hooks.once("init", async () => {
     label: "GAIA.Sheet.Legacy"
   });
   Items.registerSheet("gaia-preludio", /** @type {any} */ (PathSheet), {
-    types: ["path", "caminho"],
+    types: ["path"],
     makeDefault: true,
     label: "GAIA.Sheet.Path"
   });

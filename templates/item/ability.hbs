@@ -8,6 +8,11 @@
         <h2 class="ability-name">
           <input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'GAIA.Ability.NamePlaceholder'}}" />
         </h2>
+        <div class="meta-item category-select-meta">
+            <select name="system.category">
+              {{selectOptions config.abilityCategories selected=system.category localize=true blank=""}}
+            </select>
+          </div>
         <button type="button" class="ability-roll-btn" data-action="rollAbility" title="{{localize 'GAIA.Ability.SendToChat'}}">
           <i class="fas fa-comment-alt"></i>
         </button>
@@ -20,7 +25,7 @@
           <span class="meta-divider">|</span>
           <div class="meta-item action-meta">
             <select name="system.typeAction">
-              {{selectOptions config.actionType selected=system.typeAction localize=true}}
+              {{selectOptions config.actionType selected=system.typeAction localize=true blank=""}}
             </select>
           </div>
           <span class="meta-divider">|</span>
@@ -28,7 +33,7 @@
             {{#if firstType}}
             <div class="single-type-wrapper">
               <select name="system.types.{{firstType.index}}">
-                {{selectOptions config.abilitiesTypes selected=firstType.value localize=true}}
+                {{selectOptions config.abilitiesTypes selected=firstType.value localize=true blank=""}}
               </select>
               {{#if firstType.canRemove}}
               <button type="button" class="btn-remove-type" data-action="removeType" data-index="{{firstType.index}}" title="{{localize 'GAIA.Ability.RemoveType'}}">
@@ -37,29 +42,26 @@
               {{/if}}
             </div>
             {{/if}}
+            {{#if hasAdditionalTypes}}
+              <div class="additional-types-container">
+                {{#each additionalTypes}}
+                  {{#unless @first}}<span class="type-slash">|</span>{{/unless}}
+                  <div class="single-type-wrapper">
+                    <select name="system.types.{{this.index}}">
+                      {{selectOptions ../config.abilitiesTypes selected=this.value localize=true blank=""}}
+                    </select>
+                    <button type="button" class="btn-remove-type" data-action="removeType" data-index="{{this.index}}" title="{{localize 'GAIA.Ability.RemoveType'}}">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                {{/each}}
+              </div>
+            {{/if}}
             <button type="button" class="btn-add-type" data-action="addType" title="{{localize 'GAIA.Ability.AddType'}}">
               <i class="fas fa-plus"></i>
             </button>
           </div>
         </div>
-
-        {{#if hasAdditionalTypes}}
-        <div class="meta-row-2">
-          <div class="additional-types-container">
-            {{#each additionalTypes}}
-              {{#unless @first}}<span class="type-slash">|</span>{{/unless}}
-              <div class="single-type-wrapper">
-                <select name="system.types.{{this.index}}">
-                  {{selectOptions ../config.abilitiesTypes selected=this.value localize=true}}
-                </select>
-                <button type="button" class="btn-remove-type" data-action="removeType" data-index="{{this.index}}" title="{{localize 'GAIA.Ability.RemoveType'}}">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            {{/each}}
-          </div>
-        </div>
-        {{/if}}
       </div>
 
     </div>
@@ -98,17 +100,28 @@
         </div>
         
         {{#each formattedSubEffects}}
-        <div class="subeffect-block">
-          <div class="subeffect-header-row">
-            <input name="system.subEffects.{{index}}.name" type="text" class="subeffect-name" value="{{this.name}}" placeholder="{{localize 'GAIA.Ability.SubEffectNamePlaceholder'}}" />
-            <input name="system.subEffects.{{index}}.cost" type="text" class="subeffect-cost" value="{{this.cost}}" placeholder="{{localize 'GAIA.Ability.SubEffectCostPlaceholder'}}" />
-            <button type="button" class="btn-remove-subeffect" data-action="removeSubEffect" data-index="{{index}}" title="{{localize 'GAIA.Ability.RemoveSubEffect'}}">
-              <i class="fas fa-trash"></i>
-            </button>
+        <div class="subeffect-card" data-action="editSubEffect" data-index="{{index}}" style="cursor: pointer;" title="Clique para editar esta sub-habilidade">
+          <div class="subeffect-card-header">
+            <div class="subeffect-identity">
+              <strong class="subeffect-title-text">{{this.name}}</strong>
+              <div class="subeffect-meta-badges">
+                {{#if this.actionTypeLabel}}<span class="subeffect-meta-badge action-badge">{{this.actionTypeLabel}}</span>{{/if}}
+                {{#if this.typeLabel}}<span class="subeffect-meta-badge type-badge">{{this.typeLabel}}</span>{{/if}}
+                {{#if this.cost}}<span class="subeffect-cost-badge"><i class="fas fa-bolt"></i> {{this.cost}}</span>{{/if}}
+              </div>
+            </div>
+            <div class="subeffect-controls">
+              <button type="button" class="btn-roll-subeffect" data-action="rollSubEffect" data-index="{{index}}" title="Enviar Sub-Habilidade para o Chat">
+                <i class="fas fa-comment-alt"></i>
+              </button>
+              <button type="button" class="btn-edit-subeffect" data-action="editSubEffect" data-index="{{index}}" title="Editar Sub-Habilidade">
+                <i class="fas fa-pen-to-square"></i>
+              </button>
+              <button type="button" class="btn-remove-subeffect" data-action="removeSubEffect" data-index="{{index}}" title="{{localize 'GAIA.Ability.RemoveSubEffect'}}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
           </div>
-          <div class="subeffect-divider"></div>
-          <textarea name="system.subEffects.{{index}}.description" class="subeffect-desc" placeholder="{{localize 'GAIA.Ability.SubEffectDescPlaceholder'}}">{{this.description}}</textarea>
-          <input name="system.subEffects.{{index}}.note" type="text" class="subeffect-note" value="{{this.note}}" placeholder="{{localize 'GAIA.Ability.SubEffectNotePlaceholder'}}" />
         </div>
         {{/each}}
       </div>

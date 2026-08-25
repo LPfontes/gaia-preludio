@@ -153,19 +153,16 @@
                         {{ability.name}}
                       </h2>
                     </div>
+                    {{#if (or ability.metaRow1 ability.hasAdditionalTypes)}}
                     <div class="ability-meta-bar">
-                      <div class="meta-row-1">
-                        <span class="meta-cost">{{#if ability.system.cost}}{{ability.system.cost}}{{else}}1 PE{{/if}}</span>
-                        <span class="meta-divider">|</span>
-                        <span class="meta-action">{{#if ability.actionLabel}}{{ability.actionLabel}}{{else}}Ação Ativa{{/if}}</span>
-                        <span class="meta-divider">|</span>
-                        <span class="meta-category">{{#if ability.firstType}}{{ability.firstType}}{{else}}Conjuração{{/if}}</span>
-                        {{#if ability.hasAdditionalTypes}}
-                          <span class="meta-divider">|</span>
-                          <span class="meta-additional-types">{{ability.additionalTypes}}</span>
-                        {{/if}}
-                      </div>
+                      {{#if ability.metaRow1}}
+                        <div class="meta-row-1">{{ability.metaRow1}}</div>
+                      {{/if}}
+                      {{#if ability.hasAdditionalTypes}}
+                        <div class="meta-row-2">{{ability.additionalTypes}}</div>
+                      {{/if}}
                     </div>
+                    {{/if}}
                   </div>
 
                   <div class="ability-card-body">
