@@ -1,0 +1,462 @@
+/**
+ * ==============================================================================
+ * ITEM ACTIONS STYLES / ESTILOS DO PAINEL DE AÇÕES DE ITENS
+ * ==============================================================================
+ * PT: Estilização do painel de Ações incluído em Armas, Armaduras e Habilidades.
+ * EN: Styling for the Actions panel included in Weapons, Armors, and Abilities.
+ */
+
+.item-actions-panel {
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item-actions-panel .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--gaia-border-subtle);
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+.item-actions-panel .description-title {
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+}
+
+.item-actions-panel .btn-add-action {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--gaia-border-frame);
+  padding: 4px 10px;
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.item-actions-panel .btn-add-action:hover {
+  background: var(--gaia-purple);
+  border-color: var(--gaia-purple-dark);
+}
+
+.item-actions-panel .actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Card individual da ação */
+.item-actions-panel .action-card {
+  border: 1px solid var(--gaia-border-subtle);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 8px 10px;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.item-actions-panel .action-card:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.item-actions-panel .action-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.item-actions-panel .action-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.item-actions-panel .action-card-name {
+  cursor: pointer;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  transition: color 0.15s ease;
+}
+
+.item-actions-panel .action-card-name:hover {
+  color: var(--gaia-purple-dark);
+  text-decoration: underline;
+}
+
+/* Badges / Etiquetas da Ação */
+.action-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.action-badge-row{
+  display: flex;
+  gap: 6px;
+}
+.badge {
+  font-weight: 600;
+  padding: 4px 4px;
+}
+
+.badge.cost-badge {
+  background: rgba(0, 0, 0, 0.15);
+  color: var(--gaia-energy);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+
+}
+
+.badge.type-badge {
+  background: rgba(0, 0, 0, 0.15);
+  color: var(--gaia-text-parchment);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.badge.category-badge {
+  background: rgba(140, 115, 85, 0.2);
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-subtle);
+}
+
+/* Controles do Card (Rolar, Editar, Excluir) */
+.item-actions-panel .action-card-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.item-actions-panel .action-card-controls button {
+  background: transparent;
+  border: none;
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: var(--gaia-font-base);
+  transition: color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.item-actions-panel .action-card-controls button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+.item-actions-panel .action-card-controls .btn-roll-action:hover {
+  color: var(--gaia-purple-dark);
+}
+
+.item-actions-panel .action-card-controls .btn-edit-action:hover {
+  color: #1d4ed8;
+}
+
+.item-actions-panel .action-card-controls .btn-remove-action:hover {
+  color: var(--gaia-health);
+}
+
+/* Descrição e Sumário */
+.item-actions-panel .action-card-desc {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  margin-top: 4px;
+}
+
+.item-actions-panel .action-card-summary {
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-purple-dark);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+/* Estado vazio */
+.item-actions-panel .empty-hint {
+  text-align: center;
+  font-style: italic;
+  color: var(--gaia-text-parchment);
+  font-size: var(--gaia-font-base);
+  padding: 10px;
+}
+
+/* ========================================================================== */
+/* ACTION CHAT CARD STYLES / ESTILOS DO CARD DE AÇÃO NO CHAT                  */
+/* ========================================================================== */
+
+.gaia-action-chat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: inherit;
+}
+
+.gaia-action-chat-card .action-card-title-header {
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-purple-dark);
+  border-bottom: 1px solid var(--gaia-purple-dark);
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gaia-action-chat-card .action-item-parent {
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gaia-action-chat-card .action-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin: 2px 0 6px 0;
+}
+
+.gaia-action-chat-card .action-cost-notice {
+  color: var(--gaia-purple-dark);
+  padding: 2px 6px;
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+}
+
+.gaia-action-chat-card .action-description-p {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+}
+
+/* Seções de Ação no Chat (Ataque, Dano, Teste, Condição, Área) */
+.gaia-action-chat-card .action-section-block {
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.gaia-action-chat-card .action-section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.gaia-action-chat-card .action-section-title {
+  font-size: var(--gaia-font-lg);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+.gaia-action-chat-card .action-section-title.attack-title {
+  color: var(--gaia-purple-dark);
+}
+
+.gaia-action-chat-card .action-section-title.damage-title {
+  color: var(--gaia-health);
+}
+
+.gaia-action-chat-card .action-section-title.condition-title {
+  color: #9165dd98;
+}
+
+.gaia-action-chat-card .action-section-title.aoe-title {
+  color: #679bb4c2;
+}
+
+/* Seção de Alvos para Aplicação de Dano de Ação */
+.action-damage-targets-block {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.action-damage-target-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+/* Botões Interativos no Card de Chat */
+.gaia-action-chat-card button.btn-action-chat,
+.action-damage-targets-block button.btn-apply-damage-target {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--gaia-border-frame);
+  padding: 2px 8px;
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.gaia-action-chat-card button.btn-action-chat:hover,
+.action-damage-targets-block button.btn-apply-damage-target:hover {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: var(--gaia-border-gold);
+  transform: translateY(-1px);
+}
+
+.gaia-action-chat-card .btn-roll-action-damage:hover {
+  background: var(--gaia-health);
+}
+
+.gaia-action-chat-card .btn-roll-action-check:hover {
+  background: #d3aa7a;
+}
+
+.gaia-action-chat-card .btn-apply-action-condition:hover {
+  background: #a78ed1;
+}
+
+.gaia-action-chat-card .btn-place-action-template:hover {
+  background: #79a6bd;
+}
+
+.gaia-action-chat-card .action-check-outcome {
+  display: flex;
+  align-items: baseline;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-action-chat-card .action-check-outcome-label {
+  font-weight: 700;
+  font-family: var(--gaia-font-medieval);
+}
+
+.gaia-action-chat-card .action-check-outcome.success .action-check-outcome-label {
+  width: 100%;
+  font-size: var(--gaia-font-lg);  
+  background: rgba(0, 255, 30, 0.3);
+}
+
+.gaia-action-chat-card .action-check-outcome.failure .action-check-outcome-label {
+  width: 100%;
+  font-size: var(--gaia-font-lg);  
+  background: rgba(185, 28, 28, 0.3);
+}
+
+.gaia-action-chat-card .action-check-outcome-content {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  flex: 1;
+}
+
+.gaia-action-chat-card .action-condition-desc {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  font-style: italic;
+  margin-top: 4px;
+  
+}
+
+/* Linhas de Alvos e Defesa */
+.gaia-action-chat-card .action-target-row,
+.action-damage-targets-block .action-damage-target-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 6px 10px;
+  font-size: var(--gaia-font-base);
+  gap: 4px;
+}
+
+.gaia-action-chat-card .action-target-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.gaia-action-chat-card .btn-target-defend {
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  transition: all 0.15s ease;
+}
+
+.gaia-action-chat-card .btn-target-defend:hover {
+  background: var(--gaia-purple);
+  color: #fff;
+  border-color: var(--gaia-purple-dark);
+}
+
+/* Bloco de alvos pós-rolagem de dano */
+.action-damage-targets-block {
+  margin-top: 4px;
+  padding-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.action-damage-targets-block button.btn-apply-damage-target:hover {
+  background: var(--gaia-health);
+  color: #fff;
+  border-color: #991b1bb0;
+}
+
+/* Card de Resultado de Teste / Embate no Chat */
+.gaia-outcome-card {
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.1);
+  font-family: inherit;
+}
+
+.gaia-outcome-card.outcome-success {
+  border-left-color: #27ae5fc4;
+}
+
+.gaia-outcome-card.outcome-failure {
+  border-left-color: #c03a2bcb;
+}
+
+.gaia-outcome-card .outcome-title {
+  font-family: var(--gaia-font-medieval);
+  font-weight: 700;
+  font-size: var(--gaia-font-base);
+  margin-bottom: 4px;
+}
+
+.gaia-outcome-card.outcome-success .outcome-title {
+  color: #1e824dad;
+}
+
+.gaia-outcome-card.outcome-failure .outcome-title {
+  color: #c03a2baf;
+}
+
+.gaia-outcome-card .outcome-details {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+}
+
+

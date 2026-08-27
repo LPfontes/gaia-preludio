@@ -1,0 +1,74 @@
+name: Release Creation
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Tag da versão (ex: v1.0.0)"
+        required: true
+        default: "v1.0.0"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repositório
+        uses: actions/checkout@v4
+
+      - name: Extrair Versão da Tag
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_NAME="${{ github.event.inputs.version }}"
+          else
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+          fi
+          VERSION="${TAG_NAME#v}"
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Atualizar system.json
+        run: |
+          node -e "
+            const fs = require('fs');
+            const system = JSON.parse(fs.readFileSync('system.json', 'utf8'));
+            const version = '${{ steps.get_version.outputs.version }}';
+            const tag = '${{ steps.get_version.outputs.tag_name }}';
+            system.version = version;
+            system.manifest = 'https://github.com/${{ github.repository }}/releases/latest/download/system.json';
+            system.download = 'https://github.com/${{ github.repository }}/releases/download/' + tag + '/gaia-preludio.zip';
+            fs.writeFileSync('system.json', JSON.stringify(system, null, 2));
+            console.log('system.json atualizado com sucesso para versão:', version);
+          "
+
+      - name: Criar Pacote Zip do Sistema (gaia-preludio.zip)
+        run: |
+          zip -r gaia-preludio.zip \
+            system.json \
+            DOCUMENTACAO_SISTEMA.md \
+            README.md \
+            LICENSE \
+            assets \
+            lang \
+            module \
+            styles \
+            templates \
+            -x "*.git*" "node_modules/*" "*.zip"
+
+      - name: Publicar GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.tag_name }}
+          name: "Gaia: Prelúdio ${{ steps.get_version.outputs.tag_name }}"
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            system.json
+            gaia-preludio.zip

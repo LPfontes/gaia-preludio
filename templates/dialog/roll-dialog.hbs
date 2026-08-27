@@ -6,13 +6,15 @@
       {{#if statValue}}
         <span class="dialog-stat-badge">+{{statValue}}</span>
       {{/if}}
+      {{#if hasExhaustion}}
+        <span class="dialog-stat-badge exhaustion-penalty-badge" title="Penalidade de Exaustão ativa">-{{exhaustionPenalty}} Exaustão</span>
+      {{/if}}
     </div>
   {{/if}}
 
   {{!-- 2. Tipo de Rolagem (Aptidão / Inaptidão) --}}
   <div class="form-group">
     <label for="fitness-select">
-      <i class="fa-solid fa-dice-d12"></i>
       <strong>{{localize "GAIA.Dialog.RollType"}}</strong>
     </label>
     <div class="form-fields">

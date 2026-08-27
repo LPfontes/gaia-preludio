@@ -9,40 +9,62 @@
       </div>
     </div>
 
-    <div class="weapons-table-frame">
-      <table class="inventory-grid-table">
-        <thead>
-          <tr>
-            <th class="col-equip-price">{{localize "GAIA.Equipment.Price"}}</th>
-            <th class="col-equip-category">{{localize "GAIA.Equipment.Category"}}</th>
-            <th class="col-equip-qty">{{localize "GAIA.Equipment.Quantity"}}</th>
-            <th class="col-equip-unity">{{localize "GAIA.Equipment.Weight"}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="item-row">
-            <td class="col-equip-price">
-              <input type="number" name="system.price" value="{{system.price}}" min="0" />
-            </td>
-            <td class="col-equip-category">
-              <select name="system.category">
-                {{selectOptions config.equipmentCategories selected=system.category localize=true}}
-              </select>
-            </td>
-            <td class="col-equip-qty">
-              <input type="number" name="system.quantity" value="{{system.quantity}}" min="1" />
-            </td>
-            <td class="col-equip-unity">
-              <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    {{!-- NAVEGAÇÃO POR ABAS DO ITEM --}}
+    <nav class="sheet-navigation-tabs item-tabs tabs" data-group="primary">
+      <a class="tab-item active" data-action="tab" data-group="primary" data-tab="tabela">{{localize "GAIA.ItemTabs.Table"}}</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="acoes">{{localize "GAIA.ItemTabs.Actions"}}</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="efeitos">{{localize "GAIA.ItemTabs.Effects"}}</a>
+    </nav>
 
-    <div class="weapon-description-panel">
-      <label class="description-title">{{localize "GAIA.Equipment.Description"}}</label>
-      <textarea name="system.description" class="equipment-description-textarea" placeholder="{{localize 'GAIA.Equipment.DescriptionPlaceholder'}}">{{system.description}}</textarea>
-    </div>
+    <section class="sheet-tabs-content item-tabs-content">
+      {{!-- ABA 1: TABELA --}}
+      <div class="tab tabela active" data-group="primary" data-tab="tabela">
+        <div class="weapons-table-frame">
+          <table class="inventory-grid-table">
+            <thead>
+              <tr>
+                <th class="col-equip-price">{{localize "GAIA.Equipment.Price"}}</th>
+                <th class="col-equip-category">{{localize "GAIA.Equipment.Category"}}</th>
+                <th class="col-equip-qty">{{localize "GAIA.Equipment.Quantity"}}</th>
+                <th class="col-equip-unity">{{localize "GAIA.Equipment.Weight"}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="item-row">
+                <td class="col-equip-price">
+                  <input type="number" name="system.price" value="{{system.price}}" min="0" />
+                </td>
+                <td class="col-equip-category">
+                  <select name="system.category">
+                    {{selectOptions config.equipmentCategories selected=system.category localize=true}}
+                  </select>
+                </td>
+                <td class="col-equip-qty">
+                  <input type="number" name="system.quantity" value="{{system.quantity}}" min="1" />
+                </td>
+                <td class="col-equip-unity">
+                  <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="weapon-description-panel" style="margin-top: 15px;">
+          <label class="description-title">{{localize "GAIA.Equipment.Description"}}</label>
+          <textarea name="system.description" class="equipment-description-textarea" placeholder="{{localize 'GAIA.Equipment.DescriptionPlaceholder'}}">{{system.description}}</textarea>
+        </div>
+      </div>
+
+      {{!-- ABA 2: AÇÕES --}}
+      <div class="tab acoes" data-group="primary" data-tab="acoes">
+        {{> "systems/gaia-preludio/templates/item/parts/item-actions.hbs"}}
+      </div>
+
+      {{!-- ABA 3: EFEITOS --}}
+      <div class="tab efeitos" data-group="primary" data-tab="efeitos">
+        {{> "systems/gaia-preludio/templates/item/parts/item-effects.hbs"}}
+      </div>
+    </section>
   </div>
 </section>

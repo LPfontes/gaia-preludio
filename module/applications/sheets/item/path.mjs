@@ -6,8 +6,7 @@
  * EN: Item sheet for Paths in the Gaia: Prelúdio system.
  */
 
-const { ItemSheetV2 } = foundry.applications.sheets;
-const { HandlebarsApplicationMixin } = foundry.applications.api;
+import { GaiaItemSheet } from "./base.mjs";
 import { AbilitySheet } from "./ability.mjs";
 
 class PathAbilitySheet extends AbilitySheet {
@@ -17,7 +16,7 @@ class PathAbilitySheet extends AbilitySheet {
   }
 }
 
-export class PathSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
+export class PathSheet extends GaiaItemSheet {
   /** @override */
   static DEFAULT_OPTIONS = {
     classes: ["gaia-preludio", "sheet", "item", "caminho"],

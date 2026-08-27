@@ -13,7 +13,7 @@
 
 import { BaseDataModel } from "./baseModel.mjs";
 
-const { NumberField, ArrayField, SchemaField, StringField } = foundry.data.fields;
+const { NumberField, ArrayField, SchemaField, StringField, BooleanField } = foundry.data.fields;
 
 /**
  * @extends {BaseDataModel}
@@ -38,17 +38,29 @@ class ActorBaseDataModel extends BaseDataModel {
         temp: new NumberField({ required: false, integer: true, min: 0, initial: 0 })
       }),
 
+      // PT: Sistema de Dado de Morte (Incapacitado: Sentenças do Corruptor e Dádivas do Artesão)
+      // EN: Death Die system (Incapacitated: Corruption Sentences and Artisan Gifts)
+      death: new SchemaField({
+        sentences: new NumberField({ required: true, integer: true, min: 0, max: 2, initial: 0 }),
+        gifts: new NumberField({ required: true, integer: true, min: 0, max: 2, initial: 0 }),
+        stabilized: new BooleanField({ required: true, initial: false })
+      }),
+
       // PT: Tamanho do personagem ou criatura
       // EN: Size of the character or creature
       size: new StringField({ required: true, initial: "medium" }),
 
-      // PT: Energia / mana / estamina (atual e máximo)
-      // EN: Energy / mana / stamina (current and maximum)
+      // PT: Energia / mana / estamina (atual, máximo e temporário)
+      // EN: Energy / mana / stamina (current, maximum, and temporary)
       energy: new SchemaField({
         value: new NumberField({ required: true, integer: true, min: 0, initial: 5 }),
-        max: new NumberField({ required: true, integer: true, min: 0, initial: 5 })
+        max: new NumberField({ required: true, integer: true, min: 0, initial: 5 }),
+        temp: new NumberField({ required: false, integer: true, min: 0, initial: 0 })
       }),
       
+      // PT: Quantidade de exaustões (0 a 6)
+      // EN: Number of exhaustion entries (0 to 6)
+      exhaustion: new NumberField({ required: true, integer: true, min: 0, max: 6, initial: 0 }),
       // PT: Deslocamento / velocidade de movimento em combate
       // EN: Movement speed / travel displacement in combat
       movement: new NumberField({ required: true, integer: true, min: 0, initial: 6 }),

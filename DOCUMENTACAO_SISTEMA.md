@@ -49,6 +49,11 @@ O sistema utiliza a API nativa de `DataModel` do Foundry VTT (`foundry.abstract.
 * **`energy`** (`SchemaField`): Energia / Mana / Estamina.
   * `value` (`NumberField`, Inteiro, Mín: 0, Padrão: 5): Energia atual.
   * `max` (`NumberField`, Inteiro, Mín: 0, Padrão: 5): Energia máxima.
+  * `temp` (`NumberField`, Inteiro, Mín: 0, Padrão: 0): Pontos de Energia Temporários (PET).
+* **`death`** (`SchemaField`): Sistema de Dado de Morte para alvos Incapacitados.
+  * `sentences` (`NumberField`, Inteiro, Mín: 0, Máx: 2, Padrão: 0): Sentenças do Corruptor acumuladas (2 = Morte).
+  * `gifts` (`NumberField`, Inteiro, Mín: 0, Máx: 2, Padrão: 0): Dádivas do Artesão acumuladas (2 = Estabilizado).
+  * `stabilized` (`BooleanField`, Padrão: false): Indicador se o alvo está estabilizado (não precisa rolar Dado de Morte e regenera 1d4 PV a cada 10 min).
 * **`movement`** (`NumberField`, Inteiro, Mín: 0, Padrão: 6): Deslocamento base em m/quadrados.
 * **`block`** (`NumberField`, Inteiro, Mín: 0, Padrão: 0): Valor defensivo de bloqueio base.
 * **`passivePerception`** (`NumberField`, Inteiro, Padrão: 6): Percepção passiva base.
@@ -71,7 +76,8 @@ O sistema utiliza a API nativa de `DataModel` do Foundry VTT (`foundry.abstract.
 *Extende `ActorBaseDataModel`. Modelo para personagens jogáveis (Legados).*
 * Campos herdados de `ActorBaseDataModel`.
 * **`legacy`** (`StringField`): Identificador do Legado/Arquétipo do personagem.
-* **`exhaustion`** (`NumberField`, Inteiro, Mín: 0, Padrão: 0): Nível de exaustão (0 a 6 pips).
+* **`exhaustion`** (`NumberField`, Inteiro, Mín: 0, Máx: 6, Padrão: 0): Nível de exaustão (0 a 6 pips).
+  * **Regra de Exaustão:** Para cada 1 ponto de Exaustão, o personagem recebe **-1 de penalidade** em todos os testes de **Parâmetro** e **Bloqueio** realizados, e tem sua **Movimentação reduzida em 1 metro** por ponto. Ao atingir **6 pontos de Exaustão**, o personagem **morre**.
 * **`parameters`** (`ArrayField<SchemaField>`): Lista dos 8 Parâmetros base.
   * `name` (`StringField`): Nome da chave do parâmetro (`precision`, `brutality`, `dexterity`, `agility`, `channeling`, `arcane`, `spirit`, `vigor`).
   * `value` (`NumberField`, Inteiro, Padrão: 0): Pontos no parâmetro (0 a 6).
@@ -326,6 +332,8 @@ O Navegador de Itens (`module/applications/item-browser.mjs`) permite buscar, fi
 | **`flowClash()` / `flowEmbate()`** | `flowClash(roll1, roll2): object` | Executa a comparação de um Embate entre dois Alvos, retornando o vencedor (1, 2 ou 0 em empate) e a diferença. |
 | **`flowDifficultyCheck()` / `flowTesteDificuldade()`** | `flowDifficultyCheck(roll, difficulty): object` | Valida se o resultado total de um teste atinge ou supera a Dificuldade (Dif.) estabelecida. |
 | **`flowDestinyCheck()` / `flowTesteDestino()`** | `async flowDestinyCheck(difficulty, options): Promise<object>` | Rola um 1d12 puro (sem modificadores) e compara o resultado com a Dificuldade (Dif.) pré-estabelecida. |
+| **`flowDeathDie()` / `flowDadoDeMorte()`** | `async flowDeathDie(actor, options): Promise<object\|null>` | Rola o Dado de Morte (1d12) para um alvo incapacitado: 1-6 concede Sentença do Corruptor (2 = Morte), 7-12 concede Dádiva do Artesão (2 = Estabilizado). |
+| **`flowRegenerateStabilized()` / `flowRegenerarEstabilizado()`** | `async flowRegenerateStabilized(actor): Promise<Roll\|null>` | Rola 1d4 PV de regeneração a cada 10 minutos para um alvo estabilizado. |
 
 ---
 

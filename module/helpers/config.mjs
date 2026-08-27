@@ -433,4 +433,77 @@ GAIA.difficultyLevels = {
   }
 };
 
+/**
+ * PT: Condições e Efeitos de Status do sistema Gaia: Prelúdio.
+ * EN: Conditions and Status Effects for the Gaia: Prelúdio system.
+ */
+GAIA.conditions = {
+  penumbra: {
+    id: "penumbra",
+    name: "GAIA.Condition.Penumbra",
+    icon: "icons/magic/perception/shadow-stealth-eyes-purple.webp",
+    description: "GAIA.Condition.PenumbraDesc"
+  },
+  escuridao: {
+    id: "escuridao",
+    name: "GAIA.Condition.Escuridao",
+    icon: "icons/magic/unholy/silhouette-robe-evil-glow.webp",
+    description: "GAIA.Condition.EscuridaoDesc"
+  },
+  atordoado: {
+    id: "atordoado",
+    name: "GAIA.Condition.Atordoado",
+    icon: "icons/magic/control/silhouette-hold-beam-blue.webp",
+    description: "GAIA.Condition.AtordoadoDesc"
+  },
+  enfraquecido: {
+    id: "enfraquecido",
+    name: "GAIA.Condition.Enfraquecido",
+    icon: "icons/magic/death/undead-skeleton-energy-green.webp",
+    description: "GAIA.Condition.EnfraquecidoDesc"
+  },
+  lentidao: {
+    id: "lentidao",
+    name: "GAIA.Condition.Lentidao",
+    icon: "icons/magic/time/hourglass-tilted-gray.webp",
+    description: "GAIA.Condition.LentidaoDesc"
+  },
+  incapacitado: {
+    id: "incapacitado",
+    name: "GAIA.Condition.Incapacitado",
+    icon: "icons/svg/unconscious.svg",
+    description: "GAIA.Condition.IncapacitadoDesc"
+  },
+  caido: {
+    id: "caido",
+    name: "GAIA.Condition.Caido",
+    icon: "icons/svg/falling.svg",
+    description: "GAIA.Condition.CaidoDesc"
+  },
+  envenenado: {
+    id: "envenenado",
+    name: "GAIA.Condition.Envenenado",
+    icon: "icons/magic/symbols/poison-drop-skull-green.webp",
+    description: "GAIA.Condition.EnvenenadoDesc"
+  },
+  fratura: {
+    id: "fratura",
+    name: "GAIA.Condition.Fratura",
+    icon: "icons/skills/wounds/bone-broken-red.webp",
+    description: "GAIA.Condition.FraturaDesc"
+  },
+  imovel: {
+    id: "imovel",
+    name: "GAIA.Condition.Imovel",
+    icon: "icons/magic/nature/root-vine-entangle-tan.webp",
+    description: "GAIA.Condition.ImovelDesc"
+  },
+  sangramento: {
+    id: "sangramento",
+    name: "GAIA.Condition.Sangramento",
+    icon: "icons/skills/wounds/blood-drip-droplet-red.webp",
+    description: "GAIA.Condition.SangramentoDesc"
+  }
+};
+
 

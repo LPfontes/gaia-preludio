@@ -96,7 +96,10 @@
                   <div class="masteries-list">
                     {{#each unlockedMasteries as |mastery index|}}
                       <div class="mastery-item">
-                        <span class="mastery-name">{{mastery.label}}</span>
+                        <span class="mastery-name" data-action="rollMastery" data-key="{{mastery.key}}" data-knowledge="{{mastery.knowledgeKey}}" title="{{localize 'GAIA.Dialog.RollTitle' label=mastery.label}}">
+                          <span class="stat-roll-icon" aria-hidden="true"></span>
+                          {{mastery.label}}
+                        </span>
                         <button type="button" class="btn-remove-mastery" data-action="removeMastery" data-index="{{index}}" title="{{localize 'GAIA.title.RemoveMastery'}}">
                           <i class="fa-solid fa-xmark"></i>
                         </button>

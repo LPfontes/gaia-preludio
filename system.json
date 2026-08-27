@@ -1,13 +1,24 @@
 {
   "id": "gaia-preludio",
   "title": "Gaia: Prelúdio",
-  "description": "Sistema de RPG Gaia: Prelúdio para Foundry Virtual Tabletop.",
-  "version": "0.1.0",
+  "description": "Sistema de RPG oficial Gaia: Prelúdio para Foundry Virtual Tabletop.",
+  "version": "1.0.0",
   "compatibility": {
     "minimum": "14",
     "verified": "14",
     "maximum": "14"
   },
+  "authors": [
+    {
+      "name": "LPfontes",
+      "url": "https://github.com/LPfontes"
+    }
+  ],
+  "url": "https://github.com/LPfontes/gaia-preludio",
+  "manifest": "https://github.com/LPfontes/gaia-preludio/releases/latest/download/system.json",
+  "download": "https://github.com/LPfontes/gaia-preludio/releases/latest/download/gaia-preludio.zip",
+  "bugs": "https://github.com/LPfontes/gaia-preludio/issues",
+  "license": "MIT",
   "esmodules": [
     "module/gaia-preludio.mjs"
   ],
@@ -26,8 +37,7 @@
       "weapon": {},
       "ability": {},
       "legacy": {},
-      "path": {},
-      "caminho": {}
+      "path": {}
     }
   },
   "languages": [

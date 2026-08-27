@@ -6,25 +6,19 @@
  * EN: Item sheet for Legacy in the Gaia: Prelúdio system.
  */
 
-const { ItemSheetV2 } = foundry.applications.sheets;
-const { HandlebarsApplicationMixin } = foundry.applications.api;
+import { GaiaItemSheet } from "./base.mjs";
 import { promptLegacyAbilityDialog } from "../../../helpers/dialogs.mjs";
 
-export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
+export class LegacySheet extends GaiaItemSheet {
   /** @override */
   static DEFAULT_OPTIONS = {
     classes: ["gaia-preludio", "sheet", "item", "legado"],
     position: { width: 800, height: "auto" },
-    tag: "form",
-    form: {
-      submitOnChange: true,
-      closeOnSubmit: false
-    },
     actions: {
-      editImage: LegacySheet.#onEditImage,
       addLegacyAbility: LegacySheet.#onAddLegacyAbility,
       editLegacyAbility: LegacySheet.#onEditLegacyAbility,
-      removeLegacyAbility: LegacySheet.#onRemoveLegacyAbility
+      removeLegacyAbility: LegacySheet.#onRemoveLegacyAbility,
+      rollLegacyAction: LegacySheet.#onRollLegacyAction
     }
   };
 
@@ -34,24 +28,12 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   };
 
   /** @override */
-  _onRender(context, options) {
-    super._onRender(context, options);
-    this.element.querySelectorAll("[data-edit='img']").forEach(img => {
-      img.addEventListener("click", (event) => {
-        LegacySheet.#onEditImage.call(this, event, img);
-      });
-    });
-  }
-
-  /** @override */
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
-    context.item = this.item;
-    context.system = this.item.system;
-    context.config = /** @type {any} */ (CONFIG).GAIA;
+    const config = context.config;
 
     const rawAbilities = this.item.system?.legacyAbilities ?? [];
-    context.legacyAbilities = rawAbilities.map((ab) => {
+    context.legacyAbilities = rawAbilities.map((ab, index) => {
       const activeEffect = ab.activeEffect;
       let activeEffectText = "";
       if (typeof activeEffect === "string") {
@@ -59,31 +41,38 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       } else if (activeEffect && typeof activeEffect === "object") {
         activeEffectText = typeof activeEffect.text === "string" ? activeEffect.text : "";
       }
+
+      const actions = Array.isArray(ab.actions) ? ab.actions : [];
+      const formattedActions = actions.map((act, aIdx) => {
+        const summaries = [];
+        if (act.attack?.hasAttack) {
+          const paramKey = act.attack.attribute || "brutality";
+          const paramLabel = config?.parameters?.[paramKey] ? game.i18n.localize(config.parameters[paramKey]) : paramKey;
+          summaries.push(`Ataque: ${paramLabel}`);
+        }
+        if (act.damage?.hasDamage && act.damage.formula) {
+          summaries.push(`Dano: ${act.damage.formula}`);
+        }
+        if (act.check?.hasCheck) {
+          summaries.push(`Dif. ${act.check.difficulty ?? 10}`);
+        }
+        return {
+          ...act,
+          index: aIdx,
+          abilityIndex: index,
+          summary: summaries.join(" | ")
+        };
+      });
+
       return {
         ...ab,
-        activeEffectText
+        index,
+        activeEffectText,
+        formattedActions
       };
     });
 
     return context;
-  }
-
-  static async #onEditImage(event, target) {
-    const attr = target.dataset.edit || "img";
-    const current = foundry.utils.getProperty(this.item, attr);
-    const FilePickerClass = foundry.applications.apps.FilePicker?.implementation || globalThis.FilePicker;
-    const fpOptions = {
-      type: "image",
-      current,
-      callback: async (path) => {
-        await this.item.update({ [attr]: path });
-      }
-    };
-    if (Number.isNumeric(this.position?.top)) fpOptions.top = this.position.top + 40;
-    if (Number.isNumeric(this.position?.left)) fpOptions.left = this.position.left + 10;
-
-    const fp = new FilePickerClass(fpOptions);
-    return fp.browse();
   }
 
   static async #onAddLegacyAbility(event, target) {
@@ -96,6 +85,7 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     current.push({
       name: dialogData.name,
       description: dialogData.description,
+      actions: dialogData.actions || [],
       activeEffect: dialogData.activeEffect ?? {
         text: dialogData.activeEffectText,
         used: false,
@@ -120,17 +110,17 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     const dialogData = await promptLegacyAbilityDialog(ability);
     if (!dialogData) return;
 
-    const current = Array.isArray(rawList) ? foundry.utils.deepClone(rawList) : [];
+    const current = Array.isArray(rawList) ? [...rawList] : [];
     current[index] = {
-      ...current[index],
+      ...ability,
       name: dialogData.name,
       description: dialogData.description,
+      actions: dialogData.actions || [],
       activeEffect: dialogData.activeEffect ?? {
-        ...(typeof current[index].activeEffect === "object" ? current[index].activeEffect : {}),
+        ...(ability.activeEffect || {}),
         text: dialogData.activeEffectText
       }
     };
-
     await this.item.update({ "system.legacyAbilities": current });
   }
 
@@ -138,9 +128,24 @@ export class LegacySheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     event.preventDefault();
     const index = Number(target.dataset.index);
     if (isNaN(index)) return;
+
     const rawList = this.item.system.legacyAbilities ?? [];
     const current = Array.isArray(rawList) ? [...rawList] : [];
     current.splice(index, 1);
     await this.item.update({ "system.legacyAbilities": current });
+  }
+
+  static async #onRollLegacyAction(event, target) {
+    event.preventDefault();
+    event.stopPropagation();
+    const abilityIndex = Number(target.dataset.abilityIndex);
+    const actionIndex = Number(target.dataset.actionIndex);
+    if (isNaN(abilityIndex) || isNaN(actionIndex)) return;
+
+    const ability = this.item.system?.legacyAbilities?.[abilityIndex];
+    const action = ability?.actions?.[actionIndex];
+    if (!action) return;
+
+    return this.item.rollAction(action);
   }
 }

@@ -1,0 +1,56 @@
+<div class="item-actions-panel">
+  <div class="section-header">
+    <label class="description-title">
+      {{localize "GAIA.Action.SectionTitle"}}
+    </label>
+    <button type="button" class="btn-add-action" data-action="addAction" title="{{localize 'GAIA.Action.AddActionTitle'}}">
+      <i class="fa-solid fa-plus"></i> {{localize "GAIA.Action.AddActionBtn"}}
+    </button>
+  </div>
+
+  <div class="actions-list">
+    {{#each formattedActions}}
+      <div class="action-card">
+        <div class="action-card-header">
+          <div class="action-card-title-group">
+            <strong class="action-card-name" data-action="editAction" data-index="{{this.index}}" title="Clique para editar">
+              {{this.name}}
+            </strong>
+            <div class="action-badges">
+              {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
+              {{#if this.actionTypeLabel}}<span class="badge type-badge">{{this.actionTypeLabel}}</span>{{/if}}
+              {{#if this.categoryLabel}}<span class="badge category-badge">{{this.categoryLabel}}</span>{{/if}}
+            </div>
+          </div>
+          <div class="action-card-controls">
+            <button type="button" class="btn-roll-action" data-action="rollAction" data-index="{{this.index}}" title="{{localize 'GAIA.Action.RollActionTitle'}}">
+              <i class="fa-solid fa-comment-alt"></i>
+            </button>
+            <button type="button" class="btn-edit-action" data-action="editAction" data-index="{{this.index}}" title="{{localize 'GAIA.Action.EditActionTitle'}}">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button type="button" class="btn-remove-action" data-action="removeAction" data-index="{{this.index}}" title="{{localize 'GAIA.Action.RemoveActionTitle'}}">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        {{#if this.description}}
+          <div class="action-card-desc">
+            {{this.description}}
+          </div>
+        {{/if}}
+
+        {{#if this.summary}}
+          <div class="action-card-summary">
+            {{this.summary}}
+          </div>
+        {{/if}}
+      </div>
+    {{else}}
+      <div class="empty-hint">
+        {{localize "GAIA.Action.EmptyActionsHint"}}
+      </div>
+    {{/each}}
+  </div>
+</div>

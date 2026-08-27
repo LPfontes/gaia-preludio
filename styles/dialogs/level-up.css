@@ -1,0 +1,347 @@
+/**
+ * ==============================================================================
+ * GAIA: PRELÚDIO - LEVEL UP / EVOLUÇÃO DO DESPERTAR DIALOG CSS
+ * ==============================================================================
+ */
+
+.gaia-dialog-level-up {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--gaia-font-medieval, Georgia, serif);
+  color: var(--gaia-text-parchment, #2c2416);
+}
+
+/* 1. Header Box */
+.gaia-dialog-level-up .level-up-header-box {
+  background: linear-gradient(135deg, rgba(74, 46, 107, 0.15), rgba(201, 163, 75, 0.15));
+  border: 1px solid var(--gaia-border-gold, #8c7355);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.gaia-dialog-level-up .level-up-header-box h3 {
+  margin: 0 0 4px 0;
+  font-family: var(--gaia-font-medieval, "Cinzel", Georgia, serif);
+  color: var(--gaia-purple-dark);
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+}
+
+.gaia-dialog-level-up .level-up-header-box .level-progression-badge {
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  color: var(--gaia-text-parchment, #2c2416);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.gaia-dialog-level-up .level-up-header-box .level-progression-badge i {
+  color: var(--gaia-gold-accent, #c9a34b);
+}
+
+/* 2. Tabs Navigation */
+.gaia-dialog-level-up .gaia-dialog-tabs {
+  display: flex;
+  gap: 4px;
+  padding-bottom: 2px;
+}
+
+.gaia-dialog-level-up .gaia-dialog-tab-btn {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--gaia-text-parchment, #2c2416);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  font-family: var(--gaia-font-medieval, Georgia, serif);
+}
+
+.gaia-dialog-level-up .gaia-dialog-tab-btn:hover {
+  background: rgba(74, 46, 107, 0.15);
+  color: var(--gaia-purple-dark);
+}
+
+.gaia-dialog-level-up .gaia-dialog-tab-btn.active {
+  background: var(--gaia-purple-dark);
+  color: #fff;
+  border-color: var(--gaia-purple-dark);
+}
+
+
+.gaia-dialog-level-up .tab-points-indicator {
+  font-size: var(--gaia-font-md);
+  font-weight: bold;
+}
+
+.gaia-dialog-level-up .gaia-dialog-tab-body {
+  margin-top: 4px;
+}
+
+.gaia-dialog-level-up .gaia-dialog-tab-pane {
+  display: none;
+}
+
+.gaia-dialog-level-up .gaia-dialog-tab-pane.active {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 3. Sections */
+.gaia-dialog-level-up .level-up-section {
+  border: 1px solid var(--gaia-border-frame, #c4b998);
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gaia-dialog-level-up .level-up-section h4 {
+  margin: 0 0 4px 0;
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-purple-dark);
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px dashed rgba(196, 185, 152, 0.5);
+  padding-bottom: 4px;
+}
+
+
+.gaia-dialog-level-up .level-up-section .section-hint {
+  margin: 0 0 6px 0;
+  font-size: var(--gaia-font-base);
+  color: #666;
+  font-style: italic;
+}
+
+/* 4. HP & Energy Form */
+.gaia-dialog-level-up .form-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.gaia-dialog-level-up .hp-method-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.gaia-dialog-level-up .hp-method-options label {
+  font-size: var(--gaia-font-base);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gaia-dialog-level-up .btn-roll-hp-gain {
+  padding: 4px 8px;
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  background: var(--gaia-purple-dark);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.gaia-dialog-level-up .btn-roll-hp-gain:hover {
+  background: var(--gaia-purple, #581c87);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.gaia-dialog-level-up .hp-gain-preview {
+  font-size: var(--gaia-font-2xl);
+  font-weight: bold;
+  color: var(--gaia-health, #b91c1c);
+}
+
+.gaia-dialog-level-up .energy-gain-row {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-purple-dark);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 5. Attribute Distribution Grids */
+.gaia-dialog-level-up .gaia-params-dist-grid,
+.gaia-dialog-level-up .gaia-knows-dist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+}
+
+.gaia-dialog-level-up .gaia-param-dist-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.gaia-dialog-level-up .gaia-param-dist-card .param-label {
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+}
+
+.gaia-dialog-level-up .gaia-param-dist-card .param-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gaia-dialog-level-up .btn-adjust-param,
+.gaia-dialog-level-up .btn-adjust-know {
+  cursor: pointer;
+  border-radius: 3px;
+  line-height: 1;
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.gaia-dialog-level-up .btn-adjust-param:hover,
+.gaia-dialog-level-up .btn-adjust-know:hover {
+  background: var(--gaia-purple-dark);
+  color: #fff;
+  border-color: var(--gaia-purple-dark);
+}
+
+.gaia-dialog-level-up .param-val-display,
+.gaia-dialog-level-up .know-val-display {
+  font-weight: bold;
+  width: 18px;
+  text-align: center;
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment, #2c2416);
+}
+
+.gaia-dialog-level-up .dist-tracker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-weight: 600;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-dialog-level-up .params-points-left,
+.gaia-dialog-level-up .knows-points-left {
+  color: var(--gaia-purple-dark);
+  font-weight: bold;
+}
+
+.gaia-dialog-level-up .vigor-hp-bonus-notice {
+  margin-top: 8px;
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-green, #2e8b57);
+  font-weight: bold;
+  background: rgba(46, 139, 87, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border-left: 3px solid var(--gaia-green, #2e8b57);
+}
+
+/* 6. Ability / Path Input & Browser Button */
+.gaia-dialog-level-up .level-up-ability-container {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.gaia-dialog-level-up .btn-open-abilities-browser {
+  padding: 6px 12px;
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  background: var(--gaia-purple-dark);
+  color: #fff;
+  border: 1px solid var(--gaia-border-gold, #8c7355);
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  font-family: var(--gaia-font-medieval, Georgia, serif);
+}
+
+.gaia-dialog-level-up .btn-open-abilities-browser:hover {
+  background: var(--gaia-purple, #581c87);
+  box-shadow: 0 2px 5px rgba(74, 46, 107, 0.3);
+}
+
+.gaia-dialog-level-up .level-up-ability-input {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: var(--gaia-font-md);
+  border: 1px solid var(--gaia-border-frame, #c4b998);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--gaia-text-parchment, #2c2416);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.gaia-dialog-level-up .level-up-ability-input:focus {
+  border-color: var(--gaia-purple-dark);
+  outline: none;
+  box-shadow: 0 0 4px rgba(74, 46, 107, 0.3);
+}
+
+/* 7. Level Up Chat Card */
+.gaia-preludio.chat-card.level-up-card {
+  border: 2px solid var(--gaia-border-gold, #8c7355);
+  border-radius: 6px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(74, 46, 107, 0.1), rgba(201, 163, 75, 0.1));
+}
+
+.gaia-preludio.chat-card.level-up-card header h3 {
+  margin: 0;
+  font-family: var(--gaia-font-medieval, "Cinzel", Georgia, serif);
+  color: var(--gaia-purple-dark);
+  font-size: 1.2em;
+}
+
+.gaia-preludio.chat-card.level-up-card .level-up-rewards-grid {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 6px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  font-weight: bold;
+  font-size: var(--gaia-font-sm);
+}

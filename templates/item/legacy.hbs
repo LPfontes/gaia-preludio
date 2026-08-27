@@ -75,6 +75,19 @@
               <strong class="active-effect-label">{{localize "GAIA.Legado.ActiveEffectLabel"}}:</strong> {{ability.activeEffectText}}
             </div>
           {{/if}}
+
+          {{#if ability.formattedActions.length}}
+            <div class="legacy-ability-actions-list" style="margin-top: 6px; display: flex; flex-direction: column; gap: 4px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 4px;">
+              {{#each ability.formattedActions as |action aIdx|}}
+                <div class="legacy-ability-action-row" style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 3px 6px; border-radius: 3px; font-size: 11px;">
+                  <span><strong>{{action.name}}</strong> {{#if action.summary}}<small style="color: var(--gaia-gold-light, #e0cb8d);">({{action.summary}})</small>{{/if}}</span>
+                  <button type="button" class="btn-roll-legacy-action" data-action="rollLegacyAction" data-ability-index="{{ability.index}}" data-action-index="{{aIdx}}" title="{{localize 'GAIA.Action.RollActionTitle'}}" style="background: transparent; border: none; color: var(--gaia-text-parchment); cursor: pointer;">
+                    <i class="fa-solid fa-comment-alt"></i>
+                  </button>
+                </div>
+              {{/each}}
+            </div>
+          {{/if}}
         </div>
       {{else}}
         <p class="empty-hint">{{localize "GAIA.Legado.EmptyAbilitiesHint"}}</p>

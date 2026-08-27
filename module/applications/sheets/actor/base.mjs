@@ -6,11 +6,13 @@ import {
   promptMasteryDialog,
   promptEditFieldDialog,
   promptRollRequestDialog,
-  promptItemActionDialog
+  promptItemActionDialog,
+  promptLevelUpDialog
 } from "../../../helpers/dialogs.mjs";
-import { defense } from "../../../helpers/flow.mjs";
-import { rollWeaponAttack, rollStat } from "../../../helpers/stat-rolls.mjs";
+import { defense, flowDeathDie, flowRegenerateStabilized } from "../../../helpers/flow.mjs";
+import { rollWeaponAttack, rollStat, rollMastery } from "../../../helpers/stat-rolls.mjs";
 import { GaiaItemBrowser } from "../../item-browser.mjs";
+import { GaiaDeathSaveDialog } from "../../death-save-dialog.mjs";
 
 /**
  * ==============================================================================
@@ -33,6 +35,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       primary: "personagem"
     },
     actions: {
+      levelUp: GaiaBaseActorSheet._onLevelUp,
       addResistance: GaiaBaseActorSheet._onAddResistance,
       removeResistance: GaiaBaseActorSheet._onRemoveResistance,
       addImmunity: GaiaBaseActorSheet._onAddImmunity,
@@ -42,10 +45,17 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       addReduction: GaiaBaseActorSheet._onAddReduction,
       removeReduction: GaiaBaseActorSheet._onRemoveReduction,
       setExhaustion: GaiaBaseActorSheet._onSetExhaustion,
+      openDeathSave: GaiaBaseActorSheet._onOpenDeathSaveDialog,
+      openDeathSaveDialog: GaiaBaseActorSheet._onOpenDeathSaveDialog,
+      rollDeathDie: GaiaBaseActorSheet._onRollDeathDie,
+      regenerateStabilized: GaiaBaseActorSheet._onRegenerateStabilized,
+      setDeathSentence: GaiaBaseActorSheet._onSetDeathSentence,
+      setDeathGift: GaiaBaseActorSheet._onSetDeathGift,
       setParameterPip: GaiaBaseActorSheet._onSetParameterPip,
       setKnowledgePip: GaiaBaseActorSheet._onSetKnowledgePip,
       addMastery: GaiaBaseActorSheet._onAddMastery,
       removeMastery: GaiaBaseActorSheet._onRemoveMastery,
+      rollMastery: GaiaBaseActorSheet._onRollMastery,
       rollDefense: GaiaBaseActorSheet._onRollDefense,
       rollParameter: GaiaBaseActorSheet._onRollParameter,
       rollKnowledge: GaiaBaseActorSheet._onRollKnowledge,
@@ -54,6 +64,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       createItem: GaiaBaseActorSheet._onCreateItem,
       createAbility: GaiaBaseActorSheet._onCreateAbility,
       openItem: GaiaBaseActorSheet._onOpenItem,
+      openLegacyItem: GaiaBaseActorSheet._onOpenLegacyItem,
       deleteItem: GaiaBaseActorSheet._onDeleteItem,
       toggleEquip: GaiaBaseActorSheet._onToggleEquip,
       rollItem: GaiaBaseActorSheet._onRollItem,
@@ -67,7 +78,13 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       tab: GaiaBaseActorSheet._onChangeTab,
       promptRollRequest: GaiaBaseActorSheet._onPromptRollRequest,
       promptRollRequestDialog: GaiaBaseActorSheet._onPromptRollRequest,
-      rollLegacyAbility: GaiaBaseActorSheet._onRollLegacyAbility
+      rollAction: GaiaBaseActorSheet._onRollItemAction,
+      rollItemAction: GaiaBaseActorSheet._onRollItemAction,
+      rollLegacyAbility: GaiaBaseActorSheet._onRollLegacyAbility,
+      createEffect: GaiaBaseActorSheet._onCreateEffect,
+      editEffect: GaiaBaseActorSheet._onEditEffect,
+      deleteEffect: GaiaBaseActorSheet._onDeleteEffect,
+      toggleEffect: GaiaBaseActorSheet._onToggleEffect
     }
   };
 
@@ -140,6 +157,16 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     if (item.actor?.id === this.actor.id) return false;
 
     const itemData = item.toObject();
+
+    // Se for um item de Legado, vincula o nome no sistema e substitui legado anterior
+    if (item.type === "legacy") {
+      const existingLegacies = this.actor.items.filter(i => i.type === "legacy");
+      if (existingLegacies.length > 0) {
+        await this.actor.deleteEmbeddedDocuments("Item", existingLegacies.map(i => i.id));
+      }
+      await this.actor.update({ "system.legacy": item.name });
+    }
+
     return await this.actor.createEmbeddedDocuments("Item", [itemData]);
   }
 
@@ -178,6 +205,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     const context = await super._prepareContext(options);
     context.actor = this.actor;
     context.system = this.actor.system;
+    context.config = /** @type {any} */ (CONFIG).GAIA;
     return context;
   }
 
@@ -292,8 +320,45 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
   static async _onOpenItem(event, target) {
     event.preventDefault();
     const itemId = target.dataset.itemId || target.closest("[data-item-id]")?.dataset.itemId;
-    const item = this.actor.items.get(itemId);
+    const itemUuid = target.dataset.itemUuid || target.closest("[data-item-uuid]")?.dataset.itemUuid;
+    let item = null;
+    if (itemUuid) {
+      item = await fromUuid(itemUuid);
+    }
+    if (!item && itemId) {
+      item = this.actor.items.get(itemId) || game.items?.get(itemId);
+    }
     if (item) item.sheet.render(true);
+  }
+
+  /**
+   * Abre a ficha do Legado vinculado ao Ator.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onOpenLegacyItem(event, target) {
+    event.preventDefault();
+    const itemId = target?.dataset?.itemId;
+    const itemUuid = target?.dataset?.itemUuid;
+    let item = null;
+    if (itemUuid) {
+      item = await fromUuid(itemUuid);
+    }
+    if (!item && itemId) {
+      item = this.actor.items.get(itemId) || game.items?.get(itemId);
+    }
+    if (!item) {
+      const legacyName = this.actor.system?.legacy || "";
+      item = (this.actor.items ?? []).find(i => i.type === "legacy" && (!legacyName || i.name.toLowerCase() === legacyName.toLowerCase()))
+        || (game.items ?? []).find(i => i.type === "legacy" && i.name.toLowerCase() === legacyName.toLowerCase())
+        || this.actor.items.find(i => i.type === "legacy");
+    }
+    if (item) {
+      item.sheet.render(true);
+    } else {
+      ui.notifications?.info("Nenhuma ficha de Legado vinculada a este personagem.");
+    }
   }
 
   /**
@@ -368,6 +433,122 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     const item = this.actor.items.get(itemId);
     if (!item) return null;
     return await promptItemActionDialog(this.actor, item, { event, target });
+  }
+
+  /**
+   * Executa uma Ação estruturada de um Item diretamente a partir da ficha do Ator.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onRollItemAction(event, target) {
+    event.preventDefault();
+    const itemId = target.dataset.itemId || target.closest("[data-item-id]")?.dataset.itemId;
+    const actionId = target.dataset.actionId;
+    const actionIndex = target.dataset.actionIndex ?? target.dataset.index;
+    const item = this.actor.items.get(itemId);
+    if (!item) return null;
+
+    let action = null;
+    if (actionId) {
+      action = item.system?.actions?.find(a => a.id === actionId);
+    }
+    if (!action && actionIndex !== undefined) {
+      action = item.system?.actions?.[Number(actionIndex)];
+    }
+    if (!action && item.system?.action) {
+      action = item.system.action;
+    }
+    if (action) {
+      return await item.rollAction(action, { event, target });
+    }
+    return null;
+  }
+
+  /**
+   * Executa ou envia ao chat uma Habilidade de Legado da ficha.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento com `data-index`
+   */
+  static async _onRollLegacyAbility(event, target) {
+    event.preventDefault();
+    const index = Number(target.dataset.index);
+    const legacyItem = this.actor.items.find(i => i.type === "legacy");
+    const ability = legacyItem?.system?.legacyAbilities?.[index];
+    if (!ability) return null;
+
+    if (ability.action && (ability.action.attack?.hasAttack || ability.action.damage?.hasDamage || ability.action.check?.hasCheck)) {
+      return await legacyItem.rollAction(ability.action, { event, target });
+    }
+
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor });
+    const content = `
+      <div class="gaia-ability-chat-card">
+        <div class="ability-title-row" style="border-bottom: 1px solid var(--gaia-purple-dark); padding-bottom: 4px; margin-bottom: 4px;">
+          <h3 style="margin: 0; font-family: var(--gaia-font-medieval); font-size: 1.1em; color: var(--gaia-purple-dark);">${ability.name}</h3>
+        </div>
+        ${ability.description ? `<p style="font-size: 12px; line-height: 1.4; margin: 4px 0;">${ability.description}</p>` : ""}
+        ${ability.activeEffectText ? `<div style="font-size: 11px; font-style: italic; color: var(--gaia-purple-dark);"><strong>Efeito:</strong> ${ability.activeEffectText}</div>` : ""}
+      </div>
+    `;
+    return await ChatMessage.create({ speaker, content });
+  }
+
+  /**
+   * Cria um novo Efeito Ativo no Ator.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onCreateEffect(event, target) {
+    event.preventDefault();
+    return await this.actor.createEmbeddedDocuments("ActiveEffect", [{
+      name: game.i18n.localize("GAIA.Effects.NewEffectDefaultName") || "Novo Efeito",
+      icon: "icons/svg/aura.svg",
+      origin: this.actor.uuid
+    }]);
+  }
+
+  /**
+   * Abre a janela de edição de um Efeito Ativo do Ator.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento contendo data-effect-id
+   */
+  static async _onEditEffect(event, target) {
+    event.preventDefault();
+    const effectId = target.dataset.effectId || target.closest("[data-effect-id]")?.dataset.effectId;
+    const effect = this.actor.effects.get(effectId);
+    return effect?.sheet?.render(true);
+  }
+
+  /**
+   * Exclui um Efeito Ativo do Ator.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento contendo data-effect-id
+   */
+  static async _onDeleteEffect(event, target) {
+    event.preventDefault();
+    const effectId = target.dataset.effectId || target.closest("[data-effect-id]")?.dataset.effectId;
+    const effect = this.actor.effects.get(effectId);
+    return await effect?.delete();
+  }
+
+  /**
+   * Alterna o estado (ativo / desativado) de um Efeito Ativo do Ator.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento contendo data-effect-id
+   */
+  static async _onToggleEffect(event, target) {
+    event.preventDefault();
+    const effectId = target.dataset.effectId || target.closest("[data-effect-id]")?.dataset.effectId;
+    const effect = this.actor.effects.get(effectId);
+    if (effect) {
+      return await effect.update({ disabled: !effect.disabled });
+    }
   }
 
   /**
@@ -658,10 +839,10 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     const defenseType = target.dataset.type || "block";
     if (defenseType === "agility" || defenseType === "block") {
       const roll = await defense(defenseType, this.actor, "standard");
-      const label = defenseType === "agility" ? "Esquiva (Agilidade)" : "Bloqueio";
+      const label = defenseType === "agility" ? "Esquiva" : "Bloqueio";
       return await roll.toMessage({
         speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-        flavor: `Rolagem de Defesa (${label}) - Gaia: Prelúdio`
+        flavor: `Rolagem de Defesa ${label}`
       });
     }
     return await rollStat(this.actor, { event, target, type: "defense", categoryLabel: "Defesa" });
@@ -713,7 +894,8 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
   }
 
   /**
-   * Manipula a marcação de diamantes de Exaustão no Ator.
+   * Manipula a marcação de diamantes de Exaustão no Ator (0 a 6).
+   * Caso atinja 6 pontos de exaustão, o personagem morre e uma notificação/mensagem é emitida.
    * @protected
    * @param {Event} event - Evento de clique
    * @param {HTMLElement} target - Elemento contendo `data-value`
@@ -722,7 +904,101 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     const value = Number(target.dataset.value);
     const current = Number(this.actor.system.exhaustion) || 0;
     const next = current === value ? value - 1 : value;
-    await this.actor.update({ "system.exhaustion": Math.max(0, next) });
+    const clamped = Math.clamp(next, 0, 6);
+    await this.actor.update({ "system.exhaustion": clamped });
+
+    if (clamped === 6 && current !== 6) {
+      ui.notifications.warn(`${this.actor.name} atingiu 6 pontos de Exaustão e morreu!`);
+      const speaker = ChatMessage.getSpeaker({ actor: this.actor });
+      const content = `
+        <div class="gaia-preludio chat-card exhaustion-death-card" style="border-left: 4px solid var(--gaia-red-crimson, #b02e2e); padding: 8px; background: rgba(0,0,0,0.05); border-radius: 4px;">
+          <h3 style="margin: 0 0 4px 0; color: var(--gaia-red-crimson, #b02e2e); font-family: var(--gaia-font-medieval, Georgia, serif); font-size: 1.1em;">
+            <i class="fa-solid fa-skull"></i> MORTE POR EXAUSTÃO
+          </h3>
+          <p style="margin: 0; font-size: 13px; line-height: 1.4;">
+            <strong>${this.actor.name}</strong> atingiu <strong>6 pontos de Exaustão</strong> e sucumbiu (MORTE).
+          </p>
+        </div>
+      `;
+      await ChatMessage.create({ speaker, content });
+    }
+  }
+
+  /**
+   * Abre a janela dedicada do Dado de Morte (GaiaDeathSaveDialog) para o Ator.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onOpenDeathSaveDialog(event, target) {
+    event?.preventDefault?.();
+    return await GaiaDeathSaveDialog.open(this.actor);
+  }
+
+  /**
+   * Executa a rolagem do Dado de Morte (1d12) para um personagem incapacitado.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onRollDeathDie(event, target) {
+    event?.preventDefault?.();
+    return await flowDeathDie(this.actor);
+  }
+
+  /**
+   * Executa a regeneração de 1d4 PV para um personagem estabilizado após 10 minutos.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onRegenerateStabilized(event, target) {
+    event?.preventDefault?.();
+    return await flowRegenerateStabilized(this.actor);
+  }
+
+  /**
+   * Ajusta manualmente a quantidade de Sentenças do Corruptor do personagem (0 a 2).
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento com `data-value`
+   */
+  static async _onSetDeathSentence(event, target) {
+    event?.preventDefault?.();
+    const value = Number(target.dataset.value);
+    const current = Number(this.actor.system?.death?.sentences ?? 0);
+    const next = current === value ? value - 1 : value;
+    const clamped = Math.clamp(next, 0, 2);
+    await this.actor.update({ "system.death.sentences": clamped });
+
+    if (clamped >= 2 && current < 2) {
+      ui.notifications?.warn(`${this.actor.name} acumulou 2 Sentenças do Corruptor e morreu!`);
+    }
+  }
+
+  /**
+   * Ajusta manualmente a quantidade de Dádivas do Artesão do personagem (0 a 2).
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento com `data-value`
+   */
+  static async _onSetDeathGift(event, target) {
+    event?.preventDefault?.();
+    const value = Number(target.dataset.value);
+    const current = Number(this.actor.system?.death?.gifts ?? 0);
+    const next = current === value ? value - 1 : value;
+    const clamped = Math.clamp(next, 0, 2);
+
+    if (clamped >= 2) {
+      await this.actor.update({
+        "system.death.gifts": 0,
+        "system.death.sentences": 0,
+        "system.death.stabilized": true
+      });
+      ui.notifications?.info(`${this.actor.name} acumulou 2 Dádivas do Artesão e estabilizou!`);
+    } else {
+      await this.actor.update({ "system.death.gifts": clamped });
+    }
   }
 
   /**
@@ -882,6 +1158,30 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
    * @param {HTMLElement} target - Elemento contendo as informações do conhecimento
    */
   static async _onRollKnowledge(event, target) {
-    return await rollStat(this.actor, { event, target, type: "knowledge", categoryLabel: "Conhecimento" });
+    const key = target?.dataset?.key || target?.getAttribute?.("data-key");
+    return await rollStat(this.actor, { event, target, type: "knowledge", key, categoryLabel: "Conhecimento" });
+  }
+
+  /**
+   * Executa a rolagem associada a uma Maestria do Ator (com Aptidão / Vantagem).
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento contendo as informações da maestria
+   */
+  static async _onRollMastery(event, target) {
+    const key = target?.dataset?.key || target?.getAttribute?.("data-key");
+    const knowledgeKey = target?.dataset?.knowledge || target?.getAttribute?.("data-knowledge");
+    return await rollMastery(this.actor, { event, target, key, customKey: key, knowledgeKey });
+  }
+
+  /**
+   * Abre o diálogo de Evolução do Nível de Despertar.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onLevelUp(event, target) {
+    event.preventDefault();
+    await promptLevelUpDialog(this.actor);
   }
 }

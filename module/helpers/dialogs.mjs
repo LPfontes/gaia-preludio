@@ -62,9 +62,8 @@ export async function promptDefenseTraitDialog(title, isReduction = false) {
           const form = dialog.element.querySelector("form");
           const data = new FormDataExtended(form).object;
           const custom = String(data.customType || "").trim();
-          const selectedKey = String(data.damageType || "");
-          const selectedOpt = damageTypes.find(d => d.key === selectedKey);
-          const resolvedType = custom.length > 0 ? custom : (selectedOpt?.label || selectedKey);
+          const selectedKey = String(data.damageType || "physical");
+          const resolvedType = custom.length > 0 ? custom : selectedKey;
           return {
             type: resolvedType,
             value: Number(data.value) || 1
@@ -538,7 +537,7 @@ export async function promptAwakeningGuideDialog(actor = null) {
           fixedHpBtn?.classList.remove("active");
           await roll.toMessage({
             speaker: ChatMessage.getSpeaker({ actor }),
-            flavor: "Rolagem de PV Inicial (1d6) - Gaia: Prelúdio"
+            flavor: "Rolagem de PV Inicial (1d6)"
           });
           updateCalculatedHP();
         });
@@ -748,25 +747,24 @@ export async function promptRollRequestDialog() {
 
           // Monta o cartão do Chat
           const chatContent = `
-            <div class="gaia-chat-card roll-request-card" style="border: 2px solid var(--color-border, #444); border-radius: 6px; padding: 10px; background: rgba(0,0,0,0.2);">
-              <div style="font-weight: bold; font-size: 1.1em; color: var(--color-highlight, #e67e22); margin-bottom: 6px;">
+            <div class="gaia-chat-card roll-request-card">
+              <div class="roll-request-header">
                 <i class="fa-solid fa-scroll"></i> ${cardTitleText}
               </div>
-              <div style="font-size: 1.05em; margin-bottom: 4px;">
+              <div class="roll-request-stat">
                 <strong>${requestedCheckText}</strong> ${statLabel}
               </div>
-              <div style="font-size: 0.95em; color: #aaa; margin-bottom: 8px;">
+              <div class="roll-request-dc">
                 <strong>${difficultyLabelText}</strong> Dif. ${dc} (${levelLabel})
               </div>
-              ${note ? `<div style="font-style: italic; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 4px; margin-bottom: 10px;">"${note}"</div>` : ''}
+              ${note ? `<div class="roll-request-note">"${note}"</div>` : ''}
               <button type="button" class="gaia-btn-roll-request" 
                       data-action="rollRequest"
                       data-category="${category}"
                       data-stat-key="${statKey}"
                       data-dc="${dc}"
                       data-fitness="${fitness}"
-                      data-label="${statLabel}"
-                      style="width: 100%; padding: 8px; font-size: 1em; font-weight: bold; cursor: pointer;">
+                      data-label="${statLabel}">
                 ${btnText}
               </button>
             </div>
@@ -836,7 +834,7 @@ export function registerRollRequestListeners() {
         // Valida o resultado contra a Dif. solicitada
         const check = flowDifficultyCheck(roll, dc);
 
-        const statusColor = check.success ? "#27ae60" : "#c0392b";
+        const outcomeClass = check.success ? "outcome-success" : "outcome-failure";
         const outcomeTitle = game.i18n.format(
           check.success ? "GAIA.RollRequest.OutcomePassed" : "GAIA.RollRequest.OutcomeFailed",
           { name: actor.name, label: statLabel }
@@ -845,11 +843,9 @@ export function registerRollRequestListeners() {
         const marginLabelText = game.i18n.localize("GAIA.RollRequest.MarginLabel");
 
         const outcomeHtml = `
-          <div class="gaia-chat-card" style="border-left: 4px solid ${statusColor}; padding: 8px; background: rgba(0,0,0,0.15); margin-top: 4px;">
-            <div style="font-weight: bold; font-size: 1.05em; color: ${statusColor};">
-              ${outcomeTitle}
-            </div>
-            <div style="font-size: 0.9em; margin-top: 4px;">
+          <div class="gaia-outcome-card ${outcomeClass}">
+            <div class="outcome-title">${outcomeTitle}</div>
+            <div class="outcome-details">
               <strong>${resultLabelText}</strong> ${check.total} vs <strong>Dif. ${dc}</strong> (${marginLabelText} ${check.margin >= 0 ? '+' : ''}${check.margin})
             </div>
           </div>
@@ -870,6 +866,15 @@ export function registerRollRequestListeners() {
         const defenseType = defBtn.dataset.defenseType || "agility";
         const targetTokenId = defBtn.dataset.targetTokenId;
         const targetActorId = defBtn.dataset.targetActorId;
+
+        // Resgata o dano configurado a partir do dataset do botão de defesa
+        let damageAmount = Number(defBtn.dataset.damageAmount);
+        let damageText = defBtn.dataset.damageText || "";
+        let damageType = defBtn.dataset.damageType || "";
+        if (isNaN(damageAmount) || damageAmount <= 0) {
+          const match = damageText.match(/(\d+)/);
+          if (match) damageAmount = parseInt(match[1], 10);
+        }
 
         // Resgata o total do ataque a partir do dataset do botão ou das rolagens da mensagem
         let attackTotal = Number(defBtn.dataset.attackTotal);
@@ -928,6 +933,24 @@ export function registerRollRequestListeners() {
               break;
           }
 
+          let applyDamageBtnHtml = "";
+          if (critResult.isHit || critResult.isCritical) {
+            const damageDisplay = damageText ? ` (${damageText})` : (damageAmount > 0 ? ` (${damageAmount})` : "");
+            applyDamageBtnHtml = `
+              <div style="margin-top: 8px; display: flex; justify-content: center;">
+                <button type="button" class="gaia-btn-apply-damage" 
+                        data-action="applyTargetDamage" 
+                        data-damage-amount="${damageAmount || ''}" 
+                        data-damage-text="${damageText}" 
+                        data-damage-type="${damageType}" 
+                        data-target-token-id="${targetTokenId}" 
+                        data-target-actor-id="${targetActorId || targetActor?.id}">
+                  Aplicar Dano${damageDisplay}
+                </button>
+              </div>
+            `;
+          }
+
           const diffSign = critResult.difference > 0 ? "+" : "";
           const outcomeHtml = `
             <div class="gaia-chat-card outcome-card" style="padding: 8px; background: rgba(0,0,0,0.15); margin-top: 6px;">
@@ -940,6 +963,7 @@ export function registerRollRequestListeners() {
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px; font-weight: bold;">(Diferença: ${diffSign}${critResult.difference})</div>
               </div>
+              ${applyDamageBtnHtml}
             </div>
           `;
 
@@ -950,6 +974,108 @@ export function registerRollRequestListeners() {
           });
         }
       });
+    });
+
+    // 3. Ouvinte para Botão de Aplicar Dano no Alvo (applyTargetDamage)
+    const applyDamageBtns = rootEl.querySelectorAll ? rootEl.querySelectorAll("[data-action='applyTargetDamage']") : [];
+    applyDamageBtns.forEach(applyBtn => {
+      applyBtn.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const targetTokenId = applyBtn.dataset.targetTokenId;
+        const targetActorId = applyBtn.dataset.targetActorId;
+        let amount = Number(applyBtn.dataset.damageAmount);
+        const damageText = applyBtn.dataset.damageText || "";
+        let damageType = applyBtn.dataset.damageType || "";
+
+        if (isNaN(amount) || amount <= 0) {
+          const match = damageText.match(/(\d+)/);
+          if (match) amount = parseInt(match[1], 10);
+        }
+
+        // Se ainda não temos um valor de dano definido, pergunta ao usuário
+        if (isNaN(amount) || amount <= 0) {
+          const promptVal = window.prompt("Quantidade de dano a aplicar:", "1");
+          if (!promptVal) return;
+          amount = Number(promptVal) || 0;
+        }
+
+        if (amount <= 0) return;
+
+        if (!damageType && damageText) {
+          const typeMatch = damageText.replace(/^\d+\s*/, "").trim();
+          if (typeMatch) damageType = typeMatch;
+        }
+
+        // Procura o Ator do Alvo:
+        let targetActor = null;
+        if (targetTokenId && canvas?.tokens) {
+          const token = canvas.tokens.get(targetTokenId);
+          if (token?.actor) targetActor = token.actor;
+        }
+        if (!targetActor && targetActorId) {
+          targetActor = game.actors.get(targetActorId);
+        }
+        if (!targetActor) {
+          const { getSelectedOrTargetToken } = await import("./token-helper.mjs");
+          const token = getSelectedOrTargetToken(null, { notify: true, warnMessage: "Selecione ou mire em um token alvo para aplicar o dano." });
+          targetActor = token?.actor ?? null;
+        }
+
+        if (!targetActor) {
+          ui.notifications.warn("Nenhum alvo selecionado ou mirado para aplicar dano.");
+          return;
+        }
+
+        // Calcula o dano final considerando Imunidade, Resistência, Vulnerabilidade e Redução de Dano
+        const { calculateDamage } = await import("./flow.mjs");
+        const finalDamage = calculateDamage({ type: damageType, value: amount }, targetActor);
+
+        if (finalDamage === 0) {
+          ui.notifications.info(`${targetActor.name} é imune a dano ${damageType || ''} (0 de dano recebido).`);
+          applyBtn.disabled = true;
+          applyBtn.innerHTML = "Imune (0 Dano)";
+
+          const immuneCardHtml = `
+            <div class="gaia-chat-card damage-applied-card immune">
+              <div class="damage-applied-header">
+                <div class="damage-applied-title">
+                  <i class="fa-solid fa-shield"></i> Dano Anulado (Imunidade)
+                </div>
+                <span class="damage-applied-badge">
+                  ${damageType ? damageType.toUpperCase() : 'IMUNE'}
+                </span>
+              </div>
+              <div class="damage-applied-target">
+                ${targetActor.img ? `<img src="${targetActor.img}" class="damage-target-avatar" />` : ''}
+                <div class="damage-target-info">
+                  <div class="damage-target-name">${targetActor.name}</div>
+                  <div class="damage-target-amount">
+                    É imune a dano <strong>${damageType || ''}</strong> (0 de dano sofrido).
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+          await ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor: targetActor }),
+            content: immuneCardHtml,
+            style: CONST.CHAT_MESSAGE_STYLES?.OTHER ?? 0
+          });
+          return;
+        }
+
+        const { applyActionDamage } = await import("./action-flow.mjs");
+        await applyActionDamage(targetActor, finalDamage, { damageType, baseDamage: amount });
+
+        applyBtn.disabled = true;
+        applyBtn.innerHTML = `Dano Aplicado (${finalDamage})`;
+      });
+    });
+
+    // 4. Ouvinte para Ações Estruturadas (ActionDataModel)
+    import("./action-flow.mjs").then(({ registerActionChatListeners }) => {
+      registerActionChatListeners(rootEl, message);
     });
   });
 }
@@ -965,6 +1091,22 @@ export async function promptItemActionDialog(actor, item, { event, target } = {}
   if (!actor || !item) return null;
 
   const isWeapon = item.type === "weapon" || item.system?.category === "weapon" || Boolean(item.system?.attackParameter);
+  
+  // Resgata ações estruturadas (ActionDataModel) do item
+  const actions = [];
+  if (Array.isArray(item.system?.actions)) {
+    actions.push(...item.system.actions);
+  }
+  if (item.system?.action && typeof item.system.action === "object" && (item.system.action.name || item.system.action.attack?.hasAttack || item.system.action.damage?.hasDamage)) {
+    actions.push(item.system.action);
+  }
+  if (Array.isArray(item.system?.legacyAbilities)) {
+    for (const la of item.system.legacyAbilities) {
+      if (la.action && (la.action.name || la.action.attack?.hasAttack || la.action.damage?.hasDamage)) {
+        actions.push(la.action);
+      }
+    }
+  }
 
   const buttons = [
     {
@@ -980,15 +1122,27 @@ export async function promptItemActionDialog(actor, item, { event, target } = {}
       action: "rollAttack",
       label: "Rolar Ataque",
       icon: "fa-solid fa-dice-d20",
-      default: true,
+      default: actions.length === 0,
       callback: () => "rollAttack"
     });
   }
 
+  // Adiciona botões dinâmicos para cada Ação configurada
+  actions.forEach((act, idx) => {
+    const actName = act.name || `Ação ${idx + 1}`;
+    const costText = act.cost ? ` (${act.cost})` : "";
+    buttons.push({
+      action: `action_${idx}`,
+      label: `${actName}${costText}`,
+      default: idx === 0 && !isWeapon,
+      callback: () => `action_${idx}`
+    });
+  });
+
   const result = await DialogV2.wait({
     classes: ["gaia-preludio", "gaia-dialog", "item-action-dialog"],
     window: { title: item.name },
-    position: { width: 340, height: "auto" },
+    position: { width: Math.max(340, 160 * Math.min(buttons.length, 3)), height: "auto" },
     content: `
       <div style="text-align: center; padding: 10px 4px; font-weight: 500; font-size: 0.95rem; color: var(--gaia-text-parchment);">
         Escolha a ação para <strong>${item.name}</strong>:
@@ -998,6 +1152,8 @@ export async function promptItemActionDialog(actor, item, { event, target } = {}
     rejectClose: false
   });
 
+  if (!result) return null;
+
   if (result === "sendChat") {
     return await item.roll?.() ?? null;
   } 
@@ -1005,6 +1161,14 @@ export async function promptItemActionDialog(actor, item, { event, target } = {}
   if (result === "rollAttack") {
     const { rollWeaponAttack } = await import("./stat-rolls.mjs");
     return await rollWeaponAttack(actor, item, { event, target });
+  }
+
+  if (typeof result === "string" && result.startsWith("action_")) {
+    const idx = parseInt(result.replace("action_", ""), 10);
+    const act = actions[idx];
+    if (act) {
+      return await item.rollAction(act, { event, target });
+    }
   }
 
   return null;
@@ -1708,10 +1872,37 @@ export async function promptLegacyAbilityDialog(initialData = {}) {
     ? foundry.utils.deepClone(initialData.activeEffect)
     : { text: activeEffectText };
 
+  let currentActions = Array.isArray(initialData.actions) ? foundry.utils.deepClone(initialData.actions) : [];
+
+  const config = /** @type {any} */ (CONFIG).GAIA;
+
+  function getFormattedActions() {
+    return currentActions.map((act, index) => {
+      const summaries = [];
+      if (act.attack?.hasAttack) {
+        const paramKey = act.attack.attribute || "brutality";
+        const paramLabel = config?.parameters?.[paramKey] ? game.i18n.localize(config.parameters[paramKey]) : paramKey;
+        summaries.push(`Ataque: ${paramLabel}`);
+      }
+      if (act.damage?.hasDamage && act.damage.formula) {
+        summaries.push(`Dano: ${act.damage.formula}`);
+      }
+      if (act.check?.hasCheck) {
+        summaries.push(`Dif. ${act.check.difficulty ?? 10}`);
+      }
+      return {
+        ...act,
+        index,
+        summary: summaries.join(" | ")
+      };
+    });
+  }
+
   const dialogHtml = await renderTemplate("systems/gaia-preludio/templates/dialog/legacy-ability-dialog.hbs", {
     name,
     description,
-    activeEffectText
+    activeEffectText,
+    formattedActions: getFormattedActions()
   });
 
   const title = initialData.name ? `Editar: ${initialData.name}` : "Nova Habilidade de Legado";
@@ -1723,23 +1914,62 @@ export async function promptLegacyAbilityDialog(initialData = {}) {
     content: dialogHtml,
     render: (event, dialog) => {
       const html = dialog.element;
-      const btnConfig = html.querySelector("[data-action='configActiveEffect']");
-      btnConfig?.addEventListener("click", async (ev) => {
-        ev.preventDefault();
-        const inputEl = html.querySelector("input[name='activeEffectText']");
-        const previewEl = html.querySelector(".active-effect-preview-text");
-        const currentText = inputEl?.value || "";
-        const effectResult = await promptActiveEffectDialog({
-          ...currentActiveEffect,
-          text: currentText
+
+      const refreshActionsList = () => {
+        const container = html.querySelector(".legacy-actions-preview-list");
+        if (!container) return;
+        const actions = getFormattedActions();
+        if (actions.length === 0) {
+          container.innerHTML = `<div class="empty-hint" style="font-size: 11px; font-style: italic; color: var(--gaia-text-muted);">${game.i18n.localize("GAIA.Action.EmptyActionsHint")}</div>`;
+          return;
+        }
+        container.innerHTML = actions.map(a => `
+          <div class="legacy-action-preview-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 3px; font-size: 12px;">
+            <span><strong>${a.name}</strong> ${a.summary ? `<small style="color: #aaa;">(${a.summary})</small>` : ""}</span>
+            <div style="display: flex; gap: 4px;">
+              <button type="button" class="btn-edit-dialog-action" data-index="${a.index}" style="background: transparent; border: none; cursor: pointer; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button type="button" class="btn-remove-dialog-action" data-index="${a.index}" style="background: transparent; border: none; cursor: pointer; color: var(--gaia-text-parchment);"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `).join("");
+        bindActionButtons();
+      };
+
+      const bindActionButtons = () => {
+        html.querySelectorAll(".btn-edit-dialog-action").forEach(btn => {
+          btn.addEventListener("click", async (ev) => {
+            ev.preventDefault();
+            const idx = Number(btn.dataset.index);
+            if (isNaN(idx) || !currentActions[idx]) return;
+            const res = await promptActionDialog(currentActions[idx]);
+            if (res) {
+              currentActions[idx] = res;
+              refreshActionsList();
+            }
+          });
         });
-        if (effectResult) {
-          currentActiveEffect = effectResult;
-          const textVal = effectResult.text || "";
-          if (inputEl) inputEl.value = textVal;
-          if (previewEl) previewEl.textContent = textVal || (/** @type {any} */ (globalThis.game)?.i18n?.localize("GAIA.Legado.EmptyActiveEffectHint") || "Nenhum efeito ativo configurado.");
+        html.querySelectorAll(".btn-remove-dialog-action").forEach(btn => {
+          btn.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            const idx = Number(btn.dataset.index);
+            if (isNaN(idx)) return;
+            currentActions.splice(idx, 1);
+            refreshActionsList();
+          });
+        });
+      };
+
+      const btnAddAction = html.querySelector("[data-action='addLegacyAction']");
+      btnAddAction?.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+        const actionResult = await promptActionDialog();
+        if (actionResult) {
+          currentActions.push(actionResult);
+          refreshActionsList();
         }
       });
+
+      bindActionButtons();
     },
     buttons: [
       {
@@ -1754,90 +1984,11 @@ export async function promptLegacyAbilityDialog(initialData = {}) {
           return {
             name: String(data.name || "").trim() || "Nova Habilidade de Legado",
             description: String(data.description || "").trim(),
+            actions: currentActions,
             activeEffectText: textValue,
             activeEffect: {
               ...currentActiveEffect,
               text: textValue
-            }
-          };
-        }
-      },
-      {
-        action: "cancel",
-        label: "Cancelar",
-        icon: "fa-solid fa-xmark",
-        callback: () => null
-      }
-    ],
-    rejectClose: false
-  });
-
-  if (result === "cancel" || !result) return null;
-  return result;
-}
-
-/**
- * Abre caixa de diálogo para criar ou configurar a estrutura de um Efeito Ativo (activeEffect).
- * @param {object} [initialData={}] - Dados iniciais do Efeito Ativo
- * @returns {Promise<object | null>} Objeto de configuração do activeEffect
- */
-export async function promptActiveEffectDialog(initialData = {}) {
-  const text = typeof initialData === "string" ? initialData : (initialData.text || "");
-  const recharge = initialData.recharge || "full_rest";
-  const triggerEvent = initialData.trigger?.event || "hp_threshold";
-  const inCombatOnly = initialData.trigger?.inCombatOnly ?? true;
-  const hpThresholdPercentage = initialData.trigger?.hpThresholdPercentage ?? 50;
-  
-  const firstChange = Array.isArray(initialData.changes) && initialData.changes[0] ? initialData.changes[0] : {};
-  const changeKey = firstChange.key || "all_parameters";
-  const changeValue = Number(firstChange.value ?? 1);
-  
-  const durationType = initialData.duration?.type || "end_of_combat";
-
-  const dialogHtml = await renderTemplate("systems/gaia-preludio/templates/dialog/active-effect-dialog.hbs", {
-    text,
-    recharge,
-    triggerEvent,
-    inCombatOnly,
-    hpThresholdPercentage,
-    changeKey,
-    changeValue,
-    durationType
-  });
-
-  const result = await DialogV2.wait({
-    classes: ["gaia-preludio", "gaia-dialog", "active-effect-dialog"],
-    window: { title: "Configurar Efeito Ativo" },
-    position: { width: 460, height: "auto" },
-    content: dialogHtml,
-    buttons: [
-      {
-        action: "save",
-        label: "Salvar Efeito",
-        icon: "fa-solid fa-floppy-disk",
-        default: true,
-        callback: (event, button, dialog) => {
-          const form = dialog.element.querySelector("form");
-          const data = new FormDataExtended(form).object;
-          return {
-            text: String(data.text || "").trim(),
-            used: Boolean(initialData.used ?? false),
-            recharge: String(data.recharge || "full_rest"),
-            trigger: {
-              event: String(data.triggerEvent || "hp_threshold"),
-              inCombatOnly: Boolean(data.inCombatOnly),
-              hpThresholdPercentage: Number(data.hpThresholdPercentage || 50)
-            },
-            changes: [
-              {
-                key: String(data.changeKey || "all_parameters"),
-                mode: "ADD",
-                value: Number(data.changeValue ?? 1),
-                allowExceedMax: true
-              }
-            ],
-            duration: {
-              type: String(data.durationType || "end_of_combat")
             }
           };
         }
@@ -1919,6 +2070,574 @@ export async function promptSubEffectDialog(subEffectData = {}) {
   if (result === "cancel" || !result) return null;
   return result;
 }
+
+/**
+ * Exibe modal DialogV2 para criação ou edição de uma Ação (ActionDataModel).
+ * @param {object} [actionData] - Dados da ação para edição (ou vazio para nova ação)
+ * @returns {Promise<object|null>} Objeto de Ação formatado ou null se cancelado
+ */
+export async function promptActionDialog(actionData = {}) {
+  const defaultAction = {
+    id: actionData.id || foundry.utils.randomID(),
+    name: actionData.name || "",
+    description: actionData.description || "",
+    cost: actionData.cost || "",
+    type: {
+      actionType: actionData.type?.actionType || "acaoAtiva",
+      category: actionData.type?.category || "ataque_corpo_a_corpo",
+      tags: Array.isArray(actionData.type?.tags) ? actionData.type.tags : []
+    },
+    attack: {
+      hasAttack: Boolean(actionData.attack?.hasAttack),
+      attribute: actionData.attack?.attribute || "brutality",
+      knowledge: actionData.attack?.knowledge || "",
+      bonus: actionData.attack?.bonus || "",
+      rollType: actionData.attack?.rollType || "standard"
+    },
+    damage: {
+      hasDamage: Boolean(actionData.damage?.hasDamage),
+      formula: actionData.damage?.formula || "",
+      type: actionData.damage?.type || "physical",
+      criticalBonus: actionData.damage?.criticalBonus || "",
+      scaling: actionData.damage?.scaling || ""
+    },
+    check: {
+      hasCheck: Boolean(actionData.check?.hasCheck),
+      category: actionData.check?.category || "parameter",
+      attribute: actionData.check?.attribute || "vigor",
+      difficulty: Number(actionData.check?.difficulty ?? 10),
+      onSuccess: actionData.check?.onSuccess || "",
+      onFailure: actionData.check?.onFailure || ""
+    },
+    condition: {
+      hasCondition: Boolean(actionData.condition?.hasCondition),
+      status: actionData.condition?.status || "",
+      duration: actionData.condition?.duration || "",
+      description: actionData.condition?.description || ""
+    },
+    areaOfEffect: {
+      hasArea: Boolean(actionData.areaOfEffect?.hasArea),
+      shape: actionData.areaOfEffect?.shape || "circle",
+      size: Number(actionData.areaOfEffect?.size ?? 3),
+      unit: actionData.areaOfEffect?.unit || "m",
+      targetDisposition: actionData.areaOfEffect?.targetDisposition || "all",
+      targetLimit: actionData.areaOfEffect?.targetLimit || ""
+    }
+  };
+
+  const actionTypeOptions = Object.entries(CONFIG.GAIA?.actionType ?? {}).map(([key, labelKey]) => ({
+    key,
+    label: game.i18n.localize(labelKey),
+    selected: defaultAction.type.actionType === key
+  }));
+
+  const abilityTypeOptions = Object.entries(CONFIG.GAIA?.abilitiesTypes ?? {}).map(([key, labelKey]) => ({
+    key,
+    label: game.i18n.localize(labelKey),
+    selected: defaultAction.type.category === key
+  }));
+
+  const parameterOptions = Object.entries(CONFIG.GAIA?.parameters ?? {}).map(([key, labelKey]) => ({
+    key,
+    label: game.i18n.localize(labelKey),
+    selectedAttack: defaultAction.attack.attribute === key,
+    selectedCheck: defaultAction.check.attribute === key
+  }));
+
+  const knowledgeOptions = Object.entries(CONFIG.GAIA?.knowledge ?? {}).map(([key, labelKey]) => ({
+    key,
+    label: game.i18n.localize(labelKey),
+    selectedAttack: defaultAction.attack.knowledge === key,
+    selectedCheck: defaultAction.check.attribute === key
+  }));
+
+  const rollTypeOptions = Object.entries(CONFIG.GAIA?.rollTypes ?? {}).map(([key, data]) => ({
+    key,
+    label: game.i18n.localize(data.label),
+    selected: defaultAction.attack.rollType === key
+  }));
+
+  const damageTypeOptions = Object.entries(CONFIG.GAIA?.damageTypesFlat ?? {}).map(([key, labelKey]) => ({
+    key,
+    label: game.i18n.localize(labelKey),
+    selected: defaultAction.damage.type === key
+  }));
+
+  const conditionOptions = Object.values(CONFIG.GAIA?.conditions ?? {}).map(c => ({
+    id: c.id,
+    name: typeof c.name === "string" ? game.i18n.localize(c.name) : String(c.id)
+  }));
+
+  const title = defaultAction.name
+    ? `${game.i18n.localize("GAIA.ActionDialog.EditTitle")}: ${defaultAction.name}`
+    : game.i18n.localize("GAIA.ActionDialog.CreateTitle");
+
+  const dialogHtml = await renderTemplate("systems/gaia-preludio/templates/dialog/action-dialog.hbs", {
+    action: defaultAction,
+    actionTypeOptions,
+    abilityTypeOptions,
+    parameterOptions,
+    knowledgeOptions,
+    rollTypeOptions,
+    damageTypeOptions,
+    conditionOptions
+  });
+
+  const result = await DialogV2.wait({
+    classes: ["gaia-preludio", "gaia-dialog", "action-dialog"],
+    window: { title },
+    position: { width: 720, height: "auto" },
+    content: dialogHtml,
+    render: (event, dialog) => {
+      const el = dialog.element;
+
+      // Navegação por Abas do Diálogo
+      el.querySelectorAll(".action-dialog-tabs .tab-item").forEach(tabBtn => {
+        tabBtn.addEventListener("click", (ev) => {
+          ev.preventDefault();
+          const targetTab = tabBtn.dataset.tab;
+          el.querySelectorAll(".action-dialog-tabs .tab-item").forEach(b => b.classList.toggle("active", b.dataset.tab === targetTab));
+          el.querySelectorAll(".action-tab").forEach(content => {
+            content.classList.toggle("active", content.dataset.tab === targetTab);
+          });
+        });
+      });
+
+      // Toggles de Habilitação de cada Seção
+      el.querySelectorAll(".section-toggle").forEach(toggle => {
+        toggle.addEventListener("change", () => {
+          const targetSelector = toggle.dataset.target;
+          const targetEl = el.querySelector(targetSelector);
+          if (targetEl) {
+            targetEl.style.opacity = toggle.checked ? "1" : "0.45";
+            targetEl.style.pointerEvents = toggle.checked ? "auto" : "none";
+          }
+        });
+      });
+    },
+    buttons: [
+      {
+        action: "confirm",
+        label: defaultAction.name
+          ? game.i18n.localize("GAIA.ActionDialog.SaveButton")
+          : game.i18n.localize("GAIA.ActionDialog.CreateButton"),
+        icon: "fa-solid fa-check",
+        default: true,
+        callback: (event, button, dialog) => {
+          const form = dialog.element.querySelector("form");
+          const data = foundry.utils.expandObject(new FormDataExtended(form).object);
+          
+          const conditionStatus = String(data.condition?.status || "").trim();
+          if (Boolean(data.condition?.hasCondition) && conditionStatus) {
+            const condId = conditionStatus.toLowerCase().replace(/\s+/g, "-");
+            if (CONFIG.GAIA?.conditions && !CONFIG.GAIA.conditions[condId]) {
+              const newCond = {
+                id: condId,
+                name: conditionStatus,
+                icon: "icons/svg/aura.svg",
+                description: String(data.condition?.description || "").trim()
+              };
+              CONFIG.GAIA.conditions[condId] = newCond;
+              if (Array.isArray(CONFIG.statusEffects) && !CONFIG.statusEffects.some(e => e.id === condId || e.name === conditionStatus)) {
+                CONFIG.statusEffects.push(newCond);
+              }
+            }
+          }
+
+          return {
+            id: defaultAction.id,
+            name: String(data.name || "Nova Ação").trim(),
+            description: String(data.description || "").trim(),
+            cost: String(data.cost || "").trim(),
+            type: {
+              actionType: String(data.type?.actionType || "acaoAtiva"),
+              category: String(data.type?.category || "ataque_corpo_a_corpo"),
+              tags: defaultAction.type.tags
+            },
+            attack: {
+              hasAttack: Boolean(data.attack?.hasAttack),
+              attribute: String(data.attack?.attribute || "brutality"),
+              knowledge: String(data.attack?.knowledge || ""),
+              bonus: String(data.attack?.bonus || "").trim(),
+              rollType: String(data.attack?.rollType || "standard"),
+              defenseTarget: String(data.attack?.defenseTarget || "evasion")
+            },
+            damage: {
+              hasDamage: Boolean(data.damage?.hasDamage),
+              formula: String(data.damage?.formula || "").trim(),
+              type: String(data.damage?.type || "physical"),
+              criticalBonus: String(data.damage?.criticalBonus || "").trim(),
+              scaling: String(data.damage?.scaling || "").trim()
+            },
+            check: {
+              hasCheck: Boolean(data.check?.hasCheck),
+              category: String(data.check?.category || "parameter"),
+              attribute: String(data.check?.attribute || "vigor"),
+              difficulty: Number(data.check?.difficulty ?? 10),
+              onSuccess: String(data.check?.onSuccess || "").trim(),
+              onFailure: String(data.check?.onFailure || "").trim()
+            },
+            condition: {
+              hasCondition: Boolean(data.condition?.hasCondition),
+              status: conditionStatus,
+              duration: String(data.condition?.duration || "").trim(),
+              description: String(data.condition?.description || "").trim()
+            },
+            areaOfEffect: {
+              hasArea: Boolean(data.areaOfEffect?.hasArea),
+              shape: String(data.areaOfEffect?.shape || "circle"),
+              size: Number(data.areaOfEffect?.size ?? 3),
+              unit: String(data.areaOfEffect?.unit || "m").trim(),
+              targetDisposition: String(data.areaOfEffect?.targetDisposition || "all"),
+              targetLimit: String(data.areaOfEffect?.targetLimit || "").trim()
+            }
+          };
+        }
+      },
+      {
+        action: "cancel",
+        label: game.i18n.localize("GAIA.ActionDialog.CancelButton"),
+        icon: "fa-solid fa-xmark",
+        callback: () => null
+      }
+    ],
+    rejectClose: false
+  });
+
+  if (result === "cancel" || !result) return null;
+  return result;
+}
+
+/**
+ * Diálogo de Evolução / Subida de Nível de Despertar.
+ * @param {Actor} actor - Documento do Ator
+ * @param {number} [targetLevel=null] - Nível de destino opcional
+ * @returns {Promise<any>}
+ */
+export async function promptLevelUpDialog(actor, targetLevel = null) {
+  if (!actor) return null;
+
+  const currentLevel = Math.max(1, Number(actor.system?.nivel ?? 1));
+  const newLevel = targetLevel ? Math.max(currentLevel + 1, Number(targetLevel)) : currentLevel + 1;
+
+  // Extrai Parâmetros atuais
+  const parameters = [
+    { key: "precision", label: game.i18n.localize("GAIA.Parameter.Precision"), value: 0 },
+    { key: "brutality", label: game.i18n.localize("GAIA.Parameter.Brutality"), value: 0 },
+    { key: "dexterity", label: game.i18n.localize("GAIA.Parameter.Dexterity"), value: 0 },
+    { key: "agility", label: game.i18n.localize("GAIA.Parameter.Agility"), value: 0 },
+    { key: "channeling", label: game.i18n.localize("GAIA.Parameter.Channeling"), value: 0 },
+    { key: "arcane", label: game.i18n.localize("GAIA.Parameter.Arcane"), value: 0 },
+    { key: "spirit", label: game.i18n.localize("GAIA.Parameter.Spirit"), value: 0 },
+    { key: "vigor", label: game.i18n.localize("GAIA.Parameter.Vigor"), value: 0 }
+  ];
+  if (actor.system?.parameters?.length) {
+    for (const p of parameters) {
+      const found = actor.system.parameters.find(ap => String(ap.name || "").toLowerCase() === p.key);
+      if (found) p.value = Number(found.value) || 0;
+    }
+  }
+
+  // Extrai Conhecimentos atuais
+  const knowledge = [
+    { key: "charisma", label: game.i18n.localize("GAIA.Knowledge.Charisma"), value: 0 },
+    { key: "mystic_knowledge", label: game.i18n.localize("GAIA.Knowledge.MysticKnowledge"), value: 0 },
+    { key: "exploration", label: game.i18n.localize("GAIA.Knowledge.Exploration"), value: 0 },
+    { key: "stealth", label: game.i18n.localize("GAIA.Knowledge.Stealth"), value: 0 },
+    { key: "history", label: game.i18n.localize("GAIA.Knowledge.History"), value: 0 },
+    { key: "intimidation", label: game.i18n.localize("GAIA.Knowledge.Intimidation"), value: 0 },
+    { key: "intuition", label: game.i18n.localize("GAIA.Knowledge.Intuition"), value: 0 },
+    { key: "medicine", label: game.i18n.localize("GAIA.Knowledge.Medicine"), value: 0 },
+    { key: "perception", label: game.i18n.localize("GAIA.Knowledge.Perception"), value: 0 },
+    { key: "performance", label: game.i18n.localize("GAIA.Knowledge.Performance"), value: 0 },
+    { key: "religion", label: game.i18n.localize("GAIA.Knowledge.Religion"), value: 0 },
+    { key: "survival", label: game.i18n.localize("GAIA.Knowledge.Survival"), value: 0 },
+    { key: "technology", label: game.i18n.localize("GAIA.Knowledge.Technology"), value: 0 },
+    { key: "willpower", label: game.i18n.localize("GAIA.Knowledge.Willpower"), value: 0 }
+  ];
+  if (actor.system?.knowledge?.length) {
+    for (const k of knowledge) {
+      const found = actor.system.knowledge.find(ak => String(ak.name || "").toLowerCase() === k.key);
+      if (found) k.value = Number(found.value) || 0;
+    }
+  }
+
+  const vigorObj = parameters.find(p => p.key === "vigor");
+  const currentVigor = Number(vigorObj?.value ?? 0);
+
+  // Calcula pontos de Parâmetro e Conhecimento disponíveis para este nível
+  let paramPoints = 0;
+  let knowPoints = 0;
+  if (newLevel === 3 || newLevel === 6) {
+    paramPoints = 1;
+    knowPoints = 1;
+  } else if (newLevel >= 9 && newLevel % 3 === 0) {
+    paramPoints = 2;
+    knowPoints = 2;
+  }
+
+  const content = await renderTemplate("systems/gaia-preludio/templates/dialog/level-up-dialog.hbs", {
+    currentLevel,
+    newLevel,
+    vigor: currentVigor,
+    hasAttributePoints: paramPoints > 0,
+    paramPoints,
+    knowPoints,
+    parameters,
+    knowledge
+  });
+
+  let rolledHpValue = null;
+
+  return await DialogV2.prompt({
+    classes: ["gaia-preludio", "gaia-dialog", "level-up-dialog"],
+    window: { title: `${game.i18n.localize("GAIA.LevelUp.Title")} (Nível ${newLevel})` },
+    content,
+    position: { width: 520, height: "auto" },
+    render: (event, dialog) => {
+      const html = dialog.element;
+
+      // Alternância de Abas
+      const tabButtons = html.querySelectorAll(".gaia-dialog-tab-btn");
+      const tabPanes = html.querySelectorAll(".gaia-dialog-tab-pane");
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const targetTab = btn.dataset.tab;
+          tabButtons.forEach(b => b.classList.remove("active"));
+          tabPanes.forEach(p => p.classList.remove("active"));
+          btn.classList.add("active");
+          const pane = html.querySelector(`.gaia-dialog-tab-pane[data-tab='${targetTab}']`);
+          if (pane) pane.classList.add("active");
+        });
+      });
+
+      // Controle de Método de PV
+      const hpRadios = html.querySelectorAll("input[name='hpMethod']");
+      const btnRollHp = html.querySelector(".btn-roll-hp-gain");
+      const previewHp = html.querySelector(".hp-gain-preview");
+
+      const updateHpPreview = () => {
+        const method = html.querySelector("input[name='hpMethod']:checked")?.value || "fixed";
+        if (method === "roll") {
+          if (btnRollHp) btnRollHp.style.display = "inline-flex";
+          if (rolledHpValue !== null) {
+            previewHp.textContent = `+${rolledHpValue + currentVigor} PV (${rolledHpValue} + ${currentVigor})`;
+          } else {
+            previewHp.textContent = `(Aguardando rolagem...)`;
+          }
+        } else {
+          if (btnRollHp) btnRollHp.style.display = "none";
+          previewHp.textContent = `+${3 + currentVigor} PV`;
+        }
+      };
+
+      hpRadios.forEach(r => r.addEventListener("change", updateHpPreview));
+
+      btnRollHp?.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const r = new Roll("1d6");
+        await r.evaluate();
+        rolledHpValue = r.total;
+        updateHpPreview();
+      });
+
+      // Distribuição de Parâmetros
+      let currentParamLeft = paramPoints;
+      const paramLeftDisplay = html.querySelector(".params-points-left");
+      const vigorNotice = html.querySelector(".vigor-hp-bonus-notice");
+
+      const paramAdjustButtons = html.querySelectorAll(".btn-adjust-param");
+      paramAdjustButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const action = btn.dataset.action;
+          const key = btn.dataset.key;
+          const span = html.querySelector(`.param-val-display[data-key='${key}']`);
+          const baseVal = Number(span.dataset.base);
+          let currentVal = Number(span.textContent);
+
+          if (action === "increase") {
+            if (currentParamLeft <= 0) return;
+            if (currentVal >= baseVal + 1) return; // Máximo de 1 ponto por atributo neste nível
+            currentVal += 1;
+            currentParamLeft -= 1;
+          } else if (action === "decrease") {
+            if (currentVal <= baseVal) return;
+            currentVal -= 1;
+            currentParamLeft += 1;
+          }
+
+          span.textContent = currentVal;
+          if (paramLeftDisplay) paramLeftDisplay.textContent = currentParamLeft;
+
+          // Se Vigor foi aumentado no Nível >= 3, mostra aviso
+          const currentVigorVal = Number(html.querySelector(".param-val-display[data-key='vigor']")?.textContent ?? baseVal);
+          if (vigorNotice) {
+            vigorNotice.style.display = (newLevel >= 3 && currentVigorVal > currentVigor) ? "block" : "none";
+          }
+        });
+      });
+
+      // Distribuição de Conhecimentos
+      let currentKnowLeft = knowPoints;
+      const knowLeftDisplay = html.querySelector(".knows-points-left");
+      const knowAdjustButtons = html.querySelectorAll(".btn-adjust-know");
+      knowAdjustButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const action = btn.dataset.action;
+          const key = btn.dataset.key;
+          const span = html.querySelector(`.know-val-display[data-key='${key}']`);
+          const baseVal = Number(span.dataset.base);
+          let currentVal = Number(span.textContent);
+
+          if (action === "increase") {
+            if (currentKnowLeft <= 0) return;
+            if (currentVal >= baseVal + 1) return; // Máximo de 1 ponto por atributo neste nível
+            currentVal += 1;
+            currentKnowLeft -= 1;
+          } else if (action === "decrease") {
+            if (currentVal <= baseVal) return;
+            currentVal -= 1;
+            currentKnowLeft += 1;
+          }
+
+          span.textContent = currentVal;
+          if (knowLeftDisplay) knowLeftDisplay.textContent = currentKnowLeft;
+        });
+      });
+
+      // Botão para abrir o Navegador de Habilidades
+      const btnOpenBrowser = html.querySelector(".btn-open-abilities-browser");
+      btnOpenBrowser?.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const { GaiaItemBrowser } = await import("../applications/item-browser.mjs");
+        GaiaItemBrowser.open(actor, { type: "ability" });
+      });
+    },
+    ok: {
+      label: game.i18n.localize("GAIA.LevelUp.Confirm"),
+      icon: "fa-solid fa-arrow-up-from-bracket",
+      callback: async (event, button, dialog) => {
+        const html = dialog.element;
+
+        // 1. Calcula PV Ganho
+        const method = html.querySelector("input[name='hpMethod']:checked")?.value || "fixed";
+        let hpGainBase = 3;
+        if (method === "roll") {
+          if (rolledHpValue === null) {
+            const r = new Roll("1d6");
+            await r.evaluate();
+            hpGainBase = r.total;
+          } else {
+            hpGainBase = rolledHpValue;
+          }
+        }
+        let totalHpGained = hpGainBase + currentVigor;
+
+        // 2. Extrai novos Parâmetros
+        const updatedParams = [];
+        let newVigor = currentVigor;
+        parameters.forEach(p => {
+          const span = html.querySelector(`.param-val-display[data-key='${p.key}']`);
+          const finalVal = span ? Number(span.textContent) : p.value;
+          if (p.key === "vigor") newVigor = finalVal;
+          updatedParams.push({ name: p.key, value: finalVal });
+        });
+
+        // 3. Extrai novos Conhecimentos
+        const updatedKnows = [];
+        knowledge.forEach(k => {
+          const span = html.querySelector(`.know-val-display[data-key='${k.key}']`);
+          const finalVal = span ? Number(span.textContent) : k.value;
+          updatedKnows.push({ name: k.key, value: finalVal });
+        });
+
+        // 4. Ganho de PV Adicional por Vigor a partir do Nível 3
+        let extraVigorHp = 0;
+        if (newLevel >= 3 && newVigor > currentVigor) {
+          const vigorDiff = newVigor - currentVigor;
+          extraVigorHp = newLevel * vigorDiff;
+          totalHpGained += extraVigorHp;
+        }
+
+        // 5. Habilidade / Aprimoramento Escolhido
+        const chosenAbility = String(html.querySelector(".level-up-ability-input")?.value || "").trim();
+
+        // 6. Aplica atualização no Ator
+        const currentHpMax = Number(actor.system?.health?.max ?? 30);
+        const currentHpVal = Number(actor.system?.health?.value ?? currentHpMax);
+        const newHpMax = currentHpMax + totalHpGained;
+        const newHpVal = Math.min(newHpMax, currentHpVal + totalHpGained);
+
+        const currentEnergyMax = Number(actor.system?.energy?.max ?? 10);
+        const currentEnergyVal = Number(actor.system?.energy?.value ?? currentEnergyMax);
+        const newEnergyMax = currentEnergyMax + 1;
+        const newEnergyVal = Math.min(newEnergyMax, currentEnergyVal + 1);
+
+        const updateData = {
+          "system.nivel": newLevel,
+          "system.health.max": newHpMax,
+          "system.health.value": newHpVal,
+          "system.energy.max": newEnergyMax,
+          "system.energy.value": newEnergyVal
+        };
+
+        if (paramPoints > 0) {
+          updateData["system.parameters"] = updatedParams;
+        }
+        if (knowPoints > 0) {
+          updateData["system.knowledge"] = updatedKnows;
+        }
+
+        await actor.update(updateData);
+
+        // 7. Envia Mensagem de Chat comemorando a Evolução
+        const abilityHtml = chosenAbility ? `
+          <div style="margin-top: 6px; padding-top: 4px; border-top: 1px dashed rgba(201, 163, 75, 0.4); font-size: 12px;">
+            <i class="fa-solid fa-scroll" style="color: var(--gaia-gold-accent, #c9a34b);"></i> <strong>Habilidade/Aprimoramento:</strong> ${chosenAbility}
+          </div>
+        ` : "";
+
+        const vigorNoticeHtml = extraVigorHp > 0 ? `
+          <div style="font-size: 11px; color: var(--gaia-green, #2e8b57); margin-top: 2px;">
+            <i class="fa-solid fa-shield-heart"></i> +${extraVigorHp} PV bônus por aumento de Vigor (Nível ${newLevel})
+          </div>
+        ` : "";
+
+        const chatHtml = `
+          <div class="gaia-preludio chat-card level-up-card" style="border: 2px solid var(--gaia-border-gold, #8c7355); border-radius: 6px; padding: 10px; background: linear-gradient(135deg, rgba(74, 46, 107, 0.1), rgba(201, 163, 75, 0.1));">
+            <header style="text-align: center; margin-bottom: 8px;">
+              <h3 style="margin: 0; font-family: var(--gaia-font-medieval, 'Cinzel', Georgia, serif); color: var(--gaia-purple-dark, #4a2e6b); font-size: 1.2em;">
+                ${game.i18n.localize("GAIA.LevelUp.Title")}
+              </h3>
+              <p style="margin: 2px 0 0 0; font-size: 12px; font-weight: bold; color: var(--gaia-text-parchment, #000);">
+                <strong>${actor.name}</strong> ${game.i18n.format("GAIA.LevelUp.ChatMessageSubtitle", { level: newLevel })}
+              </p>
+            </header>
+            <div style="display: flex; justify-content: space-around; background: rgba(0,0,0,0.05); padding: 6px; border-radius: 4px; margin-bottom: 6px; font-weight: bold; font-size: 13px;">
+              <span style="color: var(--gaia-health, #b91c1c);"> +${totalHpGained} PV Máx</span>
+              <span style="color: var(--gaia-purple-dark, #4a2e6b);"> +1 PE Máx</span>
+            </div>
+            ${vigorNoticeHtml}
+            ${abilityHtml}
+          </div>
+        `;
+
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor }),
+          content: chatHtml
+        });
+
+        ui.notifications?.info(`${actor.name} evoluiu para o Nível ${newLevel} de Despertar!`);
+        return true;
+      }
+    }
+  });
+}
+
 
 
 

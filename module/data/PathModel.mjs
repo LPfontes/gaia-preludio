@@ -88,7 +88,8 @@ export class PathDataModel extends foundry.abstract.TypeDataModel {
               { required: true, initial: [] }
             ),
             duration: new SchemaField({
-              type: new StringField({ required: true, initial: "end_of_combat" })
+              type: new StringField({ required: false, initial: "end_of_combat" }),
+              units: new StringField({ required: false, initial: "end_of_combat" })
             })
           })
         }),

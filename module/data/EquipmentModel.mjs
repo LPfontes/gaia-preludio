@@ -6,7 +6,9 @@
  * EN: Data models for Items: Base Equipment, Armor, and Weapon.
  */
 
-const { NumberField, ArrayField, SchemaField, StringField, BooleanField } = foundry.data.fields;
+import { ActionDataModel } from "./ActionModel.mjs";
+
+const { NumberField, ArrayField, SchemaField, StringField, BooleanField, EmbeddedDataField } = foundry.data.fields;
 
 /**
  * PT: Modelo de dados base para todos os tipos de equipamentos e itens comuns.
@@ -41,8 +43,11 @@ export class EquipmentBaseDataModel extends foundry.abstract.TypeDataModel {
       equipped: new BooleanField({ required: true, initial: false }),
       // PT: Quantidade do item
       // EN: Quantity of the item
-      quantity: new NumberField({ required: true, initial: 1, integer: true, min: 1 })
+      quantity: new NumberField({ required: true, initial: 1, integer: true, min: 1 }),
 
+      // PT: Lista de Ações personalizadas configuradas no equipamento
+      // EN: List of custom Actions configured on the equipment
+      actions: new ArrayField(new EmbeddedDataField(ActionDataModel), { required: true, initial: [] })
     };
   }
 }

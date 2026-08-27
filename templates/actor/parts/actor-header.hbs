@@ -8,7 +8,12 @@
 
     <div class="banner-field-card level-field">
       <span class="field-label">{{localize "GAIA.Banner.Level"}}</span>
-      <input type="number" name="system.nivel" value="{{system.nivel}}" min="0" />
+      <div class="level-input-container" style="display: flex; align-items: center; gap: 4px; width: 100%;">
+        <input type="number" name="system.nivel" value="{{system.nivel}}" min="1" style="flex: 1;" />
+        <button type="button" class="btn-level-up" data-action="levelUp" title="Evolução do Despertar (Subir de Nível)" style="background: transparent; border: none; color: var(--gaia-gold-accent, #c9a34b); cursor: pointer; padding: 2px 4px; font-size: 14px; display: flex; align-items: center; justify-content: center;">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -16,9 +21,16 @@
   <div class="banner-mid-row">
     <div class="banner-field-card legacy-field legado-field">
       <span class="field-label">{{localize "GAIA.Banner.Legacy"}}</span>
-      <select name="system.legacy">
-        {{selectOptions legacySelectOptions selected=system.legacy blank=""}}
-      </select>
+      <div class="legacy-select-container" style="display: flex; align-items: center; gap: 4px; width: 100%;">
+        <select name="system.legacy" style="flex: 1;">
+          {{selectOptions legacySelectOptions selected=system.legacy blank=""}}
+        </select>
+        {{#if legacyItem}}
+          <button type="button" class="btn-open-legacy-sheet" data-action="openLegacyItem" data-item-id="{{legacyItem.id}}" data-item-uuid="{{legacyItem.uuid}}" title="Abrir Ficha do Legado ({{legacyItem.name}})" style="background: transparent; border: none; color: var(--gaia-border-gold, #8c7355); cursor: pointer; padding: 2px 4px; font-size: 14px;">
+            <i class="fa-solid fa-feather-pointed"></i>
+          </button>
+        {{/if}}
+      </div>
     </div>
   </div>
 
@@ -41,7 +53,7 @@
     </div>
   </div>
 
-  {{!-- 4. Energia (Atual / Max) --}}
+  {{!-- 4. Energia (Atual / Max / PET) --}}
   <div class="resource-card energy-card">
     <span class="resource-title">{{localize "GAIA.Banner.Energy"}}</span>
     <div class="resource-inputs-row">
@@ -52,6 +64,10 @@
       <div class="stat-input-box">
         <span class="input-sublabel">{{localize "GAIA.Banner.Max"}}</span>
         <input type="number" name="system.energy.max" value="{{system.energy.max}}" min="0" />
+      </div>
+      <div class="stat-input-box">
+        <span class="input-sublabel">{{localize "GAIA.Banner.TempEnergy"}}</span>
+        <input type="number" name="system.energy.temp" value="{{system.energy.temp}}" min="0" />
       </div>
     </div>
   </div>
@@ -115,7 +131,7 @@
          data-tooltip="{{tooltips.movement}}"
          title="{{tooltips.movement}}&#10;Clique com botão direito para Alterar Movimento">
       <span class="banner-title">{{localize "GAIA.Banner.Movement"}}</span>
-      <span class="banner-input">{{system.movement}}</span>
+      <span class="banner-input">{{#if (ne system.totalMovement undefined)}}{{system.totalMovement}}{{else}}{{system.movement}}{{/if}}</span>
     </div>
 
     {{!-- Iniciativa --}}
@@ -135,23 +151,59 @@
     </div>
   </div>
 
-  {{!-- 7. Exaustão (5 Pips) --}}
-  <div class="exhaustion-card">
-    <span class="exhaustion-title">{{localize "GAIA.Banner.Exhaustion"}}</span>
+  {{!-- 7. Exaustão (6 Pips com Morte no 6º) --}}
+  <div class="exhaustion-card {{#if isDeadByExhaustion}}dead-state{{/if}}" data-tooltip="{{tooltips.exhaustion}}" title="{{tooltips.exhaustion}}">
+    <div class="exhaustion-header-row">
+      <span class="exhaustion-title">{{localize "GAIA.Banner.Exhaustion"}}</span>
+      {{#if isDeadByExhaustion}}
+        <span class="exhaustion-dead-badge" title="Personagem morto por atingir 6 pontos de exaustão">
+          {{localize "GAIA.Banner.ExhaustionDead"}}
+        </span>
+      {{/if}}
+    </div>
     <div class="exhaustion-pips">
       {{#each exhaustionPips as |pip|}}
-        <button type="button" class="diamond-pip {{#if pip.active}}active{{/if}}" data-action="setExhaustion" data-value="{{pip.value}}" title="{{localize 'GAIA.Banner.Exhaustion'}} nível {{pip.value}}">
-          <i class="fa-solid fa-diamond"></i>
+        <button type="button" 
+                class="diamond-pip {{#if pip.active}}active{{/if}} {{#if (eq pip.value 6)}}pip-death{{/if}}" 
+                data-action="setExhaustion" 
+                data-value="{{pip.value}}" 
+                title="{{#if (eq pip.value 6)}}{{localize 'GAIA.Banner.ExhaustionLevel6'}}{{else}}{{localize 'GAIA.Banner.ExhaustionLevel'}} {{pip.value}}{{/if}}">
+          {{#if (eq pip.value 6)}}
+            <i class="fa-solid fa-skull"></i>
+          {{else}}
+            <i class="fa-solid fa-diamond"></i>
+          {{/if}}
         </button>
       {{/each}}
     </div>
     <input type="hidden" name="system.exhaustion" value="{{system.exhaustion}}" />
   </div>
 
+  {{!-- 8. Acesso à Janela de Dado de Morte (quando Incapacitado/0 PV/Estabilizado) --}}
+  {{#if showDeathCard}}
+    <div class="death-save-trigger-card {{#if isDeadByDeathDie}}dead-state{{/if}} {{#if isStabilized}}stabilized-state{{/if}}" 
+         data-action="openDeathSaveDialog" 
+         role="button" 
+         data-tooltip="{{tooltips.deathDie}}&#10;Clique para abrir a Janela do Dado de Morte">
+      <div class="death-trigger-header">
+        <span>{{localize "GAIA.DeathDie.Title"}}</span>
+      </div>
+      <div class="death-trigger-status">
+        {{#if isDeadByDeathDie}}
+          <span class="exhaustion-dead-badge"><i class="fa-solid fa-skull"></i> {{localize "GAIA.Banner.ExhaustionDead"}}</span>
+        {{else if isStabilized}}
+          <span class="stabilized-badge"><i class="fa-solid fa-shield-heart"></i> {{localize "GAIA.DeathDie.Stabilized"}}</span>
+        {{else}}
+          <span class="death-trigger-counts">{{system.death.sentences}}/2 &nbsp;|&nbsp;{{system.death.gifts}}/2</span>
+        {{/if}}
+      </div>
+    </div>
+  {{/if}}
+
   {{!-- 8. Lista de Estatísticas e Defesas Inferiores --}}
   <div class="banner-defenses-list">
     {{!-- Percepção Passiva --}}
-    <div class="defense-item passive-perception-item" data-tooltip="{{tooltips.passivePerception}}" title="{{tooltips.passivePerception}}">
+    <div class="defense-item passive-perception-item" data-tooltip="{{tooltips.passivePerception}}">
       <span class="defense-item-label">{{localize "GAIA.Banner.PassivePerception"}}</span>
       <input type="number" class="defense-item-val" name="system.passivePerception" value="{{system.passivePerception}}" min="0" />
     </div>
@@ -160,15 +212,17 @@
     <div class="defense-group">
       <div class="defense-group-header">
         <span class="defense-group-title">{{localize "GAIA.Banner.Resistance"}}</span>
-        <button type="button" class="btn-tag-add" data-action="addResistance" title="{{localize 'GAIA.Banner.AddResistance'}}">
+        <button type="button" class="btn-tag-add" data-action="addResistance">
           <i class="fa-solid fa-plus"></i>
         </button>
       </div>
       <div class="defense-tags">
         {{#each system.damageResistance as |res index|}}
           <div class="defense-tag">
-            <input type="text" name="system.damageResistance.{{index}}.type" value="{{res.type}}" placeholder="{{localize 'GAIA.Banner.TypePlaceholder'}}" />
-            <button type="button" class="btn-tag-remove" data-action="removeResistance" data-index="{{index}}" title="{{localize 'GAIA.Banner.Remove'}}">
+            <select name="system.damageResistance.{{index}}.type">
+              {{selectOptions ../config.damageTypesFlat selected=res.type localize=true}}
+            </select>
+            <button type="button" class="btn-tag-remove" data-action="removeResistance" data-index="{{index}}" data-tooltip="{{localize 'GAIA.Banner.Remove'}}">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
@@ -182,15 +236,17 @@
     <div class="defense-group">
       <div class="defense-group-header">
         <span class="defense-group-title">{{localize "GAIA.Banner.Immunity"}}</span>
-        <button type="button" class="btn-tag-add" data-action="addImmunity" title="{{localize 'GAIA.Banner.AddImmunity'}}">
+        <button type="button" class="btn-tag-add" data-action="addImmunity" data-tooltip="{{localize 'GAIA.Banner.AddImmunity'}}">
           <i class="fa-solid fa-plus"></i>
         </button>
       </div>
       <div class="defense-tags">
         {{#each system.damageImmunity as |imm index|}}
           <div class="defense-tag">
-            <input type="text" name="system.damageImmunity.{{index}}.type" value="{{imm.type}}" placeholder="{{localize 'GAIA.Banner.TypePlaceholder'}}" />
-            <button type="button" class="btn-tag-remove" data-action="removeImmunity" data-index="{{index}}" title="{{localize 'GAIA.Banner.Remove'}}">
+            <select name="system.damageImmunity.{{index}}.type">
+              {{selectOptions ../config.damageTypesFlat selected=imm.type localize=true}}
+            </select>
+            <button type="button" class="btn-tag-remove" data-action="removeImmunity" data-index="{{index}}" data-tooltip="{{localize 'GAIA.Banner.Remove'}}">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
@@ -204,16 +260,18 @@
     <div class="defense-group">
       <div class="defense-group-header">
         <span class="defense-group-title">{{localize "GAIA.Banner.Reduction"}}</span>
-        <button type="button" class="btn-tag-add" data-action="addReduction" title="{{localize 'GAIA.Banner.AddReduction'}}">
+        <button type="button" class="btn-tag-add" data-action="addReduction" data-tooltip="{{localize 'GAIA.Banner.AddReduction'}}">
           <i class="fa-solid fa-plus"></i>
         </button>
       </div>
       <div class="defense-tags">
         {{#each system.damageReduction as |red index|}}
           <div class="defense-tag reduction-tag">
-            <input type="text" class="reduction-type" name="system.damageReduction.{{index}}.type" value="{{red.type}}" placeholder="{{localize 'GAIA.Banner.TypePlaceholder'}}" />
+            <select class="reduction-type" name="system.damageReduction.{{index}}.type">
+              {{selectOptions ../config.damageTypesFlat selected=red.type localize=true}}
+            </select>
             <input type="number" class="reduction-val" name="system.damageReduction.{{index}}.value" value="{{red.value}}" placeholder="0" />
-            <button type="button" class="btn-tag-remove" data-action="removeReduction" data-index="{{index}}" title="{{localize 'GAIA.Banner.Remove'}}">
+            <button type="button" class="btn-tag-remove" data-action="removeReduction" data-index="{{index}}" data-tooltip="{{localize 'GAIA.Banner.Remove'}}">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>

@@ -1,0 +1,177 @@
+<div class="gaia-dialog-level-up">
+  {{!-- 1. Cabeçalho Fixo de Evolução --}}
+  <div class="level-up-header-box">
+    <h3>{{localize "GAIA.LevelUp.Title"}}</h3>
+    <div class="level-progression-badge">
+      Nível {{currentLevel}} &rarr; Nível {{newLevel}}
+    </div>
+  </div>
+
+  {{!-- 2. Navegação por Abas --}}
+  <nav class="gaia-dialog-tabs">
+    <button type="button" class="gaia-dialog-tab-btn active" data-tab="vitals">
+      {{localize "GAIA.LevelUp.TabVitals"}}
+    </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="parameters">
+      {{localize "GAIA.LevelUp.TabParameters"}}
+      {{#if hasAttributePoints}}
+        <span class="tab-points-indicator">({{paramPoints}})</span>
+      {{/if}}
+    </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="knowledge">
+      {{localize "GAIA.LevelUp.TabKnowledge"}}
+      {{#if hasAttributePoints}}
+        <span class="tab-points-indicator">({{knowPoints}})</span>
+      {{/if}}
+    </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="abilities">
+      {{localize "GAIA.LevelUp.TabAbilities"}}
+    </button>
+  </nav>
+
+  {{!-- 3. Corpo das Abas --}}
+  <div class="gaia-dialog-tab-body">
+    {{!-- ==================================================================== --}}
+    {{!-- ABA 1: VIDA & ENERGIA --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane active" data-tab="vitals">
+      <div class="level-up-section">
+        <h4>{{localize "GAIA.LevelUp.HealthGain"}}</h4>
+
+        <div class="form-row">
+          <div style="flex: 1;">
+            <label style="font-weight: 600; font-size: 12px; display: block; margin-bottom: 4px;">
+              Método de PV (Base + Vigor {{vigor}}):
+            </label>
+            <div class="hp-method-options">
+              <label>
+                <input type="radio" name="hpMethod" value="fixed" checked />
+                Média (3 + {{vigor}} = <strong>{{add 3 vigor}} PV</strong>)
+              </label>
+              <label>
+                <input type="radio" name="hpMethod" value="roll" />
+                Rolar (1d6 + {{vigor}})
+              </label>
+            </div>
+          </div>
+          <div style="flex: 0.6; display: flex; align-items: center; gap: 6px; flex-direction: column;">
+            <button type="button" class="btn-roll-hp-gain" style="display: none;">
+              Rolar 1d6
+            </button>
+            <span class="hp-gain-preview">+{{add 3 vigor}} PV</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="level-up-section">
+        <h4>{{localize "GAIA.LevelUp.EnergyGain"}}</h4>
+        <p class="section-hint" style="margin: 0;">
+          Ao desbloquear mais o seu Véu, você ganha <strong>+1 Ponto de Energia Máximo</strong> de forma permanente.
+        </p>
+      </div>
+    </div>
+
+    {{!-- ==================================================================== --}}
+    {{!-- ABA 2: PARÂMETROS --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane" data-tab="parameters">
+      <div class="level-up-section">
+        <h4>{{localize "GAIA.LevelUp.TabParameters"}}</h4>
+
+        {{#if (gt paramPoints 0)}}
+          <p class="section-hint">
+            {{localize "GAIA.LevelUp.DifferentAttributesNotice"}}
+          </p>
+          <div class="dist-tracker-header">
+            <span>{{localize "GAIA.LevelUp.ParamsAvailable"}}</span>
+            <span><strong class="params-points-left">{{paramPoints}}</strong> / {{paramPoints}}</span>
+          </div>
+        {{else}}
+          <p class="section-hint">
+            Neste nível de Despertar não há pontos adicionais de Parâmetros (pontos são concedidos nos níveis 3, 6 e a cada múltiplos de 3 a partir do 9).
+          </p>
+        {{/if}}
+
+        <div class="gaia-params-dist-grid">
+          {{#each parameters as |param|}}
+            <div class="gaia-param-dist-card">
+              <span class="param-label">{{param.label}}</span>
+              <div class="param-controls">
+                {{#if (gt ../paramPoints 0)}}
+                  <button type="button" class="btn-adjust-param" data-action="decrease" data-key="{{param.key}}">-</button>
+                {{/if}}
+                <span class="param-val-display" data-key="{{param.key}}" data-base="{{param.value}}">{{param.value}}</span>
+                {{#if (gt ../paramPoints 0)}}
+                  <button type="button" class="btn-adjust-param" data-action="increase" data-key="{{param.key}}">+</button>
+                {{/if}}
+              </div>
+            </div>
+          {{/each}}
+        </div>
+
+        {{#if (gte newLevel 3)}}
+          <div class="vigor-hp-bonus-notice" style="display: none;">
+            {{localize "GAIA.LevelUp.VigorBonusHpNotice" level=newLevel}}
+          </div>
+        {{/if}}
+      </div>
+    </div>
+
+    {{!-- ==================================================================== --}}
+    {{!-- ABA 3: CONHECIMENTOS --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane" data-tab="knowledge">
+      <div class="level-up-section">
+        <h4>{{localize "GAIA.LevelUp.TabKnowledge"}}</h4>
+
+        {{#if (gt knowPoints 0)}}
+          <p class="section-hint">
+            {{localize "GAIA.LevelUp.DifferentAttributesNotice"}}
+          </p>
+          <div class="dist-tracker-header">
+            <span>{{localize "GAIA.LevelUp.KnowsAvailable"}}</span>
+            <span><strong class="knows-points-left">{{knowPoints}}</strong> / {{knowPoints}}</span>
+          </div>
+        {{else}}
+          <p class="section-hint">
+            Neste nível de Despertar não há pontos adicionais de Conhecimentos (pontos são concedidos nos níveis 3, 6 e a cada múltiplos de 3 a partir do 9).
+          </p>
+        {{/if}}
+
+        <div class="gaia-knows-dist-grid">
+          {{#each knowledge as |know|}}
+            <div class="gaia-param-dist-card">
+              <span class="param-label">{{know.label}}</span>
+              <div class="param-controls">
+                {{#if (gt ../knowPoints 0)}}
+                  <button type="button" class="btn-adjust-know" data-action="decrease" data-key="{{know.key}}">-</button>
+                {{/if}}
+                <span class="know-val-display" data-key="{{know.key}}" data-base="{{know.value}}">{{know.value}}</span>
+                {{#if (gt ../knowPoints 0)}}
+                  <button type="button" class="btn-adjust-know" data-action="increase" data-key="{{know.key}}">+</button>
+                {{/if}}
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+
+    {{!-- ==================================================================== --}}
+    {{!-- ABA 4: HABILIDADES --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane" data-tab="abilities">
+      <div class="level-up-section">
+        <h4>{{localize "GAIA.LevelUp.AbilityGain"}}</h4>
+        <p class="section-hint">
+          {{localize "GAIA.LevelUp.AbilityGainNotice"}}
+        </p>
+        <div class="level-up-ability-container">
+          <button type="button" class="btn-open-abilities-browser">
+            {{localize "GAIA.ItemBrowser.OpenAbilitiesBrowser"}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

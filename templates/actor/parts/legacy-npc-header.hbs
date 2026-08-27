@@ -87,6 +87,10 @@
           <span class="input-sublabel">{{localize "GAIA.Banner.Max"}}</span>
           <input type="number" name="system.energy.max" value="{{system.energy.max}}" min="0" />
         </div>
+        <div class="stat-input-box">
+          <span class="input-sublabel">{{localize "GAIA.Banner.TempEnergy"}}</span>
+          <input type="number" name="system.energy.temp" value="{{system.energy.temp}}" min="0" />
+        </div>
       </div>
     </div>
   </div>
@@ -185,7 +189,9 @@
       <div class="defense-tags">
         {{#each system.damageResistance as |res index|}}
           <div class="defense-tag">
-            <input type="text" name="system.damageResistance.{{index}}.type" value="{{res.type}}" placeholder="Tipo" />
+            <select name="system.damageResistance.{{index}}.type">
+              {{selectOptions ../config.damageTypesFlat selected=res.type localize=true}}
+            </select>
             <button type="button" class="btn-tag-remove" data-action="removeResistance" data-index="{{index}}" title="Remover">
               <i class="fa-solid fa-xmark"></i>
             </button>
@@ -207,7 +213,9 @@
       <div class="defense-tags">
         {{#each system.damageImmunity as |imm index|}}
           <div class="defense-tag">
-            <input type="text" name="system.damageImmunity.{{index}}.type" value="{{imm.type}}" placeholder="Tipo" />
+            <select name="system.damageImmunity.{{index}}.type">
+              {{selectOptions ../config.damageTypesFlat selected=imm.type localize=true}}
+            </select>
             <button type="button" class="btn-tag-remove" data-action="removeImmunity" data-index="{{index}}" title="Remover">
               <i class="fa-solid fa-xmark"></i>
             </button>
@@ -229,7 +237,9 @@
       <div class="defense-tags">
         {{#each system.damageReduction as |red index|}}
           <div class="defense-tag reduction-tag">
-            <input type="text" class="tag-type" name="system.damageReduction.{{index}}.type" value="{{red.type}}" placeholder="Tipo" />
+            <select class="tag-type" name="system.damageReduction.{{index}}.type">
+              {{selectOptions ../config.damageTypesFlat selected=red.type localize=true}}
+            </select>
             <input type="number" class="tag-val" name="system.damageReduction.{{index}}.value" value="{{red.value}}" min="0" placeholder="0" />
             <button type="button" class="btn-tag-remove" data-action="removeReduction" data-index="{{index}}" title="Remover">
               <i class="fa-solid fa-xmark"></i>

@@ -15,6 +15,9 @@
       <a class="item tab-link" data-tab="bio" data-group="primary" data-action="tab">
         {{localize "GAIA.title.Bio"}}
       </a>
+      <a class="item tab-link" data-tab="efeitos" data-group="primary" data-action="tab">
+        {{localize "GAIA.title.Effects"}}
+      </a>
     </nav>
 
     {{!-- Conteúdo das Abas --}}
@@ -184,6 +187,27 @@
                       {{/if}}
                     </div>
 
+                    {{#if ability.system.actions.length}}
+                    <div class="ability-actions-section">
+                      {{#each ability.system.actions}}
+                      <div class="ability-action-item">
+                        <div class="ability-action-header-row">
+                          <div class="ability-action-info">
+                            <span class="ability-action-name">{{this.name}}</span>
+                            {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
+                          </div>
+                          <button type="button" class="btn-roll-ability-action" data-action="rollAction" data-item-id="{{../ability.id}}" data-action-id="{{this.id}}" data-action-index="{{@index}}" title="Rolar {{this.name}}">
+                            <i class="fa-solid fa-dice-d20"></i>
+                          </button>
+                        </div>
+                        {{#if this.description}}
+                        <div class="ability-action-desc">{{{this.description}}}</div>
+                        {{/if}}
+                      </div>
+                      {{/each}}
+                    </div>
+                    {{/if}}
+
                     {{#if ability.system.subEffects.length}}
                     <div class="subeffects-display-section">
                       {{#each ability.system.subEffects}}
@@ -251,6 +275,13 @@
             </label>
             <textarea name="system.description" rows="10" placeholder="{{localize 'GAIA.Creature.BioPlaceholder'}}">{{system.description}}</textarea>
           </div>
+        </div>
+      </div>
+
+      {{!-- ABA 3: EFEITOS --}}
+      <div class="tab tab-content" data-tab="efeitos" data-group="primary">
+        <div class="creature-effects-container" style="padding: 10px;">
+          {{> "systems/gaia-preludio/templates/actor/parts/effects.hbs"}}
         </div>
       </div>
 

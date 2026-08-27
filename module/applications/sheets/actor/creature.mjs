@@ -86,6 +86,10 @@ export class CreatureSheet extends GaiaBaseActorSheet {
     });
     context.inventory = this.actor.items.filter((i) => i.type === "equipment" || i.type === "armor");
 
+    // Formata Efeitos Ativos e Passivos da Criatura
+    const { prepareActiveEffectCategories } = await import("../../../helpers/actor-context.mjs");
+    context.effects = prepareActiveEffectCategories(this.actor);
+
     return context;
   }
 

@@ -7,8 +7,9 @@
  */
 
 import { ActorBaseDataModel } from "./ActorBaseModel.mjs";
+import { ActionDataModel } from "./ActionModel.mjs";
 
-const { NumberField, ArrayField, SchemaField, StringField, BooleanField } = foundry.data.fields;
+const { NumberField, ArrayField, SchemaField, StringField, BooleanField, EmbeddedDataField } = foundry.data.fields;
 
 /**
  * @extends {ActorBaseDataModel}
@@ -22,10 +23,6 @@ export class LegacyDataModel extends ActorBaseDataModel {
       // PT: Identificador / Legado do personagem
       // EN: Legacy identifier / subtype of the character
       legacy: new StringField({ required: true, initial: "" }),
-
-      // PT: Quantidade de exaustões (0 a 6)
-      // EN: Number of exhaustion entries (0 to 6)
-      exhaustion: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
 
       // PT: Lista de parâmetros / atributos base do personagem (nome/chave e valor)
       // EN: List of character base parameters / attributes (name/key and value)
@@ -62,6 +59,7 @@ export class LegacyDataModel extends ActorBaseDataModel {
         new SchemaField({
           name: new StringField({ required: true, initial: "" }),
           description: new StringField({ required: false, initial: "" }),
+          actions: new ArrayField(new EmbeddedDataField(ActionDataModel), { required: true, initial: [] }),
           activeEffect: new SchemaField({
             text: new StringField({ required: false, initial: "" }),
             used: new BooleanField({ required: true, initial: false }),
@@ -81,7 +79,8 @@ export class LegacyDataModel extends ActorBaseDataModel {
               { required: true, initial: [] }
             ),
             duration: new SchemaField({
-              type: new StringField({ required: true, initial: "end_of_combat" })
+              type: new StringField({ required: false, initial: "end_of_combat" }),
+              units: new StringField({ required: false, initial: "end_of_combat" })
             })
           })
         }),

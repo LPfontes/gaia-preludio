@@ -1,0 +1,263 @@
+<form class="gaia-dialog-form action-dialog-form">
+  
+  {{!-- CABEÇALHO / INFORMAÇÕES BÁSICAS (GRID 3 COLUNAS x 2 LINHAS) --}}
+  <div class="action-dialog-header">
+    <div class="form-group action-name-group">
+      <label class="form-label font-bold">{{localize "GAIA.ActionDialog.Name"}}</label>
+      <input type="text" name="name" value="{{action.name}}" placeholder="{{localize 'GAIA.ActionDialog.NamePlaceholder'}}" required autofocus />
+    </div>
+
+    <div class="form-group action-type-group">
+      <label class="form-label">{{localize "GAIA.ActionDialog.ActionType"}}</label>
+      <select name="type.actionType">
+        {{#each actionTypeOptions}}
+          <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-group action-cost-group">
+      <label class="form-label">{{localize "GAIA.ActionDialog.Cost"}}</label>
+      <input type="text" name="cost" value="{{action.cost}}" placeholder="{{localize 'GAIA.ActionDialog.CostPlaceholder'}}" />
+    </div>
+
+    <div class="form-group action-category-group">
+      <label class="form-label">{{localize "GAIA.ActionDialog.Category"}}</label>
+      <select name="type.category">
+        {{#each abilityTypeOptions}}
+          <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+  <div class="form-group action-desc-group">
+    <label class="form-label">{{localize "GAIA.ActionDialog.Description"}}</label>
+    <textarea name="description" rows="2" placeholder="{{localize 'GAIA.ActionDialog.DescriptionPlaceholder'}}">{{action.description}}</textarea>
+  </div>
+  {{!-- NAVEGAÇÃO POR ABAS DAS SEÇÕES DA AÇÃO --}}
+  <nav class="sheet-navigation-tabs action-dialog-tabs tabs" data-group="action-sections">
+    <a class="tab-item active" data-action="tab" data-group="action-sections" data-tab="attack">
+       {{localize "GAIA.ActionDialog.AttackLegend"}}
+    </a>
+    <a class="tab-item" data-action="tab" data-group="action-sections" data-tab="damage">
+      {{localize "GAIA.ActionDialog.DamageLegend"}}
+    </a>
+    <a class="tab-item" data-action="tab" data-group="action-sections" data-tab="check">
+      {{localize "GAIA.ActionDialog.CheckLegend"}}
+    </a>
+    <a class="tab-item" data-action="tab" data-group="action-sections" data-tab="condition">
+      {{localize "GAIA.ActionDialog.ConditionLegend"}}
+    </a>
+    <a class="tab-item" data-action="tab" data-group="action-sections" data-tab="area">
+      {{localize "GAIA.ActionDialog.AreaLegend"}}
+    </a>
+  </nav>
+
+  {{!-- CONTEÚDO DAS ABAS --}}
+  <div class="action-dialog-tab-contents">
+
+    {{!-- 1. ABA ATAQUE / EMBATE --}}
+    <div class="tab action-tab active" data-group="action-sections" data-tab="attack">
+      <div class="action-tab-header">
+        <label class="checkbox-label font-bold">
+          <input type="checkbox" name="attack.hasAttack" {{#if action.attack.hasAttack}}checked{{/if}} class="section-toggle" data-target=".attack-fields" />
+          <span>{{localize "GAIA.ActionDialog.AttackLegend"}}</span>
+        </label>
+      </div>
+      <div class="section-fields attack-fields" style="{{#unless action.attack.hasAttack}}opacity: 0.45; pointer-events: none;{{/unless}}">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.AttackParameter"}}</label>
+            <select name="attack.attribute">
+              {{#each parameterOptions}}
+                <option value="{{this.key}}" {{#if this.selectedAttack}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.KnowledgeOptional"}}</label>
+            <select name="attack.knowledge">
+              <option value="">{{localize "GAIA.ActionDialog.None"}}</option>
+              {{#each knowledgeOptions}}
+                <option value="{{this.key}}" {{#if this.selectedAttack}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.RollType"}}</label>
+            <select name="attack.rollType">
+              {{#each rollTypeOptions}}
+                <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.Bonus"}}</label>
+            <input type="text" name="attack.bonus" value="{{action.attack.bonus}}" placeholder="{{localize 'GAIA.ActionDialog.BonusPlaceholder'}}" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- 2. ABA DANO --}}
+    <div class="tab action-tab" data-group="action-sections" data-tab="damage">
+      <div class="action-tab-header">
+        <label class="checkbox-label font-bold">
+          <input type="checkbox" name="damage.hasDamage" {{#if action.damage.hasDamage}}checked{{/if}} class="section-toggle" data-target=".damage-fields" />
+          <span>{{localize "GAIA.ActionDialog.DamageLegend"}}</span>
+        </label>
+      </div>
+      <div class="section-fields damage-fields" style="{{#unless action.damage.hasDamage}}opacity: 0.45; pointer-events: none;{{/unless}}">
+        <div class="form-row">
+          <div class="form-group flex-15">
+            <label class="form-label">{{localize "GAIA.ActionDialog.DamageFormula"}}</label>
+            <input type="text" name="damage.formula" value="{{action.damage.formula}}" placeholder="{{localize 'GAIA.ActionDialog.DamageFormulaPlaceholder'}}" />
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.DamageType"}}</label>
+            <select name="damage.type">
+              {{#each damageTypeOptions}}
+                <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.CriticalBonus"}}</label>
+            <input type="text" name="damage.criticalBonus" value="{{action.damage.criticalBonus}}" placeholder="{{localize 'GAIA.ActionDialog.CriticalBonusPlaceholder'}}" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- 3. ABA TESTE / SALVAGUARDA --}}
+    <div class="tab action-tab" data-group="action-sections" data-tab="check">
+      <div class="action-tab-header">
+        <label class="checkbox-label font-bold">
+          <input type="checkbox" name="check.hasCheck" {{#if action.check.hasCheck}}checked{{/if}} class="section-toggle" data-target=".check-fields" />
+          <span>{{localize "GAIA.ActionDialog.CheckLegend"}}</span>
+        </label>
+      </div>
+      <div class="section-fields check-fields" style="{{#unless action.check.hasCheck}}opacity: 0.45; pointer-events: none;{{/unless}}">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.CheckCategory"}}</label>
+            <select name="check.category">
+              <option value="parameter" {{#if (eq action.check.category "parameter")}}selected{{/if}}>{{localize "GAIA.ActionDialog.CheckCategoryParameter"}}</option>
+              <option value="knowledge" {{#if (eq action.check.category "knowledge")}}selected{{/if}}>{{localize "GAIA.ActionDialog.CheckCategoryKnowledge"}}</option>
+              <option value="defense" {{#if (eq action.check.category "defense")}}selected{{/if}}>{{localize "GAIA.ActionDialog.CheckCategoryDefense"}}</option>
+            </select>
+          </div>
+          <div class="form-group flex-15">
+            <label class="form-label">{{localize "GAIA.ActionDialog.RequiredAttribute"}}</label>
+            <select name="check.attribute">
+              <optgroup label="{{localize 'GAIA.ActionDialog.ParametersGroup'}}">
+                {{#each parameterOptions}}
+                  <option value="{{this.key}}" {{#if this.selectedCheck}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+              </optgroup>
+              <optgroup label="{{localize 'GAIA.ActionDialog.KnowledgeGroup'}}">
+                {{#each knowledgeOptions}}
+                  <option value="{{this.key}}" {{#if this.selectedCheck}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group flex-08">
+            <label class="form-label">{{localize "GAIA.ActionDialog.Difficulty"}}</label>
+            <input type="number" name="check.difficulty" value="{{action.check.difficulty}}" min="0" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.OnSuccess"}}</label>
+            <input type="text" name="check.onSuccess" value="{{action.check.onSuccess}}" placeholder="{{localize 'GAIA.ActionDialog.OnSuccessPlaceholder'}}" />
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.OnFailure"}}</label>
+            <input type="text" name="check.onFailure" value="{{action.check.onFailure}}" placeholder="{{localize 'GAIA.ActionDialog.OnFailurePlaceholder'}}" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- 4. ABA CONDIÇÃO / STATUS --}}
+    <div class="tab action-tab" data-group="action-sections" data-tab="condition">
+      <div class="action-tab-header">
+        <label class="checkbox-label font-bold">
+          <input type="checkbox" name="condition.hasCondition" {{#if action.condition.hasCondition}}checked{{/if}} class="section-toggle" data-target=".condition-fields" />
+          <span>{{localize "GAIA.ActionDialog.ConditionLegend"}}</span>
+        </label>
+      </div>
+      <div class="section-fields condition-fields" style="{{#unless action.condition.hasCondition}}opacity: 0.45; pointer-events: none;{{/unless}}">
+        <div class="form-row">
+          <div class="form-group flex-15">
+            <label class="form-label">{{localize "GAIA.ActionDialog.ConditionApplied"}}</label>
+            <input type="text" name="condition.status" value="{{action.condition.status}}" list="gaia-action-conditions-list" placeholder="{{localize 'GAIA.ActionDialog.ConditionPlaceholder'}}" />
+            <datalist id="gaia-action-conditions-list">
+              {{#each conditionOptions}}
+                <option value="{{this.name}}"></option>
+              {{/each}}
+            </datalist>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.Duration"}}</label>
+            <input type="text" name="condition.duration" value="{{action.condition.duration}}" placeholder="{{localize 'GAIA.ActionDialog.DurationPlaceholder'}}" />
+          </div>
+        </div>
+        <div class="form-group Flex-1">
+          <label class="form-label">{{localize "GAIA.ActionDialog.ConditionDescription"}}</label>
+          <textarea name="condition.description" rows="3" placeholder="{{localize 'GAIA.ActionDialog.ConditionDescriptionPlaceholder'}}">{{action.condition.description}}</textarea>
+        </div>
+      </div>
+    </div>
+
+    {{!-- 5. ABA ÁREA DE EFEITO (AoE) --}}
+    <div class="tab action-tab" data-group="action-sections" data-tab="area">
+      <div class="action-tab-header">
+        <label class="checkbox-label font-bold">
+          <input type="checkbox" name="areaOfEffect.hasArea" {{#if action.areaOfEffect.hasArea}}checked{{/if}} class="section-toggle" data-target=".area-fields" />
+          <span>{{localize "GAIA.ActionDialog.AreaLegend"}}</span>
+        </label>
+      </div>
+      <div class="section-fields area-fields" style="{{#unless action.areaOfEffect.hasArea}}opacity: 0.45; pointer-events: none;{{/unless}}">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.AreaShape"}}</label>
+            <select name="areaOfEffect.shape">
+              <option value="circle" {{#if (eq action.areaOfEffect.shape "circle")}}selected{{/if}}>{{localize "GAIA.ActionDialog.ShapeCircle"}}</option>
+              <option value="cone" {{#if (eq action.areaOfEffect.shape "cone")}}selected{{/if}}>{{localize "GAIA.ActionDialog.ShapeCone"}}</option>
+              <option value="line" {{#if (eq action.areaOfEffect.shape "line")}}selected{{/if}}>{{localize "GAIA.ActionDialog.ShapeLine"}}</option>
+              <option value="rectangle" {{#if (eq action.areaOfEffect.shape "rectangle")}}selected{{/if}}>{{localize "GAIA.ActionDialog.ShapeRectangle"}}</option>
+              <option value="ellipse" {{#if (eq action.areaOfEffect.shape "ellipse")}}selected{{/if}}>{{localize "GAIA.ActionDialog.ShapeEllipse"}}</option>
+            </select>
+          </div>
+          <div class="form-group flex-08">
+            <label class="form-label">{{localize "GAIA.ActionDialog.AreaSize"}}</label>
+            <input type="number" name="areaOfEffect.size" value="{{action.areaOfEffect.size}}" min="0" step="0.5" />
+          </div>
+          <div class="form-group flex-06">
+            <label class="form-label">{{localize "GAIA.ActionDialog.AreaUnit"}}</label>
+            <input type="text" name="areaOfEffect.unit" value="{{action.areaOfEffect.unit}}" placeholder="m" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.TargetDisposition"}}</label>
+            <select name="areaOfEffect.targetDisposition">
+              <option value="all" {{#if (or (eq action.areaOfEffect.targetDisposition "all") (not action.areaOfEffect.targetDisposition))}}selected{{/if}}>{{localize "GAIA.ActionDialog.TargetDispositionAll"}}</option>
+              <option value="hostile" {{#if (eq action.areaOfEffect.targetDisposition "hostile")}}selected{{/if}}>{{localize "GAIA.ActionDialog.TargetDispositionHostile"}}</option>
+              <option value="friendly" {{#if (eq action.areaOfEffect.targetDisposition "friendly")}}selected{{/if}}>{{localize "GAIA.ActionDialog.TargetDispositionFriendly"}}</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">{{localize "GAIA.ActionDialog.TargetLimit"}}</label>
+            <input type="text" name="areaOfEffect.targetLimit" value="{{action.areaOfEffect.targetLimit}}" placeholder="{{localize 'GAIA.ActionDialog.TargetLimitPlaceholder'}}" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</form>

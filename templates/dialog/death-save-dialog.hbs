@@ -1,0 +1,97 @@
+<div class="death-save-dialog-root">
+  {{!-- 1. Cabeçalho do Personagem Caído --}}
+  <div class="death-dialog-actor-header">
+    <img class="death-dialog-portrait" src="{{actor.img}}" alt="{{actor.name}}" />
+    <div class="death-dialog-actor-info">
+      <h3 class="death-dialog-actor-name">{{actor.name}}</h3>
+      <div class="death-dialog-status-line">
+        {{#if isDead}}
+          <span class="death-status-badge dead"><i class="fa-solid fa-skull"></i> {{localize "GAIA.Banner.ExhaustionDead"}}</span>
+        {{else if isStabilized}}
+          <span class="death-status-badge stabilized"><i class="fa-solid fa-shield-heart"></i> {{localize "GAIA.DeathDie.Stabilized"}}</span>
+        {{else}}
+          <span class="death-status-badge dying"><i class="fa-solid fa-heart-crack"></i> {{localize "GAIA.DeathDie.Incapacitated"}}</span>
+        {{/if}}
+        <span class="death-hp-indicator">{{hp}} / {{maxHp}} PV</span>
+      </div>
+    </div>
+  </div>
+
+  {{!-- 2. Painel de Sentenças e Dádivas --}}
+  <div class="death-dialog-tracks-container">
+    {{!-- Sentenças do Corruptor (1-6) --}}
+    <div class="death-dialog-track sentence-track">
+      <div class="track-header">
+        <span class="track-title">{{localize "GAIA.DeathDie.Sentences"}}</span>
+        <span class="track-rule-hint">(1 a 6)</span>
+      </div>
+      <p class="track-subtext">2 Sentenças = Morte</p>
+      <div class="track-pips-row">
+        {{#each sentencesPips as |pip|}}
+          <button type="button" 
+                  class="death-pip sentence-pip {{#if pip.active}}active{{/if}}" 
+                  data-action="setDeathSentence" 
+                  data-value="{{pip.value}}" 
+                  title="Sentença do Corruptor {{pip.value}}/2">
+            <i class="fa-solid fa-skull"></i>
+          </button>
+        {{/each}}
+      </div>
+    </div>
+
+    {{!-- Dádivas do Artesão (7-12) --}}
+    <div class="death-dialog-track gift-track">
+      <div class="track-header">
+        <span class="track-title">{{localize "GAIA.DeathDie.Gifts"}}</span>
+        <span class="track-rule-hint">(7 a 12)</span>
+      </div>
+      <p class="track-subtext">2 Dádivas = Estabilizado</p>
+      <div class="track-pips-row">
+        {{#each giftsPips as |pip|}}
+          <button type="button" 
+                  class="death-pip gift-pip {{#if pip.active}}active{{/if}}" 
+                  data-action="setDeathGift" 
+                  data-value="{{pip.value}}" 
+                  title="Dádiva do Artesão {{pip.value}}/2">
+            <i class="fa-solid fa-sun"></i>
+          </button>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+
+  {{!-- 3. Botão Principal: Rolar Dado de Morte --}}
+  <div class="death-dialog-main-action">
+    {{#if (and (not isDead) (not isStabilized))}}
+      <button type="button" class="btn-death-die-roll" data-action="rollDeathDie">
+        <span>{{localize "GAIA.DeathDie.RollButton"}}</span>
+      </button>
+    {{else if isDead}}
+      <div class="death-dialog-ended-notice dead-notice">
+        <i class="fa-solid fa-skull"></i> O personagem sucumbiu às Sentenças do Corruptor e morreu.
+      </div>
+    {{else if isStabilized}}
+      <div class="death-dialog-ended-notice stabilized-notice">
+        <i class="fa-solid fa-shield-heart"></i> O personagem foi abençoado pelas Dádivas do Artesão e está estabilizado.
+      </div>
+    {{/if}}
+  </div>
+
+  {{!-- 4. Ações Secundárias --}}
+  <div class="death-dialog-footer-actions">
+    {{#if (not isDead)}}
+      {{#if (not isStabilized)}}
+        <button type="button" class="btn-death-secondary btn-stabilize" data-action="stabilize" title="Estabilizar o personagem e fechar esta janela">
+          {{localize "GAIA.DeathDie.BtnStabilize"}}
+        </button>
+      {{else}}
+        <button type="button" class="btn-death-secondary btn-regenerate" data-action="regenerateStabilized" title="Regenerar 1d4 PV a cada 10 minutos estabilizado">
+          <i class="fa-solid fa-heart-pulse"></i> {{localize "GAIA.DeathDie.RegenerateButton"}}
+        </button>
+      {{/if}}
+    {{/if}}
+    <button type="button" class="btn-death-secondary btn-close" data-action="closeWindow">
+      <i class="fa-solid fa-xmark"></i> Fechar
+    </button>
+  </div>
+</div>

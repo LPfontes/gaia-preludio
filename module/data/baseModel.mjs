@@ -6,7 +6,9 @@
  * EN: Root data model defining common properties across all documents.
  */
 
-const { StringField, NumberField, ArrayField, SchemaField } = foundry.data.fields;
+import { ActionDataModel } from "./ActionModel.mjs";
+
+const { StringField, ArrayField, EmbeddedDataField } = foundry.data.fields;
 
 /**
  * @extends {foundry.abstract.TypeDataModel<any, any>}
@@ -26,15 +28,7 @@ class BaseDataModel extends foundry.abstract.TypeDataModel {
       // PT: Lista de ações configuradas (ataques, habilidades, magias)
       // EN: List of configured actions (attacks, abilities, spells)
       actions: new ArrayField(
-        new SchemaField({
-          name: new StringField({ required: false, initial: "" }),
-          type: new StringField({ required: true, initial: "attack" }),
-          attackFormula: new StringField({ required: false, initial: "" }),
-          damageFormula: new StringField({ required: false, initial: "" }),
-          damageType: new StringField({ required: false, initial: "" }),
-          saveAbility: new StringField({ required: false, initial: "" }),
-          saveDC: new NumberField({ required: false, integer: true, min: 0, initial: 10 })
-        }),
+        new EmbeddedDataField(ActionDataModel),
         { required: true, initial: [] }
       )
     };

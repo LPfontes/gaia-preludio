@@ -66,6 +66,29 @@ export class GaiaItem extends Item {
       const target = system.numberTarget ? `<div><strong>Alvo:</strong> ${system.numberTarget}</div>` : "";
       const range = system.range ? `<div><strong>Alcance:</strong> ${system.range}</div>` : "";
       
+      let actionsHTML = "";
+      if (Array.isArray(system.actions) && system.actions.length > 0) {
+        actionsHTML = `
+          <div class="ability-actions-section">
+            <div class="ability-actions-title">• AÇÕES •</div>
+            ${system.actions.map((act, idx) => `
+              <div class="ability-action-item">
+                <div class="ability-action-header-row">
+                  <div class="ability-action-info">
+                    <span class="ability-action-name">${act.name || "Ação"}</span>
+                    ${act.cost ? `<span class="badge cost-badge">${act.cost}</span>` : ""}
+                  </div>
+                  <button type="button" class="btn-roll-ability-action" data-action="rollItemAction" data-item-uuid="${this.uuid}" data-item-id="${this.id}" data-action-id="${act.id || ''}" data-action-index="${idx}" title="Rolar ${act.name || 'Ação'}">
+                    <i class="fa-solid fa-dice-d20"></i>
+                  </button>
+                </div>
+                ${act.description ? `<div class="ability-action-desc">${act.description}</div>` : ""}
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
       let subEffectsHTML = "";
       if (Array.isArray(system.subEffects) && system.subEffects.length > 0) {
         subEffectsHTML = system.subEffects.map(sub => `
@@ -110,6 +133,7 @@ export class GaiaItem extends Item {
             ${target}
             ${range}
           </div>
+          ${actionsHTML}
           ${subEffectsHTML}
           ${improvementsHTML}
         </div>
@@ -149,6 +173,29 @@ export class GaiaItem extends Item {
 
       const description = system.description ? `<p style="margin-top: 6px; text-align: left; font-size: 0.95em;">${system.description}</p>` : "";
 
+      let actionsHTML = "";
+      if (Array.isArray(system.actions) && system.actions.length > 0) {
+        actionsHTML = `
+          <div class="ability-actions-section" style="margin-top: 8px;">
+            <div class="ability-actions-title">• AÇÕES •</div>
+            ${system.actions.map((act, idx) => `
+              <div class="ability-action-item">
+                <div class="ability-action-header-row">
+                  <div class="ability-action-info">
+                    <span class="ability-action-name">${act.name || "Ação"}</span>
+                    ${act.cost ? `<span class="badge cost-badge">${act.cost}</span>` : ""}
+                  </div>
+                  <button type="button" class="btn-roll-ability-action" data-action="rollItemAction" data-item-uuid="${this.uuid}" data-item-id="${this.id}" data-action-id="${act.id || ''}" data-action-index="${idx}" title="Rolar ${act.name || 'Ação'}">
+                    <i class="fa-solid fa-dice-d20"></i>
+                  </button>
+                </div>
+                ${act.description ? `<div class="ability-action-desc">${act.description}</div>` : ""}
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
       content = `
         <div class="gaia-weapon-chat-card" style="padding: 6px;">
           <h3 style="margin: 0 0 6px 0; font-family: var(--gaia-font-medieval, 'Cinzel', Georgia, serif); font-size: 1.1em; color: var(--gaia-text-parchment, #000); border-bottom: 1px solid var(--gaia-border-gold, #8c7355); padding-bottom: 4px; display: flex; align-items: center; gap: 8px;">
@@ -165,11 +212,34 @@ export class GaiaItem extends Item {
               <div class="dice-total">${damageText}</div>
             </div>
           </div>
+          ${actionsHTML}
         </div>
       `;
     } else {
       const description = system?.description || "";
-      content = `<h3>${this.name}</h3><p>${description}</p>`;
+      let actionsHTML = "";
+      if (Array.isArray(system?.actions) && system.actions.length > 0) {
+        actionsHTML = `
+          <div class="ability-actions-section" style="margin-top: 8px;">
+            <div class="ability-actions-title">• AÇÕES •</div>
+            ${system.actions.map((act, idx) => `
+              <div class="ability-action-item">
+                <div class="ability-action-header-row">
+                  <div class="ability-action-info">
+                    <span class="ability-action-name">${act.name || "Ação"}</span>
+                    ${act.cost ? `<span class="badge cost-badge">${act.cost}</span>` : ""}
+                  </div>
+                  <button type="button" class="btn-roll-ability-action" data-action="rollItemAction" data-item-uuid="${this.uuid}" data-item-id="${this.id}" data-action-id="${act.id || ''}" data-action-index="${idx}" title="Rolar ${act.name || 'Ação'}">
+                    <i class="fa-solid fa-dice-d20"></i>
+                  </button>
+                </div>
+                ${act.description ? `<div class="ability-action-desc">${act.description}</div>` : ""}
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+      content = `<h3>${this.name}</h3><p>${description}</p>${actionsHTML}`;
     }
 
     return ChatMessage.create(/** @type {any} */ ({
@@ -234,5 +304,27 @@ export class GaiaItem extends Item {
       content,
       ...options
     }));
+  }
+
+  /**
+   * Executa e envia uma Ação (ActionDataModel) específica com rolagens interativas e efeitos.
+   * @param {object|number|string} action - Objeto da ação ou índice na array de ações
+   * @param {object} [options] - Opções adicionais para a execução
+   * @returns {Promise<ChatMessage|null>}
+   */
+  async rollAction(action, options = {}) {
+    let act = typeof action === "number" ? this.system?.actions?.[action] : action;
+    if (!act && (typeof action === "string" || typeof action === "number")) {
+      const idx = Number(action);
+      if (!isNaN(idx)) act = this.system?.actions?.[idx];
+    }
+    if (!act) return null;
+
+    const { executeAction } = await import("../helpers/action-flow.mjs");
+    return executeAction(act, {
+      item: this,
+      actor: this.actor,
+      ...options
+    });
   }
 }

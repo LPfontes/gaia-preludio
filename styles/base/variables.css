@@ -41,9 +41,15 @@
   --gaia-health: #b91c1c;
   --gaia-health-label: #dc2626;
   --gaia-energy: #2563eb;
+  --gaia-color-stability: #2a3a5e;
   --gaia-energy-label: #3b82f6;
   --gaia-purple: #942ce4;
---gaia-purple-dark: #5d1c8f;
+  --gaia-purple-dark: #5d1c8f;
+  --gaia-green-dark: #1b4d3e;
+  --gaia-green: #2e8b57;
+  --gaia-color-regeneration: #1b4d3e;
+  --gaia-color-regeneration-border: #2e8b57;
+
   /* --- RAIO & DETALHES --- */
   --gaia-radius: 4px;
 }

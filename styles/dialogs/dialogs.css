@@ -301,7 +301,7 @@
 }
 
 .subeffect-dialog button[data-action="confirm"] {
-  background: var(--gaia-purple-dark, #5d1c8f);
+  background: var(--gaia-purple-dark);
   color: #ffffff;
   border: 1px solid #4a1573;
 }
@@ -326,15 +326,15 @@
 .weapon-defense-block {
   margin-top: 8px;
   text-align: center;
-  border-top: 1px dashed var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border-top: 1px dashed var(--gaia-border-subtle);
   padding-top: 6px;
 }
 
 .weapon-defense-block .defense-label {
-  font-size: var(--gaia-font-xs, 11px);
+  font-size: var(--gaia-font-base);
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--gaia-text-muted, #505050);
+  color: var(--gaia-text-parchment);
   display: block;
   margin-bottom: 6px;
   letter-spacing: 0.5px;
@@ -345,9 +345,9 @@
 }
 
 .gaia-btn-roll-defense:hover {
-  background: var(--gaia-purple-dark, #5d1c8f);
+  background: var(--gaia-purple-dark);
   color: #ffffff;
-  border-color: var(--gaia-purple, #942ce4);
+  border-color: var(--gaia-purple);
   box-shadow: 0 0 8px rgba(148, 44, 228, 0.5);
   transform: translateY(-1px);
 }
@@ -356,6 +356,762 @@
   transform: translateY(0);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
 }
+
+/* ==============================================================================
+ * BOTÃO DE APLICAR DANO NO ALVO (.gaia-btn-apply-damage)
+ * ============================================================================== */
+.gaia-btn-apply-damage {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius, 4px);
+  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.gaia-btn-apply-damage:hover {
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.6);
+  transform: translateY(-1px);
+}
+
+.gaia-btn-apply-damage:active {
+  transform: translateY(0);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.gaia-btn-apply-damage:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  background: var(--gaia-bg-window, #444);
+}
+
+/* ==============================================================================
+ * LISTAGEM DE ALVOS (DANO E DEFESA)
+ * ============================================================================== */
+.weapon-damage-targets-list,
+.weapon-defense-targets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.weapon-damage-target-row,
+.weapon-defense-target-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius, 4px);
+  padding: 4px 8px;
+  gap: 8px;
+}
+
+.weapon-damage-target-name,
+.weapon-defense-target-name {
+  font-size: var(--gaia-font-sm);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  text-align: left;
+  flex: 1;
+}
+
+/* ==============================================================================
+ * DIÁLOGO DE CRIAÇÃO / EDIÇÃO DE AÇÃO (.action-dialog)
+ * ============================================================================== */
+.action-dialog .action-dialog-form {
+  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.action-dialog .action-dialog-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.2fr;
+  gap: 8px;
+  align-items: start;
+}
+
+.action-dialog .action-name-group {
+  display: grid;
+}
+
+.action-dialog .action-type-group {
+  display: grid;
+}
+
+.action-dialog .action-cost-group {
+  display: grid;
+}
+
+.action-dialog .action-category-group {
+  display: grid;
+}
+
+.action-dialog .action-desc-group {
+  display: grid;
+}
+
+.action-dialog .action-name-group input[type="text"] {
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--gaia-border-frame);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.action-dialog .action-section-fieldset {
+  border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border-radius: 4px;
+  padding: 6px 10px 8px;
+  background: rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.action-dialog .action-section-fieldset.active {
+  border-color: var(--gaia-purple, #942ce4);
+  background: rgba(93, 28, 143, 0.08);
+}
+
+.action-dialog .action-section-fieldset legend {
+  padding: 0 6px;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+}
+
+.action-dialog .action-section-fieldset legend .checkbox-label {
+  user-select: none;
+}
+
+.action-dialog .action-section-fieldset legend input[type="checkbox"] {
+  accent-color: var(--gaia-purple);
+  cursor: pointer;
+}
+
+.action-dialog .form-label {
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  margin-bottom: 2px;
+  display: block;
+}
+
+.action-dialog input[type="text"],
+.action-dialog input[type="number"],
+.action-dialog select,
+.action-dialog textarea {
+  width: 100%;
+  font-size: var(--gaia-font-base);
+  padding: 4px 6px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--gaia-border-subtle);
+  color: var(--gaia-text-parchment);
+}
+
+.action-dialog textarea {
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+.action-dialog input:focus,
+.action-dialog select:focus,
+.action-dialog textarea:focus {
+  border-color: var(--gaia-purple, #942ce4);
+  outline: none;
+  box-shadow: 0 0 5px rgba(148, 44, 228, 0.4);
+}
+
+.action-dialog .action-meta-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.action-dialog .action-desc-group {
+  margin-top: 6px;
+}
+
+/* ==============================================================================
+ * ABAS DO DIÁLOGO DE AÇÃO (.action-dialog-tabs & .action-tab)
+ * ============================================================================== */
+.action-dialog .action-dialog-tabs {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  display: flex;
+  padding: 4px;
+  gap: 4px;
+}
+
+.action-dialog .action-dialog-tabs .tab-item {
+  color: var(--gaia-text-muted);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.action-dialog .action-dialog-tabs .tab-item:hover {
+  color: var(--gaia-text-parchment);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.action-dialog .action-dialog-tabs .tab-item.active {
+  background: var(--gaia-purple-dark);
+  border-color: var(--gaia-purple);
+  box-shadow: 0 0 6px rgba(148, 44, 228, 0.4);
+  color: white;
+}
+
+.action-dialog-tab-contents {
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 8px 10px;
+  min-height: 150px;
+}
+
+.action-dialog .action-tab {
+  display: none;
+}
+
+.action-dialog .action-tab.active {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-dialog .action-tab-header {
+  border-bottom: 1px dashed var(--gaia-border-subtle);
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+.action-dialog .action-tab-header .checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  user-select: none;
+}
+
+.action-dialog .action-tab-header input[type="checkbox"] {
+  accent-color: var(--gaia-purple);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.action-dialog .section-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: opacity 0.2s ease;
+}
+
+.action-dialog .form-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.action-dialog .section-fields > .form-row:first-child {
+  margin-top: 0;
+}
+
+.action-dialog .flex-1 { flex: 1; display: grid; }
+.action-dialog .flex-15 { flex: 1.5; display: grid; }
+.action-dialog .flex-08 { flex: 0.8; display: grid; }
+.action-dialog .flex-06 { flex: 0.6; display: grid; }
+.action-dialog .cost-group { flex: 0 0 110px; display: grid; }
+
+/* ==========================================================================
+   DEATH SAVE WINDOW (Janela de Dado de Morte)
+   ========================================================================== */
+.death-save-window .window-content {
+  background: var(--gaia-bg-banner, #1c1424);
+  color: var(--gaia-text-parchment, #e0d8c3);
+  padding: 8px;
+}
+
+.death-save-dialog-root {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--gaia-font-medieval, Georgia, serif);
+}
+
+.death-dialog-actor-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--gaia-border-subtle, rgba(255, 255, 255, 0.1));
+}
+
+.death-dialog-portrait {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--gaia-border-gold, #8c7355);
+}
+
+.death-dialog-actor-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.death-dialog-actor-name {
+  margin: 0;
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+}
+
+.death-dialog-status-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.death-status-badge {
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.death-status-badge.dead {
+  background: var(--gaia-red-crimson, #b02e2e);
+  color: #fff;
+  animation: pulse-dead 2s infinite ease-in-out;
+}
+
+.death-status-badge.stabilized {
+  background: var(--gaia-color-stability);
+}
+
+.death-status-badge.dying {
+  background: var(--gaia-color-death);
+}
+
+.death-hp-indicator {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-muted);
+}
+
+.death-dialog-tracks-container {
+  display: flex;
+  gap: 6px;
+}
+
+.death-dialog-track {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--gaia-border-subtle, rgba(255, 255, 255, 0.1));
+  border-radius: 4px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+
+.track-header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.track-rule-hint {
+  font-size: var(--gaia-font-md);
+  opacity: 0.8;
+}
+
+.track-subtext {
+  margin: 0;
+  color: var(--gaia-text-muted, #aaa);
+}
+
+.track-pips-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.death-dialog-track .death-pip {
+  font-size: 22px;
+}
+
+.death-dialog-main-action {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-death-die-roll {
+  width: 100%;
+  padding: 8px 16px;
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  font-family: var(--gaia-font-medieval);
+  background: var(--gaia-bg-window);
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.btn-death-die-roll:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.death-dialog-ended-notice {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--gaia-radius);
+  font-size: var(--gaia-font-base);
+  text-align: center;
+  font-weight: bold;
+}
+
+.death-dialog-footer-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-death-secondary {
+  padding: 4px 10px;
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  font-family: var(--gaia-font-medieval);
+  border-radius: var(--gaia-radius);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-stabilize {
+  background: var(--gaia-color-stability);
+  color: var(--gaia-text-dim);
+  border: 1px solid var(--gaia-border-frame);
+}
+
+.btn-stabilize:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-regenerate {
+  background: var(--gaia-green-dark);
+  border: 1px solid var(--gaia-green);
+  color: var(--gaia-text-dim);
+}
+
+.btn-regenerate:hover {
+  background: var(--gaia-green);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-close {
+  background: var(--gaia-bg-window);
+  border: 1px solid var(--gaia-border-frame);
+  color: var(--gaia-text-parchment);
+}
+
+.btn-close:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ==============================================================================
+ * CARDS DE CHAT: DANO APLICADO E IMUNIDADE (.damage-applied-card)
+ * ============================================================================== */
+.gaia-chat-card.damage-applied-card {
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.15);
+  border-left: 4px solid var(--gaia-health, #b91c1c);
+  margin-top: 4px;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.gaia-chat-card.damage-applied-card.immune {
+  border-left-color: var(--gaia-border-gold, #8c7355);
+}
+
+.damage-applied-card .damage-applied-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--gaia-border-subtle, #555);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+.damage-applied-card .damage-applied-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  font-size: 1.1em;
+  color: var(--gaia-health, #b91c1c);
+}
+
+.damage-applied-card.immune .damage-applied-title {
+  color: var(--gaia-border-gold, #8c7355);
+}
+
+.damage-applied-card .damage-applied-badge {
+  font-size: 0.85em;
+  color: var(--gaia-text-muted, #888);
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.damage-applied-card .damage-applied-target {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.damage-applied-card .damage-target-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--gaia-border-frame);
+  object-fit: cover;
+}
+
+.damage-applied-card .damage-target-info {
+  flex: 1;
+}
+
+.damage-applied-card .damage-target-name {
+  font-weight: bold;
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+}
+
+.damage-applied-card .damage-target-amount {
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+}
+
+.damage-applied-card .damage-highlight {
+  color: var(--gaia-health, #b91c1c);
+  font-size: var(--gaia-font-md);
+}
+
+.damage-applied-card .damage-base-info {
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-muted, #888);
+}
+
+.damage-applied-card .damage-applied-vitals {
+  padding: 4px 8px;
+  font-size: var(--gaia-font-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.damage-applied-card .damage-vitals-new {
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+}
+
+.damage-applied-card .damage-vitals-new.damage-vitals-zero {
+  color: var(--gaia-health, #b91c1c);
+}
+
+.damage-applied-card .damage-knockout-alert {
+  margin-top: 6px;
+  background: rgba(185, 28, 28, 0.25);
+  border: 1px solid var(--gaia-health, #b91c1c);
+  color: var(--gaia-health, #b91c1c);
+  padding: 4px;
+  text-align: center;
+  font-weight: bold;
+  font-size: var(--gaia-font-md);
+  border-radius: 3px;
+}
+
+/* ==============================================================================
+ * CARDS DE CHAT: REQUISIÇÃO DE TESTE / ROLAGEM (.roll-request-card)
+ * ============================================================================== */
+.gaia-chat-card.roll-request-card {
+  border: 2px solid var(--color-border, #444);
+  border-radius: 6px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.roll-request-card .roll-request-header {
+  font-weight: bold;
+  font-size: var(--gaia-font-md);
+  color: var(--color-highlight, #e67e22);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+}
+
+.roll-request-card .roll-request-stat {
+  font-size: var(--gaia-font-md);
+  margin-bottom: 4px;
+  color: var(--gaia-text-parchment);
+}
+
+.roll-request-card .roll-request-dc {
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-muted, #aaa);
+  margin-bottom: 8px;
+}
+
+.roll-request-card .roll-request-note {
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  color: var(--gaia-text-parchment);
+}
+
+.roll-request-card .gaia-btn-roll-request {
+  width: 100%;
+  padding: 8px;
+  font-size: var(--gaia-font-md);
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+/* ==============================================================================
+ * CARDS DE CHAT: DADO DE MORTE (.death-die-card)
+ * ============================================================================== */
+.gaia-preludio.chat-card.death-die-card {
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: var(--gaia-radius, 4px);
+  border-left: 4px solid var(--gaia-red-crimson, #b02e2e);
+  margin-top: 4px;
+}
+
+
+.death-die-card .death-die-header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--gaia-border-subtle, rgba(255, 255, 255, 0.15));
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+.death-die-card .death-die-title {
+  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  font-size: var(--gaia-font-md);
+}
+
+.death-die-card .death-die-badge {
+  font-size: var(--gaia-font-md);
+  text-transform: uppercase;
+  color: var(--gaia-text-parchment);
+}
+
+.death-die-card .death-die-desc {
+  margin: 0;
+  font-size: var(--gaia-font-md);
+  line-height: 1.4;
+  color: var(--gaia-text-parchment);
+}
+
+.death-die-card .death-die-counters {
+  margin-top: 6px;
+  font-size: var(--gaia-font-md);
+  display: flex;
+  justify-content: space-around;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 4px 6px;
+  border-radius: var(--gaia-radius, 4px);
+  color: var(--gaia-text-parchment);
+}
+
+.death-die-card .death-die-dead-alert {
+  font-weight: bold;
+  font-size: var(--gaia-font-md);
+  margin-top: 6px;
+  background: rgba(176, 46, 46, 0.25);
+  padding: 4px 6px;
+  text-align: center;
+  border-radius: var(--gaia-radius, 4px);
+}
+
+.death-die-card .death-die-stabilized-alert {
+  font-weight: bold;
+  font-size: var(--gaia-font-md);
+  margin-top: 6px;
+  background: rgba(39, 174, 96, 0.2);
+  padding: 4px 6px;
+  text-align: center;
+  border-radius: var(--gaia-radius, 4px);
+}
+
+
+
+
+
 
 
 

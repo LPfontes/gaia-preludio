@@ -317,6 +317,15 @@
   font-size: var(--gaia-font-md);
   font-weight: 600;
   color: var(--gaia-text-parchment);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s ease;
+}
+
+.mastery-name:hover {
+  color: var(--gaia-border-gold);
 }
 
 .btn-remove-mastery {

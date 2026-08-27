@@ -7,7 +7,20 @@
  */
 
 import { GAIA } from "./helpers/config.mjs";
-import { modifyDieCategory, isCriticalHit, flowClash, flowDifficultyCheck, flowDestinyCheck, getDifficultyLevel, getCreatureStatsByDifficulty, calculateHomunculusStats, calculateCreatureStats, calculateLegacyNpcStats } from "./helpers/flow.mjs";
+import { 
+  modifyDieCategory, 
+  isCriticalHit, 
+  flowClash, 
+  flowDifficultyCheck, 
+  flowDestinyCheck, 
+  flowDeathDie,
+  flowRegenerateStabilized,
+  getDifficultyLevel, 
+  getCreatureStatsByDifficulty, 
+  calculateHomunculusStats, 
+  calculateCreatureStats, 
+  calculateLegacyNpcStats 
+} from "./helpers/flow.mjs";
 import { GaiaActor } from "./documents/actor.mjs";
 import { GaiaItem } from "./documents/item.mjs";
 import { EquipmentBaseDataModel, ArmorDataModel, WeaponDataModel } from "./data/EquipmentModel.mjs";
@@ -15,9 +28,11 @@ import { LegacyDataModel, LegacyNpcDataModel } from "./data/Legacy.mjs";
 import { CreatureDataModel } from "./data/creature.mjs";
 import { AbilityBaseModel } from "./data/abilitiesBaseModel.mjs";
 import { PathDataModel } from "./data/PathModel.mjs";
+import { ActionDataModel } from "./data/ActionModel.mjs";
 import { CharacterLegacySheet } from "./applications/sheets/actor/character-legacy.mjs";
 import { CharacterLegacyNpcSheet } from "./applications/sheets/actor/character-legacy-npc.mjs";
 import { CreatureSheet } from "./applications/sheets/actor/creature.mjs";
+import { GaiaItemSheet } from "./applications/sheets/item/base.mjs";
 import { EquipmentSheet } from "./applications/sheets/item/equipment.mjs";
 import { ArmorSheet } from "./applications/sheets/item/armor.mjs";
 import { WeaponSheet } from "./applications/sheets/item/weapon.mjs";
@@ -25,7 +40,8 @@ import { AbilitySheet } from "./applications/sheets/item/ability.mjs";
 import { LegacySheet } from "./applications/sheets/item/legacy.mjs";
 import { PathSheet } from "./applications/sheets/item/path.mjs";
 import { GaiaItemBrowser } from "./applications/item-browser.mjs";
-import { promptRollRequestDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog, registerRollRequestListeners } from "./helpers/dialogs.mjs";
+import { GaiaDeathSaveDialog } from "./applications/death-save-dialog.mjs";
+import { promptRollRequestDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog, promptActionDialog, registerRollRequestListeners } from "./helpers/dialogs.mjs";
 import { createRegion, createRegionShape } from "./helpers/region-helper.mjs";
 import { getSelectedToken, getSelectedTokens, getTargetedTokens, getSelectedOrTargetToken } from "./helpers/token-helper.mjs";
 const { Actors, Items } = foundry.documents.collections;
@@ -53,7 +69,10 @@ Hooks.once("init", async () => {
     "systems/gaia-preludio/templates/dialog/creature-wizard-dialog.hbs",
     "systems/gaia-preludio/templates/dialog/legacy-npc-wizard-dialog.hbs",
     "systems/gaia-preludio/templates/dialog/legacy-ability-dialog.hbs",
-    "systems/gaia-preludio/templates/dialog/active-effect-dialog.hbs"
+    "systems/gaia-preludio/templates/dialog/action-dialog.hbs",
+    "systems/gaia-preludio/templates/item/parts/item-actions.hbs",
+    "systems/gaia-preludio/templates/actor/parts/effects.hbs",
+    "systems/gaia-preludio/templates/item/parts/item-effects.hbs"
   ]);
 
   // PT: Configura os Enums e funções auxiliares globais do sistema
@@ -66,6 +85,10 @@ Hooks.once("init", async () => {
   GAIA.flowTesteDificuldade = flowDifficultyCheck;
   GAIA.flowDestinyCheck = flowDestinyCheck;
   GAIA.flowTesteDestino = flowDestinyCheck;
+  GAIA.flowDeathDie = flowDeathDie;
+  GAIA.flowDadoDeMorte = flowDeathDie;
+  GAIA.flowRegenerateStabilized = flowRegenerateStabilized;
+  GAIA.flowRegenerarEstabilizado = flowRegenerateStabilized;
   GAIA.getDifficultyLevel = getDifficultyLevel;
   GAIA.getCreatureStatsByDifficulty = getCreatureStatsByDifficulty;
   GAIA.getAtributosPorDificuldade = getCreatureStatsByDifficulty;
@@ -74,11 +97,14 @@ Hooks.once("init", async () => {
   GAIA.calculateCreatureStats = calculateCreatureStats;
   GAIA.calcularAtributosCriatura = calculateCreatureStats;
   GAIA.calculateLegacyNpcStats = calculateLegacyNpcStats;
+  const { promptRollRequestDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog, promptActionDialog, registerRollRequestListeners, promptLevelUpDialog } = await import("./helpers/dialogs.mjs");
   GAIA.promptRollRequestDialog = promptRollRequestDialog;
   GAIA.promptCreatureWizardDialog = promptCreatureWizardDialog;
   GAIA.promptAssistenteCriatura = promptCreatureWizardDialog;
   GAIA.promptLegacyNpcWizardDialog = promptLegacyNpcWizardDialog;
   GAIA.promptAssistenteLegadoNPC = promptLegacyNpcWizardDialog;
+  GAIA.promptLevelUpDialog = promptLevelUpDialog;
+  GAIA.promptEvolucao = promptLevelUpDialog;
   GAIA.createRegion = createRegion;
   GAIA.createRegionShape = createRegionShape;
   GAIA.getSelectedToken = getSelectedToken;
@@ -87,15 +113,58 @@ Hooks.once("init", async () => {
   GAIA.getSelectedOrTargetToken = getSelectedOrTargetToken;
   GAIA.ItemBrowser = GaiaItemBrowser;
   GAIA.openItemBrowser = (actor = null, options = {}) => GaiaItemBrowser.open(actor, options);
+  GAIA.DeathSaveDialog = GaiaDeathSaveDialog;
+  GAIA.promptDeathSaveDialog = (actor) => GaiaDeathSaveDialog.open(actor);
+  GAIA.ActionDataModel = ActionDataModel;
+  GAIA.GaiaItemSheet = GaiaItemSheet;
+  GAIA.promptActionDialog = promptActionDialog;
+  GAIA.promptDialogoAcao = promptActionDialog;
+
+  // PT: Registra helpers Handlebars do sistema
+  Handlebars.registerHelper("add", (a, b) => (Number(a) || 0) + (Number(b) || 0));
+  Handlebars.registerHelper("gte", (a, b) => Number(a) >= Number(b));
+
+  // Motor de Execução de Ações e Efeitos
+  const { executeAction, applyActionDamage, applyActionCondition, placeActionAoETemplate } = await import("./helpers/action-flow.mjs");
+  GAIA.executeAction = executeAction;
+  GAIA.applyActionDamage = applyActionDamage;
+  GAIA.applyActionCondition = applyActionCondition;
+  GAIA.placeActionAoETemplate = placeActionAoETemplate;
+
   /** @type {any} */ (CONFIG).GAIA = GAIA;
+
+  // PT: Registra exclusivamente as condições e efeitos visuais do sistema Gaia: Prelúdio no Foundry VTT
+  CONFIG.statusEffects = Object.values(GAIA.conditions || {});
+  if (CONFIG.specialStatusEffects) {
+    CONFIG.specialStatusEffects.DEFEATED = "incapacitado";
+  }
 
   // PT: Registra os ouvintes interativos de mensagens do Chat
   registerRollRequestListeners();
 
-  // PT: Reorganiza o bloco de dano da arma no chat para ficar após .message-content (Foundry VTT v12 HTMLElement)
+  // PT: Abre automaticamente a janela de Dado de Morte quando o personagem fica com 0 PV / Incapacitado
+  Hooks.on("updateActor", (actor, changed, options, userId) => {
+    if (!actor) return;
+    const hp = Number(actor.system?.health?.value ?? 0);
+    const isIncapacitated = Boolean(actor.system?.isIncapacitated);
+    const isStabilized = Boolean(actor.system?.death?.stabilized);
+    const isDead = Boolean(actor.system?.isDeadByDeathDie || actor.system?.isDeadByExhaustion);
+
+    // Se está em risco de morte (0 PV / incapacitado, não estabilizado, não morto)
+    if ((hp <= 0 || isIncapacitated) && !isStabilized && !isDead) {
+      if (game.user?.isGM || actor.isOwner) {
+        GaiaDeathSaveDialog.open(actor);
+      }
+    } else if (hp > 0 || isStabilized) {
+      // Se estabilizou ou recuperou PV acima de 0, fecha a janela
+      GaiaDeathSaveDialog.closeForActor(actor);
+    }
+  });
+
+  // PT: Reorganiza o bloco de dano da arma e alvos de dano de ação no chat para ficar após .message-content (Foundry VTT v12 HTMLElement)
   Hooks.on("renderChatMessageHTML", (message, html) => {
     if (!html) return;
-    const damageBlock = html.querySelector(".flavor-text .weapon-damage-block, header .weapon-damage-block");
+    const damageBlock = html.querySelector(".flavor-text .weapon-damage-block, header .weapon-damage-block, .flavor-text .action-damage-targets-block, header .action-damage-targets-block");
     const messageContent = html.querySelector(".message-content");
     if (damageBlock && messageContent && damageBlock.parentElement !== html) {
       messageContent.after(damageBlock);

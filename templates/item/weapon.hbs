@@ -9,102 +9,124 @@
       </div>
     </div>
 
-    <div class="weapons-table-frame">
-      <table class="inventory-grid-table">
-        <thead>
-          <tr>
-            <th class="col-weapon-type">{{localize "GAIA.Weapon.Type"}}</th>
-            <th class="col-weapon-damage">{{localize "GAIA.Weapon.BaseDamage"}}</th>
-            <th class="col-weapon-damage-type">{{localize "GAIA.Weapon.DamageType"}}</th>
-            <th class="col-weapon-attr">{{localize "GAIA.Weapon.Attribute"}}</th>
-            <th class="col-weapon-range">{{localize "GAIA.Weapon.Range"}}</th>
-            <th class="col-weapon-price">{{localize "GAIA.Weapon.Price"}}</th>
-            <th class="col-weapon-unity">{{localize "GAIA.Weapon.Weight"}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="item-row">
-            <td class="col-weapon-type">
-              <select name="system.weaponType">
-                {{selectOptions config.weaponTypes selected=system.weaponType localize=true}}
-              </select>
-            </td>
-            <td class="col-weapon-damage">
-              <input type="number" name="system.damageType.value" value="{{system.damageType.value}}" min="0" />
-            </td>
-            <td class="col-weapon-damage-type">
-              <select name="system.damageType.type">
-                {{selectOptions config.damageTypesFlat selected=system.damageType.type localize=true}}
-              </select>
-            </td>
-            <td class="col-weapon-attr">
-              <select name="system.attackParameter.attribute">
-                {{selectOptions config.parameters selected=system.attackParameter.attribute localize=true}}
-              </select>
-            </td>
-            <td class="col-weapon-range">
-              <input type="number" name="system.range.value" value="{{system.range.value}}" min="0" />
-            </td>
-            <td class="col-weapon-price">
-              <input type="number" name="system.price" value="{{system.price}}" min="0" />
-            </td>
-            <td class="col-weapon-unity">
-              <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    {{!-- NAVEGAÇÃO POR ABAS DO ITEM --}}
+    <nav class="sheet-navigation-tabs item-tabs tabs" data-group="primary">
+      <a class="tab-item active" data-action="tab" data-group="primary" data-tab="tabela">{{localize "GAIA.ItemTabs.Table"}}</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="acoes">{{localize "GAIA.ItemTabs.Actions"}}</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="efeitos">{{localize "GAIA.ItemTabs.Effects"}}</a>
+    </nav>
 
-    <div class="weapon-properties-panel" style="margin-top: 15px;">
-      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <label class="description-title" style="margin: 0; font-family: var(--gaia-font-medieval); font-size: var(--gaia-font-base); font-weight: bold; color: var(--gaia-text-parchment); text-transform: uppercase;">
-          {{localize "GAIA.Weapon.PropertiesTitle"}}
-        </label>
-        <button type="button" class="btn-add-property" data-action="addProperty" title="{{localize 'GAIA.Weapon.AddPropertyTitle'}}" style="cursor: pointer; padding: 2px 8px; font-size: var(--gaia-font-base);">
-          <i class="fa-solid fa-plus"></i> {{localize "GAIA.Weapon.AddPropertyBtn"}}
-        </button>
-      </div>
-
-      <div class="weapons-table-frame">
-        <table class="inventory-grid-table weapon-properties-table">
-          <thead>
-            <tr>
-              <th style="width: 35%;">{{localize "GAIA.Weapon.PropertyNameLabel"}}</th>
-              <th style="width: 55%;">{{localize "GAIA.Weapon.PropertyDescriptionLabel"}}</th>
-              <th style="width: 10%; text-align: center;"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each weaponProperties as |prop index|}}
-              <tr class="item-row">
-                <td>
-                  <input type="text" name="system.properties.{{index}}.name" value="{{prop.name}}" placeholder="{{localize 'GAIA.Weapon.PropertyNamePlaceholder'}}" />
-                </td>
-                <td>
-                  <textarea name="system.properties.{{index}}.description" placeholder="{{localize 'GAIA.Weapon.PropertyDescriptionPlaceholder'}}" rows="2">{{prop.description}}</textarea>
-                </td>
-                <td style="text-align: center;">
-                  <button type="button" class="btn-remove-property" data-action="removeProperty" data-index="{{index}}" title="{{localize 'GAIA.Weapon.RemovePropertyTitle'}}" style="background: transparent; border: none; color: var(--gaia-text-parchment); cursor: pointer;">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            {{else}}
+    <section class="sheet-tabs-content item-tabs-content">
+      {{!-- ABA 1: TABELA --}}
+      <div class="tab tabela active" data-group="primary" data-tab="tabela">
+        <div class="weapons-table-frame">
+          <table class="inventory-grid-table">
+            <thead>
               <tr>
-                <td colspan="3" class="empty-hint" style="text-align: center; font-style: italic; color: var(--gaia-text-muted); padding: 8px;">
-                  {{localize "GAIA.Weapon.EmptyPropertiesHint"}}
+                <th class="col-weapon-type">{{localize "GAIA.Weapon.Type"}}</th>
+                <th class="col-weapon-damage">{{localize "GAIA.Weapon.BaseDamage"}}</th>
+                <th class="col-weapon-damage-type">{{localize "GAIA.Weapon.DamageType"}}</th>
+                <th class="col-weapon-attr">{{localize "GAIA.Weapon.Attribute"}}</th>
+                <th class="col-weapon-range">{{localize "GAIA.Weapon.Range"}}</th>
+                <th class="col-weapon-price">{{localize "GAIA.Weapon.Price"}}</th>
+                <th class="col-weapon-unity">{{localize "GAIA.Weapon.Weight"}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="item-row">
+                <td class="col-weapon-type">
+                  <select name="system.weaponType">
+                    {{selectOptions config.weaponTypes selected=system.weaponType localize=true}}
+                  </select>
+                </td>
+                <td class="col-weapon-damage">
+                  <input type="number" name="system.damageType.value" value="{{system.damageType.value}}" min="0" />
+                </td>
+                <td class="col-weapon-damage-type">
+                  <select name="system.damageType.type">
+                    {{selectOptions config.damageTypesFlat selected=system.damageType.type localize=true}}
+                  </select>
+                </td>
+                <td class="col-weapon-attr">
+                  <select name="system.attackParameter.attribute">
+                    {{selectOptions config.parameters selected=system.attackParameter.attribute localize=true}}
+                  </select>
+                </td>
+                <td class="col-weapon-range">
+                  <input type="number" name="system.range.value" value="{{system.range.value}}" min="0" />
+                </td>
+                <td class="col-weapon-price">
+                  <input type="number" name="system.price" value="{{system.price}}" min="0" />
+                </td>
+                <td class="col-weapon-unity">
+                  <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
                 </td>
               </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-    </div>
+            </tbody>
+          </table>
+        </div>
 
-    <div class="weapon-description-panel" style="margin-top: 15px;">
-      <label class="description-title">{{localize "GAIA.Weapon.Description"}}</label>
-      <textarea name="system.description" class="weapon-description-textarea" placeholder="{{localize 'GAIA.Weapon.DescriptionPlaceholder'}}">{{system.description}}</textarea>
-    </div>
+        <div class="weapon-properties-panel" style="margin-top: 15px;">
+          <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label class="description-title" style="margin: 0; font-family: var(--gaia-font-medieval); font-size: var(--gaia-font-base); font-weight: bold; color: var(--gaia-text-parchment); text-transform: uppercase;">
+              {{localize "GAIA.Weapon.PropertiesTitle"}}
+            </label>
+            <button type="button" class="btn-add-property" data-action="addProperty" title="{{localize 'GAIA.Weapon.AddPropertyTitle'}}" style="cursor: pointer; padding: 2px 8px; font-size: var(--gaia-font-base);">
+              <i class="fa-solid fa-plus"></i> {{localize "GAIA.Weapon.AddPropertyBtn"}}
+            </button>
+          </div>
+
+          <div class="weapons-table-frame">
+            <table class="inventory-grid-table weapon-properties-table">
+              <thead>
+                <tr>
+                  <th style="width: 35%;">{{localize "GAIA.Weapon.PropertyNameLabel"}}</th>
+                  <th style="width: 55%;">{{localize "GAIA.Weapon.PropertyDescriptionLabel"}}</th>
+                  <th style="width: 10%; text-align: center;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each weaponProperties as |prop index|}}
+                  <tr class="item-row">
+                    <td>
+                      <input type="text" name="system.properties.{{index}}.name" value="{{prop.name}}" placeholder="{{localize 'GAIA.Weapon.PropertyNamePlaceholder'}}" />
+                    </td>
+                    <td>
+                      <textarea name="system.properties.{{index}}.description" placeholder="{{localize 'GAIA.Weapon.PropertyDescriptionPlaceholder'}}" rows="2">{{prop.description}}</textarea>
+                    </td>
+                    <td style="text-align: center;">
+                      <button type="button" class="btn-remove-property" data-action="removeProperty" data-index="{{index}}" title="{{localize 'GAIA.Weapon.RemovePropertyTitle'}}" style="background: transparent; border: none; color: var(--gaia-text-parchment); cursor: pointer;">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                {{else}}
+                  <tr>
+                    <td colspan="3" class="empty-hint" style="text-align: center; font-style: italic; color: var(--gaia-text-muted); padding: 8px;">
+                      {{localize "GAIA.Weapon.EmptyPropertiesHint"}}
+                    </td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="weapon-description-panel" style="margin-top: 15px;">
+          <label class="description-title">{{localize "GAIA.Weapon.Description"}}</label>
+          <textarea name="system.description" class="weapon-description-textarea" placeholder="{{localize 'GAIA.Weapon.DescriptionPlaceholder'}}">{{system.description}}</textarea>
+        </div>
+      </div>
+
+      {{!-- ABA 2: AÇÕES --}}
+      <div class="tab acoes" data-group="primary" data-tab="acoes">
+        {{> "systems/gaia-preludio/templates/item/parts/item-actions.hbs"}}
+      </div>
+
+      {{!-- ABA 3: EFEITOS --}}
+      <div class="tab efeitos" data-group="primary" data-tab="efeitos">
+        {{> "systems/gaia-preludio/templates/item/parts/item-effects.hbs"}}
+      </div>
+    </section>
   </div>
 </section>

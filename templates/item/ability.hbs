@@ -10,7 +10,7 @@
         </h2>
         <div class="meta-item category-select-meta">
             <select name="system.category">
-              {{selectOptions config.abilityCategories selected=system.category localize=true blank=""}}
+              {{selectOptions config.abilityCategories selected=system.category localize=true blank=(localize 'GAIA.AbilityCategories.name')}}  
             </select>
           </div>
         <button type="button" class="ability-roll-btn" data-action="rollAbility" title="{{localize 'GAIA.Ability.SendToChat'}}">
@@ -25,7 +25,7 @@
           <span class="meta-divider">|</span>
           <div class="meta-item action-meta">
             <select name="system.typeAction">
-              {{selectOptions config.actionType selected=system.typeAction localize=true blank=""}}
+              {{selectOptions config.actionType selected=system.typeAction localize=true blank=(localize 'GAIA.ActionType.name')}}  
             </select>
           </div>
           <span class="meta-divider">|</span>
@@ -33,7 +33,7 @@
             {{#if firstType}}
             <div class="single-type-wrapper">
               <select name="system.types.{{firstType.index}}">
-                {{selectOptions config.abilitiesTypes selected=firstType.value localize=true blank=""}}
+                {{selectOptions config.abilitiesTypes selected=firstType.value localize=true blank=(localize 'GAIA.AbilitiesTypes.name')}}
               </select>
               {{#if firstType.canRemove}}
               <button type="button" class="btn-remove-type" data-action="removeType" data-index="{{firstType.index}}" title="{{localize 'GAIA.Ability.RemoveType'}}">
@@ -48,7 +48,7 @@
                   {{#unless @first}}<span class="type-slash">|</span>{{/unless}}
                   <div class="single-type-wrapper">
                     <select name="system.types.{{this.index}}">
-                      {{selectOptions ../config.abilitiesTypes selected=this.value localize=true blank=""}}
+                      {{selectOptions ../config.abilitiesTypes selected=this.value localize=true blank=(localize 'GAIA.AbilitiesTypes.name')}}
                     </select>
                     <button type="button" class="btn-remove-type" data-action="removeType" data-index="{{this.index}}" title="{{localize 'GAIA.Ability.RemoveType'}}">
                       <i class="fas fa-times"></i>
@@ -66,99 +66,120 @@
 
     </div>
 
+    <!-- NAVEGAÇÃO POR ABAS DO ITEM -->
+    <nav class="sheet-navigation-tabs item-tabs tabs ability-navigation-tabs" data-group="primary">
+      <a class="tab-item active" data-action="tab" data-group="primary" data-tab="tabela">{{localize "GAIA.ItemTabs.Table"}}</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="acoes">{{localize "GAIA.ItemTabs.Actions"}}</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="efeitos">{{localize "GAIA.ItemTabs.Effects"}}</a>
+    </nav>
+
     <!-- CORPO DA HABILIDADE -->
     <div class="ability-card-body">
-      <!-- 5. FRASE DE EFEITO / CITAÇÃO -->
-      <div class="ability-quote-field">
-        <input name="system.quote" type="text" value="{{system.quote}}" placeholder="{{localize 'GAIA.Ability.QuotePlaceholder'}}" />
-      </div>
+      <section class="sheet-tabs-content item-tabs-content">
+        {{!-- ABA 1: TABELA / DETALHES --}}
+        <div class="tab tabela active" data-group="primary" data-tab="tabela">
+          <!-- 5. FRASE DE EFEITO / CITAÇÃO -->
+          <div class="ability-quote-field">
+            <input name="system.quote" type="text" value="{{system.quote}}" placeholder="{{localize 'GAIA.Ability.QuotePlaceholder'}}" />
+          </div>
 
-      <!-- 6 e 7. ALVOS E ALCANCE (CAMPOS RÁPIDOS) -->
-      <div class="ability-targets-range-row">
-        <div class="target-field">
-          <label><i class="fas fa-crosshairs"></i> {{localize "GAIA.Ability.Targets"}}:</label>
-          <input name="system.numberTarget" type="text" value="{{system.numberTarget}}" placeholder="{{localize 'GAIA.Ability.TargetPlaceholder'}}" />
-        </div>
-        <div class="range-field">
-          <label><i class="fas fa-ruler-horizontal"></i> {{localize "GAIA.Ability.Range"}}:</label>
-          <input name="system.range" type="text" value="{{system.range}}" placeholder="{{localize 'GAIA.Ability.RangePlaceholder'}}" />
-        </div>
-      </div>
+          <!-- 6 e 7. ALVOS E ALCANCE (CAMPOS RÁPIDOS) -->
+          <div class="ability-targets-range-row">
+            <div class="target-field">
+              <label><i class="fas fa-crosshairs"></i> {{localize "GAIA.Ability.Targets"}}:</label>
+              <input name="system.numberTarget" type="text" value="{{system.numberTarget}}" placeholder="{{localize 'GAIA.Ability.TargetPlaceholder'}}" />
+            </div>
+            <div class="range-field">
+              <label><i class="fas fa-ruler-horizontal"></i> {{localize "GAIA.Ability.Range"}}:</label>
+              <input name="system.range" type="text" value="{{system.range}}" placeholder="{{localize 'GAIA.Ability.RangePlaceholder'}}" />
+            </div>
+          </div>
 
-      <!-- EFEITO PRINCIPAL / DESCRIÇÃO -->
-      <div class="ability-main-description">
-        <textarea name="system.description" placeholder="{{localize 'GAIA.Ability.DescriptionPlaceholder'}}">{{system.description}}</textarea>
-      </div>
+          <!-- EFEITO PRINCIPAL / DESCRIÇÃO -->
+          <div class="ability-main-description">
+            <textarea name="system.description" placeholder="{{localize 'GAIA.Ability.DescriptionPlaceholder'}}">{{system.description}}</textarea>
+          </div>
 
-      <!-- EFEITOS SECUNDÁRIOS / SUB-EFEITOS (Ex: CONSAGRAR) -->
-      <div class="ability-subeffects-container">
-        <div class="subeffects-header">
-          <span class="subeffects-title">{{localize "GAIA.Ability.SubEffects"}}</span>
-          <button type="button" class="btn-add-subeffect" data-action="addSubEffect" title="{{localize 'GAIA.Ability.AddSubEffect'}}">
-            <i class="fas fa-plus"></i> {{localize "GAIA.Ability.SubEffect"}}
-          </button>
-        </div>
-        
-        {{#each formattedSubEffects}}
-        <div class="subeffect-card" data-action="editSubEffect" data-index="{{index}}" style="cursor: pointer;" title="Clique para editar esta sub-habilidade">
-          <div class="subeffect-card-header">
-            <div class="subeffect-identity">
-              <strong class="subeffect-title-text">{{this.name}}</strong>
-              <div class="subeffect-meta-badges">
-                {{#if this.actionTypeLabel}}<span class="subeffect-meta-badge action-badge">{{this.actionTypeLabel}}</span>{{/if}}
-                {{#if this.typeLabel}}<span class="subeffect-meta-badge type-badge">{{this.typeLabel}}</span>{{/if}}
-                {{#if this.cost}}<span class="subeffect-cost-badge"><i class="fas fa-bolt"></i> {{this.cost}}</span>{{/if}}
+          <!-- EFEITOS SECUNDÁRIOS / SUB-EFEITOS (Ex: CONSAGRAR) -->
+          <div class="ability-subeffects-container">
+            <div class="subeffects-header">
+              <span class="subeffects-title">{{localize "GAIA.Ability.SubEffects"}}</span>
+              <button type="button" class="btn-add-subeffect" data-action="addSubEffect" title="{{localize 'GAIA.Ability.AddSubEffect'}}">
+                <i class="fas fa-plus"></i> {{localize "GAIA.Ability.SubEffect"}}
+              </button>
+            </div>
+            
+            {{#each formattedSubEffects}}
+            <div class="subeffect-card" data-action="editSubEffect" data-index="{{index}}" style="cursor: pointer;" title="Clique para editar esta sub-habilidade">
+              <div class="subeffect-card-header">
+                <div class="subeffect-identity">
+                  <strong class="subeffect-title-text">{{this.name}}</strong>
+                  <div class="subeffect-meta-badges">
+                    {{#if this.actionTypeLabel}}<span class="subeffect-meta-badge action-badge">{{this.actionTypeLabel}}</span>{{/if}}
+                    {{#if this.typeLabel}}<span class="subeffect-meta-badge type-badge">{{this.typeLabel}}</span>{{/if}}
+                    {{#if this.cost}}<span class="subeffect-cost-badge"><i class="fas fa-bolt"></i> {{this.cost}}</span>{{/if}}
+                  </div>
+                </div>
+                <div class="subeffect-controls">
+                  <button type="button" class="btn-roll-subeffect" data-action="rollSubEffect" data-index="{{index}}" title="Enviar Sub-Habilidade para o Chat">
+                    <i class="fas fa-comment-alt"></i>
+                  </button>
+                  <button type="button" class="btn-edit-subeffect" data-action="editSubEffect" data-index="{{index}}" title="Editar Sub-Habilidade">
+                    <i class="fas fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" class="btn-remove-subeffect" data-action="removeSubEffect" data-index="{{index}}" title="{{localize 'GAIA.Ability.RemoveSubEffect'}}">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
               </div>
             </div>
-            <div class="subeffect-controls">
-              <button type="button" class="btn-roll-subeffect" data-action="rollSubEffect" data-index="{{index}}" title="Enviar Sub-Habilidade para o Chat">
-                <i class="fas fa-comment-alt"></i>
+            {{/each}}
+          </div>
+
+          <!-- 8. APRIMORAMENTOS (IMPROVEMENTS) -->
+          <div class="ability-improvements-container">
+            <div class="improvements-divider-title">
+              <span class="dot">•</span>
+              <span class="improvements-title-text">{{localize "GAIA.Ability.Improvements"}}</span>
+              <span class="dot">•</span>
+              <button type="button" class="btn-add-improvement" data-action="addImprovement" title="{{localize 'GAIA.Ability.AddImprovement'}}">
+                <i class="fas fa-plus"></i>
               </button>
-              <button type="button" class="btn-edit-subeffect" data-action="editSubEffect" data-index="{{index}}" title="Editar Sub-Habilidade">
-                <i class="fas fa-pen-to-square"></i>
-              </button>
-              <button type="button" class="btn-remove-subeffect" data-action="removeSubEffect" data-index="{{index}}" title="{{localize 'GAIA.Ability.RemoveSubEffect'}}">
-                <i class="fas fa-trash"></i>
-              </button>
+            </div>
+
+            <div class="improvements-list">
+              {{#each formattedImprovements}}
+              <div class="improvement-item">
+                <div class="improvement-header">
+                  <label class="improvement-active-toggle" title="Ativar aprimoramento nesta habilidade">
+                    <input type="checkbox" name="system.improvements.{{index}}.active" {{checked this.active}} class="improvement-active-checkbox" />
+                  </label>
+                  <span class="improvement-letter">{{this.letter}}</span>
+                  <input name="system.improvements.{{index}}.title" type="text" class="improvement-title" value="{{this.title}}" placeholder="{{localize 'GAIA.Ability.ImprovementTitlePlaceholder'}}" />
+                  <button type="button" class="btn-remove-improvement" data-action="removeImprovement" data-index="{{index}}" title="{{localize 'GAIA.Ability.RemoveImprovement'}}">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <textarea name="system.improvements.{{index}}.description" class="improvement-desc" placeholder="{{localize 'GAIA.Ability.ImprovementDescPlaceholder'}}">{{this.description}}</textarea>
+              </div>
+              {{/each}}
+              {{#unless formattedImprovements.length}}
+              <p class="improvements-empty-hint">{{localize "GAIA.Ability.NoImprovementsHint"}}</p>
+              {{/unless}}
             </div>
           </div>
         </div>
-        {{/each}}
-      </div>
 
-      <!-- 8. APRIMORAMENTOS (IMPROVEMENTS) -->
-      <div class="ability-improvements-container">
-        <div class="improvements-divider-title">
-          <span class="dot">•</span>
-          <span class="improvements-title-text">{{localize "GAIA.Ability.Improvements"}}</span>
-          <span class="dot">•</span>
-          <button type="button" class="btn-add-improvement" data-action="addImprovement" title="{{localize 'GAIA.Ability.AddImprovement'}}">
-            <i class="fas fa-plus"></i>
-          </button>
+        {{!-- ABA 2: AÇÕES --}}
+        <div class="tab acoes" data-group="primary" data-tab="acoes">
+          {{> "systems/gaia-preludio/templates/item/parts/item-actions.hbs"}}
         </div>
 
-        <div class="improvements-list">
-          {{#each formattedImprovements}}
-          <div class="improvement-item">
-            <div class="improvement-header">
-              <label class="improvement-active-toggle" title="Ativar aprimoramento nesta habilidade">
-                <input type="checkbox" name="system.improvements.{{index}}.active" {{checked this.active}} class="improvement-active-checkbox" />
-              </label>
-              <span class="improvement-letter">{{this.letter}}</span>
-              <input name="system.improvements.{{index}}.title" type="text" class="improvement-title" value="{{this.title}}" placeholder="{{localize 'GAIA.Ability.ImprovementTitlePlaceholder'}}" />
-              <button type="button" class="btn-remove-improvement" data-action="removeImprovement" data-index="{{index}}" title="{{localize 'GAIA.Ability.RemoveImprovement'}}">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            <textarea name="system.improvements.{{index}}.description" class="improvement-desc" placeholder="{{localize 'GAIA.Ability.ImprovementDescPlaceholder'}}">{{this.description}}</textarea>
-          </div>
-          {{/each}}
-          {{#unless formattedImprovements.length}}
-          <p class="improvements-empty-hint">{{localize "GAIA.Ability.NoImprovementsHint"}}</p>
-          {{/unless}}
+        {{!-- ABA 3: EFEITOS --}}
+        <div class="tab efeitos" data-group="primary" data-tab="efeitos">
+          {{> "systems/gaia-preludio/templates/item/parts/item-effects.hbs"}}
         </div>
-      </div>
-
+      </section>
     </div>
   </div>
 </section>

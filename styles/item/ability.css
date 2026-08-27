@@ -32,7 +32,7 @@
 .ability-title-row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap:8px;
   margin: 6px 0;
 }
@@ -194,6 +194,51 @@
 
 .btn-remove-type:hover {
   color: #b91c1c;
+}
+
+/* NAVEGAÇÃO DE ABAS DA CARTA DE HABILIDADE */
+.gaia-ability-card .sheet-navigation-tabs.item-tabs,
+.gaia-ability-card .ability-navigation-tabs {
+  background: rgba(93, 28, 143, 0.07);
+  border: 1px solid rgba(93, 28, 143, 0.25);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 6px;
+  margin: 6px 4px 10px 4px;
+}
+
+.gaia-ability-card .sheet-navigation-tabs.item-tabs .tab-item,
+.gaia-ability-card .ability-navigation-tabs .tab-item {
+  color: var(--gaia-purple-dark, #5d1c8f);
+  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  font-size: var(--gaia-font-sm, 12px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 14px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.gaia-ability-card .sheet-navigation-tabs.item-tabs .tab-item:hover,
+.gaia-ability-card .ability-navigation-tabs .tab-item:hover {
+  color: var(--gaia-purple, #942ce4);
+  background: rgba(148, 44, 228, 0.12);
+  border-color: rgba(148, 44, 228, 0.25);
+}
+
+.gaia-ability-card .sheet-navigation-tabs.item-tabs .tab-item.active,
+.gaia-ability-card .ability-navigation-tabs .tab-item.active {
+  color: #ffffff;
+  background: var(--gaia-purple-dark, #5d1c8f);
+  border-color: var(--gaia-purple-dark, #5d1c8f);
+  box-shadow: 0 2px 5px rgba(93, 28, 143, 0.3);
+  text-shadow: none;
 }
 
 /* CITAÇÃO / FRASE DE EFEITO */
@@ -624,6 +669,98 @@
   margin-bottom: 10px;
 }
 
+.gaia-ability-chat-card .ability-actions-section,
+.gaia-weapon-chat-card .ability-actions-section {
+  margin-top: 10px;
+  border-top: 1px solid var(--gaia-text-primary);
+  padding-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gaia-ability-chat-card .ability-actions-title,
+.gaia-weapon-chat-card .ability-actions-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-primary);
+  margin-bottom: 4px;
+}
+
+.gaia-ability-chat-card .ability-action-item,
+.gaia-weapon-chat-card .ability-action-item {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border-radius: var(--gaia-radius, 4px);
+  padding: 4px 6px;
+  gap: 3px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.gaia-ability-chat-card .ability-action-item:hover,
+.gaia-weapon-chat-card .ability-action-item:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: var(--gaia-border-gold);
+}
+
+.gaia-ability-chat-card .ability-action-header-row,
+.gaia-weapon-chat-card .ability-action-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.gaia-ability-chat-card .ability-action-info,
+.gaia-weapon-chat-card .ability-action-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.gaia-ability-chat-card .ability-action-name,
+.gaia-weapon-chat-card .ability-action-name {
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-purple-dark);
+}
+
+.gaia-ability-chat-card .ability-action-desc,
+.gaia-weapon-chat-card .ability-action-desc {
+  font-size: var(--gaia-font-base, 12px);
+  color: var(--gaia-text-parchment);
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.gaia-ability-chat-card .btn-roll-ability-action,
+.gaia-weapon-chat-card .btn-roll-ability-action {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.gaia-ability-chat-card .btn-roll-ability-action:hover,
+.gaia-weapon-chat-card .btn-roll-ability-action:hover {
+  background: var(--gaia-purple);
+  color: #fff;
+  border-color: var(--gaia-purple-dark);
+}
+
 .gaia-ability-chat-card .subeffect-chat-block {
   border-top: 1px solid var(--gaia-text-primary);
   padding-top: 6px;
@@ -904,3 +1041,134 @@
   align-items: center;
   gap: 10px;
 }
+
+/* ==============================================================================
+ * AÇÕES DA HABILIDADE NA FICHA DO ATOR (.ability-actions-section)
+ * ============================================================================== */
+.gaia-ability-card .ability-actions-section {
+  margin-top: 6px;
+  border-top: 1px dashed var(--gaia-border-subtle, rgba(140, 115, 85, 0.4));
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gaia-ability-card .ability-action-item {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border-radius: var(--gaia-radius, 4px);
+  padding: 4px 6px;
+  gap: 3px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.gaia-ability-card .ability-action-item:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: var(--gaia-border-gold);
+}
+
+.gaia-ability-card .ability-action-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.gaia-ability-card .ability-action-desc {
+  font-size: var(--gaia-font-base, 12px);
+  color: var(--gaia-text-parchment);
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.gaia-ability-card .ability-action-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.gaia-ability-card .ability-action-name {
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-purple-dark);
+}
+
+.gaia-ability-card .btn-roll-ability-action {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.gaia-ability-card .btn-roll-ability-action:hover {
+  background: var(--gaia-purple);
+  color: #fff;
+  border-color: var(--gaia-purple-dark);
+}
+
+/* ==============================================================================
+ * PAINEL DE EFEITOS ESPECÍFICO NA CARTA DE HABILIDADE (.gaia-ability-card .item-effects-panel)
+ * ============================================================================== */
+.gaia-ability-card .item-effects-panel {
+  background: transparent;
+  padding: 4px 0;
+  gap: 8px;
+}
+
+.gaia-ability-card .item-effects-panel .effects-section-header {
+  border-bottom: 1px dashed rgba(93, 28, 143, 0.25);
+  padding-bottom: 4px;
+}
+
+.gaia-ability-card .item-effects-panel .effects-main-title {
+  color: var(--gaia-purple-dark, #5d1c8f);
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-ability-card .item-effects-panel .btn-add-effect {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--gaia-border-frame, #574c43);
+  padding: 4px 10px;
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.gaia-ability-card .item-effects-panel .btn-add-effect:hover {
+  background: var(--gaia-purple-dark, #5d1c8f);
+  color: #ffffff;
+  border-color: var(--gaia-purple-dark, #5d1c8f);
+}
+
+.gaia-ability-card .item-effects-panel .effect-card {
+  background: #ffffff;
+  border: 1px solid rgba(93, 28, 143, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.gaia-ability-card .item-effects-panel .effect-card:hover {
+  background: #faf7fd;
+  border-color: var(--gaia-purple-dark, #5d1c8f);
+}
+
+.gaia-ability-card .item-effects-panel .effect-name {
+  color: var(--gaia-purple-dark, #5d1c8f);
+}
+

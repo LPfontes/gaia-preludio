@@ -14,18 +14,28 @@ export async function flowRoll(formula, data = {}, options = {}) {
   return roll;
 }
 
-// PT: Cálculos de Parâmetros
-// EN: Parameter Calculations
-export async function flowParameter(parameter, fitness, modifier = 0) {
+// PT: Cálculos de Parâmetros (com suporte a modificador e penalidade de exaustão)
+// EN: Parameter Calculations (with modifier and exhaustion penalty support)
+export async function flowParameter(parameter, fitness, modifier = 0, exhaustion = 0) {
   const dice = GAIA.rollTypes[fitness]?.roll ?? GAIA.rollTypes[fitness] ?? "1d12";
   const mod = Number(modifier) || 0;
+  const exh = Number(exhaustion) || 0;
+
+  const formulaParts = [dice, "+ @parameter"];
+  const data = { parameter: parameter?.value ?? 0 };
+
   if (mod !== 0) {
-    return await flowRoll(`${dice} + @parameter + @modifier`, {
-      parameter: parameter?.value ?? 0,
-      modifier: mod
-    });
+    if (mod > 0) formulaParts.push("+ @modifier");
+    else formulaParts.push("- @modifier");
+    data.modifier = Math.abs(mod);
   }
-  return await flowRoll(`${dice} + @parameter`, { parameter: parameter?.value ?? 0 });
+
+  if (exh > 0) {
+    formulaParts.push("- @exaustao");
+    data.exaustao = exh;
+  }
+
+  return await flowRoll(formulaParts.join(" "), data);
 }
 
 // PT: Cálculo de Dano
@@ -182,21 +192,31 @@ export async function flowDestinyCheck(difficulty, options = {}) {
 export { flowDestinyCheck as flowTesteDestino };
 
 
-// PT: Cálculo de Defesa
-// EN: Defense Calculation
+// PT: Cálculo de Defesa (com suporte a penalidade de exaustão)
+// EN: Defense Calculation (with exhaustion penalty support)
 export async function defense(type, actor, fitness = "standard") {
+  const exhaustion = Number(actor?.system?.exhaustion) || 0;
+
   if (type === "agility") {
     const agilityParam = actor.system?.parameters?.find(p => {
       const name = String(p.name || "").toLowerCase();
       return name === "agility" || name === "agilidade";
     });
     const agilityVal = Number(agilityParam?.value ?? actor.system?.agility?.value ?? actor.system?.agility ?? 0);
-    return await flowParameter({ value: agilityVal }, fitness);
+    return await flowParameter({ value: agilityVal }, fitness, 0, exhaustion);
   }
   
   const dice = GAIA.rollTypes[fitness]?.roll ?? GAIA.rollTypes[fitness] ?? "1d12";
   const blockVal = Number(actor.system?.totalBlock ?? actor.system?.block?.value ?? actor.system?.block ?? 0);
-  return await flowRoll(`${dice} + @block`, { block: blockVal });
+  const formulaParts = [dice, "+ @block"];
+  const data = { block: blockVal };
+
+  if (exhaustion > 0) {
+    formulaParts.push("- @exaustao");
+    data.exaustao = exhaustion;
+  }
+
+  return await flowRoll(formulaParts.join(" "), data);
 }
 
 /**
@@ -205,13 +225,26 @@ export async function defense(type, actor, fitness = "standard") {
  * @param {Actor} target - Documento do Ator alvo
  * @returns {number} O dano final calculado (mínimo 1 se não for imune)
  */
-export function calculateDamage(damage, target) {
-  const baseDamage = Number(damage?.value) || 0;
+export function calculateDamage(damage, target, source = null) {
+  let baseDamage = Number(damage?.value) || 0;
   if (baseDamage <= 0) return 0;
+
+  // Enfraquecido: Ao causar qualquer tipo de dano, esse valor será reduzido pela metade
+  if (source?.system?.hasWeakened) {
+    baseDamage = Math.floor(baseDamage / 2);
+    if (baseDamage <= 0) return 0;
+  }
 
   const targetSystem = target?.system;
   if (!targetSystem) return baseDamage;
 
+  // Sangramento: Ao receber qualquer tipo de dano, o dano é aumentado num valor igual ao PE Máximo
+  if (targetSystem.hasBleeding) {
+    const maxEnergy = Number(targetSystem.energy?.max ?? 0);
+    baseDamage += maxEnergy;
+  }
+
+  const targetName = target?.name || "Alvo";
   const damageType = String(damage?.type || "").trim().toLowerCase();
 
   const {
@@ -221,15 +254,61 @@ export function calculateDamage(damage, target) {
     damageReduction = []
   } = targetSystem;
 
-  // Função auxiliar para comparação de tipo (case-insensitive)
-  const matchesType = entry => {
-    const entryType = String(entry?.type || "").trim().toLowerCase();
-    return entryType === damageType || entryType === "all" || entryType === "todos";
+  const normalizeType = (t) => {
+    const s = String(t || "").trim().toLowerCase();
+    const map = {
+      físico: "physical",
+      fisico: "physical",
+      physical: "physical",
+      fogo: "fire",
+      fire: "fire",
+      vento: "wind",
+      wind: "wind",
+      água: "water",
+      agua: "water",
+      water: "water",
+      terra: "earth",
+      earth: "earth",
+      trovão: "thunder",
+      trovao: "thunder",
+      thunder: "thunder",
+      elétrico: "thunder",
+      eletrico: "thunder",
+      gelo: "ice",
+      ice: "ice",
+      neutro: "neutro",
+      neutral: "neutro",
+      natureza: "nature",
+      nature: "nature",
+      profano: "profane",
+      profane: "profane",
+      luz: "light",
+      light: "light",
+      trevas: "dark",
+      dark: "dark",
+      sombra: "dark",
+      imaterial: "immaterial",
+      immaterial: "immaterial",
+      todos: "all",
+      all: "all"
+    };
+    return map[s] || s;
   };
 
+  const normDamageType = normalizeType(damageType);
+
+  // Função auxiliar para comparação de tipo (case-insensitive e normalizada)
+  const matchesType = entry => {
+    const entryType = normalizeType(entry?.type);
+    return entryType === normDamageType || entryType === "all" || normDamageType === "all";
+  };
+
+  
   // 1. Imunidade: cancela todo o dano imediatamente (0)
   const isImmune = damageImmunity.some(matchesType);
-  if (isImmune) return 0;
+  if (isImmune) {
+    return 0;
+  }
 
   let finalDamage = baseDamage;
 
@@ -250,11 +329,14 @@ export function calculateDamage(damage, target) {
     .reduce((sum, entry) => sum + (Number(entry?.value) || 0), 0);
 
   if (totalReduction > 0) {
+    const beforeReduction = finalDamage;
     finalDamage -= totalReduction;
   }
 
   // 4. O dano nunca é reduzido abaixo de 1 (apenas Imunidade ou dano base zero resultam em 0)
-  return Math.max(1, Math.floor(finalDamage));
+  const clampedDamage = Math.max(1, Math.floor(finalDamage));
+  
+  return clampedDamage;
 }
 
 /**
@@ -574,6 +656,167 @@ export function calculateLegacyNpcStats(difficulty, level = 0) {
     conhecimentosPontos: totalKnowledgePoints,
     maestrias: totalMasteries
   };
+}
+
+/**
+ * 4. DADO DE MORTE (Death Die)
+ * Caso um Alvo fique Incapacitado durante um combate e inicie seu turno enquanto Incapacitado,
+ * deve realizar um Dado de Morte (1d12):
+ * - 1 a 6: Sentença do Corruptor (+1 Sentença)
+ * - 7 a 12: Dádiva do Artesão (+1 Dádiva)
+ * 
+ * Regras:
+ * - 2 Sentenças: O Alvo morre.
+ * - 2 Dádivas: O Alvo estabiliza e não precisa mais realizar o Dado de Morte (permanece Incapacitado).
+ * - Ao receber 2 Dádivas ou remover Incapacitado, ambos os contadores são removidos.
+ * - Alvo estabilizado regenera 1d4 PV a cada 10 min.
+ *
+ * @param {Actor} actor - Documento do Ator
+ * @param {object} [options={}] - Opções adicionais
+ * @returns {Promise<{ roll: Roll, result: number, type: 'sentence'|'gift', sentences: number, gifts: number, isDead: boolean, isStabilized: boolean }|null>}
+ */
+export async function flowDeathDie(actor, options = {}) {
+  if (!actor) return null;
+
+  const currentSentences = Number(actor.system?.death?.sentences ?? 0);
+  const currentGifts = Number(actor.system?.death?.gifts ?? 0);
+  const isCurrentlyStabilized = Boolean(actor.system?.death?.stabilized);
+
+  if (isCurrentlyStabilized) {
+    ui.notifications?.info(`${actor.name} já está estabilizado e não precisa rolar o Dado de Morte.`);
+    return null;
+  }
+
+  // Rola o 1d12 puro
+  const roll = await flowRoll("1d12", {}, options);
+  const result = roll.total;
+
+  const isGift = result >= 7; // 7 a 12 = Dádiva do Artesão
+  const isSentence = !isGift;  // 1 a 6 = Sentença do Corruptor
+
+  let newSentences = currentSentences + (isSentence ? 1 : 0);
+  let newGifts = currentGifts + (isGift ? 1 : 0);
+
+  const isDead = newSentences >= 2;
+  const isStabilized = newGifts >= 2;
+
+  // Atualização no ator
+  const updates = {};
+  if (isDead) {
+    updates["system.death.sentences"] = 2;
+    updates["system.death.gifts"] = newGifts;
+    updates["system.death.stabilized"] = false;
+  } else if (isStabilized) {
+    // Ao receber duas Dádivas, ambos os efeitos de Dádivas e Sentenças são removidos e estabiliza
+    updates["system.death.sentences"] = 0;
+    updates["system.death.gifts"] = 0;
+    updates["system.death.stabilized"] = true;
+  } else {
+    updates["system.death.sentences"] = newSentences;
+    updates["system.death.gifts"] = newGifts;
+    updates["system.death.stabilized"] = false;
+  }
+
+  await actor.update(updates);
+
+  // Montagem do card de chat estilizado
+  const outcomeTitle = isGift 
+    ? (isStabilized ? "DÁDIVA DO ARTESÃO - ESTABILIZADO!" : "Dádiva do Artesão (+1)")
+    : (isDead ? "SENTENÇA DO CORRUPTOR - MORTE!" : "Sentença do Corruptor (+1)");
+
+  const outcomeClass = isGift ? "gift" : "sentence";
+
+  let stateDescription = "";
+  if (isDead) {
+    stateDescription = `<div class="death-die-dead-alert"><i class="fa-solid fa-skull"></i> O personagem acumulou 2 Sentenças do Corruptor e MORREU!</div>`;
+  } else if (isStabilized) {
+    stateDescription = `<div class="death-die-stabilized-alert"><i class="fa-solid fa-heart-pulse"></i> O personagem acumulou 2 Dádivas do Artesão e ESTABILIZOU! Não precisa mais rolar Dado de Morte. A cada 10 minutos recuperará 1d4 PV.</div>`;
+  } else {
+    stateDescription = `
+      <div class="death-die-counters">
+        <span><strong>Sentenças:</strong> ${newSentences}/2</span>
+        <span><strong>Dádivas:</strong> ${newGifts}/2</span>
+      </div>
+    `;
+  }
+
+  const flavor = `
+    <div class="gaia-preludio chat-card death-die-card ${outcomeClass}">
+      <div class="death-die-header">
+        <span class="death-die-title">
+          ${outcomeTitle}
+        </span>
+        <span class="death-die-badge">Dado de Morte (1d12)</span>
+      </div>
+      <p class="death-die-desc">
+        ${isGift ? `<strong>${actor.name}</strong> obteve um resultado <strong>${result}</strong> e recebeu a benevolência da <em>Dádiva do Artesão</em>.` : `<strong>${actor.name}</strong> obteve um resultado <strong>${result}</strong> e sofreu a punição da <em>Sentença do Corruptor</em>.`}
+      </p>
+      ${stateDescription}
+    </div>
+  `;
+
+  await roll.toMessage({
+    speaker: ChatMessage.getSpeaker({ actor }),
+    flavor
+  });
+
+  return {
+    roll,
+    result,
+    type: isGift ? "gift" : "sentence",
+    sentences: isDead ? 2 : (isStabilized ? 0 : newSentences),
+    gifts: isDead ? newGifts : (isStabilized ? 0 : newGifts),
+    isDead,
+    isStabilized
+  };
+}
+
+/**
+ * Regenera 1d4 PV de um alvo que esteja estabilizado a cada 10 minutos.
+ * @param {Actor} actor - Documento do Ator
+ * @returns {Promise<Roll|null>}
+ */
+export async function flowRegenerateStabilized(actor) {
+  if (!actor) return null;
+  const isStabilized = Boolean(actor.system?.death?.stabilized);
+  if (!isStabilized && Number(actor.system?.health?.value ?? 0) > 0) {
+    ui.notifications?.info(`${actor.name} não está estabilizado ou já possui PV positivo.`);
+    return null;
+  }
+
+  const roll = await flowRoll("1d4");
+  let healAmount = roll.total;
+  if (actor.system?.hasWeakened) {
+    healAmount = Math.floor(healAmount / 2);
+  }
+  const currentHp = Number(actor.system?.health?.value ?? 0);
+  const maxHp = Number(actor.system?.health?.max ?? 30);
+  const newHp = Math.min(maxHp, currentHp + healAmount);
+
+  await actor.update({
+    "system.health.value": newHp,
+    "system.death.stabilized": false,
+    "system.death.sentences": 0,
+    "system.death.gifts": 0
+  });
+
+  const flavor = `
+    <div class="gaia-preludio chat-card heal-card" style="border-left: 4px solid var(--gaia-green, #2e8b57); padding: 8px; background: rgba(0,0,0,0.04); border-radius: 4px;">
+      <div style="font-family: var(--gaia-font-medieval, Georgia, serif); font-size: 1.05em; font-weight: bold; color: var(--gaia-green, #2e8b57); margin-bottom: 4px;">
+        Regeneração Estabilizada (+${healAmount} PV)
+      </div>
+      <p style="margin: 0; font-size: 12px;">
+        <strong>${actor.name}</strong> descansou por 10 minutos estabilizado e regenerou <strong>${healAmount} PV</strong> (${newHp}/${maxHp} PV).
+      </p>
+    </div>
+  `;
+
+  await roll.toMessage({
+    speaker: ChatMessage.getSpeaker({ actor }),
+    flavor
+  });
+
+  return roll;
 }
 
 

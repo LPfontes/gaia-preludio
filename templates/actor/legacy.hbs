@@ -11,8 +11,9 @@
       <nav class="sheet-navigation-tabs tabs" data-group="primary">
         <a class="tab-item active" data-action="tab" data-group="primary" data-tab="personagem">{{localize "GAIA.title.Character"}}</a>
         <a class="tab-item" data-action="tab" data-group="primary" data-tab="inventory">{{localize "GAIA.title.Inventory"}}</a>
-        <a class="tab-item" data-action="tab" data-group="primary" data-tab="biografia">{{localize "GAIA.title.Bio"}}</a>
         <a class="tab-item" data-action="tab" data-group="primary" data-tab="abilities">{{localize "GAIA.title.Abilities"}}</a>
+        <a class="tab-item" data-action="tab" data-group="primary" data-tab="biografia">{{localize "GAIA.title.Bio"}}</a>
+        <a class="tab-item" data-action="tab" data-group="primary" data-tab="effects">{{localize "GAIA.title.Effects"}}</a>
       </nav>
 
       {{!-- Conteúdo das Abas --}}
@@ -28,15 +29,25 @@
             {{> "systems/gaia-preludio/templates/actor/parts/inventory.hbs"}}
           </div>
         </div>
+
+        {{!-- Aba 3: Habilidades --}}
         <div class="tab abilities" data-group="primary" data-tab="abilities">
           <div class="tab-abilities-content">
             {{> "systems/gaia-preludio/templates/actor/parts/abilities.hbs"}}
           </div>
         </div>
-        {{!-- Aba 3: Biografia --}}
+
+        {{!-- Aba 4: Biografia --}}
         <div class="tab biografia" data-group="primary" data-tab="biografia">
           <div class="tab-bio-content">
             {{> "systems/gaia-preludio/templates/actor/parts/bio.hbs"}}
+          </div>
+        </div>
+
+        {{!-- Aba 5: Efeitos (Ativos e Passivos) --}}
+        <div class="tab effects" data-group="primary" data-tab="effects">
+          <div class="tab-effects-content">
+            {{> "systems/gaia-preludio/templates/actor/parts/effects.hbs"}}
           </div>
         </div>
       </section>

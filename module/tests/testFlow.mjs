@@ -20,7 +20,9 @@ import {
   maxRoll,
   minRoll,
   defense,
-  calculateDamage
+  calculateDamage,
+  flowDeathDie,
+  flowRegenerateStabilized
 } from "../helpers/flow.mjs";
 
 class TestRunner {
@@ -151,6 +153,11 @@ export async function runFlowTests() {
       rollNoParam.total >= 1 && rollNoParam.total <= 12,
       `Total com parâmetro nulo é apenas o dado (1..12 = ${rollNoParam.total})`
     );
+
+    // 2.7 Exaustão no flowParameter (-2 de penalidade)
+    const rollWithExhaustion = await flowParameter({ value: 4 }, "standard", 0, 2);
+    runner.assert(rollWithExhaustion.formula.includes("@exaustao"), "flowParameter: Aplica - @exaustao na fórmula");
+    runner.assertEquals(rollWithExhaustion.data.exaustao, 2, "flowParameter: Injeta @exaustao = 2");
   } catch (err) {
     runner.assert(false, `Erro inesperado em flowParameter: ${err.message}`);
   }
@@ -244,6 +251,18 @@ export async function runFlowTests() {
       blockDiceTotal + mockActor.system.block.value,
       "Total da rolagem de bloqueio soma exatamente o resultado dos dados + valor do mockActor"
     );
+
+    // 6.3 Defesa com Exaustão
+    const mockActorExhausted = {
+      system: {
+        agility: { value: 4 },
+        block: { value: 2 },
+        exhaustion: 3
+      }
+    };
+    const defBlockExh = await defense("block", mockActorExhausted, "standard");
+    runner.assert(defBlockExh.formula.includes("@exaustao"), "defense ('block' com exaustão): Aplica - @exaustao na fórmula");
+    runner.assertEquals(defBlockExh.data.exaustao, 3, "defense ('block' com exaustão): Injeta @exaustao = 3");
   } catch (err) {
     runner.assert(false, `Erro inesperado em defense: ${err.message}`);
   }
@@ -376,6 +395,65 @@ export async function runFlowTests() {
     );
   } catch (err) {
     runner.assert(false, `Erro inesperado em calculateDamage: ${err.message}`);
+  }
+  console.groupEnd();
+
+  // ============================================================================
+  // 8. Testes: flowDeathDie & flowRegenerateStabilized
+  // ============================================================================
+  console.group("%c8. flowDeathDie & flowRegenerateStabilized", "color: #E91E63; font-weight: bold;");
+  try {
+    // 8.1 Mock de Ator Incapacitado
+    const mockDeathActor = {
+      name: "Guerreiro Caído",
+      system: {
+        health: { value: 0, max: 30 },
+        death: { sentences: 0, gifts: 0, stabilized: false }
+      },
+      update: async function(data) {
+        for (const [k, v] of Object.entries(data)) {
+          foundry.utils.setProperty(this, k, v);
+        }
+        return this;
+      }
+    };
+
+    // 8.2 Executa flowDeathDie
+    const deathResult = await flowDeathDie(mockDeathActor);
+    runner.assert(deathResult !== null, "flowDeathDie executa e retorna resultado");
+    runner.assert([ "sentence", "gift" ].includes(deathResult.type), "Tipo retornado é 'sentence' ou 'gift'");
+    if (deathResult.result <= 6) {
+      runner.assertEquals(deathResult.type, "sentence", "1-6 é Sentença do Corruptor");
+      runner.assertEquals(mockDeathActor.system.death.sentences, 1, "Ator recebe +1 Sentença");
+    } else {
+      runner.assertEquals(deathResult.type, "gift", "7-12 é Dádiva do Artesão");
+      runner.assertEquals(mockDeathActor.system.death.gifts, 1, "Ator recebe +1 Dádiva");
+    }
+
+    // 8.3 Estabilização com 2 Dádivas
+    mockDeathActor.system.death = { sentences: 1, gifts: 1, stabilized: false };
+    // Força resultado 12 (Dádiva) simulando fluxo
+    const stabilizeActor = {
+      name: "Alvo Quase Estável",
+      system: {
+        health: { value: 0, max: 30 },
+        death: { sentences: 1, gifts: 1, stabilized: false }
+      },
+      update: async function(data) {
+        for (const [k, v] of Object.entries(data)) {
+          foundry.utils.setProperty(this, k, v);
+        }
+        return this;
+      }
+    };
+    // Testa regeneração quando estabilizado
+    stabilizeActor.system.death.stabilized = true;
+    const regenRoll = await flowRegenerateStabilized(stabilizeActor);
+    runner.assert(regenRoll instanceof Roll, "flowRegenerateStabilized rola 1d4 e retorna Roll");
+    runner.assert(stabilizeActor.system.health.value > 0, "Regeneração restaura PV do personagem acima de 0");
+    runner.assertEquals(stabilizeActor.system.death.stabilized, false, "Ao recuperar PV, remove estado de estabilizado");
+  } catch (err) {
+    runner.assert(false, `Erro inesperado em flowDeathDie: ${err.message}`);
   }
   console.groupEnd();
 

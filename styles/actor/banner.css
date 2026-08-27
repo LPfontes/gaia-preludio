@@ -245,7 +245,8 @@
   gap: 8px;
 }
 
-.move-card  , .banner-card{
+.move-card,
+.banner-card {
   flex: 1;
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
@@ -318,7 +319,7 @@
   color: var(--gaia-text-parchment);
 }
 
-/* 5. Exaustão (5 Diamantes) */
+/* 5. Exaustão (6 Pips com Morte no 6º) */
 .exhaustion-card {
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
@@ -328,6 +329,19 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.exhaustion-card.dead-state {
+  border-color: var(--gaia-red-crimson, #b02e2e);
+  box-shadow: 0 0 8px rgba(176, 46, 46, 0.4);
+}
+
+.exhaustion-header-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
 }
 
 .exhaustion-title {
@@ -338,10 +352,37 @@
   letter-spacing: 0.5px;
 }
 
+.exhaustion-dead-badge {
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  color: #fff;
+  background: var(--gaia-red-crimson, #b02e2e);
+  padding: 2px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  animation: pulse-dead 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dead {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.75;
+  }
+}
+
 .exhaustion-pips {
   display: flex;
   gap: 6px;
   justify-content: center;
+  align-items: center;
 }
 
 .diamond-pip {
@@ -352,7 +393,7 @@
   font-size: var(--gaia-font-2xl);
   color: var(--gaia-text-parchment);
   opacity: 0.5;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
   line-height: 1;
 }
 
@@ -370,6 +411,219 @@
   transform: scale(1.1);
   outline: none;
   box-shadow: none;
+}
+
+.diamond-pip.pip-death {
+  font-size: 18px;
+}
+
+.diamond-pip.pip-death:hover {
+  color: var(--gaia-red-crimson, #b02e2e);
+}
+
+.diamond-pip.pip-death.active {
+  color: var(--gaia-red-crimson, #b02e2e);
+  text-shadow: 0 0 6px rgba(176, 46, 46, 0.7);
+}
+
+.exhaustion-penalty-badge {
+  background: var(--gaia-red-crimson, #b02e2e) !important;
+  color: #fff !important;
+}
+
+/* 5.1 Dado de Morte - Card de Acesso na Ficha */
+.death-save-trigger-card {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  animation: fadeIn 0.2s ease;
+}
+
+.death-save-trigger-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--gaia-border-gold, #8c7355);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.death-save-trigger-card.dead-state {
+  border-color: var(--gaia-red-crimson, #b02e2e);
+  box-shadow: 0 0 6px rgba(176, 46, 46, 0.4);
+}
+
+
+.death-trigger-header {
+  font-size: var(--gaia-font-md);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.death-trigger-status {
+  font-size: var(--gaia-font-base);
+}
+
+.death-trigger-counts {
+  color: var(--gaia-text-parchment);
+  font-weight: 600;
+}
+
+.death-save-banner-card {
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: 2px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: fadeIn 0.2s ease;
+}
+
+.death-save-banner-card.dead-state {
+  border-color: var(--gaia-red-crimson, #b02e2e);
+}
+
+.death-save-banner-card.stabilized-state {
+  border-color: var(--gaia-color-stability);
+}
+
+.death-save-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  width: 100%;
+}
+
+.death-save-title {
+  font-size: var(--gaia-font-md);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stabilized-badge {
+  font-size: var(--gaia-font-base);
+  background: var(--gaia-color-stability);
+  color: var(--gaia-text-dim);
+  padding: 2px 4px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.death-save-content {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  gap: 8px;
+}
+
+.death-track-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 4px 8px;
+  flex: 1;
+}
+
+.track-label {
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--gaia-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.track-pips {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.death-pip {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--gaia-text-parchment);
+  opacity: 0.35;
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
+  line-height: 1;
+}
+
+.death-pip:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
+  outline: none;
+  box-shadow: none;
+}
+
+.sentence-pip.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.gift-pip.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.death-save-actions {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-roll-death-die,
+.btn-regenerate-stabilized {
+  background: var(--gaia-purple-dark);
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-gold);
+  padding: 4px 8px;
+  font-size: var(--gaia-font-base);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.btn-roll-death-die:hover {
+  background: var(--gaia-purple, #6a3d8a);
+  color: #fff;
+  transform: scale(1.03);
+}
+
+.btn-regenerate-stabilized {
+  background: var(--gaia-green-dark);
+  border-color: var(--gaia-green);
+}
+
+.btn-regenerate-stabilized:hover {
+  background: var(--gaia-green);
+  color: #fff;
+  transform: scale(1.03);
 }
 
 /* 6. Defesas & Percepção Inferiores */
@@ -393,7 +647,6 @@
   font-weight: 700;
   color: var(--gaia-gold);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .defense-item-val {
@@ -429,7 +682,7 @@
   border: 1px solid var(--gaia-border-frame);
   color: var(--gaia-text-muted);
   border-radius: 2px;
-  padding: 1px 4px;
+  padding: 2px 4px;
   font-size: var(--gaia-font-2xs);
   cursor: pointer;
 }
@@ -449,27 +702,38 @@
 .defense-tag {
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
   display: flex;
   align-items: center;
-  padding: 1px 4px;
+  padding: 2px 4px;
   gap: 3px;
 }
 
-.defense-tag input {
-  font-size: var(--gaia-font-md);
-  width: 50px;
+.defense-tag input,
+.defense-tag select {
+  font-size: var(--gaia-font-sm, 12px);
   border: none;
   background: transparent;
-  padding: 0;
+  padding: 0 2px;
+  color: var(--gaia-text-parchment);
+  font-family: inherit;
+  cursor: pointer;
+  max-width: 90px;
 }
 
-.defense-tag.reduction-tag .reduction-type {
-  width: 40px;
+.defense-tag select option {
+  background: var(--gaia-bg-banner, #1c1424);
+  color: var(--gaia-text-parchment);
 }
 
-.defense-tag.reduction-tag .reduction-val {
-  width: 20px;
+.defense-tag.reduction-tag .reduction-type,
+.defense-tag.reduction-tag select.reduction-type,
+.defense-tag.reduction-tag select.tag-type {
+  max-width: 80px;
+}
+
+.defense-tag.reduction-tag .reduction-val,
+.defense-tag.reduction-tag .tag-val {
+  width: 25px;
   text-align: center;
   font-weight: bold;
 }

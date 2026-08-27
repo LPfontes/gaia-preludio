@@ -94,13 +94,19 @@ export function resolveKnowledge(system) {
 export function resolveMasteries(system) {
   return (system.masteries ?? []).map(masteryKey => {
     let label = masteryKey;
-    for (const mObj of Object.values(CONFIG.GAIA?.masteries ?? {})) {
+    let knowledgeKey = "";
+    let knowledgeLabel = "";
+
+    for (const [kKey, mObj] of Object.entries(CONFIG.GAIA?.masteries ?? {})) {
       if (mObj[masteryKey]) {
         label = game.i18n.localize(mObj[masteryKey]);
+        knowledgeKey = kKey;
+        const kRaw = CONFIG.GAIA?.knowledge?.[kKey] ?? kKey;
+        knowledgeLabel = typeof kRaw === "string" ? game.i18n.localize(kRaw) : kKey;
         break;
       }
     }
-    return { key: masteryKey, label };
+    return { key: masteryKey, label, knowledgeKey, knowledgeLabel };
   });
 }
 
@@ -222,6 +228,18 @@ export function getAttrTooltip(actor, attrPath, label = "") {
   const bonusInfo = actor.system?.bonusesCalculated?.[attrPath];
   const cleanLabel = label ? `${label}: ` : "";
 
+  if (attrPath === "movement") {
+    const rawBase = Number(foundry.utils.getProperty(actor._source ?? {}, "system.movement") ?? actor.system?.movement ?? 0);
+    const paramBonus = bonusInfo?.bonus ?? 0;
+    const exhaustion = Number(actor.system?.exhaustion) || 0;
+    const total = Math.max(0, rawBase + paramBonus - exhaustion);
+    const parts = [`Base: ${rawBase}m`];
+    if (paramBonus) parts.push(`Bônus: ${paramBonus >= 0 ? "+" : ""}${paramBonus}m`);
+    if (exhaustion) parts.push(`Exaustão: -${exhaustion}m`);
+    parts.push(`Total: ${total}m`);
+    return `${cleanLabel}${parts.join(" | ")}`;
+  }
+
   if (attrPath === "block") {
     const rawBase = Number(foundry.utils.getProperty(actor._source ?? {}, "system.block") ?? actor.system?.block ?? 0);
     const equipBonus = calculateEquipmentBlockBonus(actor);
@@ -267,15 +285,54 @@ export async function prepareLegacySheetContext(sheet, context) {
   context.agilityValue = Number(agilityParam?.value ?? system.agility?.value ?? system.agility ?? 0);
   context.initiativeValue = context.agilityValue;
   
-  // Pips de Exaustão (1 a 6)
-  context.exhaustionPips = buildPips(system.exhaustion, maxExhaustion);
+  // Pips de Exaustão (1 a 6) e status de Morte por Exaustão
+  const currentExhaustion = Math.clamp(Number(system.exhaustion) || 0, 0, maxExhaustion);
+  context.exhaustionPips = buildPips(currentExhaustion, maxExhaustion);
+  context.isDeadByExhaustion = currentExhaustion >= 6;
+
+  // Sistema de Dado de Morte (Incapacitado: Sentenças do Corruptor e Dádivas do Artesão)
+  const deathSentences = Number(system.death?.sentences ?? 0);
+  const deathGifts = Number(system.death?.gifts ?? 0);
+  const isStabilized = Boolean(system.death?.stabilized);
+  const hp = Number(system.health?.value ?? 0);
+  const hasIncapacitatedCondition = actor.effects?.some(e => 
+    String(e.name || "").toLowerCase() === "incapacitado" || 
+    e.statuses?.has?.("incapacitado") || 
+    (Array.isArray(e.statuses) && e.statuses.includes("incapacitado"))
+  );
+  const isIncapacitated = hp <= 0 || Boolean(hasIncapacitatedCondition);
+  const isDeadByDeathDie = deathSentences >= 2;
+
+  context.isIncapacitated = isIncapacitated;
+  context.isDeadByDeathDie = isDeadByDeathDie;
+  context.isDead = context.isDeadByExhaustion || isDeadByDeathDie;
+  context.isStabilized = isStabilized;
+  context.showDeathCard = isIncapacitated || isStabilized || deathSentences > 0 || deathGifts > 0;
+  context.deathSentencesPips = buildPips(deathSentences, 2);
+  context.deathGiftsPips = buildPips(deathGifts, 2);
 
   // Tooltips com Valor Base + Bônus para os atributos da ficha
+  const visionTotal = system.vision?.total ?? 40;
+  const visionPerc = system.vision?.perceptionBonus ?? 0;
+  const visionPrecise = system.vision?.precise ?? (visionTotal / 2);
+  let visionEnvNotice = "";
+  if (system.hasDarkness) {
+    visionEnvNotice = " [ESCURIDÃO ATIVA: Visão e alcance máx. limitados a 4m, Inaptidão em Percepção, PP reduzida pela metade, -1 Precisão/Canalização]";
+  } else if (system.hasPenumbra) {
+    visionEnvNotice = " [PENUMBRA ATIVA: Visão e alcance máx. limitados a 10m, -1 Percepção e PP]";
+  }
+  const visionTooltip = `Alcance da Visão: ${visionTotal}m (Base 40m + ${visionPerc}m por Percepção) • Visão Precisa/Detalhada: até ${visionPrecise}m${visionEnvNotice}`;
+
   context.tooltips = {
     movement: getAttrTooltip(actor, "movement", "Movimento"),
     healthMax: getAttrTooltip(actor, "health.max", "Vida Máxima"),
-    passivePerception: getAttrTooltip(actor, "passivePerception", "Percepção Passiva"),
-    block: getAttrTooltip(actor, "block", "Bloqueio")
+    passivePerception: `${getAttrTooltip(actor, "passivePerception", "Percepção Passiva")}\n${visionTooltip}`,
+    vision: visionTooltip,
+    block: getAttrTooltip(actor, "block", "Bloqueio"),
+    exhaustion: game.i18n.localize("GAIA.Banner.ExhaustionRule")
+      || "Exaustão: Para cada 1 ponto, penalidade de -1 em testes de Parâmetro e Bloqueio, e -1m na Movimentação. Ao atingir 6 pontos, o personagem morre.",
+    deathDie: game.i18n.localize("GAIA.DeathDie.RuleTooltip")
+      || "Dado de Morte (1d12): 1-6 = Sentença do Corruptor (2 = Morte) | 7-12 = Dádiva do Artesão (2 = Estabilizado). A cada 10 min estabilizado, regenera 1d4 PV."
   };
 
   // Parâmetros (8)
@@ -321,6 +378,10 @@ export async function prepareLegacySheetContext(sheet, context) {
       legacyItem = game.items?.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
     }
   }
+  if (!legacyItem) {
+    legacyItem = items.find(i => i.type === "legacy");
+  }
+  context.legacyItem = legacyItem;
 
   let rawLegacyAbilities = [];
   if (legacyItem?.system?.legacyAbilities && Array.isArray(legacyItem.system.legacyAbilities)) {
@@ -425,10 +486,64 @@ export async function prepareLegacySheetContext(sheet, context) {
   context.inventoryConsumables = items.filter(i => ["potion", "consumable", "toxic"].includes(i.system?.category)).map(formatItem);
   context.inventoryCommon = items.filter(i => i.type !== "ability" && i.type !== "weapon" && i.type !== "armor" && !["weapon", "armor", "vestuary", "shield", "clothing", "potion", "consumable", "toxic"].includes(i.system?.category)).map(formatItem);
 
-  // Loga os dados estruturados da ficha no console (F12)
-  console.log(`Gaia: Prelúdio | Estrutura de Contexto da Ficha [${actor.name}]:`, context);
+
+  // Efeitos Ativos e Passivos categorizados
+  context.effects = prepareActiveEffectCategories(actor);
 
   return context;
+}
+
+/**
+ * Categoriza os Efeitos Ativos de um Documento (Ator ou Item) em passivos, ativos/temporários e inativos.
+ * @param {Actor|Item} doc - Documento proprietário dos efeitos
+ * @returns {{
+ *   passive: { type: string, label: string, effects: Array<object> },
+ *   active: { type: string, label: string, effects: Array<object> },
+ *   inactive: { type: string, label: string, effects: Array<object> }
+ * }}
+ */
+export function prepareActiveEffectCategories(doc) {
+  const effects = doc?.effects ?? [];
+  const entries = [];
+  const active = [];
+  const inactive = [];
+
+  for (const effect of effects) {
+    const changesSummary = (effect.changes || []).map(c => {
+      const rawKey = c.key?.replace(/^system\./, "") || c.key;
+      const keyLabel = CONFIG.GAIA?.parameters?.[rawKey] 
+        ? game.i18n.localize(CONFIG.GAIA.parameters[rawKey]) 
+        : (CONFIG.GAIA?.ChangeKey?.[rawKey] ? game.i18n.localize(CONFIG.GAIA.ChangeKey[rawKey]) : rawKey);
+      const modSign = Number(c.value) > 0 ? `+${c.value}` : String(c.value);
+      return `${keyLabel}: ${modSign}`;
+    }).join(", ");
+
+    const formattedEffect = {
+      id: effect.id,
+      name: effect.name || "Efeito Sem Nome",
+      img: effect.img || effect.icon || "icons/svg/aura.svg",
+      disabled: Boolean(effect.disabled),
+      isSuppressed: Boolean(effect.isSuppressed),
+      sourceName: effect.sourceName || (effect.parent?.name ?? ""),
+      durationText: effect.duration?.label || (effect.duration?.seconds ? `${effect.duration.seconds}s` : (effect.duration?.rounds ? `${effect.duration.rounds} rodadas` : "")),
+      changes: changesSummary
+    };
+
+    entries.push(formattedEffect);
+    if (effect.disabled) {
+      inactive.push(formattedEffect);
+    } else {
+      active.push(formattedEffect);
+    }
+  }
+
+  return {
+    entries,
+    active: { effects: active, count: active.length },
+    inactive: { effects: inactive, count: inactive.length },
+    all: entries,
+    length: entries.length
+  };
 }
 
 export function formatInventoryItem(item) {

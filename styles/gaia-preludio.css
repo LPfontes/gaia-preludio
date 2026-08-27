@@ -18,6 +18,8 @@
 
 /* 3. Ficha de Item & Habilidades (Item Sheets) */
 @import "./item/ability.css";
+@import "./item/actions.css";
+@import "./item/effects.css";
 @import "./item/legacy.css";
 @import "./item/path.css";
 
@@ -26,4 +28,5 @@
 @import "./dialogs/awakening-guide.css";
 @import "./dialogs/creature-wizard.css";
 @import "./dialogs/legacy-npc-wizard.css";
+@import "./dialogs/level-up.css";
 @import "./apps/item-browser.css";

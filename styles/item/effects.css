@@ -1,0 +1,318 @@
+/**
+ * ==============================================================================
+ * EFFECTS STYLES / ESTILOS DE EFEITOS ATIVOS E PASSIVOS
+ * ==============================================================================
+ * PT: Estilização do painel e listas de Efeitos Ativos e Passivos em Atores e Itens.
+ * EN: Styling for the Active and Passive Effects panel in Actors and Items.
+ */
+
+/* ==============================================================================
+ * CONTÊINERES DE ABA DA FICHA (.effects / .tab-effects-content)
+ * ============================================================================== */
+.effects,
+.tab.effects,
+.tab[data-tab="effects"],
+.tab[data-tab="efeitos"] {
+  height: 100%;
+  width: 100%;
+}
+
+.tab-effects-content,
+.creature-effects-container {
+  display: block;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px;
+}
+
+.actor-effects-panel {
+  background-color: var(--gaia-bg-window);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.actor-effects-panel .effects-section-header {
+  display: flex;
+  justify-content: space-between;
+}
+/* ==============================================================================
+ * PAINEL DE EFEITOS DO ITEM (.item-effects-panel)
+ * ============================================================================== */
+.item-effects-panel {
+  background-color: var(--gaia-bg-window);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: var(--gaia-radius, 4px);
+}
+
+.item-effects-panel .effects-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  padding-bottom: 6px;
+}
+
+.item-effects-panel .effects-main-title {
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.item-effects-panel .effects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.effects-main-title {
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-add-effect {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.08);
+  padding: 4px 8px;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-add-effect:hover {
+  background: var(--gaia-purple);
+  color: #ffffff;
+  border-color: var(--gaia-purple-dark);
+  box-shadow: 0 0 6px rgba(148, 44, 228, 0.4);
+}
+
+/* Blocos de Categoria de Efeito */
+.effects-category-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.effects-category-block .category-header {
+  border-bottom: 1px dashed var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  padding-bottom: 4px;
+}
+
+.effects-category-block .category-title {
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.effects-category-block .category-title.active-title {
+  color: var(--gaia-purple-dark, #5d1c8f);
+}
+
+.effects-category-block .category-title.passive-title {
+  color: #1e824c;
+}
+
+.effects-category-block .category-title.inactive-title {
+  color: var(--gaia-text-muted, #777);
+}
+
+.effects-category-block .category-count {
+  font-size: var(--gaia-font-xs, 11px);
+  color: var(--gaia-text-muted, #777);
+  font-weight: 500;
+}
+
+/* Lista e Cards de Efeitos */
+.effects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.effect-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border-radius: var(--gaia-radius, 4px);
+  padding: 6px 10px;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.effect-card:hover {
+  background: rgba(0, 0, 0, 0.09);
+  border-color: var(--gaia-border-gold, #8c7355);
+}
+
+.effect-card.active-effect-item {
+  border-left: 3px solid var(--gaia-purple-dark, #5d1c8f);
+}
+
+.effect-card.passive-effect-item {
+  border-left: 3px solid #1e824c;
+}
+
+.effect-card.inactive-effect-item {
+  border-left: 3px solid #777;
+  opacity: 0.7;
+}
+
+.effect-card-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.effect-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--gaia-border-frame, #574c43);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.effect-icon.grayscale {
+  filter: grayscale(100%);
+}
+
+.effect-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.effect-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.effect-name {
+  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  font-size: var(--gaia-font-base, 13px);
+  font-weight: 700;
+  color: var(--gaia-text-parchment, #000);
+}
+
+.effect-source {
+  font-size: var(--gaia-font-base);
+  font-style: italic;
+  color: var(--gaia-text-muted, #777);
+}
+
+.effect-changes-summary {
+  font-size: var(--gaia-font-xs);
+  color: var(--gaia-purple-dark, #5d1c8f);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.effect-duration-badge {
+  font-size: var(--gaia-font-md);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  color: var(--gaia-text-parchment);
+}
+
+.badge-passive {
+  background: rgba(30, 130, 76, 0.15);
+  color: #1e824c;
+  border: 1px solid rgba(30, 130, 76, 0.3);
+}
+
+.badge-inactive {
+  background: rgba(0, 0, 0, 0.15);
+  color: #777;
+}
+
+/* Controles do Card (Toggle, Edit, Delete) */
+.effect-card-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.btn-effect-control {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: var(--gaia-font-sm);
+  color: var(--gaia-text-muted);
+  border-radius: 3px;
+  transition: all 0.15s ease;
+}
+
+.btn-effect-control:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+.btn-edit-effect:hover {
+  color: #1d4ed8;
+}
+
+.btn-delete-effect:hover {
+  color: var(--gaia-health, #b91c1c);
+}
+
+.text-success {
+  color: #1e824c;
+}
+
+.text-muted {
+  color: var(--gaia-text-muted, #777);
+}
+
+/* Dica de Estado Vazio */
+.effects-empty-hint {
+  font-style: italic;
+  color: var(--gaia-text-muted);
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: var(--gaia-radius);
+  border: 1px dashed var(--gaia-border-subtle, rgba(140, 115, 85, 0.2));
+  text-align: center;
+}
