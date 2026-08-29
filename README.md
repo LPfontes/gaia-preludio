@@ -1,6 +1,6 @@
 # Gaia: Prelúdio — Sistema para Foundry Virtual Tabletop (v14+)
 
-![Foundry VTT](https://img.shields.io/badge/Foundry-v12%2B-orange?style=flat-square&logo=foundry-virtual-tabletop)
+![Foundry VTT](https://img.shields.io/badge/Foundry-v14%2B-orange?style=flat-square&logo=foundry-virtual-tabletop)
 ![Status](https://img.shields.io/badge/Status-Est%C3%A1vel-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 ![Language](https://img.shields.io/badge/Language-Portugu%C3%AAs%20(Brasil)-green?style=flat-square)
