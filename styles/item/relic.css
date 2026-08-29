@@ -1,0 +1,77 @@
+/**
+ * ==============================================================================
+ * RELIC SHEET STYLES / ESTILOS DA FICHA DE RELÍQUIA
+ * ==============================================================================
+ */
+
+.gaia-sheet-content.relic-sheet .relic-header-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gaia-sheet-content.relic-sheet .btn-relic-bound-toggle {
+  padding: 4px 8px;
+  border-radius: var(--gaia-radius);
+  border: 1px solid var(--gaia-border-gold);
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  transition: all 0.2s ease;
+  text-wrap: nowrap;
+}
+
+.gaia-sheet-content.relic-sheet .btn-relic-bound-toggle.bound {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+}
+
+.gaia-sheet-content.relic-sheet .relic-potency-badge {
+  padding: 4px 8px;
+  border-radius: var(--gaia-radius);
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  color: var(--gaia-text-parchment);
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  text-wrap: nowrap;
+}
+
+.gaia-sheet-content.relic-sheet .col-relic-potency input {
+  text-align: center;
+}
+
+.gaia-sheet-content.relic-sheet .col-relic-bound {
+  text-align: center;
+}
+
+.gaia-sheet-content.relic-sheet .relic-potency-info-box {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(74, 46, 107, 0.12);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  font-size: var(--gaia-font-xs);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-sheet-content.relic-sheet .relic-potency-info-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: var(--gaia-purple-dark);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gaia-sheet-content.relic-sheet .relic-potency-info-text {
+  margin-top: 2px;
+  font-style: italic;
+  color: var(--gaia-text-muted);
+}
+
+.gaia-sheet-content.relic-sheet .weapon-description-panel {
+  margin-top: 15px;
+}

@@ -15,7 +15,7 @@
       <a class="item tab-link" data-tab="bio" data-group="primary" data-action="tab">
         {{localize "GAIA.title.Bio"}}
       </a>
-      <a class="item tab-link" data-tab="efeitos" data-group="primary" data-action="tab">
+      <a class="item tab-link" data-tab="effects" data-group="primary" data-action="tab">
         {{localize "GAIA.title.Effects"}}
       </a>
     </nav>
@@ -278,12 +278,8 @@
         </div>
       </div>
 
-      {{!-- ABA 3: EFEITOS --}}
-      <div class="tab tab-content" data-tab="efeitos" data-group="primary">
-        <div class="creature-effects-container" style="padding: 10px;">
-          {{> "systems/gaia-preludio/templates/actor/parts/effects.hbs"}}
-        </div>
-      </div>
+      {{!-- ABA 4: EFEITOS --}}
+      {{> "systems/gaia-preludio/templates/actor/parts/effects.hbs"}}
 
     </section>
   </div>

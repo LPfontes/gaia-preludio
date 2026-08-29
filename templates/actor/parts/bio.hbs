@@ -1,4 +1,45 @@
+<div class="tab biografia" data-group="primary" data-tab="biografia">
+<div class="tab-bio-content">
 <div class="bio-content">
-  <h2 class="panel-main-title">{{localize "GAIA.title.Bio"}}</h2>
-  <textarea name="system.notes" class="bio-notes-textarea" placeholder="Biografia e Anotações do Personagem...">{{system.notes}}</textarea>
+  {{!-- SEÇÃO DE IDIOMAS DO PERSONAGEM --}}
+  <div class="bio-languages-panel">
+    <div class="bio-languages-header">
+      <h3 class="bio-languages-title">
+      {{localize "GAIA.Language.SectionTitle"}}
+      </h3>
+      <button type="button" class="btn-add-language" data-action="addLanguage"
+        title="{{localize 'GAIA.Language.AddLanguage'}}">
+        <i class="fa-solid fa-plus"></i> {{localize "GAIA.Language.AddLanguage"}}
+      </button>
+    </div>
+
+    {{!-- Lista de Tags de Idiomas --}}
+    <div class="bio-languages-tags-list">
+      {{#each languagesList as |lang|}}
+      <span class="bio-language-pill">
+        <strong>{{lang.label}}</strong>
+        {{#if lang.categoryLabel}}
+        <span class="bio-language-category">({{lang.categoryLabel}})</span>
+        {{/if}}
+        <button type="button" class="btn-remove-language" data-action="removeLanguage" data-language="{{lang.key}}"
+          title="{{localize 'GAIA.title.ClickToRemove'}}">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </span>
+      {{else}}
+      <div class="empty-languages-hint">
+        {{localize "GAIA.Language.EmptyLanguagesHint"}}
+      </div>
+      {{/each}}
+    </div>
+  </div>
+
+  {{!-- SEÇÃO DE BIOGRAFIA E ANOTAÇÕES --}}
+  <div class="bio-notes-panel">
+    <h2 class="panel-main-title">{{localize "GAIA.title.Bio"}}</h2>
+    <textarea name="system.notes" class="bio-notes-textarea"
+      placeholder="Biografia e Anotações do Personagem...">{{system.notes}}</textarea>
+  </div>
+</div>
+</div>
 </div>

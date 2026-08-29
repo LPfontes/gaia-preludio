@@ -125,7 +125,7 @@
   padding: 4px 8px;
   background: rgba(0, 0, 0, 0.4);
   color: var(--gaia-text-parchment);
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   border: 1px solid var(--gaia-border-frame);
   font-family: inherit;
   font-size: var(--gaia-font-base);
@@ -210,7 +210,7 @@
   background: rgba(0, 0, 0, 0.4);
   color: var(--gaia-text-parchment);
   border: 1px solid var(--gaia-border-frame);
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   font-family: inherit;
   font-size: var(--gaia-font-base);
 }
@@ -367,7 +367,7 @@
   gap: 6px;
   padding: 4px 12px;
   border: 1px solid var(--gaia-border-frame);
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
   font-family: var(--gaia-font-medieval, "Cinzel", serif);
   font-size: var(--gaia-font-base);
   font-weight: 700;
@@ -413,7 +413,7 @@
   align-items: center;
   background: rgba(0, 0, 0, 0.15);
   border: 1px solid var(--gaia-border-frame);
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
   padding: 4px 8px;
   gap: 8px;
 }
@@ -471,12 +471,12 @@
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--gaia-border-frame);
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
 }
 
 .action-dialog .action-section-fieldset {
   border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   padding: 6px 10px 8px;
   background: rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease;
@@ -566,7 +566,7 @@
   font-weight: 700;
   text-transform: uppercase;
   padding: 4px 8px;
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -642,15 +642,34 @@
   margin-top: 6px;
 }
 
-.action-dialog .section-fields > .form-row:first-child {
+.action-dialog .section-fields>.form-row:first-child {
   margin-top: 0;
 }
 
-.action-dialog .flex-1 { flex: 1; display: grid; }
-.action-dialog .flex-15 { flex: 1.5; display: grid; }
-.action-dialog .flex-08 { flex: 0.8; display: grid; }
-.action-dialog .flex-06 { flex: 0.6; display: grid; }
-.action-dialog .cost-group { flex: 0 0 110px; display: grid; }
+.action-dialog .flex-1 {
+  flex: 1;
+  display: grid;
+}
+
+.action-dialog .flex-15 {
+  flex: 1.5;
+  display: grid;
+}
+
+.action-dialog .flex-08 {
+  flex: 0.8;
+  display: grid;
+}
+
+.action-dialog .flex-06 {
+  flex: 0.6;
+  display: grid;
+}
+
+.action-dialog .cost-group {
+  flex: 0 0 110px;
+  display: grid;
+}
 
 /* ==========================================================================
    DEATH SAVE WINDOW (Janela de Dado de Morte)
@@ -674,14 +693,14 @@
   gap: 6px;
   background: rgba(0, 0, 0, 0.25);
   padding: 8px 10px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   border: 1px solid var(--gaia-border-subtle, rgba(255, 255, 255, 0.1));
 }
 
 .death-dialog-portrait {
   width: 48px;
   height: 48px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   object-fit: cover;
   border: 1px solid var(--gaia-border-gold, #8c7355);
 }
@@ -710,7 +729,7 @@
   font-size: var(--gaia-font-base);
   font-weight: bold;
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   text-transform: uppercase;
   display: inline-flex;
   align-items: center;
@@ -745,7 +764,7 @@
   flex: 1;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--gaia-border-subtle, rgba(255, 255, 255, 0.1));
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -878,7 +897,7 @@
   background: rgba(0, 0, 0, 0.15);
   border-left: 4px solid var(--gaia-health, #b91c1c);
   margin-top: 4px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   font-family: inherit;
 }
 
@@ -926,7 +945,7 @@
 .damage-applied-card .damage-target-avatar {
   width: 32px;
   height: 32px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   border: 1px solid var(--gaia-border-frame);
   object-fit: cover;
 }
@@ -982,7 +1001,7 @@
   text-align: center;
   font-weight: bold;
   font-size: var(--gaia-font-md);
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
 }
 
 /* ==============================================================================
@@ -990,7 +1009,7 @@
  * ============================================================================== */
 .gaia-chat-card.roll-request-card {
   border: 2px solid var(--color-border, #444);
-  border-radius: 6px;
+  border-radius: var(--gaia-radius);
   padding: 10px;
   background: rgba(0, 0, 0, 0.2);
 }
@@ -1022,7 +1041,7 @@
   font-style: italic;
   background: rgba(255, 255, 255, 0.05);
   padding: 6px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   margin-bottom: 10px;
   color: var(--gaia-text-parchment);
 }
@@ -1033,7 +1052,7 @@
   font-size: var(--gaia-font-md);
   font-weight: bold;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   transition: all 0.15s ease;
 }
 
@@ -1043,7 +1062,7 @@
 .gaia-preludio.chat-card.death-die-card {
   padding: 8px;
   background: rgba(0, 0, 0, 0.15);
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
   border-left: 4px solid var(--gaia-red-crimson, #b02e2e);
   margin-top: 4px;
 }
@@ -1084,7 +1103,7 @@
   justify-content: space-around;
   background: rgba(0, 0, 0, 0.25);
   padding: 4px 6px;
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
   color: var(--gaia-text-parchment);
 }
 
@@ -1095,7 +1114,7 @@
   background: rgba(176, 46, 46, 0.25);
   padding: 4px 6px;
   text-align: center;
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
 }
 
 .death-die-card .death-die-stabilized-alert {
@@ -1105,13 +1124,5 @@
   background: rgba(39, 174, 96, 0.2);
   padding: 4px 6px;
   text-align: center;
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
 }
-
-
-
-
-
-
-
-

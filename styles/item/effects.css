@@ -23,11 +23,11 @@
   height: 100%;
   width: 100%;
   box-sizing: border-box;
-  padding: 4px;
 }
 
 .actor-effects-panel {
   background-color: var(--gaia-bg-window);
+  border-radius: var(--gaia-radius);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -35,10 +35,12 @@
   width: 100%;
   box-sizing: border-box;
 }
+
 .actor-effects-panel .effects-section-header {
   display: flex;
   justify-content: space-between;
 }
+
 /* ==============================================================================
  * PAINEL DE EFEITOS DO ITEM (.item-effects-panel)
  * ============================================================================== */
@@ -49,7 +51,7 @@
   gap: 10px;
   width: 100%;
   box-sizing: border-box;
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
 }
 
 .item-effects-panel .effects-section-header {
@@ -57,7 +59,7 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
-  padding-bottom: 6px;
+  padding: 6px 0;
 }
 
 .item-effects-panel .effects-main-title {
@@ -91,24 +93,21 @@
 }
 
 .btn-add-effect {
-  cursor: pointer;
-  background: rgba(0, 0, 0, 0.08);
-  padding: 4px 8px;
+  padding: 4px 10px;
   font-family: var(--gaia-font-medieval);
   font-size: var(--gaia-font-base);
-  font-weight: 600;
+  font-weight: 700;
+  background: transparent;
   color: var(--gaia-text-parchment);
-  display: inline-flex;
+  border-radius: var(--gaia-radius);
+  cursor: pointer;
+  display: flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.15s ease;
 }
 
 .btn-add-effect:hover {
-  background: var(--gaia-purple);
-  color: #ffffff;
-  border-color: var(--gaia-purple-dark);
-  box-shadow: 0 0 6px rgba(148, 44, 228, 0.4);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Blocos de Categoria de Efeito */
@@ -164,7 +163,7 @@
   align-items: center;
   background: rgba(0, 0, 0, 0.05);
   border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
   padding: 6px 10px;
   gap: 8px;
   transition: all 0.15s ease;
@@ -199,7 +198,7 @@
 .effect-icon {
   width: 32px;
   height: 32px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   border: 1px solid var(--gaia-border-frame, #574c43);
   object-fit: cover;
   flex-shrink: 0;
@@ -281,7 +280,7 @@
   padding: 4px 6px;
   font-size: var(--gaia-font-sm);
   color: var(--gaia-text-muted);
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   transition: all 0.15s ease;
 }
 

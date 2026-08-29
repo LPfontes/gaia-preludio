@@ -60,7 +60,7 @@
             </div>
 
             {{!-- Seção de Conhecimentos & Maestrias --}}
-            <div class="creature-section knowledge-section" style="margin-top: 14px;">
+            <div class="creature-section knowledge-section" >
               <div class="personagem-bottom-grid">
                 {{!-- Painel de Conhecimentos (14 Conhecimentos) --}}
                 <div class="knowledge-panel">
@@ -115,18 +115,10 @@
         </div>
 
         {{!-- ABA 2: INVENTÁRIO --}}
-        <div class="tab inventory" data-group="primary" data-tab="inventory">
-          <div class="tab-inventory-content">
-            {{> "systems/gaia-preludio/templates/actor/parts/inventory.hbs"}}
-          </div>
-        </div>
+        {{> "systems/gaia-preludio/templates/actor/parts/inventory.hbs"}}
 
         {{!-- ABA 3: HABILIDADES --}}
-        <div class="tab abilities" data-group="primary" data-tab="abilities">
-          <div class="tab-abilities-content">
-            {{> "systems/gaia-preludio/templates/actor/parts/abilities.hbs"}}
-          </div>
-        </div>
+        {{> "systems/gaia-preludio/templates/actor/parts/abilities.hbs"}}
 
         {{!-- ABA 4: BIOGRAFIA --}}
         <div class="tab biografia" data-group="primary" data-tab="biografia">

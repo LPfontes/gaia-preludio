@@ -1,7 +1,27 @@
 <div class="gaia-dialog-awakening-guide">
-  {{!-- Caixa introdutória --}}
+  {{!-- Caixa introdutória e Seletor de Modo (Desperto vs Não-Desperto) --}}
   <div class="gaia-dialog-intro-box">
-    <p>
+    <div class="awakening-mode-selection"
+      style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed rgba(201, 163, 75, 0.4);">
+      <label
+        style="font-weight: bold; font-family: var(--gaia-font-medieval); font-size: 13px; color: var(--gaia-purple-dark);">
+        <i class="fa-solid fa-user-shield"></i> {{localize "GAIA.CreateActor.ModeSelectLabel"}}
+      </label>
+      <div style="display: flex; gap: 14px;">
+        <label
+          style="display: flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer; color: var(--gaia-text-parchment);">
+          <input type="radio" name="creationMode" value="awakened" checked class="creation-mode-radio" />
+          <strong>{{localize "GAIA.CreateActor.ModeAwakened"}}</strong>
+        </label>
+        <label
+          style="display: flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer; color: var(--gaia-text-parchment);">
+          <input type="radio" name="creationMode" value="unawakened" class="creation-mode-radio" />
+          <strong>{{localize "GAIA.CreateActor.ModeUnawakened"}}</strong>
+        </label>
+      </div>
+    </div>
+    <p class="gaia-intro-description-text"
+      style="font-size: 12px; margin: 0; line-height: 1.4; color: var(--gaia-text-muted);">
       {{localize "GAIA.CreateActor.AwakeningIntro"}}
     </p>
   </div>
@@ -17,46 +37,50 @@
     <button type="button" class="gaia-dialog-tab-btn" data-tab="vitals">
       {{localize "GAIA.CreateActor.TabVitals"}}
     </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="abilities">
+      {{localize "GAIA.CreateActor.TabAbilities"}}
+    </button>
   </nav>
 
   {{!-- Conteúdo das abas --}}
   <div class="gaia-dialog-tab-body">
-   {{!-- ==================================================================== --}}
+    {{!-- ==================================================================== --}}
     {{!-- ETAPA 1: PARÂMETROS --}}
     {{!-- ==================================================================== --}}
     <div class="gaia-dialog-tab-pane active" data-tab="parameters">
-  
-        <p class="gaia-dialog-hint-title">
-          {{localize "GAIA.CreateActor.AwakeningParamTitle"}}
-        </p>
-        <p class="gaia-dialog-hint-text">
-          ● {{localize "GAIA.CreateActor.AwakeningParam"}}
-        </p>
+      <p class="gaia-dialog-hint-title">
+        {{localize "GAIA.CreateActor.AwakeningParamTitle"}}
+      </p>
+      <p class="gaia-dialog-hint-text">
+        ● {{localize "GAIA.CreateActor.AwakeningParam"}}
+      </p>
 
-      {{!-- Distribuidor Interativo dos 7 Pontos de Parâmetros --}}
+      {{!-- Distribuidor Interativo dos Pontos de Parâmetros --}}
       <div class="gaia-distributor-header">
         <span class="gaia-distributor-title">
           {{localize "GAIA.CreateActor.PointsDistribute"}}
         </span>
         <span class="gaia-points-tracker">
-          {{localize "GAIA.CreateActor.PointsRemaining"}} <strong class="gaia-points-left">7</strong> / 7
+          {{localize "GAIA.CreateActor.PointsRemaining"}} <strong class="gaia-points-left">7</strong> / <span
+            class="gaia-param-max-points">7</span>
         </span>
       </div>
 
       <div class="gaia-params-dist-grid">
         {{#each parameters as |param|}}
-          <div class="gaia-param-dist-card">
-            <span class="gaia-param-dist-label">{{param.label}}</span>
-            <div class="gaia-param-dist-controls">
-              <button type="button" class="gaia-param-adjust-btn" data-action="decrease" data-param="{{param.key}}">
-                <i class="fa-solid fa-minus"></i>
-              </button>
-              <input type="text" class="gaia-param-dist-input" data-param="{{param.key}}" value="{{param.value}}" readonly />
-              <button type="button" class="gaia-param-adjust-btn" data-action="increase" data-param="{{param.key}}">
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </div>
+        <div class="gaia-param-dist-card">
+          <span class="gaia-param-dist-label">{{param.label}}</span>
+          <div class="gaia-param-dist-controls">
+            <button type="button" class="gaia-param-adjust-btn" data-action="decrease" data-param="{{param.key}}">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <input type="text" class="gaia-param-dist-input" data-param="{{param.key}}" value="{{param.value}}"
+              readonly />
+            <button type="button" class="gaia-param-adjust-btn" data-action="increase" data-param="{{param.key}}">
+              <i class="fa-solid fa-plus"></i>
+            </button>
           </div>
+        </div>
         {{/each}}
       </div>
 
@@ -71,14 +95,12 @@
     {{!-- ETAPA 2: CONHECIMENTOS --}}
     {{!-- ==================================================================== --}}
     <div class="gaia-dialog-tab-pane" data-tab="knowledge">
-  
-        <p class="gaia-dialog-hint-title">
-          {{localize "GAIA.CreateActor.AwakeningKnowledgeTitle"}}
-        </p>
-        <p class="gaia-dialog-hint-text">
-          ● {{localize "GAIA.CreateActor.AwakeningKnowledge"}}
-        </p>
-      
+      <p class="gaia-dialog-hint-title">
+        {{localize "GAIA.CreateActor.AwakeningKnowledgeTitle"}}
+      </p>
+      <p class="gaia-dialog-hint-text">
+        ● {{localize "GAIA.CreateActor.AwakeningKnowledge"}}
+      </p>
 
       {{!-- Distribuidor Interativo dos 7 Pontos de Conhecimentos --}}
       <div class="gaia-distributor-header">
@@ -92,18 +114,21 @@
 
       <div class="gaia-params-dist-grid">
         {{#each knowledge as |know|}}
-          <div class="gaia-param-dist-card">
-            <span class="gaia-param-dist-label">{{know.label}}</span>
-            <div class="gaia-param-dist-controls">
-              <button type="button" class="gaia-know-adjust-btn gaia-param-adjust-btn" data-action="decrease" data-knowledge="{{know.key}}">
-                <i class="fa-solid fa-minus"></i>
-              </button>
-              <input type="text" class="gaia-know-dist-input gaia-param-dist-input" data-knowledge="{{know.key}}" value="{{know.value}}" readonly />
-              <button type="button" class="gaia-know-adjust-btn gaia-param-adjust-btn" data-action="increase" data-knowledge="{{know.key}}">
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </div>
+        <div class="gaia-param-dist-card">
+          <span class="gaia-param-dist-label">{{know.label}}</span>
+          <div class="gaia-param-dist-controls">
+            <button type="button" class="gaia-know-adjust-btn gaia-param-adjust-btn" data-action="decrease"
+              data-knowledge="{{know.key}}">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <input type="text" class="gaia-know-dist-input gaia-param-dist-input" data-knowledge="{{know.key}}"
+              value="{{know.value}}" readonly />
+            <button type="button" class="gaia-know-adjust-btn gaia-param-adjust-btn" data-action="increase"
+              data-knowledge="{{know.key}}">
+              <i class="fa-solid fa-plus"></i>
+            </button>
           </div>
+        </div>
         {{/each}}
       </div>
 
@@ -118,43 +143,161 @@
     </div>
 
     {{!-- ==================================================================== --}}
-    {{!-- ETAPA 3: VIDA E ENERGIA --}}
+    {{!-- ETAPA 3: RECURSOS (VIDA & ENERGIA) E IDIOMAS --}}
     {{!-- ==================================================================== --}}
     <div class="gaia-dialog-tab-pane" data-tab="vitals">
-        <p class="gaia-dialog-hint-title">
-          {{localize "GAIA.CreateActor.AwakeningVitalsTitle"}}
-        </p>
-        <ul class="gaia-dialog-hint-list">
-          <li><strong>Pontos de Vida (PV):</strong> 30 + 1d6 (ou 3) + <span class="gaia-vigor-hint-val">0</span> (Vigor)</li>
-          <li><strong>Pontos de Energia (PE):</strong> {{localize "GAIA.CreateActor.AwakeningEnergy"}}</li>
-        </ul>
-      
+      <p class="gaia-dialog-hint-title">
+        {{localize "GAIA.CreateActor.AwakeningVitalsTitle"}}
+      </p>
 
-      {{!-- Painel de Definição / Rolagem de Vida --}}
-      <div class="gaia-vitals-roller-box">
-        <div class="gaia-vitals-roller-header">
-          <span class="gaia-distributor-title">
-            <i class="fa-solid fa-heart-pulse"></i> {{localize "GAIA.CreateActor.RollHPHint"}}
-          </span>
-          <div class="gaia-vitals-roller-controls">
-            <button type="button" class="gaia-hp-action-btn gaia-roll-hp-btn" data-action="roll">
-              <i class="fa-solid fa-dice-d6"></i> {{localize "GAIA.CreateActor.RollHP"}}
-            </button>
-            <button type="button" class="gaia-hp-action-btn gaia-fixed-hp-btn active" data-action="fixed">
-              {{localize "GAIA.CreateActor.FixedHP"}}
-            </button>
+      {{!-- Painel específico para Personagem Desperto --}}
+      <div class="vitals-panel-awakened">
+        <ul class="gaia-dialog-hint-list">
+          <li><strong>Pontos de Vida (PV):</strong> 30 + 1d6 (ou 3) + <span class="gaia-vigor-hint-val">0</span> (Vigor)
+          </li>
+          <li><strong>Pontos de Energia (PE):</strong> 5 PE Máx</li>
+          <li><strong>Movimentação Base:</strong> 6m (+ bônus de Agilidade)</li>
+        </ul>
+
+        {{!-- Painel de Definição / Rolagem de Vida --}}
+        <div class="gaia-vitals-roller-box">
+          <div class="gaia-vitals-roller-header">
+            <span class="gaia-distributor-title">
+              <i class="fa-solid fa-heart-pulse"></i> {{localize "GAIA.CreateActor.RollHPHint"}}
+            </span>
+            <div class="gaia-vitals-roller-controls">
+              <button type="button" class="gaia-hp-action-btn gaia-roll-hp-btn" data-action="roll">
+                <i class="fa-solid fa-dice-d6"></i> {{localize "GAIA.CreateActor.RollHP"}}
+              </button>
+              <button type="button" class="gaia-hp-action-btn gaia-fixed-hp-btn active" data-action="fixed">
+                {{localize "GAIA.CreateActor.FixedHP"}}
+              </button>
+            </div>
+          </div>
+
+          <div class="gaia-vitals-result-display">
+            <span>{{localize "GAIA.CreateActor.CalculatedHP"}}</span>
+            <strong class="gaia-vitals-calculated-hp">33 PV</strong>
+            <input type="hidden" class="gaia-hp-selected-input" value="33" />
           </div>
         </div>
+      </div>
 
-        <div class="gaia-vitals-result-display">
-          <span>{{localize "GAIA.CreateActor.CalculatedHP"}}</span>
-          <strong class="gaia-vitals-calculated-hp">33 PV</strong>
-          <input type="hidden" class="gaia-hp-selected-input" value="33" />
+      {{!-- Painel específico para Personagem Não-Desperto --}}
+      <div class="vitals-panel-unawakened" style="display: none;">
+        <ul class="gaia-dialog-hint-list">
+          <li><strong>Pontos de Vida (PV):</strong> 12 PV (Fixos)</li>
+          <li><strong>Pontos de Energia (PE):</strong> 0 PE Máx</li>
+          <li><strong>Movimentação Base:</strong> 6m</li>
+        </ul>
+
+        {{!-- Painel de Seleção de Idioma Adicional --}}
+        <div class="gaia-vitals-roller-box unawakened-languages-box">
+          <div class="gaia-vitals-roller-header">
+            <span class="gaia-distributor-title">
+              <i class="fa-solid fa-language"></i> {{localize "GAIA.CreateActor.AdditionalLanguage"}}
+            </span>
+          </div>
+
+          <p class="gaia-dialog-hint-text">
+            ● <strong>Comum</strong> (incluso automaticamente) + 1 outro idioma à escolha:
+          </p>
+
+          <select class="unawakened-additional-language-select">
+            <option value="">-- {{localize "GAIA.CreateActor.SelectAdditionalLanguage"}} --</option>
+            {{#each availableLanguages as |lang|}}
+            <option value="{{lang.key}}">{{lang.label}} ({{lang.categoryLabel}})</option>
+            {{/each}}
+          </select>
         </div>
+
+        <p class="gaia-dialog-hint-muted">
+          Um ser Não-Desperto não canalizou o Véu e mantém apenas suas Habilidades de Legado naturais.
+        </p>
       </div>
 
       <div class="gaia-dialog-tab-footer">
         <button type="button" class="gaia-wizard-nav-btn" data-next-tab="knowledge">
+          <i class="fa-solid fa-arrow-left"></i> <span>{{localize "GAIA.CreateActor.Previous"}}</span>
+        </button>
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="abilities">
+          <span>{{localize "GAIA.CreateActor.Next"}}</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    {{!-- ==================================================================== --}}
+    {{!-- ETAPA 4: HABILIDADES DE CAMINHO --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane" data-tab="abilities">
+      <p class="gaia-dialog-hint-title">
+        {{localize "GAIA.CreateActor.AwakeningAbilitiesTitle"}}
+      </p>
+      <p class="gaia-dialog-hint-text">
+        ● {{localize "GAIA.CreateActor.AwakeningAbilitiesHint"}}
+      </p>
+
+      {{!-- Painel específico para Personagem Desperto --}}
+      <div class="abilities-panel-awakened">
+        <div class="gaia-vitals-roller-box gaia-abilities-selection-box">
+          <div class="gaia-vitals-roller-header">
+            <span class="gaia-distributor-title">
+              <i class="fa-solid fa-book-sparkles"></i> {{localize "GAIA.CreateActor.ChooseAbilitiesTitle"}}
+            </span>
+            <div class="gaia-vitals-roller-controls">
+              <button type="button" class="gaia-hp-action-btn btn-open-abilities-browser">
+                <i class="fa-solid fa-book-open"></i> {{localize "GAIA.CreateActor.OpenAbilitiesBrowser"}}
+              </button>
+            </div>
+          </div>
+
+          <div class="awakening-chosen-abilities-container">
+            <div class="awakening-chosen-abilities-header">
+              <span class="gaia-distributor-title" style="font-size: 12px;">
+                <i class="fa-solid fa-list-check"></i> {{localize "GAIA.CreateActor.SelectedAbilitiesLabel"}}
+              </span>
+              <span class="gaia-points-tracker">
+                <strong class="awakening-selected-abilities-count">{{initialAbilities.length}}</strong> / 2
+              </span>
+            </div>
+
+            <div class="awakening-chosen-abilities-list">
+              {{#if initialAbilities.length}}
+                {{#each initialAbilities as |ab idx|}}
+                <div class="awakening-ability-card" data-index="{{@index}}">
+                  <div class="awakening-ability-info">
+                    <img src="{{ab.img}}" class="awakening-ability-img" alt="{{ab.name}}" />
+                    <div class="awakening-ability-text">
+                      <strong class="awakening-ability-name">{{ab.name}}</strong>
+                      {{#if ab.category}}<span class="awakening-ability-category">{{ab.category}}</span>{{/if}}
+                    </div>
+                  </div>
+                  <button type="button" class="btn-remove-chosen-ability" data-index="{{@index}}" title="Remover Habilidade">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+                {{/each}}
+              {{else}}
+                <div class="empty-abilities-hint gaia-dialog-hint-muted">
+                  {{localize "GAIA.CreateActor.EmptyAbilitiesHint"}}
+                </div>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{!-- Painel específico para Personagem Não-Desperto --}}
+      <div class="abilities-panel-unawakened" style="display: none;">
+        <div class="gaia-vitals-roller-box">
+          <p class="gaia-dialog-hint-muted">
+            <i class="fa-solid fa-circle-info"></i> {{localize "GAIA.CreateActor.UnawakenedNoAbilities"}}
+          </p>
+        </div>
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="vitals">
           <i class="fa-solid fa-arrow-left"></i> <span>{{localize "GAIA.CreateActor.Previous"}}</span>
         </button>
       </div>

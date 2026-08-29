@@ -245,17 +245,39 @@
   font-size: var(--gaia-font-base);
 }
 
-.gaia-dialog-creature-wizard .compendium-placeholder-box {
-  margin-top: 12px;
-  padding: 20px;
-  text-align: center;
-  border: 1px dashed var(--gaia-border-subtle);
-  opacity: 0.75;
+.gaia-dialog-creature-wizard .btn-open-features-browser:hover {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+  border-color: var(--gaia-border-frame);
 }
 
-.gaia-dialog-creature-wizard .compendium-placeholder-box p {
-  margin: 6px 0 0 0;
-  font-size: var(--gaia-font-base);
+.gaia-dialog-creature-wizard .chosen-feature-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 4px 8px;
+  transition: all 0.15s ease;
+}
+
+.gaia-dialog-creature-wizard .chosen-feature-pill:hover {
+  border-color: var(--gaia-purple-dark);
+}
+
+.gaia-dialog-creature-wizard .btn-remove-chosen-feature {
+  background: transparent;
+  border: none;
+  color: var(--gaia-text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: var(--gaia-font-sm);
+  transition: color 0.15s ease;
+}
+
+.gaia-dialog-creature-wizard .btn-remove-chosen-feature:hover {
+  color: var(--gaia-health, #b91c1c);
 }
 
 /* Card de Resumo Final */

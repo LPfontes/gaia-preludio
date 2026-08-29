@@ -18,8 +18,7 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--gaia-border-subtle);
-  padding-bottom: 4px;
-  margin-bottom: 4px;
+  padding: 6px 0;
 }
 
 .item-actions-panel .description-title {
@@ -32,21 +31,21 @@
 }
 
 .item-actions-panel .btn-add-action {
-  cursor: pointer;
-  background: rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--gaia-border-frame);
   padding: 4px 10px;
+  font-family: var(--gaia-font-medieval);
   font-size: var(--gaia-font-base);
-  font-weight: 600;
+  font-weight: 700;
+  background: transparent;
   color: var(--gaia-text-parchment);
-  display: inline-flex;
+  border-radius: var(--gaia-radius);
+  cursor: pointer;
+  display: flex;
   align-items: center;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  gap: 6px;
 }
 
 .item-actions-panel .btn-add-action:hover {
-  background: var(--gaia-purple);
-  border-color: var(--gaia-purple-dark);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 .item-actions-panel .actions-list {
@@ -102,30 +101,32 @@
   gap: 6px;
   flex-wrap: wrap;
 }
-.action-badge-row{
+
+.action-badge-row {
   display: flex;
   gap: 6px;
 }
+
 .badge {
   font-weight: 600;
   padding: 4px 4px;
 }
 
 .badge.cost-badge {
-  background: rgba(0, 0, 0, 0.15);
+  background: transparent;
   color: var(--gaia-energy);
   border: 1px solid rgba(0, 0, 0, 0.2);
 
 }
 
 .badge.type-badge {
-  background: rgba(0, 0, 0, 0.15);
+  background: transparent;
   color: var(--gaia-text-parchment);
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .badge.category-badge {
-  background: rgba(140, 115, 85, 0.2);
+  background: transparent;
   color: var(--gaia-text-parchment);
   border: 1px solid var(--gaia-border-subtle);
 }
@@ -286,7 +287,7 @@
   flex-direction: column;
   gap: 4px;
   background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   padding: 4px 6px;
 }
 
@@ -353,13 +354,13 @@
 
 .gaia-action-chat-card .action-check-outcome.success .action-check-outcome-label {
   width: 100%;
-  font-size: var(--gaia-font-lg);  
+  font-size: var(--gaia-font-lg);
   background: rgba(0, 255, 30, 0.3);
 }
 
 .gaia-action-chat-card .action-check-outcome.failure .action-check-outcome-label {
   width: 100%;
-  font-size: var(--gaia-font-lg);  
+  font-size: var(--gaia-font-lg);
   background: rgba(185, 28, 28, 0.3);
 }
 
@@ -374,7 +375,7 @@
   color: var(--gaia-text-parchment);
   font-style: italic;
   margin-top: 4px;
-  
+
 }
 
 /* Linhas de Alvos e Defesa */
@@ -458,5 +459,3 @@
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
 }
-
-

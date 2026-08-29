@@ -210,18 +210,25 @@
           </span>
         </div>
 
-        <div class="wizard-field-group" style="margin-top: 10px;">
-          <label class="wizard-field-label">{{localize "GAIA.CreatureWizard.SelectBook"}}</label>
-          <select class="wizard-select-book gaia-select">
-            <option value="livro-base">{{localize "GAIA.CreatureWizard.BookBase"}}</option>
-            <option value="seres-veu">{{localize "GAIA.CreatureWizard.BookVeil"}}</option>
-            <option value="bestiario-ferais">{{localize "GAIA.CreatureWizard.BookFeral"}}</option>
-          </select>
-        </div>
+        <div class="compendium-features-browser-box" style="margin-top: 10px;">
+          <button type="button" class="btn-open-features-browser gaia-btn" style="width: 100%; padding: 8px 12px; font-family: var(--gaia-font-medieval); font-size: var(--gaia-font-base); font-weight: bold; background: var(--gaia-bg-banner); border: 1px solid var(--gaia-border-frame); border-radius: var(--gaia-radius); color: var(--gaia-text-parchment); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s ease;">
+            <i class="fa-solid fa-book-open"></i> Abrir Navegador de Características (<span class="wizard-btn-features-count">0/3</span>)
+          </button>
 
-        <div class="compendium-placeholder-box">
-          
-          <p>{{localize "GAIA.CreatureWizard.CompendiumIntegrationNotice"}}</p>
+          {{!-- Lista das Características Escolhidas --}}
+          <div class="wizard-chosen-features-container" style="margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label class="wizard-field-label" style="font-weight: bold; margin-bottom: 0;">Características Selecionadas:</label>
+              <span class="chosen-features-counter" style="font-size: var(--gaia-font-base); font-weight: bold;">
+                <span class="wizard-selected-features-count">0</span> / <span class="wizard-hint-features-max">3</span>
+              </span>
+            </div>
+            <div class="wizard-chosen-features-list" style="display: flex; flex-direction: column; gap: 4px;">
+              <div class="empty-features-hint" style="font-style: italic; color: var(--gaia-text-muted); font-size: var(--gaia-font-base); padding: 6px; border: 1px dashed var(--gaia-border-subtle); border-radius: var(--gaia-radius); text-align: center;">
+                Nenhuma característica selecionada. Clique no botão acima para escolher até <span class="wizard-hint-features-max-2">3</span> características.
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -242,7 +249,10 @@
           <div class="summary-item"> <strong>Poder:</strong> <span class="wizard-summary-power">2</span></div>
           <div class="summary-item"> <strong>Par. Ofensivo:</strong> <span class="wizard-summary-off">3</span></div>
           <div class="summary-item"> <strong>Par. Defensivo:</strong> <span class="wizard-summary-def">0</span></div>
-          <div class="summary-item"> <strong>Características:</strong> <span class="wizard-summary-features">3</span></div>
+          <div class="summary-item" style="grid-column: span 3; display: flex; flex-direction: column; align-items: flex-start; gap: 2px;">
+            <div><strong>Características (<span class="wizard-summary-features-count">0/3</span>):</strong></div>
+            <span class="wizard-summary-features" style="font-style: italic; color: var(--gaia-text-parchment); font-size: var(--gaia-font-sm);">Nenhuma selecionada</span>
+          </div>
         </div>
       </div>
 

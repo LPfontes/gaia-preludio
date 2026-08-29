@@ -36,7 +36,12 @@
           {{!-- Nome do Legado --}}
           <div class="wizard-field-group">
             <label class="wizard-field-label"> {{localize "GAIA.Banner.Legacy"}}</label>
-            <input type="text" class="wizard-input-legacy gaia-input" value="{{initialData.legacy}}" placeholder="{{localize 'GAIA.Banner.LegacyPlaceholder'}}" />
+            <select class="wizard-input-legacy wizard-select-legacy gaia-select">
+              <option value="">-- {{localize "GAIA.Banner.LegacyPlaceholder"}} --</option>
+              {{#each legacyOptions as |legName|}}
+                <option value="{{legName}}" {{#if (eq ../initialData.legacy legName)}}selected{{/if}}>{{legName}}</option>
+              {{/each}}
+            </select>
           </div>
 
           {{!-- Nível de Despertar do Grupo de Jogadores --}}
@@ -182,6 +187,27 @@
           </button>
           <div class="rule-item"> <strong>{{localize "GAIA.LegacyNpcWizard.InitialMasteries"}}:</strong> <span class="wizard-val-masteries">6 Maestrias</span></div>
         </div>
+
+        <div class="compendium-features-browser-box" style="margin-top: 10px;">
+          <button type="button" class="btn-open-abilities-browser gaia-btn" style="width: 100%; padding: 8px 12px; font-family: var(--gaia-font-medieval); font-size: var(--gaia-font-base); font-weight: bold; background: var(--gaia-bg-banner); border: 1px solid var(--gaia-border-frame); border-radius: var(--gaia-radius); color: var(--gaia-text-parchment); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s ease;">
+            <i class="fa-solid fa-book-open"></i> Abrir Navegador de Habilidades (<span class="wizard-btn-abilities-count">0/3</span>)
+          </button>
+
+          {{!-- Lista das Habilidades Escolhidas --}}
+          <div class="wizard-chosen-abilities-container" style="margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label class="wizard-field-label" style="font-weight: bold; margin-bottom: 0;">Habilidades Selecionadas:</label>
+              <span class="chosen-abilities-counter" style="font-size: var(--gaia-font-base); font-weight: bold;">
+                <span class="wizard-selected-abilities-count">0</span> / <span class="wizard-hint-abilities-max">3</span>
+              </span>
+            </div>
+            <div class="wizard-chosen-abilities-list" style="display: flex; flex-direction: column; gap: 4px;">
+              <div class="empty-abilities-hint" style="font-style: italic; color: var(--gaia-text-muted); font-size: var(--gaia-font-base); padding: 6px; border: 1px dashed var(--gaia-border-subtle); border-radius: var(--gaia-radius); text-align: center;">
+                Nenhuma habilidade selecionada. Clique no botão acima para escolher até <span class="wizard-hint-abilities-max-2">3</span> habilidades.
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {{!-- Resumo Final da Ficha Legado NPC --}}
@@ -201,7 +227,10 @@
           <div class="summary-item"><strong>{{localize "GAIA.Creature.PowerPoints"}}:</strong> <span class="wizard-summary-power">4</span> ({{localize "GAIA.LegacyNpcWizard.Max6"}})</div>
           <div class="summary-item"><strong>{{localize "GAIA.LegacyNpcWizard.OffensiveShort"}}:</strong> <span class="wizard-summary-off">0</span></div>
           <div class="summary-item"><strong>{{localize "GAIA.LegacyNpcWizard.DefensiveShort"}}:</strong> <span class="wizard-summary-def">0</span></div>
-          <div class="summary-item"><strong>{{localize "GAIA.title.Abilities"}}:</strong> <span class="wizard-summary-abilities">{{localize "GAIA.LegacyNpcWizard.UpTo"}} 3</span></div>
+          <div class="summary-item" style="grid-column: span 3; display: flex; flex-direction: column; align-items: flex-start; gap: 2px;">
+            <div><strong>Habilidades (<span class="wizard-summary-abilities-count">0/3</span>):</strong></div>
+            <span class="wizard-summary-abilities" style="font-style: italic; color: var(--gaia-text-parchment); font-size: var(--gaia-font-sm);">Nenhuma selecionada</span>
+          </div>
         </div>
       </div>
 

@@ -16,7 +16,7 @@
 .gaia-dialog-level-up .level-up-header-box {
   background: linear-gradient(135deg, rgba(74, 46, 107, 0.15), rgba(201, 163, 75, 0.15));
   border: 1px solid var(--gaia-border-gold, #8c7355);
-  border-radius: 6px;
+  border-radius: var(--gaia-radius);
   padding: 10px;
   text-align: center;
   box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.05);
@@ -58,8 +58,7 @@
   font-weight: bold;
   background: rgba(0, 0, 0, 0.04);
   color: var(--gaia-text-parchment, #2c2416);
-  border-bottom: none;
-  border-radius: 6px 6px 0 0;
+  border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -103,7 +102,7 @@
 /* 3. Sections */
 .gaia-dialog-level-up .level-up-section {
   border: 1px solid var(--gaia-border-frame, #c4b998);
-  border-radius: 6px;
+  border-radius: var(--gaia-radius);
   padding: 8px 12px;
   background: rgba(0, 0, 0, 0.02);
   display: flex;
@@ -161,7 +160,7 @@
   background: var(--gaia-purple-dark);
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -175,7 +174,7 @@
 }
 
 .gaia-dialog-level-up .hp-gain-preview {
-  font-size: var(--gaia-font-2xl);
+  font-size: var(--gaia-font-md);
   font-weight: bold;
   color: var(--gaia-health, #b91c1c);
 }
@@ -203,7 +202,7 @@
   align-items: center;
   background: rgba(0, 0, 0, 0.04);
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -221,7 +220,7 @@
 .gaia-dialog-level-up .btn-adjust-param,
 .gaia-dialog-level-up .btn-adjust-know {
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   line-height: 1;
   font-weight: bold;
   font-size: var(--gaia-font-base);
@@ -269,7 +268,7 @@
   font-weight: bold;
   background: rgba(46, 139, 87, 0.1);
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   border-left: 3px solid var(--gaia-green, #2e8b57);
 }
 
@@ -287,7 +286,7 @@
   background: var(--gaia-purple-dark);
   color: #fff;
   border: 1px solid var(--gaia-border-gold, #8c7355);
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -307,7 +306,7 @@
   padding: 4px 8px;
   font-size: var(--gaia-font-md);
   border: 1px solid var(--gaia-border-frame, #c4b998);
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   background: rgba(255, 255, 255, 0.8);
   color: var(--gaia-text-parchment, #2c2416);
   font-family: inherit;
@@ -323,7 +322,7 @@
 /* 7. Level Up Chat Card */
 .gaia-preludio.chat-card.level-up-card {
   border: 2px solid var(--gaia-border-gold, #8c7355);
-  border-radius: 6px;
+  border-radius: var(--gaia-radius);
   padding: 10px;
   background: linear-gradient(135deg, rgba(74, 46, 107, 0.1), rgba(201, 163, 75, 0.1));
 }
@@ -340,7 +339,7 @@
   justify-content: space-around;
   background: rgba(0, 0, 0, 0.05);
   padding: 6px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   margin-bottom: 6px;
   font-weight: bold;
   font-size: var(--gaia-font-sm);

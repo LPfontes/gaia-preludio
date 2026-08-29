@@ -8,7 +8,7 @@
  * @extends {Actor}
  */
 import { prepareParameterBonuses, calculateEquipmentBlockBonus } from "../helpers/actor-context.mjs";
-import { promptAwakeningGuideDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog } from "../helpers/dialogs.mjs";
+import { promptAwakeningGuideDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog } from "../helpers/dialogs/index.mjs";
 
 export class GaiaActor extends Actor {
 
@@ -87,10 +87,87 @@ export class GaiaActor extends Actor {
         foundry.utils.setProperty(changed, "system.death.stabilized", false);
       } else if (newHp <= 0 && oldHp > 0 && !this.system?.isIncapacitated) {
         // PT: Ao ficar Incapacitado, ganha 1 ponto de Exaustão e zera PV Temporário
-        // EN: Upon becoming Incapacitated, gain 1 point of Exhaustion and zero Temp HP
-        const currentExh = Number(this.system?.exhaustion ?? 0);
-        foundry.utils.setProperty(changed, "system.exhaustion", Math.min(6, currentExh + 1));
         foundry.utils.setProperty(changed, "system.health.temp", 0);
+      }
+    }
+
+    // PT: Registra o delta de PV e PV Temporário para números flutuantes no canvas (Scrolling Text)
+    const hasHpChange = foundry.utils.hasProperty(changed, "system.health.value");
+    const hasTempChange = foundry.utils.hasProperty(changed, "system.health.temp");
+    if (hasHpChange || hasTempChange) {
+      const oldHpVal = Number(this.system?.health?.value ?? 0);
+      const newHpVal = hasHpChange ? Number(foundry.utils.getProperty(changed, "system.health.value")) : oldHpVal;
+      const oldTempVal = Number(this.system?.health?.temp ?? 0);
+      const newTempVal = hasTempChange ? Number(foundry.utils.getProperty(changed, "system.health.temp")) : oldTempVal;
+
+      options.gaiaHealthDelta = {
+        hpDiff: newHpVal - oldHpVal,
+        tempDiff: newTempVal - oldTempVal
+      };
+    }
+  }
+
+  /**
+   * PT: Chamado após uma atualização ser processada pelo servidor.
+   * Exibe números flutuantes (scrolling text) para dano ou cura.
+   * @override
+   */
+  _onUpdate(changed, options, userId) {
+    super._onUpdate(changed, options, userId);
+    if (options.gaiaHealthDelta) {
+      this._showScrollingHealthText(options.gaiaHealthDelta);
+    }
+  }
+
+  /**
+   * PT: Exibe números flutuantes de dano e cura sobre os tokens vinculados no canvas.
+   * @param {{ hpDiff?: number, tempDiff?: number }} delta
+   * @protected
+   */
+  _showScrollingHealthText({ hpDiff = 0, tempDiff = 0 } = {}) {
+    if (!canvas?.ready || !canvas.interface) return;
+    const tokens = this.getActiveTokens();
+    if (!tokens.length) return;
+
+    for (const token of tokens) {
+      if (!token.visible) continue;
+
+      // 1. Dano (-) ou Cura (+) de Vida
+      if (hpDiff !== 0) {
+        const isDamage = hpDiff < 0;
+        const text = isDamage ? `${hpDiff}` : `+${hpDiff}`;
+        // Dano em vermelho escarlate, Cura em verde esmeralda
+        const color = isDamage ? 0xef4444 : 0x22c55e;
+
+        canvas.interface.createScrollingText(token.center, text, {
+          anchor: isDamage ? (CONST.TEXT_ANCHOR_POINTS?.TOP ?? 2) : (CONST.TEXT_ANCHOR_POINTS?.BOTTOM ?? 1),
+          direction: isDamage ? (CONST.TEXT_SCROLL_DIRECTIONS?.DOWN ?? 2) : (CONST.TEXT_SCROLL_DIRECTIONS?.UP ?? 1),
+          duration: 2000,
+          fontSize: 28,
+          stroke: 0x000000,
+          strokeThickness: 4,
+          jitter: 0.25,
+          fill: color
+        });
+      }
+
+      // 2. Ganho ou Perda de PV Temporário
+      if (tempDiff !== 0) {
+        const isLoss = tempDiff < 0;
+        const text = isLoss ? `${tempDiff} Temp` : `+${tempDiff} Temp`;
+        // Laranja para perda de PV temp, Azul ciano para ganho de PV temp
+        const color = isLoss ? 0xf97316 : 0x38bdf8;
+
+        canvas.interface.createScrollingText(token.center, text, {
+          anchor: CONST.TEXT_ANCHOR_POINTS?.CENTER ?? 0,
+          direction: isLoss ? (CONST.TEXT_SCROLL_DIRECTIONS?.DOWN ?? 2) : (CONST.TEXT_SCROLL_DIRECTIONS?.UP ?? 1),
+          duration: 2000,
+          fontSize: 22,
+          stroke: 0x000000,
+          strokeThickness: 4,
+          jitter: 0.25,
+          fill: color
+        });
       }
     }
   }

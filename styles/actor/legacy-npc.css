@@ -10,6 +10,95 @@
   color: var(--gaia-text-parchment);
 }
 
+/* ==============================================================================
+ * LAYOUT PRINCIPAL DA FICHA DE LEGADO NPC
+ * ============================================================================== */
+.gaia-preludio.sheet.actor.legacy-npc-sheet .window-content {
+  display: block !important;
+  padding: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+.legacy-npc-sheet.gaia-sheet-content {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+.legacy-npc-sheet .sheet-main-layout {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 6px !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+
+.legacy-npc-sheet .sheet-sidebar-header-npc {
+  grid-area: auto !important;
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  flex-shrink: 0 !important;
+  height: auto !important;
+  min-height: 100% !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+.legacy-npc-sheet .sheet-main-body {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  width: auto !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  gap: 6px !important;
+}
+
+.legacy-npc-sheet .sheet-tabs-content {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.legacy-npc-sheet .tab {
+  grid-area: auto !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  display: none;
+  flex-direction: column !important;
+}
+
+.legacy-npc-sheet .tab.active {
+  display: flex !important;
+}
+
 .legacy-npc-header-container {
   display: flex;
   flex-direction: column;
@@ -17,11 +106,12 @@
   background: var(--gaia-bg-banner);
   border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
-  padding: 10px 10px 40px 10px;
+  padding: 10px 10px 45px 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
   box-sizing: border-box;
   position: relative;
   width: 100%;
+  overflow: visible !important;
   clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 97%, 0% 100%);
 }
 
@@ -83,7 +173,7 @@
 
 .legacy-npc-header-container .creature-defenses-row {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   align-items: center;
 }
@@ -91,10 +181,6 @@
   width: 100%;
 }
 
-.legacy-npc-sheet .personagem-bottom-grid {
-  display: flex;
-  gap: 14px;
-}
 .gaia-dialog-legacy-npc-wizard .gaia-dialog-title {
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);

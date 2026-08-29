@@ -7,29 +7,48 @@
  */
 
 /* Grid Layout Principal da Ficha de Criatura */
+.creature-sheet .window-content {
+  padding: 0;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: visible !important;
+  box-sizing: border-box;
+}
+
 .gaia-creature-sheet {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: 340px minmax(0, 1fr);
   gap: 8px;
   height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  width: 100%;
   box-sizing: border-box;
   font-family: var(--gaia-font-medieval);
   color: var(--gaia-text-parchment);
+  overflow: visible !important;
 }
 
-/* Banner de Criatura */
+/* Banner de Criatura (Flâmula que vaza para fora da janela) */
 .gaia-creature-banner {
+  grid-area: auto !important;
   display: flex;
   flex-direction: column;
   gap: 10px;
   background: var(--gaia-bg-banner);
   border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
-  padding: 10px 10px 40px 10px;
+  padding: 10px 10px 50px 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
   box-sizing: border-box;
   position: relative;
-  width: 100%;
+  width: 100% !important;
+  max-width: 340px;
+  min-height: calc(100% + 40px);
+  height: auto;
+  overflow: visible !important;
+  z-index: 5;
   clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 97%, 0% 100%);
 }
 
@@ -61,15 +80,16 @@
   text-align: center;
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 4px;
 }
+
 .stat-card:hover {
   transform: translateY(-2px);
   border-color: var(--gaia-purple);
   background: rgba(255, 255, 255, 0.04);
 }
-  
+
 .creature-stats-cards-row .stat-card .field-label {
   font-size: var(--gaia-font-base);
   font-weight: bold;
@@ -90,11 +110,13 @@
 .creature-stats-cards-row .stat-card .field-label[data-action]:hover {
   color: var(--gaia-purple);
 }
+
 .creature-stats-cards-row .stat-card .stat-value {
   font-size: var(--gaia-font-xl);
   font-weight: bold;
   color: var(--gaia-text-parchment);
 }
+
 .creature-stats-cards-row .stat-card input {
   width: 100%;
   text-align: center;
@@ -125,7 +147,7 @@
   flex: 1;
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 4px;
   display: flex;
   align-items: center;
@@ -135,20 +157,25 @@
  * CORPO DA FICHA DE CRIATURA (.creature-sheet-body)
  * ============================================================================== */
 .creature-sheet-body {
+  grid-area: auto !important;
   display: flex;
   flex-direction: column;
   gap: 8px;
   background: var(--gaia-bg-banner);
-  border: 1px solid var(--gaia-border-frame);
+  border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
   padding: 8px;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
   overflow-y: auto !important;
+  box-sizing: border-box;
 }
 
 /* Navegação por Abas (Personagem e Bio) */
 .creature-tabs {
   background: var(--gaia-bg-banner);
-  border: 1px solid var(--gaia-border-frame);
+  border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
   display: flex;
   padding: 4px;
@@ -163,7 +190,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 4px 12px;
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   cursor: pointer;
   transition: all 0.15s ease;
   text-decoration: none;
@@ -187,16 +214,20 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
 }
 
+.sheet-tab-body .tab,
 .sheet-tab-body .tab-content {
-  display: none;
+  display: none !important;
   flex-direction: column;
   gap: 8px;
 }
 
+.sheet-tab-body .tab.active,
 .sheet-tab-body .tab-content.active {
-  display: flex;
+  display: flex !important;
 }
 
 /* ==============================================================================
@@ -216,9 +247,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
   border-bottom: 1px solid var(--gaia-border-subtle);
-  padding-bottom: 4px;
+  border-radius: var(--gaia-radius);
+  padding: 4px;
+  margin: 4px 0 ;
 }
 
 .creature-section .section-title {
@@ -230,9 +262,11 @@
   align-items: center;
   gap: 6px;
 }
-.knowledge-section{
+
+.knowledge-section {
   border: none;
 }
+
 .btn-section-add {
   background: transparent;
   border: 1px solid var(--gaia-border-frame);
@@ -301,7 +335,7 @@
 .creature-item-card .item-icon {
   width: 24px;
   height: 24px;
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   object-fit: cover;
   border: 1px solid var(--gaia-border-frame);
   cursor: pointer;

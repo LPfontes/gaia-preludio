@@ -258,9 +258,9 @@ export function getAttrTooltip(actor, attrPath, label = "") {
     return `${cleanLabel}Base: ${original} | Bônus: ${bonusSign} | Total: ${total}`;
   }
 
-  const rawBase = foundry.utils.getProperty(actor._source ?? {}, `system.${attrPath}`) 
-               ?? foundry.utils.getProperty(actor.system, attrPath) 
-               ?? 0;
+  const rawBase = foundry.utils.getProperty(actor._source ?? {}, `system.${attrPath}`)
+    ?? foundry.utils.getProperty(actor.system, attrPath)
+    ?? 0;
   return `${cleanLabel}Base: ${rawBase}`;
 }
 
@@ -270,13 +270,34 @@ export function getAttrTooltip(actor, attrPath, label = "") {
  * @param {object} context - Contexto base fornecido pelo ActorSheetV2
  * @returns {Promise<object>} Contexto enriquecido para o template
  */
+/**
+ * Enriquece o contexto da ficha de personagem (Legado) dividindo por partes ou completo.
+ * @param {ActorSheetV2} sheet - Instância da Ficha do Ator
+ * @param {object} context - Contexto base fornecido pelo ActorSheetV2
+ * @returns {Promise<object>} Contexto enriquecido para o template
+ */
 export async function prepareLegacySheetContext(sheet, context) {
   const actor = sheet.actor;
+  context.actor = actor;
+  context.system = actor.system;
+
+  prepareSidebarContext(actor, context);
+  preparePersonagemContext(actor, context);
+  prepareInventoryContext(actor, context);
+  prepareAbilitiesContext(actor, context);
+  prepareBioContext(actor, context);
+  prepareEffectsContext(actor, context);
+
+  return context;
+}
+
+/**
+ * Prepara o contexto para a Sidebar / Banner do Ator.
+ */
+export function prepareSidebarContext(actor, context) {
   const system = actor.system;
   const maxExhaustion = 6;
 
-  context.actor = actor;
-  context.system = system;
   // Valor de Agilidade e Iniciativa
   const agilityParam = system.parameters?.find(p => {
     const name = String(p.name || "").toLowerCase();
@@ -284,7 +305,7 @@ export async function prepareLegacySheetContext(sheet, context) {
   });
   context.agilityValue = Number(agilityParam?.value ?? system.agility?.value ?? system.agility ?? 0);
   context.initiativeValue = context.agilityValue;
-  
+
   // Pips de Exaustão (1 a 6) e status de Morte por Exaustão
   const currentExhaustion = Math.clamp(Number(system.exhaustion) || 0, 0, maxExhaustion);
   context.exhaustionPips = buildPips(currentExhaustion, maxExhaustion);
@@ -295,9 +316,9 @@ export async function prepareLegacySheetContext(sheet, context) {
   const deathGifts = Number(system.death?.gifts ?? 0);
   const isStabilized = Boolean(system.death?.stabilized);
   const hp = Number(system.health?.value ?? 0);
-  const hasIncapacitatedCondition = actor.effects?.some(e => 
-    String(e.name || "").toLowerCase() === "incapacitado" || 
-    e.statuses?.has?.("incapacitado") || 
+  const hasIncapacitatedCondition = actor.effects?.some(e =>
+    String(e.name || "").toLowerCase() === "incapacitado" ||
+    e.statuses?.has?.("incapacitado") ||
     (Array.isArray(e.statuses) && e.statuses.includes("incapacitado"))
   );
   const isIncapacitated = hp <= 0 || Boolean(hasIncapacitatedCondition);
@@ -335,22 +356,8 @@ export async function prepareLegacySheetContext(sheet, context) {
       || "Dado de Morte (1d12): 1-6 = Sentença do Corruptor (2 = Morte) | 7-12 = Dádiva do Artesão (2 = Estabilizado). A cada 10 min estabilizado, regenera 1d4 PV."
   };
 
-  // Parâmetros (8)
-  const params = resolveParameters(system);
-  context.parameters = params.all;
-  // Conhecimentos (14)
-  const knows = resolveKnowledge(system);
-  context.knowledge = knows.all;
-  // Maestrias
-  context.unlockedMasteries = resolveMasteries(system);
-
-  // Armamentos Equipados
-  context.equippedWeapons = resolveEquippedWeapons(actor);
-
-  // Categorias do Inventário e Habilidades para o Template
-  const items = actor.items ?? [];
-  
   // Coleta as opções de Legado (Itens do tipo 'legacy')
+  const items = actor.items ?? [];
   const worldLegacies = (game.items?.filter(i => i.type === "legacy") ?? []).map(i => i.name);
   const actorLegacies = (items.filter(i => i.type === "legacy") ?? []).map(i => i.name);
   const allLegacies = Array.from(new Set([...worldLegacies, ...actorLegacies])).filter(Boolean);
@@ -358,7 +365,6 @@ export async function prepareLegacySheetContext(sheet, context) {
   if (system.legacy && !allLegacies.includes(system.legacy)) {
     allLegacies.push(system.legacy);
   }
-
   allLegacies.sort((a, b) => a.localeCompare(b));
 
   const legacySelectOptions = {};
@@ -367,7 +373,6 @@ export async function prepareLegacySheetContext(sheet, context) {
   }
   context.legacySelectOptions = legacySelectOptions;
 
-  // Busca o item de Legado correspondente ao Legado selecionado para extrair suas habilidades
   const selectedLegacyName = system.legacy || "";
   context.selectedLegacyName = selectedLegacyName;
 
@@ -383,14 +388,76 @@ export async function prepareLegacySheetContext(sheet, context) {
   }
   context.legacyItem = legacyItem;
 
+  return context;
+}
+
+/**
+ * Prepara o contexto para a Aba de Personagem (Parâmetros, Conhecimentos, Maestrias, Defesas).
+ */
+export function preparePersonagemContext(actor, context) {
+  const system = actor.system;
+  context.parameters = resolveParameters(system).all;
+  context.knowledge = resolveKnowledge(system).all;
+  context.unlockedMasteries = resolveMasteries(system);
+  context.equippedWeapons = resolveEquippedWeapons(actor);
+  return context;
+}
+
+/**
+ * Prepara o contexto para a Aba de Inventário (Armas, Armaduras, Relíquias, Consumíveis, Itens Comuns).
+ */
+export function prepareInventoryContext(actor, context) {
+  const items = actor.items ?? [];
+  const formatItem = (item) => formatInventoryItem(item);
+  context.inventoryWeapons = items.filter(i => (i.type === "weapon" || i.system?.category === "weapon")).map(formatItem);
+  context.inventoryArmor = items.filter(i => (i.type === "armor" || ["armor", "vestuary", "shield", "clothing"].includes(i.system?.category))).map(formatItem);
+  context.inventoryRelics = items.filter(i => (i.type === "relic" || i.system?.category === "relic")).map(formatItem);
+  context.inventoryConsumables = items.filter(i => ["potion", "consumable", "toxic"].includes(i.system?.category)).map(formatItem);
+  context.inventoryCommon = items.filter(i => i.type !== "ability" && i.type !== "weapon" && i.type !== "armor" && i.type !== "relic" && !["weapon", "armor", "vestuary", "shield", "clothing", "potion", "consumable", "toxic", "relic"].includes(i.system?.category)).map(formatItem);
+
+  // Monitoramento de Potência de Véu das Relíquias Vinculadas
+  const boundRelics = items.filter(i => (i.type === "relic" || i.system?.category === "relic") && Boolean(i.system?.isBound));
+  const maxBoundPotency = CONFIG.GAIA?.maxBoundRelicPotency ?? 5;
+  const totalBoundPotency = boundRelics.reduce((sum, r) => sum + (Number(r.system?.potency) || 0), 0);
+  const isRelicOverloaded = totalBoundPotency > maxBoundPotency;
+  const relicOverloadAmount = isRelicOverloaded ? totalBoundPotency - maxBoundPotency : 0;
+
+  context.boundRelics = boundRelics;
+  context.totalBoundPotency = totalBoundPotency;
+  context.maxBoundPotency = maxBoundPotency;
+  context.isRelicOverloaded = isRelicOverloaded;
+  context.relicOverloadAmount = relicOverloadAmount;
+  context.relicPotencyPips = buildPips(Math.min(totalBoundPotency, maxBoundPotency), maxBoundPotency);
+
+  return context;
+}
+
+/**
+ * Prepara o contexto para a Aba de Habilidades (Caminho e Legado).
+ */
+export function prepareAbilitiesContext(actor, context) {
+  const system = actor.system;
+  const items = actor.items ?? [];
+  const config = /** @type {any} */ (CONFIG).GAIA;
+
+  const selectedLegacyName = system.legacy || "";
+  let legacyItem = null;
+  if (selectedLegacyName) {
+    legacyItem = items.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
+    if (!legacyItem) {
+      legacyItem = game.items?.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
+    }
+  }
+  if (!legacyItem) {
+    legacyItem = items.find(i => i.type === "legacy");
+  }
+
   let rawLegacyAbilities = [];
   if (legacyItem?.system?.legacyAbilities && Array.isArray(legacyItem.system.legacyAbilities)) {
     rawLegacyAbilities = legacyItem.system.legacyAbilities;
   } else if (Array.isArray(system.legacyAbilities)) {
     rawLegacyAbilities = system.legacyAbilities;
   }
-
-  const config = /** @type {any} */ (CONFIG).GAIA;
 
   context.legacyAbilitiesList = rawLegacyAbilities.map((ab, index) => {
     const activeEffect = ab.activeEffect;
@@ -411,6 +478,8 @@ export async function prepareLegacySheetContext(sheet, context) {
       ? game.i18n.localize(config.abilitiesTypes[rawType])
       : (rawType !== "ability" ? rawType : "");
 
+    const isEffectActive = (actor.effects ?? []).some(e => !e.disabled && (e.name === ab.name || e.flags?.gaia?.abilityName === ab.name));
+
     return {
       index,
       name: ab.name || "Habilidade de Legado",
@@ -419,25 +488,29 @@ export async function prepareLegacySheetContext(sheet, context) {
       typeAction: ab.typeAction || "",
       actionTypeLabel,
       typeLabel,
-      activeEffectText
+      activeEffectText,
+      isEffectActive
     };
   });
-  context.abilities = items.filter(i => i.type === "ability").map(item => {
+
+  const formatAbilityOrFeature = (item) => {
+    const isFeature = item.type === "feature";
     const rawCategory = item.system?.category || "";
-    const categoryLabel = rawCategory && config?.abilityCategories?.[rawCategory]
-      ? game.i18n.localize(config.abilityCategories[rawCategory])
+    const categoryDict = isFeature ? config?.featureCategories : config?.abilityCategories;
+    const categoryLabel = rawCategory && categoryDict?.[rawCategory]
+      ? game.i18n.localize(categoryDict[rawCategory])
       : (rawCategory || "");
 
-    const rawTypes = Array.isArray(item.system?.types) && item.system.types.length > 0 
-      ? item.system.types 
+    const rawTypes = Array.isArray(item.system?.types) && item.system.types.length > 0
+      ? item.system.types
       : (item.system?.type ? [item.system.type] : []);
     const localizedTypes = rawTypes.map(t => config?.abilitiesTypes?.[t] ? game.i18n.localize(config.abilitiesTypes[t]) : t).filter(Boolean);
     const firstType = localizedTypes[0] || "";
     const additionalTypes = localizedTypes.slice(1).join(" / ");
 
     const rawAction = item.system?.typeAction || "";
-    const actionLabel = rawAction && config?.actionType?.[rawAction] 
-      ? game.i18n.localize(config.actionType[rawAction]) 
+    const actionLabel = rawAction && config?.actionType?.[rawAction]
+      ? game.i18n.localize(config.actionType[rawAction])
       : (rawAction || "");
 
     const cost = item.system?.cost || "";
@@ -466,6 +539,8 @@ export async function prepareLegacySheetContext(sheet, context) {
       id: item.id,
       name: item.name,
       img: item.img,
+      type: item.type,
+      isFeature,
       system: item.system,
       categoryLabel,
       firstType,
@@ -478,18 +553,44 @@ export async function prepareLegacySheetContext(sheet, context) {
       hasActiveImprovements: activeImprovements.length > 0,
       formattedSubEffects
     };
+  };
+
+  context.abilities = items.filter(i => i.type === "ability" || i.type === "feature").map(formatAbilityOrFeature);
+  context.features = items.filter(i => i.type === "feature").map(formatAbilityOrFeature);
+
+  return context;
+}
+
+/**
+ * Prepara o contexto para a Aba de Biografia e Idiomas.
+ */
+export function prepareBioContext(actor, context) {
+  const config = /** @type {any} */ (CONFIG).GAIA;
+  const rawLangs = actor.system?.languages ?? [];
+  context.languagesList = rawLangs.map(langKey => {
+    const key = String(langKey).toLowerCase();
+    let label = langKey;
+    let categoryLabel = "";
+    if (config?.allLanguages?.[key]) {
+      label = game.i18n.localize(config.allLanguages[key].label);
+      categoryLabel = game.i18n.localize(config.allLanguages[key].categoryLabel || "");
+    } else if (key === "comum") {
+      label = game.i18n.localize("GAIA.Language.Comum") || "Comum";
+    }
+    return {
+      key: langKey,
+      label,
+      categoryLabel
+    };
   });
+  return context;
+}
 
-  const formatItem = (item) => formatInventoryItem(item);
-  context.inventoryWeapons = items.filter(i => (i.type === "weapon" || i.system?.category === "weapon")).map(formatItem);
-  context.inventoryArmor = items.filter(i => (i.type === "armor" || ["armor", "vestuary", "shield", "clothing"].includes(i.system?.category))).map(formatItem);
-  context.inventoryConsumables = items.filter(i => ["potion", "consumable", "toxic"].includes(i.system?.category)).map(formatItem);
-  context.inventoryCommon = items.filter(i => i.type !== "ability" && i.type !== "weapon" && i.type !== "armor" && !["weapon", "armor", "vestuary", "shield", "clothing", "potion", "consumable", "toxic"].includes(i.system?.category)).map(formatItem);
-
-
-  // Efeitos Ativos e Passivos categorizados
+/**
+ * Prepara o contexto para a Aba de Efeitos Ativos e Passivos.
+ */
+export function prepareEffectsContext(actor, context) {
   context.effects = prepareActiveEffectCategories(actor);
-
   return context;
 }
 
@@ -511,8 +612,8 @@ export function prepareActiveEffectCategories(doc) {
   for (const effect of effects) {
     const changesSummary = (effect.changes || []).map(c => {
       const rawKey = c.key?.replace(/^system\./, "") || c.key;
-      const keyLabel = CONFIG.GAIA?.parameters?.[rawKey] 
-        ? game.i18n.localize(CONFIG.GAIA.parameters[rawKey]) 
+      const keyLabel = CONFIG.GAIA?.parameters?.[rawKey]
+        ? game.i18n.localize(CONFIG.GAIA.parameters[rawKey])
         : (CONFIG.GAIA?.ChangeKey?.[rawKey] ? game.i18n.localize(CONFIG.GAIA.ChangeKey[rawKey]) : rawKey);
       const modSign = Number(c.value) > 0 ? `+${c.value}` : String(c.value);
       return `${keyLabel}: ${modSign}`;
@@ -601,9 +702,16 @@ export function formatInventoryItem(item) {
 
   const rawCat = iSys.category || item.type;
   const config = /** @type {any} */ (CONFIG).GAIA;
-  const categoryLabel = config?.equipmentCategories?.[rawCat]
-    ? game.i18n.localize(config.equipmentCategories[rawCat])
-    : (rawCat || "-");
+  let categoryLabel = rawCat || "-";
+  if (item.type === "relic" || rawCat === "relic" || config?.relicCategories?.[rawCat]) {
+    const relicCatObj = config?.relicCategories?.[rawCat];
+    categoryLabel = relicCatObj ? game.i18n.localize(relicCatObj.label) : (game.i18n.localize("GAIA.Relic.Name") || "Relíquia");
+  } else if (config?.equipmentCategories?.[rawCat]) {
+    categoryLabel = game.i18n.localize(config.equipmentCategories[rawCat]);
+  }
+
+  const defaultPotency = config?.relicCategories?.[rawCat]?.potency ?? 0;
+  const potency = Number(iSys.potency ?? defaultPotency);
 
   return {
     id: item.id,
@@ -612,6 +720,8 @@ export function formatInventoryItem(item) {
     type: item.type,
     system: iSys,
     equipped: Boolean(iSys.equipped),
+    isBound: Boolean(iSys.isBound),
+    potency,
     quantity: iSys.quantity ?? 1,
     unity: iSys.unity || "-",
     price: iSys.price || "-",

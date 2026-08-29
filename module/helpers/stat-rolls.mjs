@@ -93,7 +93,11 @@ export function extractStatData(actor, { target, type = "parameters", categoryLa
       break;
     }
     case "defense": {
-      if (key === "agility") {
+      if (actor.type === "creature" || actor.type === "legacyNpc" || key === "defensiveParameters") {
+        value = Number(system.defensiveParameters) || 0;
+        label = "Defesa";
+        dataKey = "GAIA.Creature.DefensiveParameters";
+      } else if (key === "agility") {
         value = getStatEntry(system, "parameters", "agility").value || Number(system.agility?.value ?? system.agility ?? 0);
         label = game.i18n.localize("GAIA.Dialog.AgilityDefense");
         if (label === "GAIA.Dialog.AgilityDefense") label = "Esquiva";
@@ -131,7 +135,7 @@ export function extractStatData(actor, { target, type = "parameters", categoryLa
 
   // Verifica penalidade de exaustão
   const isParameterOrBlockTest = type === "parameters" 
-    || (type === "defense" && (key === "block" || key === "agility"))
+    || (type === "defense" && (key === "block" || key === "agility" || key === "defensiveParameters"))
     || (type === "initiative");
   const actorExhaustion = Number(system?.exhaustion) || 0;
   const exhaustionPenalty = isParameterOrBlockTest ? actorExhaustion : 0;
@@ -181,8 +185,10 @@ export async function promptRollDialog({
     };
   });
 
+  const rollTitle = game.i18n.format("GAIA.Dialog.RollTitle", { label }) || `Rolagem de ${label}`;
+
   const dialogHtml = await renderTemplate("systems/gaia-preludio/templates/dialog/roll-dialog.hbs", {
-    title: `${label}`,
+    title: rollTitle,
     dataKey,
     statValue: value,
     rollTypes,
@@ -194,7 +200,7 @@ export async function promptRollDialog({
 
   const dialogResult = await DialogV2.wait({
     classes: ["gaia-preludio", "gaia-dialog", "roll-dialog"],
-    window: { title: `Configurar Rolagem - ${label}` },
+    window: { title: rollTitle },
     position: { width: 400, height: "auto" },
     content: dialogHtml,
     buttons: [
@@ -280,6 +286,7 @@ export async function postStatRollMessage(actor, roll, {
   modifier = 0,
   exhaustionPenalty = 0,
   rollMode = "publicroll",
+  messageMode = null,
   weaponDamageText = null,
   weaponDamageHtml = null,
   defenseButtonsHtml = null,
@@ -305,12 +312,14 @@ export async function postStatRollMessage(actor, roll, {
     flavor += renderedDefenseHtml;
   }
 
+  const effectiveMessageMode = messageMode || rollMode;
+
   const message = await roll.toMessage(
     {
       speaker: ChatMessage.getSpeaker({ actor }),
       flavor
     },
-    { rollMode }
+    { messageMode: effectiveMessageMode }
   );
 
   // Se for rolagem de iniciativa e o ator estiver em combate ativo, atualiza o combat tracker
@@ -531,35 +540,58 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
             <i class="fa-solid fa-shield-halved"></i> Defesa dos Alvos
           </span>
           <div class="weapon-defense-targets-list">
-            ${targets.map(t => `
-              <div class="weapon-defense-target-row">
-                <span class="weapon-defense-target-name">${t.name}</span>
-                <div style="display: flex; gap: 4px;">
-                  <button type="button" class="gaia-btn-roll-defense" style="width: auto; padding: 2px 8px; font-size: 0.85em;"
-                          data-action="rollTargetDefense" 
-                          data-defense-type="agility"
-                          data-attack-total="${attackTotal ?? ''}"
-                          data-damage-amount="${damageValue}"
-                          data-damage-text="${damageText}"
-                          data-damage-type="${damageType}"
-                          data-target-token-id="${t.id}"
-                          data-target-actor-id="${t.actor?.id || ''}">
-                    Esquiva
-                  </button>
-                  <button type="button" class="gaia-btn-roll-defense" style="width: auto; padding: 2px 8px; font-size: 0.85em;"
-                          data-action="rollTargetDefense" 
-                          data-defense-type="block"
-                          data-attack-total="${attackTotal ?? ''}"
-                          data-damage-amount="${damageValue}"
-                          data-damage-text="${damageText}"
-                          data-damage-type="${damageType}"
-                          data-target-token-id="${t.id}"
-                          data-target-actor-id="${t.actor?.id || ''}">
-                    Bloqueio
-                  </button>
+            ${targets.map(t => {
+              const isNpcOrCreature = t.actor?.type === "creature" || t.actor?.type === "legacyNpc";
+              if (isNpcOrCreature) {
+                return `
+                  <div class="weapon-defense-target-row">
+                    <span class="weapon-defense-target-name">${t.name}</span>
+                    <div style="display: flex; gap: 4px;">
+                      <button type="button" class="gaia-btn-roll-defense" style="width: auto; padding: 2px 8px; font-size: 0.85em;"
+                              data-action="rollTargetDefense" 
+                              data-defense-type="defensiveParameters"
+                              data-attack-total="${attackTotal ?? ''}"
+                              data-damage-amount="${damageValue}"
+                              data-damage-text="${damageText}"
+                              data-damage-type="${damageType}"
+                              data-target-token-id="${t.id}"
+                              data-target-actor-id="${t.actor?.id || ''}">
+                        Defesa
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }
+              return `
+                <div class="weapon-defense-target-row">
+                  <span class="weapon-defense-target-name">${t.name}</span>
+                  <div style="display: flex; gap: 4px;">
+                    <button type="button" class="gaia-btn-roll-defense" style="width: auto; padding: 2px 8px; font-size: 0.85em;"
+                            data-action="rollTargetDefense" 
+                            data-defense-type="agility"
+                            data-attack-total="${attackTotal ?? ''}"
+                            data-damage-amount="${damageValue}"
+                            data-damage-text="${damageText}"
+                            data-damage-type="${damageType}"
+                            data-target-token-id="${t.id}"
+                            data-target-actor-id="${t.actor?.id || ''}">
+                      Esquiva
+                    </button>
+                    <button type="button" class="gaia-btn-roll-defense" style="width: auto; padding: 2px 8px; font-size: 0.85em;"
+                            data-action="rollTargetDefense" 
+                            data-defense-type="block"
+                            data-attack-total="${attackTotal ?? ''}"
+                            data-damage-amount="${damageValue}"
+                            data-damage-text="${damageText}"
+                            data-damage-type="${damageType}"
+                            data-target-token-id="${t.id}"
+                            data-target-actor-id="${t.actor?.id || ''}">
+                      Bloqueio
+                    </button>
+                  </div>
                 </div>
-              </div>
-            `).join("")}
+              `;
+            }).join("")}
           </div>
         </div>
       `;

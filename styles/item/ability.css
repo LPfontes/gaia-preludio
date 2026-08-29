@@ -33,7 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap:8px;
+  gap: 8px;
   margin: 6px 0;
 }
 
@@ -43,7 +43,7 @@
   height: 50px;
   object-fit: cover;
   border: 1px solid var(--gaia-purple-dark);
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   cursor: pointer;
 }
 
@@ -75,7 +75,7 @@
 .ability-roll-btn {
   background: transparent;
   border: 1px solid var(--gaia-purple-dark);
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   color: var(--gaia-purple-dark);
   padding: 4px 8px;
   cursor: pointer;
@@ -201,7 +201,7 @@
 .gaia-ability-card .ability-navigation-tabs {
   background: rgba(93, 28, 143, 0.07);
   border: 1px solid rgba(93, 28, 143, 0.25);
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   display: flex;
   justify-content: center;
   gap: 6px;
@@ -218,7 +218,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 4px 14px;
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
@@ -275,11 +275,12 @@
   padding: 6px 8px;
   background: #f8f6fd;
   border: 1px solid #e0d7f3;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
 }
 
 .target-field,
-.range-field {
+.range-field,
+.requirement-field {
   flex: 1;
   display: flex;
   align-items: center;
@@ -289,19 +290,21 @@
 }
 
 .target-field label,
-.range-field label {
+.range-field label,
+.requirement-field label {
   font-weight: bold;
   white-space: nowrap;
   color: var(--gaia-text-primary);
 }
 
 .target-field input,
-.range-field input {
+.range-field input,
+.requirement-field input {
   flex: 1;
   border: 1px solid #ccc;
   background: #ffffff;
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-primary);
 }
@@ -311,7 +314,7 @@
   width: 100%;
   min-height: 100px;
   border: 1px solid #dcd6e8;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   padding: 6px 8px;
   font-size: var(--gaia-font-base);
   line-height: 1.5;
@@ -347,7 +350,7 @@
   background: var(--gaia-purple-dark);
   color: #ffffff;
   border: none;
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   padding: 2px 8px;
   font-size: var(--gaia-font-base);
   cursor: pointer;
@@ -356,7 +359,7 @@
 .subeffect-card {
   background: #fbf9ff;
   border: 1px solid #d4cae8;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   padding: 8px 10px;
   margin-bottom: 8px;
   transition: all 0.2s ease;
@@ -393,7 +396,7 @@
   font-size: 11px;
   font-weight: 600;
   padding: 1px 6px;
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   background: #eef2ff;
   border: 1px solid #c7d2fe;
   color: #3730a3;
@@ -460,7 +463,7 @@
   font-size: 12px;
   padding: 2px 4px;
   border: 1px solid #d4cae8;
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   background: #ffffff;
   color: var(--gaia-text-primary);
 }
@@ -481,7 +484,7 @@
   font-size: 11px;
   font-weight: 600;
   padding: 1px 6px;
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   background: rgba(148, 44, 228, 0.08);
   border: 1px solid #d4cae8;
   color: var(--gaia-text-primary);
@@ -631,12 +634,11 @@
 
 /* ESTILO DA CARTA RENDERIZADA NO CHAT OU EM MODO LEITURA */
 .gaia-ability-chat-card {
-  background: #ffffff;  
-  border: 2px solid #000000;
+  background: #ffffff;
   padding: 8px 10px;
   font-family: var(--gaia-font-medieval), Georgia, serif;
   color: var(--gaia-text-primary);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
 }
 
 .gaia-ability-chat-card .ability-name {
@@ -694,7 +696,7 @@
   flex-direction: column;
   background: rgba(0, 0, 0, 0.04);
   border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
   padding: 4px 6px;
   gap: 3px;
   transition: background 0.15s ease, border-color 0.15s ease;
@@ -743,7 +745,7 @@
   cursor: pointer;
   background: rgba(0, 0, 0, 0.08);
   border: 1px solid var(--gaia-border-frame);
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   padding: 2px 6px;
   font-size: var(--gaia-font-base);
   font-weight: 600;
@@ -796,21 +798,24 @@
 /* ==============================================================================
  * PAINEL E GRID DE HABILIDADES NA FICHA DO PERSONAGEM
  * ============================================================================== */
+.tab-abilities-content {
+  border-radius: var(--gaia-radius);
+}
 
 .abilities-panel {
   background: var(--gaia-bg-window);
-  border: 1px solid var(--gaia-border-frame);
   display: flex;
   flex-direction: column;
   gap: 6px;
   width: 100%;
+  padding: 6px;
+  border-radius: var(--gaia-radius);
 }
 
 .abilities-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 6px;
   flex-wrap: wrap;
   gap: 6px;
 }
@@ -827,10 +832,8 @@
 }
 
 .abilities-panel-header .header-buttons {
-  padding: 8px;
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
 .btn-create-ability {
@@ -854,7 +857,94 @@
 .abilities-list-grid {
   display: grid;
   grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+/* SEÇÃO DE HABILIDADES DE LEGADO NA FICHA DO ATOR */
+.legacy-abilities-section {
+  margin-bottom: 6px;
+}
+
+.legacy-abilities-section .section-header {
   padding: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.legacy-abilities-section .section-title,
+.legacy-abilities-section .section-header h3 {
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  font-size: var(--gaia-font-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-open-legacy-sheet {
+  background: transparent;
+  border: 1px solid var(--gaia-purple-dark);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-purple-dark);
+  cursor: pointer;
+  padding: 2px 8px;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-md);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-open-legacy-sheet:hover {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+}
+
+.ability-effect-display {
+  margin-top: 6px;
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+  font-style: italic;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-apply-effect-inline {
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: var(--gaia-font-md);
+  font-family: var(--gaia-font-medieval);
+  font-weight: bold;
+  font-style: normal;
+  background: transparent;
+  color: var(--gaia-purple-dark);
+  border: 1px solid var(--gaia-purple-dark);
+  border-radius: var(--gaia-radius);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-apply-effect-inline:hover {
+  background: rgba(93, 28, 143, 0.15);
+}
+
+.btn-apply-effect-inline.active {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+}
+
+.btn-apply-effect-inline.active:hover {
+  background: var(--gaia-purple-light, #7c2dbb);
 }
 
 .ability-card-item {
@@ -875,7 +965,7 @@
 .btn-item-control {
   width: 30px;
   height: 30px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   border: 1px solid var(--gaia-border-frame);
   background: var(--gaia-bg-input);
   color: #ffffff;
@@ -888,8 +978,7 @@
 }
 
 .btn-item-control:hover {
-  background: var(--gaia-border-gold);
-  border-color: var(--gaia-border-gold);
+  border-color: var(--gaia-purple-dark);
 }
 
 .btn-delete-ability:hover {
@@ -901,7 +990,7 @@
   max-width: 100%;
   box-sizing: border-box;
   background: var(--gaia-bg-window);
-  border: 1px solid var(--gaia-border-gold);
+  border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 12px;
@@ -949,7 +1038,7 @@
   background: rgba(140, 115, 85, 0.12);
   border: 1px solid var(--gaia-border-gold);
   color: var(--gaia-text-parchment);
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   padding: 2px 6px;
   font-size: var(--gaia-font-base);
   margin-right: 4px;
@@ -965,7 +1054,7 @@
 .subeffect-display-block {
   background: rgba(0, 0, 0, 0.03);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   padding: 6px;
   margin-bottom: 6px;
 }
@@ -999,7 +1088,7 @@
 .subeffect-desc-text {
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .subeffect-note-text {
@@ -1047,7 +1136,6 @@
  * ============================================================================== */
 .gaia-ability-card .ability-actions-section {
   margin-top: 6px;
-  border-top: 1px dashed var(--gaia-border-subtle, rgba(140, 115, 85, 0.4));
   padding-top: 5px;
   display: flex;
   flex-direction: column;
@@ -1059,7 +1147,7 @@
   flex-direction: column;
   background: rgba(0, 0, 0, 0.04);
   border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
   padding: 4px 6px;
   gap: 3px;
   transition: background 0.15s ease, border-color 0.15s ease;
@@ -1080,7 +1168,7 @@
 .gaia-ability-card .ability-action-desc {
   font-size: var(--gaia-font-base, 12px);
   color: var(--gaia-text-parchment);
-  line-height: 1.35;
+  line-height: 1.4;
   margin-top: 2px;
 }
 
@@ -1102,7 +1190,7 @@
   cursor: pointer;
   background: rgba(0, 0, 0, 0.08);
   border: 1px solid var(--gaia-border-frame);
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   padding: 2px 6px;
   font-size: var(--gaia-font-base);
   font-weight: 600;
@@ -1124,13 +1212,12 @@
  * ============================================================================== */
 .gaia-ability-card .item-effects-panel {
   background: transparent;
-  padding: 4px 0;
   gap: 8px;
 }
 
 .gaia-ability-card .item-effects-panel .effects-section-header {
   border-bottom: 1px dashed rgba(93, 28, 143, 0.25);
-  padding-bottom: 4px;
+  padding-bottom: 6px 0;
 }
 
 .gaia-ability-card .item-effects-panel .effects-main-title {
@@ -1138,24 +1225,7 @@
   font-size: var(--gaia-font-base);
 }
 
-.gaia-ability-card .item-effects-panel .btn-add-effect {
-  cursor: pointer;
-  background: rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--gaia-border-frame, #574c43);
-  padding: 4px 10px;
-  font-size: var(--gaia-font-base);
-  font-weight: 600;
-  color: var(--gaia-text-parchment);
-  display: inline-flex;
-  align-items: center;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
 
-.gaia-ability-card .item-effects-panel .btn-add-effect:hover {
-  background: var(--gaia-purple-dark, #5d1c8f);
-  color: #ffffff;
-  border-color: var(--gaia-purple-dark, #5d1c8f);
-}
 
 .gaia-ability-card .item-effects-panel .effect-card {
   background: #ffffff;
@@ -1171,4 +1241,3 @@
 .gaia-ability-card .item-effects-panel .effect-name {
   color: var(--gaia-purple-dark, #5d1c8f);
 }
-

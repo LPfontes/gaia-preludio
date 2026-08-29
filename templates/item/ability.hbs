@@ -10,7 +10,7 @@
         </h2>
         <div class="meta-item category-select-meta">
             <select name="system.category">
-              {{selectOptions config.abilityCategories selected=system.category localize=true blank=(localize 'GAIA.AbilityCategories.name')}}  
+              {{selectOptions categoriesOptions selected=system.category localize=true blank=(localize 'GAIA.AbilityCategories.name')}}  
             </select>
           </div>
         <button type="button" class="ability-roll-btn" data-action="rollAbility" title="{{localize 'GAIA.Ability.SendToChat'}}">
@@ -83,7 +83,7 @@
             <input name="system.quote" type="text" value="{{system.quote}}" placeholder="{{localize 'GAIA.Ability.QuotePlaceholder'}}" />
           </div>
 
-          <!-- 6 e 7. ALVOS E ALCANCE (CAMPOS RÁPIDOS) -->
+          <!-- 6, 7 e 8. ALVOS, ALCANCE E REQUERIMENTO (CAMPOS RÁPIDOS) -->
           <div class="ability-targets-range-row">
             <div class="target-field">
               <label><i class="fas fa-crosshairs"></i> {{localize "GAIA.Ability.Targets"}}:</label>
@@ -92,6 +92,10 @@
             <div class="range-field">
               <label><i class="fas fa-ruler-horizontal"></i> {{localize "GAIA.Ability.Range"}}:</label>
               <input name="system.range" type="text" value="{{system.range}}" placeholder="{{localize 'GAIA.Ability.RangePlaceholder'}}" />
+            </div>
+            <div class="requirement-field">
+              <label><i class="fas fa-scroll"></i> {{localize "GAIA.Ability.Requirement"}}:</label>
+              <input name="system.requirement" type="text" value="{{system.requirement}}" placeholder="{{localize 'GAIA.Ability.RequirementPlaceholder'}}" />
             </div>
           </div>
 

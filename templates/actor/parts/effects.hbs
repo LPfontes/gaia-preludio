@@ -1,22 +1,26 @@
 {{!-- ==============================================================================
-     GAIA: PRELÚDIO - ACTOR EFFECTS PARTIAL / PARCIAL DE EFEITOS DO ATOR
-     ==============================================================================
-     PT: Renderiza lista unificada de Efeitos Ativos.
-     EN: Renders unified list of Active Effects. --}}
+GAIA: PRELÚDIO - ACTOR EFFECTS PARTIAL / PARCIAL DE EFEITOS DO ATOR
+==============================================================================
+PT: Renderiza lista unificada de Efeitos Ativos.
+EN: Renders unified list of Active Effects. --}}
 
+<div class="tab effects" data-group="primary" data-tab="effects">
+<div class="tab-effects-content">
 <div class="actor-effects-panel">
   <div class="effects-section-header">
     <h3 class="effects-main-title">
       {{localize "GAIA.Effects.SectionTitle"}}
     </h3>
-    <button type="button" class="btn-add-effect" data-action="createEffect" title="{{localize 'GAIA.Effects.AddEffect'}}">
+    <button type="button" class="btn-add-effect" data-action="createEffect"
+      title="{{localize 'GAIA.Effects.AddEffect'}}">
       <i class="fa-solid fa-plus"></i> {{localize "GAIA.Effects.AddEffect"}}
     </button>
   </div>
 
   <div class="effects-list">
     {{#each effects.entries}}
-    <div class="effect-card {{#if this.disabled}}inactive-effect-item{{else}}active-effect-item{{/if}}" data-effect-id="{{this.id}}">
+    <div class="effect-card {{#if this.disabled}}inactive-effect-item{{else}}active-effect-item{{/if}}"
+      data-effect-id="{{this.id}}">
       <div class="effect-card-main">
         <img class="effect-icon {{#if this.disabled}}grayscale{{/if}}" src="{{this.img}}" alt="{{this.name}}" />
         <div class="effect-details">
@@ -24,7 +28,7 @@
             <strong class="effect-name {{#if this.disabled}}text-muted{{/if}}">{{this.name}}</strong>
             {{#if this.sourceName}}<span class="effect-source">({{this.sourceName}})</span>{{/if}}
             {{#if this.disabled}}
-              <span class="badge badge-inactive">{{localize "GAIA.Effects.InactiveBadge"}}</span>
+            <span class="badge badge-inactive">{{localize "GAIA.Effects.InactiveBadge"}}</span>
             {{/if}}
           </div>
           {{#if this.changes}}
@@ -39,17 +43,20 @@
       </div>
 
       <div class="effect-card-controls">
-        <button type="button" class="btn-effect-control btn-toggle-effect" data-action="toggleEffect" data-effect-id="{{this.id}}" title="{{localize 'GAIA.Effects.ToggleEffect'}}">
+        <button type="button" class="btn-effect-control btn-toggle-effect" data-action="toggleEffect"
+          data-effect-id="{{this.id}}" title="{{localize 'GAIA.Effects.ToggleEffect'}}">
           {{#if this.disabled}}
-            <i class="fa-solid fa-toggle-off text-muted"></i>
+          <i class="fa-solid fa-toggle-off text-muted"></i>
           {{else}}
-            <i class="fa-solid fa-toggle-on text-success"></i>
+          <i class="fa-solid fa-toggle-on text-success"></i>
           {{/if}}
         </button>
-        <button type="button" class="btn-effect-control btn-edit-effect" data-action="editEffect" data-effect-id="{{this.id}}" title="{{localize 'GAIA.Effects.EditEffect'}}">
+        <button type="button" class="btn-effect-control btn-edit-effect" data-action="editEffect"
+          data-effect-id="{{this.id}}" title="{{localize 'GAIA.Effects.EditEffect'}}">
           <i class="fa-solid fa-pen-to-square"></i>
         </button>
-        <button type="button" class="btn-effect-control btn-delete-effect" data-action="deleteEffect" data-effect-id="{{this.id}}" title="{{localize 'GAIA.Effects.DeleteEffect'}}">
+        <button type="button" class="btn-effect-control btn-delete-effect" data-action="deleteEffect"
+          data-effect-id="{{this.id}}" title="{{localize 'GAIA.Effects.DeleteEffect'}}">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
@@ -58,4 +65,6 @@
     <div class="effects-empty-hint">{{localize "GAIA.Effects.NoActiveEffects"}}</div>
     {{/each}}
   </div>
+</div>
+</div>
 </div>

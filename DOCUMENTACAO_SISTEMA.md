@@ -147,16 +147,20 @@ O sistema utiliza a API nativa de `DataModel` do Foundry VTT (`foundry.abstract.
   * `type` (`StringField`, Padrão: `"melee"`): Categoria de alcance (`melee` ou `ranged`).
 * **`properties`** (`ArrayField<StringField>`): Propriedades especiais (ex: versátil, pesada, arremesso).
 
-#### `LegadoDataModel` (`module/data/LegadoModel.mjs`)
-*Extende `BaseDataModel`. Modelo para itens do tipo Legado (Raça/Ancestralidade).*
-* Campos herdados de `BaseDataModel` (`name`, `description`, `actions`).
-* **`appearance`** (`StringField`): Características visuais e estéticas da ancestralidade/legado.
-* **`height`** (`StringField`): Faixa de altura média do legado.
-* **`lifeExpectancy`** (`StringField`): Expectativa de vida do legado.
-* **`legacyAbilities`** (`ArrayField<SchemaField>`): Lista das Habilidades inerentes ao Legado.
-  * `name` (`StringField`): Nome da Habilidade.
-  * `description` (`StringField`): Descrição textual dos efeitos.
-  * `activeEffect` (`StringField`): Efeito ativo/aplicado da Habilidade.
+#### `RelicDataModel` (`module/data/RelicModel.mjs`)
+*Extende `EquipmentBaseDataModel`. Modelo para Relíquias: itens e equipamentos únicos com habilidades e força de Véu.*
+* Campos herdados de `EquipmentBaseDataModel` (`name`, `description`, `price`, `unity`, `equipped`, `quantity`, `actions`).
+* **`category`** (`StringField`, Padrão: `"comum"`): Categoria da Relíquia (`comum`, `incomum`, `rara`, `lendaria`).
+* **`potency`** (`NumberField`, Inteiro, Mín: 0, Máx: 3, Padrão: 0): Pontos de Potência de Véu armazenada na Relíquia.
+  * **Comum:** 0 Potência
+  * **Incomum:** 1 Potência
+  * **Rara:** 2 Potência
+  * **Lendária:** 3 Potência
+* **`isBound`** (`BooleanField`, Padrão: `false`): Indica se a Relíquia está Vinculada ao personagem.
+* **`properties`** (`StringField`): Notas, propriedades ou palavras-chave especiais da Relíquia.
+* **Regra de Vínculo e Sobrecarga de Potência (Véu):**
+  * Um personagem pode manter até **5 pontos de Potência** vindos de Relíquias Vinculadas.
+  * Caso possua **mais de 5 pontos de Potência**, a cada minuto o personagem perde **1d20 Pontos de Vida (PV)** e **1d6 Pontos de Energia (PE)**.
 
 ---
 
@@ -203,16 +207,25 @@ flowchart TD
 1. **Carregamento de Partiais Handlebars**: Carrega `actor-header.hbs`, `actor-personagem.hbs` e `inventory.hbs`.
 2. **Configuração Global**: Injeta o objeto `GAIA` em `CONFIG.GAIA`.
 3. **Mapeamento de Data Models**: Vincula `LegacyDataModel`, `LegacyNpcDataModel` e `CreatureDataModel` aos tipos de ator, e os modelos de equipamentos ao `CONFIG.Item.dataModels`.
-4. **Registro de Fichas (ApplicationV2)**: Desregistra as fichas nativas e registra `LegacySheet`, `CreatureSheet`, `EquipmentSheet`, `ArmorSheet` e `WeaponSheet`.
+4. **Registro de Fichas (ApplicationV2)**: Desregistra as fichas nativas e registra `CharacterLegacySheet`, `CreatureSheet`, `LegacyNpcSheet`, `EquipmentSheet`, `ArmorSheet`, `WeaponSheet`, `AbilitySheet`, `FeatureSheet`, `LegacySheet`, `PathSheet` e `RelicSheet`.
+5. **Tipos de Itens Especiais**:
+   * **Habilidade (`ability`)**: Poderes e técnicas com custo, tipo de ação, tipos, alvos, alcance, aprimoramentos, sub-efeitos e campo opcional de **Requerimento** (`system.requirement`).
+   * **Característica (`feature`)**: Herda integralmente de Habilidade, adicionando categorias exclusivas como **Presença**, **Cólera**, **Redução**, **Passiva** e **Geral**.
 
 ### 2.2. Fluxo de Criação de Atores e Guia de Despertar
 1. O usuário clica em "Criar Ator". O método estático `GaiaActor.createDialog()` intercepta a ação e exibe uma modal com os tipos customizados (`legacy`, `creature`, `legacyNpc`).
-2. Se o tipo selecionado for `legacy`, dispara automaticamente o Wizard de Despertar (`promptAwakeningGuideDialog`).
-3. O Guia de Despertar possui 3 abas interativas:
-   * **Aba 1 (Parâmetros)**: Distribuição de exatamente 7 pontos entre os 8 parâmetros (máximo 2 por atributo).
-   * **Aba 2 (Conhecimentos)**: Distribuição de 7 pontos entre os 14 conhecimentos (máximo 2 por perícia).
-   * **Aba 3 (Vida & Energia)**: Escolha entre rolagem de 1d6 no chat ou valor fixo (3) para o PV base (30 + dado + Vigor).
-4. Ao confirmar, o ator salva os atributos, recalcula os bônus derivados (Vigor -> PV Máx, Agilidade -> Deslocamento, Percepção -> Percepção Passiva) e atualiza o documento.
+2. Se o tipo selecionado for `legacy`, dispara automaticamente o Wizard de Despertar / Criação (`promptAwakeningGuideDialog`).
+3. O Guia permite alternar entre **Desperto (Nível 1)** e **Não-Desperto (Nível 0)**:
+   * **Modo Desperto (Nível 1)**:
+     * **Aba 1 (Parâmetros)**: Distribuição de 7 pontos entre os 8 parâmetros (máximo 2 por atributo).
+     * **Aba 2 (Conhecimentos)**: Distribuição de 7 pontos entre os 14 conhecimentos (máximo 2 por perícia).
+     * **Aba 3 (Recursos & Idiomas)**: PV base (30 + 1d6 ou 3 fixo + Vigor), 5 PE Máx, Deslocamento base 6m (+ bônus de Agilidade / 2).
+   * **Modo Não-Desperto (Nível 0)**:
+     * Mantém apenas Habilidades de Legado naturais.
+     * **Aba 1 (Parâmetros)**: Distribuição de 4 pontos entre os parâmetros (máximo 2 por atributo).
+     * **Aba 2 (Conhecimentos)**: Distribuição de 7 pontos entre os conhecimentos (máximo 2 por perícia).
+     * **Aba 3 (Recursos & Idiomas)**: 12 PV fixos, 0 PE, Movimentação de 6 metros, Idioma Comum + 1 Idioma adicional à escolha.
+4. Ao confirmar, o ator salva os atributos, recalcula os bônus derivados e atualiza o documento.
 
 ### 2.3. Fluxo de Atualização de Dados e Prevenção de Loop de Bônus (`_preUpdate` & `prepareDerivedData`)
 1. **`prepareDerivedData`**:
@@ -302,7 +315,7 @@ O Navegador de Itens (`module/applications/item-browser.mjs`) permite buscar, fi
 
 ---
 
-### 3.5. Auxiliares de Diálogos (`module/helpers/dialogs.mjs`)
+### 3.5. Auxiliares de Diálogos (`module/helpers/dialogs/index.mjs`)
 
 | Função | Assinatura | Descrição |
 | :--- | :--- | :--- |

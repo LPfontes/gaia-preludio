@@ -3,20 +3,27 @@
     <label>
       {{localize "GAIA.Legado.AbilityNameLabel"}}
     </label>
-    <input type="text" name="name" value="{{name}}" placeholder="{{localize 'GAIA.Legado.AbilityNamePlaceholder'}}" required />
+    <input type="text" name="name" value="{{name}}" placeholder="{{localize 'GAIA.Legado.AbilityNamePlaceholder'}}"
+      required />
   </div>
 
   <div class="form-group">
     <label>
       {{localize "GAIA.Legado.AbilityDescriptionLabel"}}
     </label>
-    <textarea name="description" rows="3" placeholder="{{localize 'GAIA.Legado.AbilityDescriptionPlaceholder'}}">{{description}}</textarea>
+    <textarea name="description" rows="3"
+      placeholder="{{localize 'GAIA.Legado.AbilityDescriptionPlaceholder'}}">{{description}}</textarea>
   </div>
 
   <div class="form-group">
-    <label class="active-effect-label">
-      {{localize "GAIA.Legado.ActiveEffectLabel"}}
-    </label>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <label class="active-effect-label" style="font-weight: bold; margin-bottom: 0;">
+        Efeito Ativo
+      </label>
+      <button type="button" class="btn-add-effect" data-action="createEffect" style="cursor: pointer; padding: 2px 8px; font-size: 12px; background: transparent; border: 1px solid var(--gaia-border-frame); border-radius: var(--gaia-radius); color: var(--gaia-text-parchment);">
+        <i class="fa-solid fa-plus"></i> Criar Efeito
+      </button>
+    </div>
     <textarea name="activeEffectText" rows="2" placeholder="{{localize 'GAIA.Legado.EmptyActiveEffectHint'}}">{{activeEffectText}}</textarea>
   </div>
 
@@ -26,23 +33,30 @@
       <label class="form-label" style="margin-bottom: 0; font-weight: bold;">
         {{localize "GAIA.Action.SectionTitle"}}
       </label>
-      <button type="button" class="btn-add-legacy-action" data-action="addLegacyAction" style="cursor: pointer; padding: 2px 8px; font-size: 12px;">
+      <button type="button" class="btn-add-legacy-action" data-action="addLegacyAction"
+        style="cursor: pointer; padding: 2px 8px; font-size: 12px;">
         <i class="fa-solid fa-plus"></i> {{localize "GAIA.Action.AddActionBtn"}}
       </button>
     </div>
     <div class="legacy-actions-preview-list" style="display: flex; flex-direction: column; gap: 4px;">
       {{#each formattedActions}}
-        <div class="legacy-action-preview-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 3px; font-size: 12px;">
-          <span><strong>{{this.name}}</strong> {{#if this.summary}}<small style="color: #aaa;">({{this.summary}})</small>{{/if}}</span>
-          <div style="display: flex; gap: 4px;">
-            <button type="button" class="btn-edit-dialog-action" data-index="{{@index}}" style="background: transparent; border: none; cursor: pointer; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button type="button" class="btn-remove-dialog-action" data-index="{{@index}}" style="background: transparent; border: none; cursor: pointer; color: var(--gaia-text-parchment);"><i class="fa-solid fa-trash"></i></button>
-          </div>
+      <div class="legacy-action-preview-item"
+        style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: var(--gaia-radius); font-size: 12px;">
+        <span><strong>{{this.name}}</strong> {{#if this.summary}}<small
+            style="color: #aaa;">({{this.summary}})</small>{{/if}}</span>
+        <div style="display: flex; gap: 4px;">
+          <button type="button" class="btn-edit-dialog-action" data-index="{{@index}}"
+            style="background: transparent; border: none; cursor: pointer; color: var(--gaia-text-parchment);"><i
+              class="fa-solid fa-pen-to-square"></i></button>
+          <button type="button" class="btn-remove-dialog-action" data-index="{{@index}}"
+            style="background: transparent; border: none; cursor: pointer; color: var(--gaia-text-parchment);"><i
+              class="fa-solid fa-trash"></i></button>
         </div>
+      </div>
       {{else}}
-        <div class="empty-hint" style="font-size: 11px; font-style: italic; color: var(--gaia-text-muted);">
-          {{localize "GAIA.Action.EmptyActionsHint"}}
-        </div>
+      <div class="empty-hint" style="font-size: 11px; font-style: italic; color: var(--gaia-text-muted);">
+        {{localize "GAIA.Action.EmptyActionsHint"}}
+      </div>
       {{/each}}
     </div>
   </div>

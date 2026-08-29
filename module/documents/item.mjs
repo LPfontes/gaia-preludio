@@ -48,13 +48,14 @@ export class GaiaItem extends Item {
 
     let content = "";
 
-    if (this.type === "ability") {
+    if (this.type === "ability" || this.type === "feature") {
       const config = /** @type {any} */ (CONFIG).GAIA;
       const cost = system.cost || "";
       const actionLabel = config?.actionType?.[system.typeAction] ? game.i18n.localize(config.actionType[system.typeAction]) : (system.typeAction || "");
-      const categoryLabel = config?.abilityCategories?.[system.category] ? game.i18n.localize(config.abilityCategories[system.category]) : (system.category || "");
-      const rawTypes = Array.isArray(system.types) && system.types.length > 0 
-        ? system.types 
+      const categoryDict = this.type === "feature" ? (config?.featureCategories || {}) : (config?.abilityCategories || {});
+      const categoryLabel = categoryDict[system.category] ? game.i18n.localize(categoryDict[system.category]) : (system.category || "");
+      const rawTypes = Array.isArray(system.types) && system.types.length > 0
+        ? system.types
         : (system.type ? [system.type] : [""]);
       const localizedTypes = rawTypes.map(t => config?.abilitiesTypes?.[t] ? game.i18n.localize(config.abilitiesTypes[t]) : t).filter(Boolean);
       const firstType = localizedTypes[0] || "";
@@ -63,9 +64,10 @@ export class GaiaItem extends Item {
       const metaParts = [cost, actionLabel, categoryLabel, firstType].filter(Boolean);
       const metaRow1 = metaParts.join(" | ");
       const quote = system.quote ? `<div class="ability-quote"><em>${system.quote}</em></div>` : "";
+      const requirement = system.requirement ? `<div><strong>Requerimento:</strong> ${system.requirement}</div>` : "";
       const target = system.numberTarget ? `<div><strong>Alvo:</strong> ${system.numberTarget}</div>` : "";
       const range = system.range ? `<div><strong>Alcance:</strong> ${system.range}</div>` : "";
-      
+
       let actionsHTML = "";
       if (Array.isArray(system.actions) && system.actions.length > 0) {
         actionsHTML = `
@@ -130,6 +132,7 @@ export class GaiaItem extends Item {
           ${quote}
           <div class="ability-body">
             ${system.description ? `<p>${system.description}</p>` : ""}
+            ${requirement}
             ${target}
             ${range}
           </div>
@@ -140,7 +143,7 @@ export class GaiaItem extends Item {
       `;
     } else if (this.type === "weapon" || system.category === "weapon") {
       const config = /** @type {any} */ (CONFIG).GAIA;
-      
+
       // Formatação do Dano
       let damageText = "-";
       if (system.damageType) {
@@ -199,7 +202,7 @@ export class GaiaItem extends Item {
       content = `
         <div class="gaia-weapon-chat-card" style="padding: 6px;">
           <h3 style="margin: 0 0 6px 0; font-family: var(--gaia-font-medieval, 'Cinzel', Georgia, serif); font-size: 1.1em; color: var(--gaia-text-parchment, #000); border-bottom: 1px solid var(--gaia-border-gold, #8c7355); padding-bottom: 4px; display: flex; align-items: center; gap: 8px;">
-            <img src="${this.img}" style="width: 28px; height: 28px; object-fit: cover; border: 1px solid var(--gaia-border-frame, #574c43); border-radius: 4px;" />
+            <img src="${this.img}" style="width: 28px; height: 28px; object-fit: cover; border: 1px solid var(--gaia-border-frame, #574c43); border-radius: var(--gaia-radius);" />
             <span>${this.name}</span>
           </h3>
           <div class="weapon-meta-bar" style="font-size: 0.9em; font-weight: bold; text-align: center; margin-bottom: 6px;">
@@ -242,7 +245,7 @@ export class GaiaItem extends Item {
       content = `<h3>${this.name}</h3><p>${description}</p>${actionsHTML}`;
     }
 
-    return ChatMessage.create(/** @type {any} */ ({
+    return ChatMessage.create(/** @type {any} */({
       speaker,
       content,
       ...options
@@ -267,7 +270,7 @@ export class GaiaItem extends Item {
     const actionLabel = sub.typeAction && config?.actionType?.[sub.typeAction]
       ? game.i18n.localize(config.actionType[sub.typeAction])
       : (sub.typeAction || "");
-    
+
     const typeLabel = sub.type && config?.abilitiesTypes?.[sub.type]
       ? game.i18n.localize(config.abilitiesTypes[sub.type])
       : (sub.type || "");
@@ -299,7 +302,7 @@ export class GaiaItem extends Item {
       </div>
     `;
 
-    return ChatMessage.create(/** @type {any} */ ({
+    return ChatMessage.create(/** @type {any} */({
       speaker,
       content,
       ...options
@@ -320,7 +323,7 @@ export class GaiaItem extends Item {
     }
     if (!act) return null;
 
-    const { executeAction } = await import("../helpers/action-flow.mjs");
+    const { executeAction } = await import("../helpers/action-flow/index.mjs");
     return executeAction(act, {
       item: this,
       actor: this.actor,

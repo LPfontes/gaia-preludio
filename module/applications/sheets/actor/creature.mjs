@@ -24,7 +24,7 @@ export class CreatureSheet extends GaiaBaseActorSheet {
   static PARTS = {
     main: { 
       template: "systems/gaia-preludio/templates/actor/creature.hbs",
-      scrollable: [".sheet-body"]
+      scrollable: [".sheet-body", ".gaia-creature-banner"]
     }
   };
 
@@ -99,7 +99,7 @@ export class CreatureSheet extends GaiaBaseActorSheet {
 
   static async #onOpenCreatureWizard(event, target) {
     event.preventDefault();
-    const { promptCreatureWizardDialog } = await import("../../../helpers/dialogs.mjs");
+    const { promptCreatureWizardDialog } = await import("../../../helpers/dialogs/index.mjs");
     return await promptCreatureWizardDialog(this.actor);
   }
 }

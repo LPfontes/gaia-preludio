@@ -7,7 +7,7 @@
  */
 
 import { GaiaItemSheet } from "./base.mjs";
-import { promptLegacyAbilityDialog } from "../../../helpers/dialogs.mjs";
+import { promptLegacyAbilityDialog } from "../../../helpers/dialogs/index.mjs";
 
 export class LegacySheet extends GaiaItemSheet {
   /** @override */
@@ -77,7 +77,7 @@ export class LegacySheet extends GaiaItemSheet {
 
   static async #onAddLegacyAbility(event, target) {
     event.preventDefault();
-    const dialogData = await promptLegacyAbilityDialog();
+    const dialogData = await promptLegacyAbilityDialog({}, { item: this.item });
     if (!dialogData) return;
 
     const rawList = this.item.system.legacyAbilities ?? [];
@@ -107,7 +107,7 @@ export class LegacySheet extends GaiaItemSheet {
     const ability = rawList[index];
     if (!ability) return;
 
-    const dialogData = await promptLegacyAbilityDialog(ability);
+    const dialogData = await promptLegacyAbilityDialog(ability, { item: this.item });
     if (!dialogData) return;
 
     const current = Array.isArray(rawList) ? [...rawList] : [];

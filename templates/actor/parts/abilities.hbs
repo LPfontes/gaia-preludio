@@ -1,217 +1,244 @@
-<div class="abilities-panel">
-  <div class="abilities-panel-header">
-    <h3 class="abilities-panel-title">
-    </h3>
-    <div class="header-buttons" style="display: flex; gap: 6px;">
-      <button type="button" class="btn-open-browser" data-action="openItemBrowser" data-type="ability" title="{{localize 'GAIA.ItemBrowser.OpenAbilitiesBrowser'}}">
-        {{localize "GAIA.ItemBrowser.OpenAbilitiesBrowser"}}
-      </button>
-    </div>
-  </div>
+<div class="tab abilities" data-group="primary" data-tab="abilities">
+  <div class="tab-abilities-content">
+    <div class="abilities-panel">
 
-  {{#if legacyAbilitiesList.length}}
-  <div class="legacy-abilities-section" style="margin-bottom: 20px;">
-    <div class="section-header" style="margin-bottom: 10px; border-bottom: 2px solid var(--gaia-purple-dark); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="margin: 0; font-family: var(--gaia-font-medieval); color: var(--gaia-purple-dark); text-transform: uppercase; font-size: 16px; display: flex; align-items: center; gap: 8px;">
-        <i class="fas fa-crown"></i> {{localize "GAIA.Ability.LegacyAbilitiesSection"}} {{#if selectedLegacyName}}({{selectedLegacyName}}){{/if}}
-      </h3>
-      {{#if legacyItem}}
-        <button type="button" class="btn-open-legacy-sheet" data-action="openLegacyItem" data-item-id="{{legacyItem.id}}" data-item-uuid="{{legacyItem.uuid}}" title="Abrir Ficha do Legado ({{legacyItem.name}})" style="background: transparent; border: 1px solid var(--gaia-purple-dark); border-radius: 4px; color: var(--gaia-purple-dark); cursor: pointer; padding: 2px 8px; font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">
-          <i class="fa-solid fa-feather-pointed"></i> Ver Legado
-        </button>
-      {{/if}}
-    </div>
 
-    <div class="abilities-list-grid">
-      {{#each legacyAbilitiesList}}
-      <div class="ability-card-item legacy-ability-card-item">
-        <div class="ability-card-controls">
-          <button type="button" class="btn-item-control btn-roll-legacy-ability" data-action="rollLegacyAbility" data-index="{{@index}}" title="{{localize 'GAIA.Ability.SendToChat'}}">
-            <i class="fas fa-comment-alt"></i>
+      {{#if legacyAbilitiesList.length}}
+      <div class="legacy-abilities-section">
+        <div class="section-header">
+          <h3 class="section-title">
+            {{localize "GAIA.Ability.LegacyAbilitiesSection"}} {{#if
+            selectedLegacyName}}({{selectedLegacyName}}){{/if}}
+          </h3>
+          {{#if legacyItem}}
+          <button type="button" class="btn-open-legacy-sheet" data-action="openLegacyItem"
+            data-item-id="{{legacyItem.id}}" data-item-uuid="{{legacyItem.uuid}}"
+            title="Abrir Ficha do Legado ({{legacyItem.name}})">
+            <i class="fa-solid fa-feather-pointed"></i> Ver Legado
           </button>
+          {{/if}}
         </div>
 
-        <div class="gaia-ability-card actor-sheet-card">
-          <div class="ability-card-header">
-            <div class="ability-title-row">
-              <img class="ability-icon" src="icons/svg/book.svg" title="{{this.name}}"/>
-              <h2 class="ability-name-display">{{this.name}}</h2>
+        <div class="abilities-list-grid">
+          {{#each legacyAbilitiesList}}
+          <div class="ability-card-item legacy-ability-card-item">
+            <div class="ability-card-controls">
+              {{#if this.activeEffectText}}
+              <button type="button" class="btn-item-control btn-create-effect {{#if this.isEffectActive}}active{{/if}}"
+                data-action="createEffect" data-index="{{@index}}"
+                title="{{#if this.isEffectActive}}Desativar Efeito Ativo{{else}}Criar / Ativar Efeito no Personagem{{/if}}">
+                <i class="fa-solid fa-sparkles"></i>
+              </button>
+              {{/if}}
+              <button type="button" class="btn-item-control btn-roll-legacy-ability" data-action="rollLegacyAbility"
+                data-index="{{@index}}" title="{{localize 'GAIA.Ability.SendToChat'}}">
+                <i class="fas fa-comment-alt"></i>
+              </button>
             </div>
-            {{#if (or this.cost this.actionTypeLabel this.typeLabel)}}
-            <div class="ability-meta-bar">
-              <div class="meta-row-1">
-                {{#if this.cost}}<span class="meta-cost">{{this.cost}}</span>{{/if}}
-                {{#if this.actionTypeLabel}}
-                  {{#if this.cost}}<span class="meta-divider">|</span>{{/if}}
-                  <span class="meta-action">{{this.actionTypeLabel}}</span>
-                {{/if}}
-                {{#if this.typeLabel}}
-                  {{#if (or this.cost this.actionTypeLabel)}}<span class="meta-divider">|</span>{{/if}}
-                  <span class="meta-type">{{this.typeLabel}}</span>
+
+            <div class="gaia-ability-card actor-sheet-card">
+              <div class="ability-card-header">
+                <div class="ability-title-row">
+                  <img class="ability-icon" src="icons/svg/book.svg" title="{{this.name}}" />
+                  <h2 class="ability-name-display">{{this.name}}</h2>
+                </div>
+                {{#if (or this.cost this.actionTypeLabel this.typeLabel)}}
+                <div class="ability-meta-bar">
+                  <div class="meta-row-1">
+                    {{#if this.cost}}<span class="meta-cost">{{this.cost}}</span>{{/if}}
+                    {{#if this.actionTypeLabel}}
+                    {{#if this.cost}}<span class="meta-divider">|</span>{{/if}}
+                    <span class="meta-action">{{this.actionTypeLabel}}</span>
+                    {{/if}}
+                    {{#if this.typeLabel}}
+                    {{#if (or this.cost this.actionTypeLabel)}}<span class="meta-divider">|</span>{{/if}}
+                    <span class="meta-type">{{this.typeLabel}}</span>
+                    {{/if}}
+                  </div>
+                </div>
                 {{/if}}
               </div>
-            </div>
-            {{/if}}
-          </div>
 
-          <div class="ability-card-body">
-            {{#if this.description}}
-            <div class="ability-body-text">
-              <p>{{this.description}}</p>
-            </div>
-            {{/if}}
-            {{#if this.activeEffectText}}
-            <div class="ability-effect-display" style="margin-top: 6px; font-size: 13px; color: var(--gaia-purple-dark); font-style: italic;">
-              <strong>Efeito:</strong> {{this.activeEffectText}}
-            </div>
-            {{/if}}
-            {{#if this.action}}
-            <div class="ability-actions-section">
-              <div class="ability-action-item">
-                <div class="ability-action-header-row">
-                  <div class="ability-action-info">
-                    <span class="ability-action-name">{{this.action.name}}</span>
-                    {{#if this.action.cost}}<span class="badge cost-badge">{{this.action.cost}}</span>{{/if}}
-                  </div>
-                  <button type="button" class="btn-roll-ability-action" data-action="rollLegacyAbility" data-index="{{@index}}" title="Rolar {{this.action.name}}">
-                    <i class="fa-solid fa-dice-d20"></i>
+              <div class="ability-card-body">
+                {{#if this.description}}
+                <div class="ability-body-text">
+                  <p>{{this.description}}</p>
+                </div>
+                {{/if}}
+                {{#if this.activeEffectText}}
+                <div class="ability-effect-display">
+                  <span><strong>Efeito:</strong> {{this.activeEffectText}}</span>
+                  <button type="button" class="btn-apply-effect-inline {{#if this.isEffectActive}}active{{/if}}" data-action="createEffect" data-index="{{@index}}">
+                    <i class="fa-solid fa-sparkles"></i> {{#if this.isEffectActive}}Ativo{{else}}Criar Efeito{{/if}}
                   </button>
                 </div>
-                {{#if this.action.description}}
-                <div class="ability-action-desc">{{{this.action.description}}}</div>
+                {{/if}}
+                {{#if this.action}}
+                <div class="ability-actions-section">
+                  <div class="ability-action-item">
+                    <div class="ability-action-header-row">
+                      <div class="ability-action-info">
+                        <span class="ability-action-name">{{this.action.name}}</span>
+                        {{#if this.action.cost}}<span class="badge cost-badge">{{this.action.cost}}</span>{{/if}}
+                      </div>
+                      <button type="button" class="btn-roll-ability-action" data-action="rollLegacyAbility"
+                        data-index="{{@index}}" title="Rolar {{this.action.name}}">
+                        <i class="fa-solid fa-dice-d20"></i>
+                      </button>
+                    </div>
+                    {{#if this.action.description}}
+                    <div class="ability-action-desc">{{{this.action.description}}}</div>
+                    {{/if}}
+                  </div>
+                </div>
                 {{/if}}
               </div>
             </div>
-            {{/if}}
           </div>
+          {{/each}}
         </div>
       </div>
-      {{/each}}
-    </div>
-  </div>
-  {{/if}}
+      {{/if}}
 
-  <div class="abilities-list-grid">
-    {{#each abilities}}
-    <div class="ability-card-item" data-item-id="{{this.id}}">
-      
-      <!-- MINI CABEÇALHO COM CONTROLES -->
-      <div class="ability-card-controls">
-        <button type="button" class="btn-item-control btn-roll-ability" data-action="rollItem" data-item-id="{{this.id}}" title="{{localize 'GAIA.Ability.SendToChat'}}">
-          <i class="fas fa-comment-alt"></i>
-        </button>
-        <button type="button" class="btn-item-control btn-edit-ability" data-action="openItem" data-item-id="{{this.id}}" title="{{localize 'GAIA.title.EditItem'}}">
-          <i class="fas fa-edit"></i>
-        </button>
-        <button type="button" class="btn-item-control btn-delete-ability" data-action="deleteItem" data-item-id="{{this.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
+      <div class="abilities-list-grid">
+        {{#each abilities}}
+        <div class="ability-card-item" data-item-id="{{this.id}}">
 
-      <!-- TEMPLATE VISUAL DA CARTA DE HABILIDADE DA FICHA DO ATOR -->
-      <div class="gaia-ability-card actor-sheet-card">
-        <div class="ability-card-header">
-          <div class="ability-title-row">
-            <img class="ability-icon" src="{{this.img}}" data-action="openItem" data-item-id="{{this.id}}" title="{{this.name}}"/>
-            <h2 class="ability-name-display" data-action="openItem" data-item-id="{{this.id}}">
-              {{this.name}}
-            </h2>
-          </div>
-          {{#if (or this.metaRow1 this.hasAdditionalTypes)}}
-          <div class="ability-meta-bar">
-            {{#if this.metaRow1}}
-              <div class="meta-row-1">{{this.metaRow1}}</div>
-            {{/if}}
-            {{#if this.hasAdditionalTypes}}
-              <div class="meta-row-2">{{this.additionalTypes}}</div>
-            {{/if}}
-          </div>
-          {{/if}}
-  
-        </div>
-
-        <div class="ability-card-body">
-          {{#if this.system.quote}}
-          <div class="ability-quote-display">
-            <em>{{this.system.quote}}</em>
-          </div>
-          {{/if}}
-
-          <div class="ability-body-text">
-            {{#if this.system.description}}
-            <p>{{this.system.description}}</p>
-            {{/if}}
-            {{#if this.system.numberTarget}}
-            <span class="tag-target"><strong>{{localize "GAIA.Ability.Target"}}:</strong> {{this.system.numberTarget}}</span>
-            {{/if}}
-            {{#if this.system.range}}
-            <span class="tag-range"><strong>{{localize "GAIA.Ability.Range"}}:</strong> {{this.system.range}}</span>
-            {{/if}}
+          <!-- MINI CABEÇALHO COM CONTROLES -->
+          <div class="ability-card-controls">
+            <button type="button" class="btn-item-control btn-roll-ability" data-action="rollItem"
+              data-item-id="{{this.id}}" title="{{localize 'GAIA.Ability.SendToChat'}}">
+              <i class="fas fa-comment-alt"></i>
+            </button>
+            <button type="button" class="btn-item-control btn-edit-ability" data-action="openItem"
+              data-item-id="{{this.id}}" title="{{localize 'GAIA.title.EditItem'}}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button type="button" class="btn-item-control btn-delete-ability" data-action="deleteItem"
+              data-item-id="{{this.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
+              <i class="fas fa-trash"></i>
+            </button>
           </div>
 
-          {{#if this.system.actions.length}}
-          <div class="ability-actions-section">
-            {{#each this.system.actions}}
-            <div class="ability-action-item">
-              <div class="ability-action-header-row">
-                <div class="ability-action-info">
-                  <span class="ability-action-name">{{this.name}}</span>
-                  {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
-                </div>
-                <button type="button" class="btn-roll-ability-action" data-action="rollAction" data-item-id="{{../id}}" data-action-id="{{this.id}}" data-action-index="{{@index}}" title="Rolar {{this.name}}">
-                  <i class="fa-solid fa-dice-d20"></i>
-                </button>
+          <!-- TEMPLATE VISUAL DA CARTA DE HABILIDADE DA FICHA DO ATOR -->
+          <div class="gaia-ability-card actor-sheet-card">
+            <div class="ability-card-header">
+              <div class="ability-title-row">
+                <img class="ability-icon" src="{{this.img}}" data-action="openItem" data-item-id="{{this.id}}"
+                  title="{{this.name}}" />
+                <h2 class="ability-name-display" data-action="openItem" data-item-id="{{this.id}}">
+                  {{this.name}}
+                </h2>
               </div>
-              {{#if this.description}}
-              <div class="ability-action-desc">{{{this.description}}}</div>
+              {{#if (or this.metaRow1 this.hasAdditionalTypes)}}
+              <div class="ability-meta-bar">
+                {{#if this.metaRow1}}
+                <div class="meta-row-1">{{this.metaRow1}}</div>
+                {{/if}}
+                {{#if this.hasAdditionalTypes}}
+                <div class="meta-row-2">{{this.additionalTypes}}</div>
+                {{/if}}
+              </div>
               {{/if}}
-            </div>
-            {{/each}}
-          </div>
-          {{/if}}
 
-          {{#if this.formattedSubEffects.length}}
-          <div class="subeffects-display-section">
-            {{#each this.formattedSubEffects}}
-            <div class="subeffect-display-block">
-              <div class="subeffect-display-header">
-                <span class="subeffect-title-text">{{this.name}}</span>
-                <div class="subeffect-meta-badges">
-                  {{#if this.actionTypeLabel}}<span class="subeffect-meta-badge action-badge">{{this.actionTypeLabel}}</span>{{/if}}
-                  {{#if this.typeLabel}}<span class="subeffect-meta-badge type-badge">{{this.typeLabel}}</span>{{/if}}
-                  {{#if this.cost}}<span class="subeffect-cost-text">{{this.cost}}</span>{{/if}}
+            </div>
+
+            <div class="ability-card-body">
+              {{#if this.system.quote}}
+              <div class="ability-quote-display">
+                <em>{{this.system.quote}}</em>
+              </div>
+              {{/if}}
+
+              <div class="ability-body-text">
+                {{#if this.system.description}}
+                <p>{{this.system.description}}</p>
+                {{/if}}
+                {{#if this.system.numberTarget}}
+                <span class="tag-target"><strong>{{localize "GAIA.Ability.Target"}}:</strong>
+                  {{this.system.numberTarget}}</span>
+                {{/if}}
+                {{#if this.system.range}}
+                <span class="tag-range"><strong>{{localize "GAIA.Ability.Range"}}:</strong> {{this.system.range}}</span>
+                {{/if}}
+              </div>
+
+              {{#if this.system.actions.length}}
+              <div class="ability-actions-section">
+                {{#each this.system.actions}}
+                <div class="ability-action-item">
+                  <div class="ability-action-header-row">
+                    <div class="ability-action-info">
+                      <span class="ability-action-name">{{this.name}}</span>
+                      {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
+                    </div>
+                    <button type="button" class="btn-roll-ability-action" data-action="rollAction"
+                      data-item-id="{{../id}}" data-action-id="{{this.id}}" data-action-index="{{@index}}"
+                      title="Rolar {{this.name}}">
+                      <i class="fa-solid fa-dice-d20"></i>
+                    </button>
+                  </div>
+                  {{#if this.description}}
+                  <div class="ability-action-desc">{{{this.description}}}</div>
+                  {{/if}}
+                </div>
+                {{/each}}
+              </div>
+              {{/if}}
+
+              {{#if this.formattedSubEffects.length}}
+              <div class="subeffects-display-section">
+                {{#each this.formattedSubEffects}}
+                <div class="subeffect-display-block">
+                  <div class="subeffect-display-header">
+                    <span class="subeffect-title-text">{{this.name}}</span>
+                    <div class="subeffect-meta-badges">
+                      {{#if this.actionTypeLabel}}<span
+                        class="subeffect-meta-badge action-badge">{{this.actionTypeLabel}}</span>{{/if}}
+                      {{#if this.typeLabel}}<span
+                        class="subeffect-meta-badge type-badge">{{this.typeLabel}}</span>{{/if}}
+                      {{#if this.cost}}<span class="subeffect-cost-text">{{this.cost}}</span>{{/if}}
+                    </div>
+                  </div>
+
+                  <div class="subeffect-desc-text">{{this.description}}</div>
+                  {{#if this.note}}<div class="subeffect-note-text">{{this.note}}</div>{{/if}}
+                </div>
+                {{/each}}
+              </div>
+              {{/if}}
+
+              {{#if this.hasActiveImprovements}}
+              <div class="improvements-display-section">
+                <div class="improvements-divider-title">
+                  <span class="dot">•</span>
+                  <span class="improvements-title-text">{{localize "GAIA.Ability.Improvements"}}</span>
+                  <span class="dot">•</span>
+                </div>
+                <div class="improvements-display-list">
+                  {{#each this.activeImprovements}}
+                  <div class="improvement-display-item">
+                    <strong>{{this.title}}:</strong> {{this.description}}
+                  </div>
+                  {{/each}}
                 </div>
               </div>
-              
-              <div class="subeffect-desc-text">{{this.description}}</div>
-              {{#if this.note}}<div class="subeffect-note-text">{{this.note}}</div>{{/if}}
-            </div>
-            {{/each}}
-          </div>
-          {{/if}}
+              {{/if}}
 
-          {{#if this.hasActiveImprovements}}
-          <div class="improvements-display-section">
-            <div class="improvements-divider-title">
-              <span class="dot">•</span>
-              <span class="improvements-title-text">{{localize "GAIA.Ability.Improvements"}}</span>
-              <span class="dot">•</span>
-            </div>
-            <div class="improvements-display-list">
-              {{#each this.activeImprovements}}
-              <div class="improvement-display-item">
-                <strong>{{this.title}}:</strong> {{this.description}}
-              </div>
-              {{/each}}
             </div>
           </div>
-          {{/if}}
 
         </div>
+        {{/each}}
+
       </div>
 
+      <div class="header-buttons" style="display: flex; gap: 6px;">
+        <button type="button" class="btn-open-browser" data-action="openItemBrowser" data-type="ability"
+          title="{{localize 'GAIA.ItemBrowser.OpenAbilitiesBrowser'}}">
+          {{localize "GAIA.ItemBrowser.OpenAbilitiesBrowser"}}
+        </button>
+      </div>
     </div>
-    {{/each}}
-
   </div>
 </div>

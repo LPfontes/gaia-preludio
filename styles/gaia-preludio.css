@@ -22,6 +22,7 @@
 @import "./item/effects.css";
 @import "./item/legacy.css";
 @import "./item/path.css";
+@import "./item/relic.css";
 
 /* 4. Diálogos e Aplicativos (Dialogs & Apps) */
 @import "./dialogs/dialogs.css";

@@ -8,9 +8,9 @@
   flex-direction: column;
   gap: 8px;
   background: var(--gaia-bg-banner);
-  border: 1px solid var(--gaia-border-frame);
+  border: 1px solid var(--gaia-border-);
   border-radius: var(--gaia-radius);
-  padding: 8px;
+  padding: 12px;
 }
 
 .panel-main-title {
@@ -84,13 +84,14 @@
   gap: 6px;
   background: rgba(13, 12, 11, 0.85);
   padding: 2px 2px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   border: 1px solid var(--gaia-border-frame);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
   opacity: 0.85;
   transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   z-index: 10;
 }
+
 .personagem-portrait-actions-overlay .portrait-action-btn {
   background: transparent;
   border: none;
@@ -154,7 +155,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 2px 4px;
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   transition: background 0.15s ease;
   gap: 6px;
 }
@@ -235,7 +236,7 @@
 /* --- 2. SEÇÃO INFERIOR (CONHECIMENTOS + MAESTRIAS) --- */
 .personagem-bottom-grid {
   display: grid;
-  grid-template-columns: 60% 38%;
+  grid-template-columns: 0.5fr auto;
   gap: 8px;
 }
 
@@ -306,7 +307,7 @@
 .mastery-item {
   background: transparent;
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 3px 6px;
   display: flex;
   justify-content: space-between;
@@ -325,7 +326,7 @@
 }
 
 .mastery-name:hover {
-  color: var(--gaia-border-gold);
+  color: var(--gaia-purple);
 }
 
 .btn-remove-mastery {
@@ -348,29 +349,126 @@
   font-style: italic;
   text-align: center;
 }
+
 .tab-bio-content {
   background: var(--gaia-bg-banner);
   border: 1px solid var(--gaia-border-frame);
   border-radius: var(--gaia-radius);
-  padding: 8px;
   min-height: 450px;
 }
 
 .bio-content {
   background: var(--gaia-bg-box);
-  border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
-  padding: 12px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 420px;
+  gap: 12px;
+}
+
+/* Painel de Idiomas */
+.bio-languages-panel {
+  border-radius: var(--gaia-radius);
+}
+
+.bio-languages-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bio-languages-title {
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-add-language {
+  padding: 4px 10px;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  background: var(--gaia-bg-window);
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-gold);
+  border-radius: var(--gaia-radius);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-add-language:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.bio-languages-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 28px;
+  align-items: center;
+}
+
+.bio-language-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gaia-bg-box);
+  border: 1px solid var(--gaia-border-subtle);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: var(--gaia-font-xs);
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+}
+
+.bio-language-category {
+  color: var(--gaia-text-dim);
+  font-size: 9px;
+  font-weight: normal;
+}
+
+.btn-remove-language {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  font-size: var(--gaia-font-md);
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.btn-remove-language:hover {
+  color: var(--gaia-health);
+}
+
+.empty-languages-hint {
+  font-size: var(--gaia-font-base);
+  font-style: italic;
+  color: var(--gaia-text-muted);
+}
+
+.bio-notes-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .bio-notes-textarea {
   width: 100%;
   flex: 1;
-  min-height: 600px;
+  min-height: 380px;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--gaia-border-frame);
   border-radius: var(--gaia-radius);

@@ -40,6 +40,7 @@
   align-items: center;
   gap: 6px;
 }
+
 /* Banner de Atributos Calculados em Tempo Real (PV, PE, Pontos de Poder) */
 .gaia-dialog-legacy-npc-wizard .wizard-live-stats-banner {
   display: grid;
@@ -213,7 +214,7 @@
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--gaia-border-frame);
   padding: 8px 12px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   font-size: var(--gaia-font-base);
   display: flex;
   align-items: center;
@@ -240,6 +241,100 @@
   background: rgba(140, 115, 85, 0.25);
   border-color: var(--gaia-border-gold, #8c7355);
   box-shadow: 0 0 8px rgba(140, 115, 85, 0.4);
+}
+
+.gaia-dialog-legacy-npc-wizard .btn-open-abilities-browser:hover {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+  border-color: var(--gaia-border-frame);
+}
+
+.gaia-dialog-legacy-npc-wizard .chosen-ability-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 4px 8px;
+  transition: all 0.15s ease;
+}
+
+.gaia-dialog-legacy-npc-wizard .chosen-ability-pill:hover {
+  border-color: var(--gaia-purple-dark);
+}
+
+.gaia-dialog-legacy-npc-wizard .btn-remove-chosen-ability {
+  background: transparent;
+  border: none;
+  color: var(--gaia-text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: var(--gaia-font-sm);
+  transition: color 0.15s ease;
+}
+
+.gaia-dialog-legacy-npc-wizard .btn-remove-chosen-ability:hover {
+  color: var(--gaia-health, #b91c1c);
+}
+
+.gaia-dialog-legacy-npc-wizard .badge-owned {
+  font-size: 10px;
+  background: rgba(140, 115, 85, 0.25);
+  border: 1px solid var(--gaia-border-gold);
+  color: var(--gaia-gold-accent);
+  padding: 1px 4px;
+  border-radius: var(--gaia-radius);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gaia-dialog-legacy-npc-wizard .btn-enhance-ability {
+  background: transparent;
+  border: 1px solid var(--gaia-border-gold);
+  color: var(--gaia-gold-accent);
+  border-radius: var(--gaia-radius);
+  padding: 2px 6px;
+  font-family: var(--gaia-font-medieval);
+  font-size: 11px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.gaia-dialog-legacy-npc-wizard .btn-enhance-ability:hover {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+  border-color: var(--gaia-border-frame);
+}
+
+.gaia-dialog-legacy-npc-wizard .btn-enhance-ability.active {
+  background: rgba(140, 115, 85, 0.35);
+  color: var(--gaia-gold);
+  border-color: var(--gaia-border-gold);
+  font-weight: bold;
+}
+
+.gaia-dialog-enhancement .gaia-dialog-choose-enhancement {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-dialog-enhancement .enhancement-option-card {
+  transition: all 0.15s ease;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.gaia-dialog-enhancement .enhancement-option-card:hover {
+  border-color: var(--gaia-border-gold) !important;
+  background: rgba(140, 115, 85, 0.2) !important;
 }
 
 /* Card de Resumo Final (Etapa 3) */
@@ -320,7 +415,7 @@
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid var(--gaia-border-frame);
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
   font-size: var(--gaia-font-base);
 }
 
@@ -338,7 +433,7 @@
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--gaia-border-subtle);
   padding: 6px 10px;
-  border-radius: 4px;
+  border-radius: var(--gaia-radius);
 }
 
 .gaia-dialog-knowledge-selection .knowledge-label {
@@ -362,7 +457,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--gaia-border-frame);
   color: var(--gaia-text-parchment);
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   cursor: pointer;
 }
 
@@ -377,6 +472,6 @@
   background: transparent;
   border: 1px solid var(--gaia-border-frame);
   color: var(--gaia-text-parchment);
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
   font-weight: bold;
 }

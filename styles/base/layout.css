@@ -27,29 +27,36 @@
 
 .gaia-preludio.sheet.actor .window-content {
   padding: 0;
-  overflow: visible !important;
-  height: 100%;
-  max-height: 100%;
-  box-sizing: border-box;
-}
-
-.gaia-preludio.sheet.actor form {
   height: 100%;
   max-height: 100%;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
   overflow: visible !important;
+  box-sizing: border-box;
+}
+
+/* ==============================================================================
+ * ESTRUTURA DA FICHA DE PERSONAGEM LEGADO (Multi-part ApplicationV2 Grid)
+ * ============================================================================== */
+.gaia-preludio.sheet.actor.legacy-sheet .window-content {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "sidebar tabs"
+    "sidebar content";
+  gap: 6px;
 }
 
 .gaia-sheet-content {
   height: 100%;
   max-height: 100%;
   min-height: 0;
+  width: 100%;
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: visible;
+  overflow: visible !important;
+  box-sizing: border-box;
 }
 
 .sheet-main-layout {
@@ -63,18 +70,34 @@
   position: relative;
 }
 
+/* Sidebar e Banner da Ficha de Personagem Legado */
+.gaia-preludio.sheet.actor.legacy-sheet .sheet-sidebar-header,
+.gaia-preludio.sheet.actor.legacy-sheet .sheet-sidebar-header-npc,
+.gaia-preludio.sheet.actor.legacy-sheet .gaia-actor-banner,
+.gaia-preludio.sheet.actor.legacy-sheet aside.sheet-sidebar-header {
+  grid-area: sidebar;
+  width: 300px;
+  flex-shrink: 0;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 5;
+}
+
+/* Sidebar e Header para fichas gerais */
 .sheet-sidebar-header,
 .sheet-sidebar-header-npc {
   width: 300px;
   flex-shrink: 0;
   height: 100%;
   max-height: 100%;
+  min-height: 0;
   overflow: visible;
   position: relative;
   z-index: 5;
 }
-
-
 
 .sheet-main-body {
   flex: 1;
@@ -87,27 +110,53 @@
   overflow: hidden !important;
 }
 
+/* Abas de Conteúdo da Ficha de Personagem Legado */
+.gaia-preludio.sheet.actor.legacy-sheet .tab {
+  grid-area: content;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+}
+
+.gaia-preludio.sheet.actor.legacy-sheet .tab:not(.active) {
+  display: none !important;
+}
+
+.gaia-preludio.sheet.actor.legacy-sheet .tab.active {
+  display: flex !important;
+  flex-direction: column;
+}
+
 /* ==============================================================================
  * NAVEGAÇÃO DE ABAS (.sheet-navigation-tabs)
  * ============================================================================== */
-.sheet-navigation-tabs {
+.sheet-navigation-tabs,
+.gaia-preludio.sheet.actor .sheet-navigation-tabs,
+.gaia-preludio.sheet.actor nav.sheet-navigation-tabs {
   background: var(--gaia-bg-banner);
-  border: 1px solid var(--gaia-border-frame);
+  border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
   display: flex;
   padding: 4px;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 0px;
+  margin-bottom: 0;
+}
+
+.gaia-preludio.sheet.actor.legacy-sheet .sheet-navigation-tabs,
+.gaia-preludio.sheet.actor.legacy-sheet nav.sheet-navigation-tabs {
+  grid-area: tabs;
 }
 
 .sheet-navigation-tabs .tab-item {
   color: var(--gaia-text-muted);
-  font-size: var(--gaia-font-sm);
+  font-size: var(--gaia-font-base);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 4px 12px;
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   cursor: pointer;
   transition: all 0.15s ease;
   text-decoration: none;
@@ -129,7 +178,6 @@
   min-height: 0;
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  padding-right: 6px;
 }
 
 /* Barra de rolagem personalizada temática */
@@ -139,12 +187,12 @@
 
 .sheet-tabs-content::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
 }
 
 .sheet-tabs-content::-webkit-scrollbar-thumb {
   background: var(--gaia-border-frame);
-  border-radius: 3px;
+  border-radius: var(--gaia-radius);
 }
 
 .sheet-tabs-content::-webkit-scrollbar-thumb:hover {

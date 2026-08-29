@@ -7,7 +7,7 @@
  */
 
 import { GaiaItemSheet } from "./base.mjs";
-import { promptSubEffectDialog } from "../../../helpers/dialogs.mjs";
+import { promptSubEffectDialog } from "../../../helpers/dialogs/index.mjs";
 
 export class AbilitySheet extends GaiaItemSheet {
   /** @override */
@@ -39,6 +39,9 @@ export class AbilitySheet extends GaiaItemSheet {
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     const config = context.config;
+
+    context.isFeature = this.item.type === "feature";
+    context.categoriesOptions = context.isFeature ? config.featureCategories : config.abilityCategories;
 
     // Converte os aprimoramentos para um array formatado com letras (A), B), C)...)
     const rawImprovements = Array.isArray(context.system.improvements) ? context.system.improvements : [];

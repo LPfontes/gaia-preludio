@@ -10,7 +10,7 @@
 
 const { ItemSheetV2 } = foundry.applications.sheets;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
-import { promptActionDialog } from "../../../helpers/dialogs.mjs";
+import { promptActionDialog } from "../../../helpers/dialogs/index.mjs";
 
 export class GaiaItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   /** @override */
@@ -204,11 +204,13 @@ export class GaiaItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   static async #onCreateEffect(event, target) {
     event.preventDefault();
-    return await this.item.createEmbeddedDocuments("ActiveEffect", [{
+    const created = await this.item.createEmbeddedDocuments("ActiveEffect", [{
       name: game.i18n.localize("GAIA.Effects.NewEffectDefaultName") || "Novo Efeito",
+      img: this.item.img || "icons/svg/aura.svg",
       icon: this.item.img || "icons/svg/aura.svg",
       origin: this.item.uuid
     }]);
+    return created[0]?.sheet?.render(true);
   }
 
   static async #onEditEffect(event, target) {

@@ -21,7 +21,9 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     actions: {
       previewItem: GaiaItemBrowser.#onPreviewItem,
       importItem: GaiaItemBrowser.#onImportItem,
-      createItem: GaiaItemBrowser.#onCreateItem
+      createItem: GaiaItemBrowser.#onCreateItem,
+      toggleSelectItem: GaiaItemBrowser.#onToggleSelectItem,
+      confirmSelection: GaiaItemBrowser.#onConfirmSelection
     }
   };
 
@@ -35,6 +37,18 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
 
   /** @type {Actor|null} */
   targetActor = null;
+
+  /** @type {boolean} Modo de seleção com retorno em callback */
+  selectionMode = false;
+
+  /** @type {number|null} Limite máximo de itens selecionáveis */
+  maxSelectable = null;
+
+  /** @type {Function|null} Callback ao confirmar seleção */
+  onSelect = null;
+
+  /** @type {Map<string, object>} */
+  #selectedMap = new Map();
 
   /** @type {string} */
   searchTerm = "";
@@ -56,10 +70,30 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
   constructor(actor = null, options = {}) {
     super(options);
     this.targetActor = actor;
+    this.selectionMode = Boolean(options.selectionMode);
+    this.maxSelectable = Number.isInteger(options.maxSelectable) ? options.maxSelectable : null;
+    this.onSelect = typeof options.onSelect === "function" ? options.onSelect : null;
+
+    if (Array.isArray(options.selectedItems)) {
+      for (const item of options.selectedItems) {
+        if (item.uuid) this.#selectedMap.set(item.uuid, item);
+      }
+    }
+
     if (options.type) {
       this.selectedType = options.type;
     } else if (options.selectedType) {
       this.selectedType = options.selectedType;
+    }
+
+    if (options.selectedSource) {
+      this.selectedSource = options.selectedSource;
+    }
+
+    if (options.searchTerm !== undefined) {
+      this.searchTerm = String(options.searchTerm || "").toLowerCase();
+    } else if (options.search !== undefined) {
+      this.searchTerm = String(options.search || "").toLowerCase();
     }
   }
 
@@ -120,6 +154,9 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
       .filter((p) => p.documentName === "Item")
       .map((p) => ({ id: p.collection, title: p.metadata.label }));
 
+    const cleanStr = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const cleanSearch = cleanStr(this.searchTerm);
+
     // Executa a filtragem
     const filtered = this.#indexedItems.filter((item) => {
       // 1. Filtro por Tipo / Categoria
@@ -135,15 +172,22 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
         if (this.selectedSource !== "world" && item.sourceId !== this.selectedSource) return false;
       }
 
-      // 3. Filtro por Busca Textual
-      if (this.searchTerm.length > 0) {
-        const nameMatch = item.name.toLowerCase().includes(this.searchTerm);
-        const descMatch = item.rawDescription.toLowerCase().includes(this.searchTerm);
-        if (!nameMatch && !descMatch) return false;
+      // 3. Filtro por Busca Textual (com suporte a busca por nome, descrição e tipo de item)
+      if (cleanSearch.length > 0) {
+        const nameMatch = cleanStr(item.name).includes(cleanSearch);
+        const descMatch = cleanStr(item.rawDescription).includes(cleanSearch);
+        const typeMatch = cleanStr(item.typeLabel).includes(cleanSearch) || cleanStr(item.type).includes(cleanSearch);
+        if (!nameMatch && !descMatch && !typeMatch) return false;
       }
 
       return true;
     });
+
+    const isSelectionMax = Boolean(this.maxSelectable && this.#selectedMap.size >= this.maxSelectable);
+
+    for (const item of filtered) {
+      item.isSelected = this.#selectedMap.has(item.uuid);
+    }
 
     context.targetActor = this.targetActor;
     context.compendiums = compendiums;
@@ -152,6 +196,10 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     context.selectedSource = this.selectedSource;
     context.totalItems = this.#indexedItems.length;
     context.filteredItems = filtered;
+    context.selectionMode = this.selectionMode;
+    context.maxSelectable = this.maxSelectable;
+    context.selectedCount = this.#selectedMap.size;
+    context.isSelectionMax = isSelectionMax;
 
     return context;
   }
@@ -214,6 +262,32 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!uuid) return;
     const item = await fromUuid(uuid);
     item?.sheet?.render(true);
+  }
+
+  static async #onToggleSelectItem(event, target) {
+    const uuid = target.dataset.uuid || target.closest("[data-uuid]")?.dataset.uuid;
+    if (!uuid) return;
+
+    if (this.#selectedMap.has(uuid)) {
+      this.#selectedMap.delete(uuid);
+    } else {
+      if (this.maxSelectable && this.#selectedMap.size >= this.maxSelectable) {
+        ui.notifications?.warn(`Você já selecionou o limite máximo de ${this.maxSelectable} itens.`);
+        return;
+      }
+      const item = this.#indexedItems.find(i => i.uuid === uuid);
+      if (item) {
+        this.#selectedMap.set(uuid, item);
+      }
+    }
+    this.render(false);
+  }
+
+  static async #onConfirmSelection(event, target) {
+    if (this.onSelect) {
+      this.onSelect(Array.from(this.#selectedMap.values()));
+    }
+    await this.close();
   }
 
   static async #onImportItem(event, target) {

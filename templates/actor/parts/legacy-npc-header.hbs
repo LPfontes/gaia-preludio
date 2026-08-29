@@ -3,14 +3,14 @@
   <div class="npc-banner-row">
     {{!-- Campos Principais de Identidade do NPC --}}
     <div class="npc-identity-fields">
-      <div class="banner-top-row" style="display: grid; grid-template-columns: 68% 30%;">
-        <div class="banner-field-card npc-name-card" style="flex: 1;">
+      <div class="banner-top-row" style="display: flex; gap: 6px;">
+        <div class="banner-field-card npc-name-card" style="flex: 1; min-width: 0;">
           <label class="field-label">{{localize "GAIA.Creature.Name"}}</label>
           <input type="text" name="name" value="{{actor.name}}" placeholder="{{localize 'GAIA.Creature.NamePlaceholder'}}" />
         </div>
 
         {{!-- Nível --}}
-        <div class="banner-card stat-card">
+        <div class="banner-card stat-card" style="width: 75px; flex-shrink: 0;">
           <span class="banner-title">{{localize "GAIA.Creature.LevelCR"}}</span>
           <input type="number" name="system.level" value="{{system.level}}" min="1" class="banner-input" />
         </div>

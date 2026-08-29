@@ -1,3 +1,4 @@
+<div class="tab personagem active" data-group="primary" data-tab="personagem">
 <div class="personagem-tab-content">
   {{!-- 1. Seção Superior: Imagem/Retrato à esquerda + Parâmetros em 1 coluna à direita --}}
   <div class="personagem-top-grid">
@@ -5,13 +6,16 @@
     <div class="portrait-box">
       <img class="character-portrait" src="{{actor.img}}" alt="{{actor.name}}" />
       <div class="portrait-actions-overlay personagem-portrait-actions-overlay">
-        <button type="button" class="portrait-action-btn" data-action="editImage" data-field="img" title="{{localize 'GAIA.title.ChangeImage'}}">
+        <button type="button" class="portrait-action-btn" data-action="editImage" data-field="img"
+          title="{{localize 'GAIA.title.ChangeImage'}}">
           <i class="fa-solid fa-pen-to-square"></i>
         </button>
-        <button type="button" class="portrait-action-btn" data-action="sendPortraitToChat" title="{{localize 'GAIA.title.SendToChat'}}">
+        <button type="button" class="portrait-action-btn" data-action="sendPortraitToChat"
+          title="{{localize 'GAIA.title.SendToChat'}}">
           <i class="fa-solid fa-message"></i>
         </button>
-        <button type="button" class="portrait-action-btn" data-action="showPortraitToPlayers" title="{{localize 'GAIA.title.ShowToPlayers'}}">
+        <button type="button" class="portrait-action-btn" data-action="showPortraitToPlayers"
+          title="{{localize 'GAIA.title.ShowToPlayers'}}">
           <i class="fa-solid fa-eye"></i>
         </button>
       </div>
@@ -22,19 +26,22 @@
       <h3 class="panel-main-title">{{localize "GAIA.Parameter.name"}}</h3>
       <div class="stat-pips-column">
         {{#each parameters as |param|}}
-          <div class="pip-stat-row">
-            <span class="pip-stat-label" data-action="rollParameter" data-key="{{param.key}}" title="{{localize 'GAIA.Dialog.RollTitle' label=param.label}}">
-              <span class="stat-roll-icon" aria-hidden="true"></span>
-              {{param.label}}
-            </span>
-            <div class="pips-bar">
-              {{#each param.pips as |pip|}}
-                <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setParameterPip" data-param="{{param.key}}" data-value="{{pip.value}}" title="{{localize 'GAIA.Dialog.RollTitle' label=param.label}}">
-                  <i class="fa-solid fa-diamond"></i>
-                </button>
-              {{/each}}
-            </div>
+        <div class="pip-stat-row">
+          <span class="pip-stat-label" data-action="rollParameter" data-key="{{param.key}}"
+            title="{{localize 'GAIA.Dialog.RollTitle' label=param.label}}">
+            <span class="stat-roll-icon" aria-hidden="true"></span>
+            {{param.label}}
+          </span>
+          <div class="pips-bar">
+            {{#each param.pips as |pip|}}
+            <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setParameterPip"
+              data-param="{{param.key}}" data-value="{{pip.value}}"
+              title="{{localize 'GAIA.Dialog.RollTitle' label=param.label}}">
+              <i class="fa-solid fa-diamond"></i>
+            </button>
+            {{/each}}
           </div>
+        </div>
         {{/each}}
       </div>
     </div>
@@ -53,38 +60,48 @@
         </thead>
         <tbody>
           {{#each equippedWeapons as |weapon|}}
-            <tr class="weapon-row">
-              <td class="col-weapon-name" data-action="promptItemAction" data-item-id="{{weapon.id}}" role="button" title="{{weapon.name}}">
-                <div class="weapon-name-cell">
-                  {{#if weapon.img}}
-                    <img class="weapon-mini-icon" src="{{weapon.img}}" alt="{{weapon.name}}" />
-                  {{/if}}
-                  <span class="weapon-name-text">{{weapon.name}}</span>
-                </div>
-              </td>
-              <td class="col-weapon-damage">{{weapon.damage}}</td>
-              <td class="col-weapon-range">{{weapon.range}}</td>
-              <td class="col-weapon-props" title="{{weapon.propertiesTitle}}">{{weapon.properties}}</td>
-            </tr>
+          <tr class="weapon-row">
+            <td class="col-weapon-name" data-action="promptItemAction" data-item-id="{{weapon.id}}" role="button"
+              title="{{weapon.name}}">
+              <div class="weapon-name-cell">
+                {{#if weapon.img}}
+                <img class="weapon-mini-icon" src="{{weapon.img}}" alt="{{weapon.name}}" />
+                {{/if}}
+                <span class="weapon-name-text">{{weapon.name}}</span>
+              </div>
+            </td>
+            <td class="col-weapon-damage">{{weapon.damage}}</td>
+            <td class="col-weapon-range">{{weapon.range}}</td>
+            <td class="col-weapon-props" title="{{weapon.propertiesTitle}}">
+              {{#if (and weapon.properties (ne weapon.properties "-"))}}
+              <button type="button" class="btn-item-props" data-action="viewItemProperties" data-item-id="{{weapon.id}}"
+                title="{{weapon.propertiesTitle}}">
+                {{weapon.properties}}
+              </button>
+              {{else}}
+              -
+              {{/if}}
+            </td>
+          </tr>
           {{else}}
-            <tr class="weapon-row empty-row">
-              <td class="col-weapon-name"></td>
-              <td class="col-weapon-damage"></td>
-              <td class="col-weapon-range"></td>
-              <td class="col-weapon-props"></td>
-            </tr>
-            <tr class="weapon-row empty-row">
-              <td class="col-weapon-name"></td>
-              <td class="col-weapon-damage"></td>
-              <td class="col-weapon-range"></td>
-              <td class="col-weapon-props"></td>
-            </tr>
-            <tr class="weapon-row empty-row">
-              <td class="col-weapon-name"></td>
-              <td class="col-weapon-damage"></td>
-              <td class="col-weapon-range"></td>
-              <td class="col-weapon-props"></td>
-            </tr>
+          <tr class="weapon-row empty-row">
+            <td class="col-weapon-name"></td>
+            <td class="col-weapon-damage"></td>
+            <td class="col-weapon-range"></td>
+            <td class="col-weapon-props"></td>
+          </tr>
+          <tr class="weapon-row empty-row">
+            <td class="col-weapon-name"></td>
+            <td class="col-weapon-damage"></td>
+            <td class="col-weapon-range"></td>
+            <td class="col-weapon-props"></td>
+          </tr>
+          <tr class="weapon-row empty-row">
+            <td class="col-weapon-name"></td>
+            <td class="col-weapon-damage"></td>
+            <td class="col-weapon-range"></td>
+            <td class="col-weapon-props"></td>
+          </tr>
           {{/each}}
         </tbody>
       </table>
@@ -97,19 +114,21 @@
       <h3 class="panel-main-title">{{localize "GAIA.Knowledge.name"}}</h3>
       <div class="stat-pips-column">
         {{#each knowledge as |know|}}
-          <div class="pip-stat-row">
-            <span class="pip-stat-label" data-action="rollKnowledge" data-key="{{know.key}}" title="{{localize "GAIA.Dialog.RollTitle" label=know.label}}">
-              <span class="stat-roll-icon" aria-hidden="true"></span>
-              {{know.label}}
-            </span>
-            <div class="pips-bar">
-              {{#each know.pips as |pip|}}
-                <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setKnowledgePip" data-knowledge="{{know.key}}" data-value="{{pip.value}}" title="{{know.label}} {{pip.value}}">
-                  <i class="fa-solid fa-diamond"></i>
-                </button>
-              {{/each}}
-            </div>
+        <div class="pip-stat-row">
+          <span class="pip-stat-label" data-action="rollKnowledge" data-key="{{know.key}}" title="{{localize "
+            GAIA.Dialog.RollTitle" label=know.label}}">
+            <span class="stat-roll-icon" aria-hidden="true"></span>
+            {{know.label}}
+          </span>
+          <div class="pips-bar">
+            {{#each know.pips as |pip|}}
+            <button type="button" class="diamond-pip-stat {{#if pip.active}}active{{/if}}" data-action="setKnowledgePip"
+              data-knowledge="{{know.key}}" data-value="{{pip.value}}" title="{{know.label}} {{pip.value}}">
+              <i class="fa-solid fa-diamond"></i>
+            </button>
+            {{/each}}
           </div>
+        </div>
         {{/each}}
       </div>
     </div>
@@ -118,28 +137,31 @@
     <div class="masteries-panel">
       <div class="masteries-header">
         <h3 class="panel-main-title">Maestrias</h3>
-        <button type="button" class="btn-add-mastery" data-action="addMastery" title="{{localize "GAIA.title.AddMastery"}}">
+        <button type="button" class="btn-add-mastery" data-action="addMastery" title="{{localize "
+          GAIA.title.AddMastery"}}">
           <i class="fa-solid fa-plus"></i>
         </button>
       </div>
 
       <div class="masteries-list">
         {{#each unlockedMasteries as |mastery index|}}
-          <div class="mastery-item">
-            <span class="mastery-name" data-action="rollMastery" data-key="{{mastery.key}}" data-knowledge="{{mastery.knowledgeKey}}" title="{{localize "GAIA.Dialog.RollTitle" label=mastery.label}}">
-              <span class="stat-roll-icon" aria-hidden="true"></span>
-              {{mastery.label}}
-            </span>
-            <button type="button" class="btn-remove-mastery" data-action="removeMastery" data-index="{{index}}" title="{{localize "GAIA.title.RemoveMastery"}}">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
+        <div class="mastery-item">
+          <span class="mastery-name" data-action="rollMastery" data-key="{{mastery.key}}"
+            data-knowledge="{{mastery.knowledgeKey}}" title="{{localize " GAIA.Dialog.RollTitle" label=mastery.label}}">
+            <span class="stat-roll-icon" aria-hidden="true"></span>
+            {{mastery.label}}
+          </span>
+          <button type="button" class="btn-remove-mastery" data-action="removeMastery" data-index="{{index}}"
+            title="{{localize " GAIA.title.RemoveMastery"}}">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
         {{else}}
-          <span class="empty-masteries-hint">{{localize "GAIA.Sheet.masteryEmptyHint"}}</span>
+        <span class="empty-masteries-hint">{{localize "GAIA.Sheet.masteryEmptyHint"}}</span>
         {{/each}}
       </div>
     </div>
   </div>
 
-  
+</div>
 </div>

@@ -13,6 +13,7 @@ export class AbilityBaseModel extends BaseDataModel {
       ...super.defineSchema(),
       category: new StringField({ required: false, initial: "" }),
       cost: new StringField({ required: false, initial: "" }),
+      requirement: new StringField({ required: false, initial: "" }),
       typeAction: new StringField({ required: false, initial: "" }),
       type: new StringField({ required: false, initial: "" }),
       types: new ArrayField(new StringField({ required: false }), { required: false, initial: [] }),
@@ -43,4 +44,11 @@ export class AbilityBaseModel extends BaseDataModel {
       Improvements: new ArrayField(new StringField({ required: true }), { required: true, initial: [] })
     };
   }
-}   
+}
+
+/**
+ * Data Model para Características (Features) do sistema Gaia: Prelúdio.
+ * Herda todos os campos e estruturas de Habilidade.
+ * @extends {AbilityBaseModel}
+ */
+export class FeatureDataModel extends AbilityBaseModel {}

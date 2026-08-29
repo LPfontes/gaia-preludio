@@ -27,7 +27,7 @@
   font-family: inherit;
   color: var(--gaia-text-parchment);
   background: transparent;
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 2px 4px;
   font-size: var(--gaia-font-base);
 }
@@ -51,7 +51,7 @@
 .banner-field-card {
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 4px 6px;
   display: flex;
   flex-direction: column;
@@ -94,6 +94,35 @@
   text-align: center;
 }
 
+.level-input-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.level-input-container input {
+  flex: 1;
+}
+
+.btn-level-up {
+  background: transparent;
+  border: none;
+  color: var(--gaia-purple);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: var(--gaia-font-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gaia-radius);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-level-up:hover {
+  transform: scale(1.1);
+}
+
 .banner-field-card.legacy-field,
 .banner-field-card.legado-field {
   width: 100%;
@@ -103,7 +132,7 @@
 .resource-card {
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 4px 8px;
   display: flex;
   flex-direction: column;
@@ -250,7 +279,7 @@
   flex: 1;
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 6px;
   display: flex;
   flex-direction: column;
@@ -284,7 +313,7 @@
   flex: 1;
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 6px;
   display: flex;
   flex-direction: column;
@@ -323,7 +352,7 @@
 .exhaustion-card {
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 6px;
   display: flex;
   flex-direction: column;
@@ -435,7 +464,7 @@
 .death-save-trigger-card {
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 4px 8px;
   display: flex;
   flex-direction: column;
@@ -480,7 +509,7 @@
 .death-save-banner-card {
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 6px;
   display: flex;
   flex-direction: column;
@@ -681,7 +710,7 @@
   background: var(--gaia-bg-box);
   border: 1px solid var(--gaia-border-frame);
   color: var(--gaia-text-muted);
-  border-radius: 2px;
+  border-radius: var(--gaia-radius);
   padding: 2px 4px;
   font-size: var(--gaia-font-2xs);
   cursor: pointer;

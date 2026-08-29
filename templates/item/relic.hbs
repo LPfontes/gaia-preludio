@@ -1,0 +1,88 @@
+<section class="gaia-sheet-content relic-sheet">
+  <div class="inventory-table-panel tab-relic-content">
+    <div class="inventory-table-header">
+      <div class="item-header-group">
+        <img class="item-mini-icon" src="{{item.img}}" data-action="editImage" data-edit="img" title="{{item.name}}"/>
+        <h4 class="inventory-table-title">
+          <input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'GAIA.Relic.NamePlaceholder'}}"/>
+        </h4>
+      </div>
+      <div class="relic-header-badges">
+        <button type="button" class="btn-relic-bound-toggle {{#if isBound}}bound{{/if}}" data-action="toggleBound" title="{{#if isBound}}{{localize 'GAIA.Relic.Unbind'}}{{else}}{{localize 'GAIA.Relic.Bind'}}{{/if}}">
+          <i class="fa-solid fa-link"></i> {{#if isBound}}{{localize 'GAIA.Relic.Bound'}}{{else}}{{localize 'GAIA.Relic.NotBound'}}{{/if}}
+        </button>
+        <span class="relic-potency-badge">
+          {{system.potency}} {{localize 'GAIA.Relic.Potency'}}
+        </span>
+      </div>
+    </div>
+
+    {{!-- NAVEGAÇÃO POR ABAS DA RELÍQUIA --}}
+    <nav class="sheet-navigation-tabs item-tabs tabs" data-group="primary">
+      <a class="tab-item active" data-action="tab" data-group="primary" data-tab="tabela">{{localize "GAIA.ItemTabs.Table"}}</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="acoes">{{localize "GAIA.ItemTabs.Actions"}}</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="efeitos">{{localize "GAIA.ItemTabs.Effects"}}</a>
+    </nav>
+
+    <section class="sheet-tabs-content item-tabs-content">
+      {{!-- ABA 1: TABELA & PROPRIEDADES --}}
+      <div class="tab tabela active" data-group="primary" data-tab="tabela">
+        <div class="weapons-table-frame">
+          <table class="inventory-grid-table">
+            <thead>
+              <tr>
+                <th class="col-relic-bound">{{localize "GAIA.Relic.Bound"}}</th>
+                <th class="col-equip-category">{{localize "GAIA.Relic.Category"}}</th>
+                <th class="col-relic-potency">{{localize "GAIA.Relic.Potency"}}</th>
+                <th class="col-equip-price">{{localize "GAIA.TableLabels.Price"}}</th>
+                <th class="col-equip-qty">{{localize "GAIA.TableLabels.Quantity"}}</th>
+                <th class="col-equip-unity">{{localize "GAIA.TableLabels.Unity"}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="item-row">
+                <td class="col-relic-bound">
+                  <input type="checkbox" name="system.isBound" {{checked system.isBound}} />
+                </td>
+                <td class="col-equip-category">
+                  <select name="system.category">
+                    {{selectOptions relicCategories selected=system.category}}
+                  </select>
+                </td>
+                <td class="col-relic-potency">
+                  <input type="number" name="system.potency" value="{{system.potency}}" min="0" max="3" />
+                </td>
+                <td class="col-equip-price">
+                  <input type="number" name="system.price" value="{{system.price}}" min="0" />
+                </td>
+                <td class="col-equip-qty">
+                  <input type="number" name="system.quantity" value="{{system.quantity}}" min="1" />
+                </td>
+                <td class="col-equip-unity">
+                  <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      
+        {{!-- DESCRIÇÃO E PROPRIEDADES --}}
+        <div class="weapon-description-panel">
+          <label class="description-title">{{localize "GAIA.Relic.Description"}}</label>
+          <textarea name="system.description" class="equipment-description-textarea" placeholder="{{localize 'GAIA.Relic.DescriptionPlaceholder'}}">{{system.description}}</textarea>
+        </div>
+      </div>
+
+      {{!-- ABA 2: AÇÕES / HABILIDADES ÚNICAS --}}
+      <div class="tab acoes" data-group="primary" data-tab="acoes">
+        {{> "systems/gaia-preludio/templates/item/parts/item-actions.hbs"}}
+      </div>
+
+      {{!-- ABA 3: EFEITOS ATIVOS --}}
+      <div class="tab efeitos" data-group="primary" data-tab="efeitos">
+        {{> "systems/gaia-preludio/templates/item/parts/item-effects.hbs"}}
+      </div>
+    </section>
+  </div>
+</section>

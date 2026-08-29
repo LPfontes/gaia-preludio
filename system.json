@@ -1,7 +1,7 @@
 {
   "id": "gaia-preludio",
   "title": "Gaia: Prelúdio",
-  "description": "Sistema de RPG oficial Gaia: Prelúdio para Foundry Virtual Tabletop.",
+  "description": "Sistema de RPG Gaia: Prelúdio para Foundry Virtual Tabletop.",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "14",
@@ -37,7 +37,9 @@
       "weapon": {},
       "ability": {},
       "legacy": {},
-      "path": {}
+      "path": {},
+      "relic": {},
+      "feature": {}
     }
   },
   "languages": [

@@ -197,6 +197,11 @@ export { flowDestinyCheck as flowTesteDestino };
 export async function defense(type, actor, fitness = "standard") {
   const exhaustion = Number(actor?.system?.exhaustion) || 0;
 
+  if (actor?.type === "creature" || actor?.type === "legacyNpc" || type === "defensiveParameters") {
+    const defVal = Number(actor?.system?.defensiveParameters ?? 0);
+    return await flowParameter({ value: defVal }, fitness, 0, exhaustion);
+  }
+
   if (type === "agility") {
     const agilityParam = actor.system?.parameters?.find(p => {
       const name = String(p.name || "").toLowerCase();
@@ -205,7 +210,7 @@ export async function defense(type, actor, fitness = "standard") {
     const agilityVal = Number(agilityParam?.value ?? actor.system?.agility?.value ?? actor.system?.agility ?? 0);
     return await flowParameter({ value: agilityVal }, fitness, 0, exhaustion);
   }
-  
+
   const dice = GAIA.rollTypes[fitness]?.roll ?? GAIA.rollTypes[fitness] ?? "1d12";
   const blockVal = Number(actor.system?.totalBlock ?? actor.system?.block?.value ?? actor.system?.block ?? 0);
   const formulaParts = [dice, "+ @block"];
@@ -303,7 +308,7 @@ export function calculateDamage(damage, target, source = null) {
     return entryType === normDamageType || entryType === "all" || normDamageType === "all";
   };
 
-  
+
   // 1. Imunidade: cancela todo o dano imediatamente (0)
   const isImmune = damageImmunity.some(matchesType);
   if (isImmune) {
@@ -335,7 +340,7 @@ export function calculateDamage(damage, target, source = null) {
 
   // 4. O dano nunca é reduzido abaixo de 1 (apenas Imunidade ou dano base zero resultam em 0)
   const clampedDamage = Math.max(1, Math.floor(finalDamage));
-  
+
   return clampedDamage;
 }
 
@@ -444,16 +449,16 @@ export function getCreatureStatsByDifficulty(difficulty) {
     .replace(/[\u0300-\u036f]/g, "");
 
   const statsMap = {
-    facil:     { health: 25,  energy: 2,  powerPoints: 1, parameters: 2, features: 2 },
-    easy:      { health: 25,  energy: 2,  powerPoints: 1, parameters: 2, features: 2 },
+    facil: { health: 25, energy: 2, powerPoints: 1, parameters: 2, features: 2 },
+    easy: { health: 25, energy: 2, powerPoints: 1, parameters: 2, features: 2 },
 
-    normal:    { health: 40,  energy: 4,  powerPoints: 2, parameters: 3, features: 3 },
+    normal: { health: 40, energy: 4, powerPoints: 2, parameters: 3, features: 3 },
 
-    dificil:   { health: 80,  energy: 8,  powerPoints: 3, parameters: 4, features: 5 },
-    hard:      { health: 80,  energy: 8,  powerPoints: 3, parameters: 4, features: 5 },
+    dificil: { health: 80, energy: 8, powerPoints: 3, parameters: 4, features: 5 },
+    hard: { health: 80, energy: 8, powerPoints: 3, parameters: 4, features: 5 },
 
-    extrema:   { health: 120, energy: 12, powerPoints: 4, parameters: 5, features: 6 },
-    extreme:   { health: 120, energy: 12, powerPoints: 4, parameters: 5, features: 6 }
+    extrema: { health: 120, energy: 12, powerPoints: 4, parameters: 5, features: 6 },
+    extreme: { health: 120, energy: 12, powerPoints: 4, parameters: 5, features: 6 }
   };
 
   const base = statsMap[normalizedKey] ?? statsMap.normal;
@@ -576,20 +581,20 @@ export function calculateLegacyNpcStats(difficulty, level = 0) {
     .replace(/[\u0300-\u036f]/g, "");
 
   const baseMap = {
-    facil:    { hp: 25,  pe: 2,  power: 1, parameters: 2, maxAbilities: 2, maxParamCategory: 4, enhancements: "Sem aprimoramentos adicionais" },
-    easy:     { hp: 25,  pe: 2,  power: 1, parameters: 2, maxAbilities: 2, maxParamCategory: 4, enhancements: "Sem aprimoramentos adicionais" },
+    facil: { hp: 25, pe: 2, power: 1, parameters: 2, maxAbilities: 2, maxParamCategory: 4, enhancements: "Sem aprimoramentos adicionais" },
+    easy: { hp: 25, pe: 2, power: 1, parameters: 2, maxAbilities: 2, maxParamCategory: 4, enhancements: "Sem aprimoramentos adicionais" },
 
-    normal:   { hp: 40,  pe: 4,  power: 2, parameters: 3, maxAbilities: 3, maxParamCategory: 4, enhancements: "Sem aprimoramentos adicionais" },
+    normal: { hp: 40, pe: 4, power: 2, parameters: 3, maxAbilities: 3, maxParamCategory: 4, enhancements: "Sem aprimoramentos adicionais" },
 
-    dificil:  { hp: 80,  pe: 8,  power: 3, parameters: 4, maxAbilities: 4, maxParamCategory: 6, enhancements: "1 Aprimoramento por habilidade" },
-    hard:     { hp: 80,  pe: 8,  power: 3, parameters: 4, maxAbilities: 4, maxParamCategory: 6, enhancements: "1 Aprimoramento por habilidade" },
+    dificil: { hp: 80, pe: 8, power: 3, parameters: 4, maxAbilities: 4, maxParamCategory: 6, enhancements: "1 Aprimoramento por habilidade" },
+    hard: { hp: 80, pe: 8, power: 3, parameters: 4, maxAbilities: 4, maxParamCategory: 6, enhancements: "1 Aprimoramento por habilidade" },
 
-    extrema:  { hp: 120, pe: 12, power: 4, parameters: 5, maxAbilities: 5, maxParamCategory: 6, enhancements: "Todos os Aprimoramentos por habilidade" },
-    extreme:  { hp: 120, pe: 12, power: 4, parameters: 5, maxAbilities: 5, maxParamCategory: 6, enhancements: "Todos os Aprimoramentos por habilidade" }
+    extrema: { hp: 120, pe: 12, power: 4, parameters: 5, maxAbilities: 5, maxParamCategory: 6, enhancements: "Todos os Aprimoramentos por habilidade" },
+    extreme: { hp: 120, pe: 12, power: 4, parameters: 5, maxAbilities: 5, maxParamCategory: 6, enhancements: "Todos os Aprimoramentos por habilidade" }
   };
 
   const hpPerLevelMap = {
-    facil: 4,  easy: 4,
+    facil: 4, easy: 4,
     normal: 8,
     dificil: 16, hard: 16,
     extrema: 32, extreme: 32
@@ -720,7 +725,7 @@ export async function flowDeathDie(actor, options = {}) {
   await actor.update(updates);
 
   // Montagem do card de chat estilizado
-  const outcomeTitle = isGift 
+  const outcomeTitle = isGift
     ? (isStabilized ? "DÁDIVA DO ARTESÃO - ESTABILIZADO!" : "Dádiva do Artesão (+1)")
     : (isDead ? "SENTENÇA DO CORRUPTOR - MORTE!" : "Sentença do Corruptor (+1)");
 
@@ -801,7 +806,7 @@ export async function flowRegenerateStabilized(actor) {
   });
 
   const flavor = `
-    <div class="gaia-preludio chat-card heal-card" style="border-left: 4px solid var(--gaia-green, #2e8b57); padding: 8px; background: rgba(0,0,0,0.04); border-radius: 4px;">
+    <div class="gaia-preludio chat-card heal-card" style="border-left: 4px solid var(--gaia-green, #2e8b57); padding: 8px; background: rgba(0,0,0,0.04); border-radius: var(--gaia-radius);">
       <div style="font-family: var(--gaia-font-medieval, Georgia, serif); font-size: 1.05em; font-weight: bold; color: var(--gaia-green, #2e8b57); margin-bottom: 4px;">
         Regeneração Estabilizada (+${healAmount} PV)
       </div>

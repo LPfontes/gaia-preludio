@@ -7,27 +7,28 @@
  */
 
 import { GAIA } from "./helpers/config.mjs";
-import { 
-  modifyDieCategory, 
-  isCriticalHit, 
-  flowClash, 
-  flowDifficultyCheck, 
-  flowDestinyCheck, 
+import {
+  modifyDieCategory,
+  isCriticalHit,
+  flowClash,
+  flowDifficultyCheck,
+  flowDestinyCheck,
   flowDeathDie,
   flowRegenerateStabilized,
-  getDifficultyLevel, 
-  getCreatureStatsByDifficulty, 
-  calculateHomunculusStats, 
-  calculateCreatureStats, 
-  calculateLegacyNpcStats 
+  getDifficultyLevel,
+  getCreatureStatsByDifficulty,
+  calculateHomunculusStats,
+  calculateCreatureStats,
+  calculateLegacyNpcStats
 } from "./helpers/flow.mjs";
 import { GaiaActor } from "./documents/actor.mjs";
 import { GaiaItem } from "./documents/item.mjs";
 import { EquipmentBaseDataModel, ArmorDataModel, WeaponDataModel } from "./data/EquipmentModel.mjs";
 import { LegacyDataModel, LegacyNpcDataModel } from "./data/Legacy.mjs";
 import { CreatureDataModel } from "./data/creature.mjs";
-import { AbilityBaseModel } from "./data/abilitiesBaseModel.mjs";
+import { AbilityBaseModel, FeatureDataModel } from "./data/abilitiesBaseModel.mjs";
 import { PathDataModel } from "./data/PathModel.mjs";
+import { RelicDataModel } from "./data/RelicModel.mjs";
 import { ActionDataModel } from "./data/ActionModel.mjs";
 import { CharacterLegacySheet } from "./applications/sheets/actor/character-legacy.mjs";
 import { CharacterLegacyNpcSheet } from "./applications/sheets/actor/character-legacy-npc.mjs";
@@ -37,11 +38,13 @@ import { EquipmentSheet } from "./applications/sheets/item/equipment.mjs";
 import { ArmorSheet } from "./applications/sheets/item/armor.mjs";
 import { WeaponSheet } from "./applications/sheets/item/weapon.mjs";
 import { AbilitySheet } from "./applications/sheets/item/ability.mjs";
+import { FeatureSheet } from "./applications/sheets/item/feature.mjs";
 import { LegacySheet } from "./applications/sheets/item/legacy.mjs";
 import { PathSheet } from "./applications/sheets/item/path.mjs";
+import { RelicSheet } from "./applications/sheets/item/relic.mjs";
 import { GaiaItemBrowser } from "./applications/item-browser.mjs";
 import { GaiaDeathSaveDialog } from "./applications/death-save-dialog.mjs";
-import { promptRollRequestDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog, promptActionDialog, registerRollRequestListeners } from "./helpers/dialogs.mjs";
+import { promptRollRequestDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog, promptActionDialog, registerRollRequestListeners } from "./helpers/dialogs/index.mjs";
 import { createRegion, createRegionShape } from "./helpers/region-helper.mjs";
 import { getSelectedToken, getSelectedTokens, getTargetedTokens, getSelectedOrTargetToken } from "./helpers/token-helper.mjs";
 const { Actors, Items } = foundry.documents.collections;
@@ -55,6 +58,7 @@ Hooks.once("init", async () => {
   // EN: Preload Handlebars partial templates
   await loadTemplates([
     "systems/gaia-preludio/templates/actor/parts/actor-header.hbs",
+    "systems/gaia-preludio/templates/actor/parts/tabs-nav.hbs",
     "systems/gaia-preludio/templates/actor/parts/actor-personagem.hbs",
     "systems/gaia-preludio/templates/actor/parts/inventory.hbs",
     "systems/gaia-preludio/templates/actor/parts/bio.hbs",
@@ -62,6 +66,7 @@ Hooks.once("init", async () => {
     "systems/gaia-preludio/templates/item/ability.hbs",
     "systems/gaia-preludio/templates/item/legacy.hbs",
     "systems/gaia-preludio/templates/item/path.hbs",
+    "systems/gaia-preludio/templates/item/relic.hbs",
     "systems/gaia-preludio/templates/dialog/roll-request-dialog.hbs",
     "systems/gaia-preludio/templates/actor/parts/creature-header.hbs",
     "systems/gaia-preludio/templates/apps/item-browser.hbs",
@@ -97,7 +102,7 @@ Hooks.once("init", async () => {
   GAIA.calculateCreatureStats = calculateCreatureStats;
   GAIA.calcularAtributosCriatura = calculateCreatureStats;
   GAIA.calculateLegacyNpcStats = calculateLegacyNpcStats;
-  const { promptRollRequestDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog, promptActionDialog, registerRollRequestListeners, promptLevelUpDialog } = await import("./helpers/dialogs.mjs");
+  const { promptRollRequestDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog, promptActionDialog, registerRollRequestListeners, promptLevelUpDialog } = await import("./helpers/dialogs/index.mjs");
   GAIA.promptRollRequestDialog = promptRollRequestDialog;
   GAIA.promptCreatureWizardDialog = promptCreatureWizardDialog;
   GAIA.promptAssistenteCriatura = promptCreatureWizardDialog;
@@ -125,7 +130,7 @@ Hooks.once("init", async () => {
   Handlebars.registerHelper("gte", (a, b) => Number(a) >= Number(b));
 
   // Motor de Execução de Ações e Efeitos
-  const { executeAction, applyActionDamage, applyActionCondition, placeActionAoETemplate } = await import("./helpers/action-flow.mjs");
+  const { executeAction, applyActionDamage, applyActionCondition, placeActionAoETemplate } = await import("./helpers/action-flow/index.mjs");
   GAIA.executeAction = executeAction;
   GAIA.applyActionDamage = applyActionDamage;
   GAIA.applyActionCondition = applyActionCondition;
@@ -134,7 +139,11 @@ Hooks.once("init", async () => {
   /** @type {any} */ (CONFIG).GAIA = GAIA;
 
   // PT: Registra exclusivamente as condições e efeitos visuais do sistema Gaia: Prelúdio no Foundry VTT
-  CONFIG.statusEffects = Object.values(GAIA.conditions || {});
+  CONFIG.statusEffects = Object.values(GAIA.conditions || {}).map(c => ({
+    ...c,
+    img: c.img || c.icon,
+    icon: c.icon || c.img
+  }));
   if (CONFIG.specialStatusEffects) {
     CONFIG.specialStatusEffects.DEFEATED = "incapacitado";
   }
@@ -191,25 +200,27 @@ Hooks.once("init", async () => {
     armor: ArmorDataModel,
     weapon: WeaponDataModel,
     ability: AbilityBaseModel,
+    feature: FeatureDataModel,
     legacy: LegacyDataModel,
-    path: PathDataModel
+    path: PathDataModel,
+    relic: RelicDataModel
   });
 
   // PT: Registra as fichas de Actor (ApplicationV2)
   // EN: Register Actor sheets (ApplicationV2)
 
   Actors.unregisterSheet("core", ActorSheetV2);
-  Actors.registerSheet("gaia-preludio", /** @type {any} */ (CharacterLegacySheet), {
+  Actors.registerSheet("gaia-preludio", /** @type {any} */(CharacterLegacySheet), {
     types: ["legacy"],
     makeDefault: true,
     label: "GAIA.Sheet.Legacy"
   });
-  Actors.registerSheet("gaia-preludio", /** @type {any} */ (CharacterLegacyNpcSheet), {
+  Actors.registerSheet("gaia-preludio", /** @type {any} */(CharacterLegacyNpcSheet), {
     types: ["legacyNpc"],
     makeDefault: true,
     label: "GAIA.Sheet.LegacyNpc"
   });
-  Actors.registerSheet("gaia-preludio", /** @type {any} */ (CreatureSheet), {
+  Actors.registerSheet("gaia-preludio", /** @type {any} */(CreatureSheet), {
     types: ["creature"],
     makeDefault: true,
     label: "GAIA.Sheet.Creature"
@@ -218,34 +229,44 @@ Hooks.once("init", async () => {
   // PT: Registra as fichas de Item (ApplicationV2)
   // EN: Register Item sheets (ApplicationV2)
   Items.unregisterSheet("core", ItemSheetV2);
-  Items.registerSheet("gaia-preludio", /** @type {any} */ (EquipmentSheet), {
+  Items.registerSheet("gaia-preludio", /** @type {any} */(EquipmentSheet), {
     types: ["equipment"],
     makeDefault: true,
     label: "GAIA.Sheet.Equipment"
   });
-  Items.registerSheet("gaia-preludio", /** @type {any} */ (ArmorSheet), {
+  Items.registerSheet("gaia-preludio", /** @type {any} */(ArmorSheet), {
     types: ["armor"],
     makeDefault: true,
     label: "GAIA.Sheet.Armor"
   });
-  Items.registerSheet("gaia-preludio", /** @type {any} */ (WeaponSheet), {
+  Items.registerSheet("gaia-preludio", /** @type {any} */(WeaponSheet), {
     types: ["weapon"],
     makeDefault: true,
     label: "GAIA.Sheet.Weapon"
   });
-  Items.registerSheet("gaia-preludio", /** @type {any} */ (AbilitySheet), {
+  Items.registerSheet("gaia-preludio", /** @type {any} */(AbilitySheet), {
     types: ["ability"],
     makeDefault: true,
     label: "GAIA.Sheet.Ability"
   });
-  Items.registerSheet("gaia-preludio", /** @type {any} */ (LegacySheet), {
+  Items.registerSheet("gaia-preludio", /** @type {any} */(FeatureSheet), {
+    types: ["feature"],
+    makeDefault: true,
+    label: "GAIA.Sheet.Feature"
+  });
+  Items.registerSheet("gaia-preludio", /** @type {any} */(LegacySheet), {
     types: ["legacy"],
     makeDefault: true,
     label: "GAIA.Sheet.Legacy"
   });
-  Items.registerSheet("gaia-preludio", /** @type {any} */ (PathSheet), {
+  Items.registerSheet("gaia-preludio", /** @type {any} */(PathSheet), {
     types: ["path"],
     makeDefault: true,
     label: "GAIA.Sheet.Path"
+  });
+  Items.registerSheet("gaia-preludio", /** @type {any} */(RelicSheet), {
+    types: ["relic"],
+    makeDefault: true,
+    label: "GAIA.Sheet.Relic"
   });
 });

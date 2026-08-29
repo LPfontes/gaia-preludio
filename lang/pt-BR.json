@@ -14,9 +14,13 @@
       "weapon": "Arma",
       "arma": "Arma",
       "ability": "Habilidade",
+      "feature": "Característica",
+      "caracteristica": "Característica",
       "legacy": "Legado",
       "path": "Caminho",
-      "caminho": "Caminho"
+      "caminho": "Caminho",
+      "relic": "Relíquia",
+      "reliquia": "Relíquia"
     }
   },
   "GAIA": {
@@ -332,10 +336,19 @@
       "acaoVersatil": "Ação Versátil"
     },
     "AbilityCategories": {
-      "name": "Categoria",  
+      "name": "Categoria",
       "ofensiva": "Ofensiva",
       "defensiva": "Defensiva",
-      "auxiliadora": "Auxiliadora"
+      "auxiliadora": "Auxiliadora",
+      "other": "Outra"
+    },
+    "FeatureCategories": {
+      "name": "Categoria",
+      "presenca": "Presença",
+      "colera": "Cólera",
+      "reducao": "Redução",
+      "passiva": "Passiva",
+      "geral": "Geral"
     },
     "Ability": {
       "SheetTitle": "Ficha de Habilidade",
@@ -345,6 +358,8 @@
       "RemoveType": "Remover Tipo",
       "AddType": "Adicionar Tipo de Habilidade",
       "QuotePlaceholder": "Citação / Flavour Text",
+      "Requirement": "Requerimento",
+      "RequirementPlaceholder": "Opcional (Ex: Vigor 2, Desperto)",
       "Targets": "Alvos",
       "TargetPlaceholder": "1 Alvo",
       "Range": "Alcance",
@@ -507,17 +522,17 @@
       "Determination": "Determinação"
     },
     "WeaponType": {
-      "name": "Tipo de Arma",  
+      "name": "Tipo de Arma",
       "Light": "Leve",
       "Medium": "Média",
       "Heavy": "Pesada",
       "Ranged": "À Distância",
       "Magical": "Mágica",
-      "special":"Especial",
-      "improvized":"Improvisado"
+      "special": "Especial",
+      "improvized": "Improvisado"
     },
     "ArmorType": {
-      "name": "Tipo de Armadura",  
+      "name": "Tipo de Armadura",
       "Robes": "Robes",
       "Light": "Leve",
       "Medium": "Média",
@@ -554,13 +569,16 @@
       "Rides": "Montarias"
     },
     "Sheet": {
+      "Relic": "Ficha de Relíquia",
       "Legacy": "Ficha de Legado",
+      "LegacyNpc": "Ficha de Legado (NPC)",
       "Legado": "Ficha de Legado",
       "Creature": "Ficha de Criatura",
       "Equipment": "Ficha de Equipamento",
       "Armor": "Ficha de Armadura",
       "Weapon": "Ficha de Arma",
       "Ability": "Ficha de Habilidade",
+      "Feature": "Ficha de Característica",
       "Path": "Ficha de Caminho",
       "masteryEmptyHint": "Nenhuma maestria adquirida. Clique em + para adicionar."
     },
@@ -584,15 +602,14 @@
       "ActiveEffectLabel": "Efeito Ativo",
       "EmptyAbilitiesHint": "Nenhuma habilidade cadastrada neste Caminho."
     },
-    "RollType":{
+    "RollType": {
       "name": "Tipo de Rolagem",
-      "Standard":"Padrão",
-      "Advantage":"Aptidão",
-      "Disadvantage":"Inaptidão",
-      "SupAdvantage":"Aptidão Aprimorada",
-      "SupDisadvantage":"Inaptidão Aprimorada"
+      "Standard": "Padrão",
+      "Advantage": "Aptidão",
+      "Disadvantage": "Inaptidão",
+      "SupAdvantage": "Aptidão Aprimorada",
+      "SupDisadvantage": "Inaptidão Aprimorada"
     },
-
     "Inventory": {
       "Weapons": "Armas",
       "Armor": "Roupas e Armaduras",
@@ -607,18 +624,18 @@
       "EmptyConsumables": "Nenhuma poção ou consumível no inventário.",
       "EmptyCommon": "Nenhum item comum no inventário."
     },
-    "TableLabels":{
-      "ItemName":"Item",
-      "WeaponName":"Armamento",
-      "WeaponDamage":"Dano",
-      "WeaponRange":"Alcance",
-      "WeaponProperties":"Propriedades",
-      "Block":"Bloqueio",
-      "Category":"Categoria",
-      "Quantity":"Qtd",
-      "Unity":"Un.",
-      "Price":"Preço",
-      "Actions":"Ações"
+    "TableLabels": {
+      "ItemName": "Item",
+      "WeaponName": "Armamento",
+      "WeaponDamage": "Dano",
+      "WeaponRange": "Alcance",
+      "WeaponProperties": "Propriedades",
+      "Block": "Bloqueio",
+      "Category": "Categoria",
+      "Quantity": "Qtd",
+      "Unity": "Un.",
+      "Price": "Preço",
+      "Actions": "Ações"
     },
     "Dialog": {
       "ActiveEffectTitle": "Configurar Efeito Ativo",
@@ -654,20 +671,32 @@
       "TypeNpc": "Legado (NPC)",
       "Submit": "Criar Personagem",
       "TabGeneral": "Identificação",
-      "TabParameters": "Parâmetros",
-      "TabKnowledge": "Conhecimentos",
-      "TabVitals": "Vida & Energia",
-      "AwakeningRulesTitle": "Regras de Despertar Inicial",
-      "AwakeningIntro": "Todo personagem inicia com 1 Nível de Despertar, que representa o início de sua jornada em Auroria. Esse Nível de Despertar inicial lhe concede:",
+      "TabParameters": "1. Parâmetros",
+      "TabKnowledge": "2. Conhecimentos",
+      "TabVitals": "3. Recursos & Idiomas",
+      "TabAbilities": "4. Habilidades",
+      "AwakeningRulesTitle": "Guia de Criação: Despertar Inicial",
+      "AwakeningIntro": "Defina o estado de Despertar do personagem e distribua seus Parâmetros e Conhecimentos iniciais.",
+      "ModeSelectLabel": "Condição de Despertar:",
+      "ModeAwakened": "Desperto (Nível 1)",
+      "ModeUnawakened": "Não-Desperto (Nível 0)",
+      "UnawakenedHint": "Um Não-Desperto possui apenas suas Habilidades de Legado, 4 pontos em Parâmetros (máx 2), 7 pontos em Conhecimentos (máx 2), 12 PV fixos, 0 PE, Movimentação de 6m e o Idioma Comum mais um adicional à escolha.",
       "AwakeningParamTitle": "Distribuição de Parâmetros:",
-      "AwakeningParam": "7 pontos em seus Parâmetros para serem distribuídos. Você pode distribuir, no máximo, 2 pontos num mesmo Parâmetro.",
+      "AwakeningParam": "Distribua os pontos de Parâmetros respeitando a regra de no máximo 2 pontos num mesmo Parâmetro.",
       "AwakeningParamHint": "Parâmetros disponíveis: Agilidade, Arcanismo, Brutalidade, Canalização, Destreza, Espírito, Precisão e Vigor.",
       "AwakeningKnowledgeTitle": "Distribuição de Conhecimentos:",
       "AwakeningKnowledge": "7 pontos em seus Conhecimentos para serem distribuídos. Você pode distribuir, no máximo, 2 pontos em um mesmo Conhecimento.",
-      "AwakeningKnowledgeHint": "Conhecimentos disponíveis: Carisma, Conhecimento Místico, Exploração, Furtividade, História, Intimidação, Intuição, Medicina, Percepção, Performance, Religião, Sobrevivência, Tecnologia e Treinamento Animal.",
-      "AwakeningVitalsTitle": "Cálculo de Vida & Energia:",
-      "AwakeningHP": "30 + 1d6 (ou 3) + o seu total de pontos distribuídos em Vigor como Pontos de Vida.",
-      "AwakeningEnergy": "5 Pontos de Energia.",
+      "AwakeningKnowledgeHint": "Conhecimentos disponíveis: Carisma, Conhecimento Místico, Exploração, Furtividade, História, Intimidação, Intuição, Medicina, Percepção, Performance, Religião, Sobrevivência, Tecnologia e Força de Vontade.",
+      "AwakeningVitalsTitle": "Cálculo de Vida, Energia & Idiomas:",
+      "AwakeningAbilitiesTitle": "Habilidades Iniciais de Caminho:",
+      "AwakeningAbilitiesHint": "Duas Habilidades de Caminho (Capítulo 3) à sua escolha. Você pode escolher Habilidades de Caminho de Caminhos de Combate diferentes.",
+      "ChooseAbilitiesTitle": "Seleção de Habilidades de Caminho",
+      "OpenAbilitiesBrowser": "Abrir Navegador de Habilidades",
+      "SelectedAbilitiesLabel": "Habilidades Selecionadas:",
+      "EmptyAbilitiesHint": "Nenhuma habilidade selecionada. Clique no botão acima para escolher até 2 Habilidades de Caminho.",
+      "UnawakenedNoAbilities": "Um personagem Não-Desperto ainda não canalizou o Véu e não recebe Habilidades de Caminho iniciais, possuindo apenas suas Habilidades de Legado naturais.",
+      "AwakeningHP": "30 + 1d6 (ou 3) + Vigor (Desperto) ou 12 PV fixos (Não-Desperto).",
+      "AwakeningEnergy": "5 Pontos de Energia (Desperto) ou 0 PE (Não-Desperto).",
       "PointsRemaining": "Pontos Restantes:",
       "PointsDistribute": "Distribuir Parâmetros (Máx 2 cada):",
       "PointsDistributeKnowledge": "Distribuir Conhecimentos (Máx 2 cada):",
@@ -675,7 +704,10 @@
       "RollHP": "Rolar 1d6",
       "FixedHP": "Fixo (3)",
       "CalculatedHP": "Pontos de Vida (PV):",
-      "RollHPHint": "Definição de PV Inicial (30 + 1d6 ou 3 + Vigor):",
+      "RollHPHint": "Definição de PV Inicial:",
+      "UnawakenedHpFixed": "Vida Fixa (Não-Desperto): 12 PV",
+      "AdditionalLanguage": "Idioma Adicional à Escolha (além do Comum):",
+      "SelectAdditionalLanguage": "Selecione um idioma",
       "Next": "Avançar",
       "Previous": "Voltar"
     },
@@ -740,6 +772,12 @@
       "Aurorian": "Idiomas Aurorianos"
     },
     "Language": {
+      "SectionTitle": "Idiomas Conhecidos",
+      "AddLanguage": "Adicionar Idioma",
+      "EmptyLanguagesHint": "Nenhum idioma registrado. Clique em + para adicionar.",
+      "SelectLanguagePrompt": "Selecione o idioma a ser adicionado ao personagem:",
+      "DialogTitle": "Adicionar Idioma ao Personagem",
+      "Comum": "Comum",
       "Abissal": "Abissal",
       "Ancestral": "Ancestral",
       "Celestial": "Celestial",
@@ -906,6 +944,33 @@
       "DurationLongRest": "Até o Próximo Descanso Longo",
       "DurationInstant": "Instantâneo",
       "DurationPermanent": "Permanente"
+    },
+    "Relic": {
+      "Name": "Relíquia",
+      "Plural": "Relíquias",
+      "Potency": "Potência",
+      "PotencyVeil": "Potência de Véu",
+      "Bound": "Vinculada",
+      "NotBound": "Não Vinculada",
+      "Bind": "Vincular",
+      "Unbind": "Desvincular",
+      "Category": "Categoria",
+      "AddRelic": "Adicionar Relíquia",
+      "EmptyRelics": "Nenhuma relíquia registrada no inventário.",
+      "OverloadTitle": "Sobrecarga de Potência (Véu)",
+      "OverloadWarning": "Sobrecarga de Véu: Este personagem mantém mais de 5 pontos de Potência vinculados e perde 1d20 PV e 1d6 PE por minuto!",
+      "OverloadRoll": "Rolar Dano de Sobrecarga (1d20 PV + 1d6 PE)",
+      "OverloadCardHeader": "Sobrecarga de Véu Sofrida",
+      "OverloadCardDesc": "O excesso de força de Véu das relíquias vinculadas corrói o corpo e a energia do personagem.",
+      "NamePlaceholder": "Nome da Relíquia...",
+      "Description": "Descrição e Propriedades da Relíquia",
+      "DescriptionPlaceholder": "Descreva a história, os efeitos únicos e as propriedades desta Relíquia..."
+    },
+    "RelicCategory": {
+      "Common": "Comum",
+      "Uncommon": "Incomum",
+      "Rare": "Rara",
+      "Legendary": "Lendária"
     }
   }
 }

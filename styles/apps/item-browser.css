@@ -28,7 +28,7 @@
   gap: 12px;
   background: rgba(87, 76, 67, 0.12);
   padding: 10px 12px;
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
   border: 1px solid var(--gaia-border-frame, #574c43);
   align-items: flex-end;
   flex-wrap: wrap;
@@ -55,7 +55,7 @@
   padding: 6px 10px 6px 34px;
   background: var(--gaia-bg-input, #151312);
   border: 1px solid var(--gaia-border-frame, #574c43);
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
   color: #ffffff;
   font-family: var(--gaia-font-medieval, "Cinzel", Georgia, serif);
   font-size: var(--gaia-font-sm, 12px);
@@ -142,7 +142,7 @@
 .browser-item-card {
   background: rgba(0, 0, 0, 0.05);
   border: 1px solid var(--gaia-border-frame, #574c43);
-  border-radius: var(--gaia-radius, 4px);
+  border-radius: var(--gaia-radius);
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -250,11 +250,60 @@
 }
 
 .btn-action.import-btn {
- background: var(--gaia-border-frame);
+  background: var(--gaia-border-frame);
 }
 
 .btn-action.import-btn:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Modo de Seleção */
+.btn-action.select-btn {
+  background: var(--gaia-border-frame);
+  color: var(--gaia-text-parchment);
+}
+
+.btn-action.select-btn:hover:not(:disabled) {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+}
+
+.btn-action.select-btn.selected {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+  border-color: var(--gaia-gold-accent, #c9a34b);
+}
+
+.btn-action.select-btn.disabled,
+.btn-action.select-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.browser-item-card.selected {
+  border-color: var(--gaia-purple-dark);
+  box-shadow: 0 0 8px rgba(93, 28, 143, 0.35);
+}
+
+.btn-confirm-selection {
+  padding: 6px 14px;
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-confirm-selection:hover {
+  background: var(--gaia-purple, #7c2dbb);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .browser-empty-state {

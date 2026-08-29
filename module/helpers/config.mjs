@@ -230,6 +230,23 @@ GAIA.weaponCategories ={
   special: "GAIA.WeaponCategory.special",
   improvized: "GAIA.WeaponCategory.improvized",
 };
+
+/**
+ * PT: Categorias e Potências de Relíquias.
+ * EN: Relic Categories and Potencies.
+ */
+GAIA.relicCategories = {
+  comum: { label: "GAIA.RelicCategory.Common", potency: 0 },
+  incomum: { label: "GAIA.RelicCategory.Uncommon", potency: 1 },
+  rara: { label: "GAIA.RelicCategory.Rare", potency: 2 },
+  lendaria: { label: "GAIA.RelicCategory.Legendary", potency: 3 }
+};
+
+/**
+ * PT: Limite máximo padrão de pontos de Potência de Relíquias Vinculadas por personagem.
+ * EN: Default maximum limit of bound relic potency points per character.
+ */
+GAIA.maxBoundRelicPotency = 5;
 /**
  * PT: Tipos de Rolagem.
  * EN: Roll Types.
@@ -277,7 +294,24 @@ GAIA.actionType = {
 GAIA.abilityCategories = {
   ofensiva: "GAIA.AbilityCategories.ofensiva",
   defensiva: "GAIA.AbilityCategories.defensiva",
-  auxiliadora: "GAIA.AbilityCategories.auxiliadora"
+  auxiliadora: "GAIA.AbilityCategories.auxiliadora",
+  other: "GAIA.AbilityCategories.other"
+};
+
+/**
+ * PT: Categorias de Características (Features).
+ * EN: Feature Categories.
+ * @enum {string}
+ */
+GAIA.featureCategories = {
+  presenca: "GAIA.FeatureCategories.presenca",
+  colera: "GAIA.FeatureCategories.colera",
+  reducao: "GAIA.FeatureCategories.reducao",
+  ofensiva: "GAIA.AbilityCategories.ofensiva",
+  defensiva: "GAIA.AbilityCategories.defensiva",
+  auxiliadora: "GAIA.AbilityCategories.auxiliadora",
+  passiva: "GAIA.FeatureCategories.passiva",
+  geral: "GAIA.FeatureCategories.geral"
 };
 
 /**
@@ -441,69 +475,81 @@ GAIA.conditions = {
   penumbra: {
     id: "penumbra",
     name: "GAIA.Condition.Penumbra",
-    icon: "icons/magic/perception/shadow-stealth-eyes-purple.webp",
+    img: "systems/gaia-preludio/assets/conditions/penumbra.webp",
+    icon: "systems/gaia-preludio/assets/conditions/penumbra.webp",
     description: "GAIA.Condition.PenumbraDesc"
   },
   escuridao: {
     id: "escuridao",
     name: "GAIA.Condition.Escuridao",
-    icon: "icons/magic/unholy/silhouette-robe-evil-glow.webp",
+    img: "systems/gaia-preludio/assets/conditions/penumbra.webp",
+    icon: "systems/gaia-preludio/assets/conditions/penumbra.webp",
     description: "GAIA.Condition.EscuridaoDesc"
   },
   atordoado: {
     id: "atordoado",
     name: "GAIA.Condition.Atordoado",
-    icon: "icons/magic/control/silhouette-hold-beam-blue.webp",
+    img: "systems/gaia-preludio/assets/conditions/atordoado.webp",
+    icon: "systems/gaia-preludio/assets/conditions/atordoado.webp",
     description: "GAIA.Condition.AtordoadoDesc"
   },
   enfraquecido: {
     id: "enfraquecido",
     name: "GAIA.Condition.Enfraquecido",
-    icon: "icons/magic/death/undead-skeleton-energy-green.webp",
+    img: "systems/gaia-preludio/assets/conditions/enfraquecido.webp",
+    icon: "systems/gaia-preludio/assets/conditions/enfraquecido.webp",
     description: "GAIA.Condition.EnfraquecidoDesc"
   },
   lentidao: {
     id: "lentidao",
     name: "GAIA.Condition.Lentidao",
-    icon: "icons/magic/time/hourglass-tilted-gray.webp",
+    img: "systems/gaia-preludio/assets/conditions/lentidao.webp",
+    icon: "systems/gaia-preludio/assets/conditions/lentidao.webp",
     description: "GAIA.Condition.LentidaoDesc"
   },
   incapacitado: {
     id: "incapacitado",
     name: "GAIA.Condition.Incapacitado",
-    icon: "icons/svg/unconscious.svg",
+    img: "systems/gaia-preludio/assets/conditions/incapacitado.webp",
+    icon: "systems/gaia-preludio/assets/conditions/incapacitado.webp",
     description: "GAIA.Condition.IncapacitadoDesc"
   },
   caido: {
     id: "caido",
     name: "GAIA.Condition.Caido",
-    icon: "icons/svg/falling.svg",
+    img: "systems/gaia-preludio/assets/conditions/caido.webp",
+    icon: "systems/gaia-preludio/assets/conditions/caido.webp",
     description: "GAIA.Condition.CaidoDesc"
   },
   envenenado: {
     id: "envenenado",
     name: "GAIA.Condition.Envenenado",
-    icon: "icons/magic/symbols/poison-drop-skull-green.webp",
+    img: "systems/gaia-preludio/assets/conditions/envenenado.webp",
+    icon: "systems/gaia-preludio/assets/conditions/envenenado.webp",
     description: "GAIA.Condition.EnvenenadoDesc"
   },
   fratura: {
     id: "fratura",
     name: "GAIA.Condition.Fratura",
-    icon: "icons/skills/wounds/bone-broken-red.webp",
+    img: "systems/gaia-preludio/assets/conditions/fratura.webp",
+    icon: "systems/gaia-preludio/assets/conditions/fratura.webp",
     description: "GAIA.Condition.FraturaDesc"
   },
   imovel: {
     id: "imovel",
     name: "GAIA.Condition.Imovel",
-    icon: "icons/magic/nature/root-vine-entangle-tan.webp",
+    img: "systems/gaia-preludio/assets/conditions/imovel.webp",
+    icon: "systems/gaia-preludio/assets/conditions/imovel.webp",
     description: "GAIA.Condition.ImovelDesc"
   },
   sangramento: {
     id: "sangramento",
     name: "GAIA.Condition.Sangramento",
-    icon: "icons/skills/wounds/blood-drip-droplet-red.webp",
+    img: "systems/gaia-preludio/assets/conditions/sangramento.webp",
+    icon: "systems/gaia-preludio/assets/conditions/sangramento.webp",
     description: "GAIA.Condition.SangramentoDesc"
   }
 };
+
 
 
