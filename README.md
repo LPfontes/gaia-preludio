@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 ![Language](https://img.shields.io/badge/Language-Portugu%C3%AAs%20(Brasil)-green?style=flat-square)
 
-Implementação não oficial do sistema de RPG de mesa **Gaia: Prelúdio** para o **Foundry Virtual Tabletop (v12/v13)**, construído sobre a arquitetura moderna de `ApplicationV2`, `DataModels` e `HandlebarsApplicationMixin`.
+Implementação não oficial do sistema de RPG de mesa **Gaia: Prelúdio** para o **Foundry Virtual Tabletop**, construído sobre a arquitetura moderna de `ApplicationV2`, `DataModels` e `HandlebarsApplicationMixin`.
 
 ---
 
