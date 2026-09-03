@@ -2,7 +2,7 @@
   "id": "gaia-preludio",
   "title": "Gaia: Prelúdio",
   "description": "Sistema de RPG Gaia: Prelúdio para Foundry Virtual Tabletop.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "compatibility": {
     "minimum": "14",
     "verified": "14",

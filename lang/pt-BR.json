@@ -325,7 +325,8 @@
       "iniciativa": "Iniciativa",
       "movimento": "Movimento",
       "passiva": "Passiva",
-      "foco": "Foco"
+      "foco": "Foco",
+      "transformacao": "Transformação"
     },
     "ActionType": {
       "name": "Tipo de Ação",

@@ -9,7 +9,7 @@
   background: #f4ede2;
   font-family: var(--gaia-font-medieval), Georgia, serif;
   color: var(--gaia-text-parchment);
-  overflow-y: auto;
+  overflow-y: auto !important;
   height: 100%;
 }
 

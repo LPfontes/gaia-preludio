@@ -281,7 +281,8 @@ GAIA.abilitiesTypes = {
   iniciativa: "GAIA.AbilitiesTypes.iniciativa",
   movimento: "GAIA.AbilitiesTypes.movimento",
   passiva: "GAIA.AbilitiesTypes.passiva",
-  foco: "GAIA.AbilitiesTypes.foco"
+  foco: "GAIA.AbilitiesTypes.foco",
+  transformacao: "GAIA.AbilitiesTypes.transformacao"
 };
 GAIA.actionType = {
   acaoAtiva: "GAIA.ActionType.acaoAtiva",
