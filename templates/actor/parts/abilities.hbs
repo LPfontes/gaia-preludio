@@ -161,6 +161,9 @@
                 {{#if this.system.range}}
                 <span class="tag-range"><strong>{{localize "GAIA.Ability.Range"}}:</strong> {{this.system.range}}</span>
                 {{/if}}
+                {{#if this.system.duration}}
+                <span class="tag-duration"><strong>{{localize "GAIA.Ability.Duration"}}:</strong> {{this.system.duration}}</span>
+                {{/if}}
               </div>
 
               {{#if this.system.actions.length}}

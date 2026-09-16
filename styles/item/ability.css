@@ -280,6 +280,7 @@
 
 .target-field,
 .range-field,
+.duration-field,
 .requirement-field {
   flex: 1;
   display: flex;
@@ -291,6 +292,7 @@
 
 .target-field label,
 .range-field label,
+.duration-field label,
 .requirement-field label {
   font-weight: bold;
   white-space: nowrap;
@@ -299,6 +301,7 @@
 
 .target-field input,
 .range-field input,
+.duration-field input,
 .requirement-field input {
   flex: 1;
   border: 1px solid #ccc;

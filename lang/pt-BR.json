@@ -325,8 +325,7 @@
       "iniciativa": "Iniciativa",
       "movimento": "Movimento",
       "passiva": "Passiva",
-      "foco": "Foco",
-      "transformacao": "Transformação"
+      "foco": "Foco"
     },
     "ActionType": {
       "name": "Tipo de Ação",
@@ -365,6 +364,8 @@
       "TargetPlaceholder": "1 Alvo",
       "Range": "Alcance",
       "RangePlaceholder": "8 metros",
+      "Duration": "Duração",
+      "DurationPlaceholder": "Ex: Instantâneo, 1 Minuto...",
       "DescriptionPlaceholder": "Descrição dos efeitos principais da habilidade",
       "LegacyAbilitiesSection": "HABILIDADES DE LEGADO",
       "LegacyAbilitiesTitle": "Habilidades de Legado",

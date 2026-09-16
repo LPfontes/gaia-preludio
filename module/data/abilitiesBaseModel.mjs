@@ -20,8 +20,10 @@ export class AbilityBaseModel extends BaseDataModel {
       quote: new StringField({ required: false, initial: "" }),
       numberTarget: new StringField({ required: false, initial: "" }),
       range: new StringField({ required: false, initial: "" }),
+      duration: new StringField({ required: false, initial: "" }),
       level: new NumberField({ required: false, integer: true, initial: 1, min: 1 }),
       pathId: new StringField({ required: false, initial: "" }),
+
       subEffects: new ArrayField(
         new SchemaField({
           name: new StringField({ required: true, initial: "" }),
