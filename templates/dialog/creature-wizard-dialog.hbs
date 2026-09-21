@@ -210,21 +210,21 @@
           </span>
         </div>
 
-        <div class="compendium-features-browser-box" style="margin-top: 10px;">
-          <button type="button" class="btn-open-features-browser gaia-btn" style="width: 100%; padding: 8px 12px; font-family: var(--gaia-font-medieval); font-size: var(--gaia-font-base); font-weight: bold; background: var(--gaia-bg-banner); border: 1px solid var(--gaia-border-frame); border-radius: var(--gaia-radius); color: var(--gaia-text-parchment); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s ease;">
+        <div class="compendium-features-browser-box">
+          <button type="button" class="btn-open-features-browser gaia-btn">
             <i class="fa-solid fa-book-open"></i> Abrir Navegador de Características (<span class="wizard-btn-features-count">0/3</span>)
           </button>
 
           {{!-- Lista das Características Escolhidas --}}
-          <div class="wizard-chosen-features-container" style="margin-top: 10px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <label class="wizard-field-label" style="font-weight: bold; margin-bottom: 0;">Características Selecionadas:</label>
-              <span class="chosen-features-counter" style="font-size: var(--gaia-font-base); font-weight: bold;">
+          <div class="wizard-chosen-features-container">
+            <div class="wizard-chosen-features-header">
+              <label class="wizard-field-label">Características Selecionadas:</label>
+              <span class="chosen-features-counter">
                 <span class="wizard-selected-features-count">0</span> / <span class="wizard-hint-features-max">3</span>
               </span>
             </div>
-            <div class="wizard-chosen-features-list" style="display: flex; flex-direction: column; gap: 4px;">
-              <div class="empty-features-hint" style="font-style: italic; color: var(--gaia-text-muted); font-size: var(--gaia-font-base); padding: 6px; border: 1px dashed var(--gaia-border-subtle); border-radius: var(--gaia-radius); text-align: center;">
+            <div class="wizard-chosen-features-list">
+              <div class="empty-features-hint">
                 Nenhuma característica selecionada. Clique no botão acima para escolher até <span class="wizard-hint-features-max-2">3</span> características.
               </div>
             </div>

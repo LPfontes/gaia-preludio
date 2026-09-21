@@ -245,13 +245,73 @@
   font-size: var(--gaia-font-base);
 }
 
-.gaia-dialog-creature-wizard .btn-open-features-browser:hover {
+/* --- Navegador de Características (Compendium Browser) --- */
+.gaia-dialog-creature-wizard .compendium-features-browser-box,
+.compendium-features-browser-box {
+  margin-top: 10px;
+}
+
+.gaia-dialog-creature-wizard .btn-open-features-browser,
+.btn-open-features-browser {
+  width: 100%;
+  padding: 8px 12px;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.gaia-dialog-creature-wizard .btn-open-features-browser:hover,
+.btn-open-features-browser:hover {
   background: var(--gaia-purple-dark);
   color: #ffffff;
   border-color: var(--gaia-border-frame);
 }
 
-.gaia-dialog-creature-wizard .chosen-feature-pill {
+.gaia-dialog-creature-wizard .wizard-chosen-features-container,
+.wizard-chosen-features-container {
+  margin-top: 10px;
+}
+
+.gaia-dialog-creature-wizard .wizard-chosen-features-header,
+.wizard-chosen-features-container > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.gaia-dialog-creature-wizard .wizard-chosen-features-header .wizard-field-label,
+.wizard-chosen-features-container .wizard-field-label {
+  font-weight: bold;
+  margin-bottom: 0;
+}
+
+.gaia-dialog-creature-wizard .chosen-features-counter,
+.chosen-features-counter {
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-dialog-creature-wizard .wizard-chosen-features-list,
+.wizard-chosen-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gaia-dialog-creature-wizard .chosen-feature-pill,
+.chosen-feature-pill {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -262,11 +322,46 @@
   transition: all 0.15s ease;
 }
 
-.gaia-dialog-creature-wizard .chosen-feature-pill:hover {
+.gaia-dialog-creature-wizard .chosen-feature-pill:hover,
+.chosen-feature-pill:hover {
   border-color: var(--gaia-purple-dark);
 }
 
-.gaia-dialog-creature-wizard .btn-remove-chosen-feature {
+.gaia-dialog-creature-wizard .chosen-feature-pill .chosen-feature-info,
+.chosen-feature-pill .chosen-feature-info,
+.chosen-feature-pill > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.gaia-dialog-creature-wizard .chosen-feature-pill .chosen-feature-img,
+.chosen-feature-pill .chosen-feature-img,
+.chosen-feature-pill img {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: var(--gaia-radius);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.gaia-dialog-creature-wizard .chosen-feature-pill .chosen-feature-name,
+.chosen-feature-pill .chosen-feature-name,
+.chosen-feature-pill span {
+  font-family: var(--gaia-font-medieval);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+  font-size: var(--gaia-font-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gaia-dialog-creature-wizard .btn-remove-chosen-feature,
+.btn-remove-chosen-feature {
   background: transparent;
   border: none;
   color: var(--gaia-text-muted);
@@ -274,10 +369,23 @@
   padding: 2px 4px;
   font-size: var(--gaia-font-sm);
   transition: color 0.15s ease;
+  flex-shrink: 0;
 }
 
-.gaia-dialog-creature-wizard .btn-remove-chosen-feature:hover {
+.gaia-dialog-creature-wizard .btn-remove-chosen-feature:hover,
+.btn-remove-chosen-feature:hover {
   color: var(--gaia-health, #b91c1c);
+}
+
+.gaia-dialog-creature-wizard .empty-features-hint,
+.empty-features-hint {
+  font-style: italic;
+  color: var(--gaia-text-muted);
+  font-size: var(--gaia-font-base);
+  padding: 6px;
+  border: 1px dashed var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  text-align: center;
 }
 
 /* Card de Resumo Final */

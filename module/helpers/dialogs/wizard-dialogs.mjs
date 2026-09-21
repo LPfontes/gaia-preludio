@@ -209,18 +209,18 @@ export async function promptCreatureWizardDialog(actor = null) {
         if (featuresListEl) {
           if (!chosenFeatures.length) {
             featuresListEl.innerHTML = `
-              <div class="empty-features-hint" style="font-style: italic; color: var(--gaia-text-muted); font-size: 11px; padding: 6px; border: 1px dashed var(--gaia-border-subtle); border-radius: var(--gaia-radius); text-align: center;">
+              <div class="empty-features-hint">
                 Nenhuma característica selecionada. Clique no botão acima para escolher até ${maxFeaturesCount} características.
               </div>
             `;
           } else {
             featuresListEl.innerHTML = chosenFeatures.map((feat, idx) => `
-              <div class="chosen-feature-pill" data-uuid="${feat.uuid}" style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); border: 1px solid var(--gaia-border-subtle); border-radius: var(--gaia-radius); padding: 4px 8px;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <img src="${feat.img || 'icons/svg/aura.svg'}" width="20" height="20" style="border: none; border-radius: var(--gaia-radius);" />
-                  <span style="font-family: var(--gaia-font-medieval); font-weight: bold; color: var(--gaia-text-parchment); font-size: 12px;">${feat.name}</span>
+              <div class="chosen-feature-pill" data-uuid="${feat.uuid}">
+                <div class="chosen-feature-info">
+                  <img class="chosen-feature-img" src="${feat.img || 'icons/svg/aura.svg'}" width="20" height="20" />
+                  <span class="chosen-feature-name">${feat.name}</span>
                 </div>
-                <button type="button" class="btn-remove-chosen-feature" data-uuid="${feat.uuid}" data-index="${idx}" style="background: transparent; border: none; color: var(--gaia-text-muted); cursor: pointer;" title="Remover característica">
+                <button type="button" class="btn-remove-chosen-feature" data-uuid="${feat.uuid}" data-index="${idx}" title="Remover característica">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </div>

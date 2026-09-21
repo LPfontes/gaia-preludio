@@ -264,6 +264,7 @@
 }
 
 .inventory-table-title {
+  width: 300px;
   margin: 0;
   font-family: var(--gaia-font-medieval);
   font-size: var(--gaia-font-base);
