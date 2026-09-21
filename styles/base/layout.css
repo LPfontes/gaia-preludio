@@ -242,6 +242,7 @@
   line-height: 1.5;
   color: var(--gaia-text-parchment);
   box-sizing: border-box;
+  white-space: pre-wrap;
 }
 
 .description-value:last-child {
@@ -258,6 +259,7 @@
 .description-value .spec-desc {
   display: block;
   color: var(--gaia-text-parchment);
+  white-space: pre-wrap;
 }
 
 /* Coluna e Botão de Edição da Tabela */

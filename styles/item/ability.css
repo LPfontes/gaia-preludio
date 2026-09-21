@@ -1143,6 +1143,7 @@
   color: var(--gaia-text-parchment);
   line-height: 1.4;
   margin-bottom: 8px;
+  white-space: pre-wrap;
 }
 
 .tag-target,

@@ -377,6 +377,7 @@
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-muted);
   padding-left: 32px;
+  white-space: pre-wrap;
 }
 
 .empty-section-placeholder {

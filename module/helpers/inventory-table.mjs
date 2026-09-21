@@ -145,8 +145,8 @@ export function toggleDescriptionMode(scope, forceEditState) {
   const container = typeof scope === "string" ? document.querySelector(scope) : scope;
   if (!container) return;
 
-  const textareas = container.querySelectorAll('textarea[name="system.description"], textarea[name="system.origin"], textarea[name="system.traditions"], textarea[name="system.inWorld"], textarea[name="system.specializations"]');
-  const spans = container.querySelectorAll('span.description-value[data-name="system.description"], span.description-value[data-name="system.origin"], span.description-value[data-name="system.traditions"], span.description-value[data-name="system.inWorld"], span.description-value[data-name="system.specializations"]');
+  const textareas = container.querySelectorAll('textarea[name="system.description"], textarea[name="system.origin"], textarea[name="system.traditions"], textarea[name="system.inWorld"], textarea[name="system.specializations"], textarea[name="system.appearance"]');
+  const spans = container.querySelectorAll('span.description-value[data-name="system.description"], span.description-value[data-name="system.origin"], span.description-value[data-name="system.traditions"], span.description-value[data-name="system.inWorld"], span.description-value[data-name="system.specializations"], span.description-value[data-name="system.appearance"]');
   
   // Se não encontrou nem textarea nem span de descrição, não faz nada
   if (textareas.length === 0 && spans.length === 0) return;
@@ -184,7 +184,7 @@ export function toggleDescriptionMode(scope, forceEditState) {
     // MODO LEITURA: Converte <textarea> em <span class="description-value">
     // -----------------------------------------------------------------------
     for (const textarea of textareas) {
-      const rawText = textarea.value || (textarea.placeholder ? `[${textarea.placeholder}]` : "");
+      const rawText = (textarea.value || (textarea.placeholder ? `[${textarea.placeholder}]` : "")).replace(/\\n/g, "\n");
       
       // NÃO separa path-description-panel em múltiplos spans: apenas o campo specializations é dividido
       const isSpecializations = textarea.name === "system.specializations" && !textarea.closest(".path-description-panel");
@@ -199,7 +199,7 @@ export function toggleDescriptionMode(scope, forceEditState) {
           const span = document.createElement("span");
           span.className = "description-value";
           span.dataset.name = textarea.name;
-          span.dataset.value = textarea.value;
+          span.dataset.value = (textarea.value || "").replace(/\\n/g, "\n");
           span.dataset.index = idx;
           if (textarea.rows) span.dataset.rows = textarea.rows;
           if (textarea.placeholder) span.dataset.placeholder = textarea.placeholder;
@@ -215,7 +215,7 @@ export function toggleDescriptionMode(scope, forceEditState) {
         const span = document.createElement("span");
         span.className = "description-value";
         span.dataset.name = textarea.name;
-        span.dataset.value = textarea.value;
+        span.dataset.value = (textarea.value || "").replace(/\\n/g, "\n");
         if (textarea.rows) span.dataset.rows = textarea.rows;
         if (textarea.placeholder) span.dataset.placeholder = textarea.placeholder;
         if (textarea.className) span.dataset.originalClass = textarea.className;
