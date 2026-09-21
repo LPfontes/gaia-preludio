@@ -459,10 +459,118 @@
   color: var(--gaia-text-muted);
 }
 
+/* --- Painel de Lore do Legado --- */
+.bio-legacy-lore-panel {
+  background: rgba(0, 0, 0, 0.01);
+  padding: 10px 12px;
+  overflow-y: scroll;
+}
+
+.bio-legacy-lore-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bio-legacy-lore-title {
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bio-legacy-lore-panel .btn-open-legacy-sheet {
+  background: var(--gaia-bg-window);
+  border: 1px solid var(--gaia-border-gold);
+  color: var(--gaia-text-parchment);
+  border-radius: var(--gaia-radius);
+  padding: 3px 10px;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-xs);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.bio-legacy-lore-panel .btn-open-legacy-sheet:hover {
+  background: var(--gaia-bg-box-hover);
+  border-color: var(--gaia-border-frame);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.legacy-lore-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legacy-lore-card {
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 8px 12px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.legacy-lore-card:hover {
+  border-color: var(--gaia-purple);
+}
+
+.legacy-lore-card[open] {
+  background: transparent;
+}
+
+.legacy-lore-card > summary,
+.legacy-lore-summary {
+  cursor: pointer;
+  font-weight: bold;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  outline: none;
+  transition: color 0.15s ease;
+}
+
+.legacy-lore-card > summary:hover,
+.legacy-lore-summary:hover {
+  color: var(--gaia-text-parchment);
+}
+
+.legacy-lore-card[open] > summary,
+.legacy-lore-card[open] > .legacy-lore-summary {
+  color: var(--gaia-border-gold);
+  margin-bottom: 4px;
+}
+
+.legacy-lore-card > div,
+.legacy-lore-body {
+  font-size: var(--gaia-font-base);
+  line-height: 1.5;
+  color: var(--gaia-text-parchment);
+}
+
+/* --- Painel de Biografia e Notas --- */
 .bio-notes-panel {
   display: flex;
   flex-direction: column;
   flex: 1;
+  margin-top: 6px;
+}
+
+.bio-notes-panel .panel-main-title {
+  text-align: left;
+  margin-bottom: 8px;
+  font-family: var(--gaia-font-medieval);
 }
 
 .bio-notes-textarea {

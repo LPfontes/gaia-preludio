@@ -1,3 +1,4 @@
+import { toggleInventoryGridTableMode } from "./helpers/inventory-table.mjs";
 /**
  * ==============================================================================
  * GAIA: PRELÚDIO - MAIN ENTRY POINT / PONTO DE ENTRADA PRINCIPAL
@@ -82,6 +83,8 @@ Hooks.once("init", async () => {
 
   // PT: Configura os Enums e funções auxiliares globais do sistema
   // EN: Configure global system Enums and helper functions
+  GAIA.toggleInventoryGridTableMode = toggleInventoryGridTableMode;
+  GAIA.toggleTabelaModoLeitura = toggleInventoryGridTableMode;
   GAIA.modifyDieCategory = modifyDieCategory;
   GAIA.isCriticalHit = isCriticalHit;
   GAIA.flowClash = flowClash;
@@ -170,15 +173,16 @@ Hooks.once("init", async () => {
     }
   });
 
-  // PT: Reorganiza o bloco de dano da arma e alvos de dano de ação no chat para ficar após .message-content (Foundry VTT v12 HTMLElement)
+  // PT: Reorganiza o bloco de dano da arma, alvos de dano e alvos de cura de ação no chat para ficar após .message-content (Foundry VTT v12 HTMLElement)
   Hooks.on("renderChatMessageHTML", (message, html) => {
     if (!html) return;
-    const damageBlock = html.querySelector(".flavor-text .weapon-damage-block, header .weapon-damage-block, .flavor-text .action-damage-targets-block, header .action-damage-targets-block");
+    const damageBlock = html.querySelector(".flavor-text .weapon-damage-block, header .weapon-damage-block, .flavor-text .action-damage-targets-block, header .action-damage-targets-block, .flavor-text .action-healing-targets-block, header .action-healing-targets-block");
     const messageContent = html.querySelector(".message-content");
     if (damageBlock && messageContent && damageBlock.parentElement !== html) {
       messageContent.after(damageBlock);
     }
   });
+
 
   // PT: Registra as classes de Document personalizadas do sistema
   // EN: Register system custom Document classes

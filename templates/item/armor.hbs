@@ -28,8 +28,9 @@
                 <th class="col-armor-category">{{localize "GAIA.Armor.ArmorType"}}</th>
                 <th class="col-armor-requirement">{{localize "GAIA.Armor.Requirement"}}</th>
                 <th class="col-armor-unity">{{localize "GAIA.Armor.Weight"}}</th>
-              </tr>
-            </thead>
+            <th class="col-edit" style="width: 36px; text-align: center;"><i class="fa-solid fa-gear"></i></th>
+          </tr>
+        </thead>
             <tbody>
               <tr class="item-row">
                 <td class="col-armor-block">
@@ -54,13 +55,19 @@
                 <td class="col-armor-unity">
                   <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
                 </td>
-              </tr>
+            <td class="col-edit" style="text-align: center; vertical-align: middle;">
+              <button type="button" class="btn-toggle-table-edit" data-action="toggleTableEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen"></i></button>
+            </td>
+          </tr>
             </tbody>
           </table>
         </div>
 
         <div class="weapon-description-panel" style="margin-top: 15px;">
-          <label class="description-title">{{localize "GAIA.Armor.Description"}}</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label class="description-title">{{localize "GAIA.Armor.Description"}}</label>
+            <button type="button" class="btn-toggle-description-edit" data-action="toggleDescriptionEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment); padding: 0 4px;"><i class="fa-solid fa-pen"></i></button>
+          </div>
           <textarea name="system.description" class="armor-description-textarea" placeholder="{{localize 'GAIA.Armor.DescriptionPlaceholder'}}">{{system.description}}</textarea>
         </div>
       </div>

@@ -301,6 +301,33 @@
   box-shadow: 0 2px 5px rgba(74, 46, 107, 0.3);
 }
 
+/* Tags de habilidades selecionadas */
+.gaia-dialog-level-up .selected-abilities-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.gaia-dialog-level-up .selected-ability-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.12), rgba(88, 28, 135, 0.06));
+  border: 1px solid var(--gaia-purple-dark, #6b21a8);
+  border-radius: 999px;
+  font-size: var(--gaia-font-sm);
+  font-family: var(--gaia-font-medieval, Georgia, serif);
+  color: var(--gaia-text-parchment, #2c2416);
+  white-space: nowrap;
+}
+
+.gaia-dialog-level-up .selected-ability-tag i {
+  color: var(--gaia-purple-dark, #6b21a8);
+  font-size: var(--gaia-font-xs);
+}
+
 .gaia-dialog-level-up .level-up-ability-input {
   flex: 1;
   padding: 4px 8px;

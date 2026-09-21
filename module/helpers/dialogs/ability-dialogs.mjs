@@ -42,6 +42,9 @@ export async function promptLegacyAbilityDialog(initialData = {}, options = {}) 
       if (act.damage?.hasDamage && act.damage.formula) {
         summaries.push(`Dano: ${act.damage.formula}`);
       }
+      if (act.healing?.hasHealing && act.healing.formula) {
+        summaries.push(`Cura: ${act.healing.formula}`);
+      }
       if (act.check?.hasCheck) {
         summaries.push(`Dif. ${act.check.difficulty ?? 10}`);
       }
@@ -261,6 +264,19 @@ export async function promptLegacyAbilityDialog(initialData = {}, options = {}) 
  * @returns {Promise<object|null>}
  */
 export async function promptSubEffectDialog(subEffectData = {}) {
+  const currentActions = Array.isArray(subEffectData.actions)
+    ? foundry.utils.deepClone(subEffectData.actions)
+    : [];
+
+  const formatAction = (act) => {
+    const rawType = act.type?.actionType || act.typeAction || "";
+    const labelKey = CONFIG.GAIA?.actionType?.[rawType];
+    return {
+      ...act,
+      actionTypeLabel: labelKey ? game.i18n.localize(labelKey) : rawType
+    };
+  };
+
   const actionTypeOptions = Object.entries(CONFIG.GAIA?.actionType ?? {}).map(([key, labelKey]) => ({
     key,
     label: game.i18n.localize(labelKey),
@@ -273,10 +289,15 @@ export async function promptSubEffectDialog(subEffectData = {}) {
     selected: subEffectData.type === key
   }));
 
+  const formattedSubEffectActions = currentActions.map(formatAction);
+
   const title = subEffectData.name ? `Editar Sub-Habilidade: ${subEffectData.name}` : "Nova Sub-Habilidade";
 
   const dialogHtml = await renderTemplate("systems/gaia-preludio/templates/dialog/subeffect-dialog.hbs", {
-    subEffect: subEffectData,
+    subEffect: {
+      ...subEffectData,
+      actions: formattedSubEffectActions
+    },
     actionTypeOptions,
     abilityTypeOptions
   });
@@ -286,6 +307,171 @@ export async function promptSubEffectDialog(subEffectData = {}) {
     window: { title },
     position: { width: 800, height: "auto" },
     content: dialogHtml,
+    render: (event, dialog) => {
+      const el = dialog.element;
+
+      // Navegação por Abas do Diálogo
+      el.querySelectorAll(".tab-item").forEach(tabBtn => {
+        tabBtn.addEventListener("click", (ev) => {
+          ev.preventDefault();
+          const group = tabBtn.dataset.group || "primary";
+          const targetTab = tabBtn.dataset.tab;
+          el.querySelectorAll(`.tab-item[data-group="${group}"]`).forEach(b => {
+            b.classList.toggle("active", b.dataset.tab === targetTab);
+          });
+          el.querySelectorAll(`.tab[data-group="${group}"]`).forEach(content => {
+            content.classList.toggle("active", content.dataset.tab === targetTab);
+          });
+        });
+      });
+
+      const refreshActionsList = () => {
+        const container = el.querySelector(".actions-list");
+        if (!container) return;
+
+        if (!currentActions.length) {
+          container.innerHTML = `
+            <div class="empty-hint" style="font-size: 12px; font-style: italic; color: var(--gaia-text-muted); text-align: center; padding: 10px;">
+              Nenhuma ação específica vinculada a esta sub-habilidade.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = currentActions.map((act, index) => {
+          const formatted = formatAction(act);
+          const esc = (val) => Handlebars.Utils.escapeExpression(val ?? "");
+          const costBadge = formatted.cost ? `<span class="badge cost-badge"><i class="fas fa-bolt"></i> ${esc(formatted.cost)}</span>` : "";
+          const typeBadge = formatted.actionTypeLabel ? `<span class="badge type-badge">${esc(formatted.actionTypeLabel)}</span>` : "";
+          const descHtml = formatted.description ? `<div class="action-card-desc">${esc(formatted.description)}</div>` : "";
+
+          return `
+            <div class="action-card">
+              <div class="action-card-header">
+                <div class="action-card-title-group">
+                  <strong class="action-card-name" data-action="editAction" data-index="${index}" style="cursor: pointer;" title="Editar Ação">${esc(formatted.name || "Ação")}</strong>
+                  <div class="action-badges">
+                    ${costBadge}
+                    ${typeBadge}
+                  </div>
+                </div>
+                <div class="action-card-controls">
+                  <button type="button" class="btn-edit-action" data-action="editAction" data-index="${index}" title="Editar Ação">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" class="btn-remove-action" data-action="removeAction" data-index="${index}" title="Remover Ação">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              ${descHtml}
+            </div>
+          `;
+        }).join("");
+
+        bindActionEvents();
+      };
+
+      const bindActionEvents = () => {
+        el.querySelectorAll(".actions-list [data-action='editAction'], .actions-list .btn-edit-action").forEach(btn => {
+          btn.addEventListener("click", async (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const idx = Number(btn.dataset.index);
+            if (isNaN(idx) || !currentActions[idx]) return;
+            const res = await promptActionDialog(currentActions[idx]);
+            if (res) {
+              currentActions[idx] = res;
+              refreshActionsList();
+            }
+          });
+        });
+
+        el.querySelectorAll(".actions-list [data-action='removeAction'], .actions-list .btn-remove-action").forEach(btn => {
+          btn.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const idx = Number(btn.dataset.index);
+            if (isNaN(idx) || !currentActions[idx]) return;
+            currentActions.splice(idx, 1);
+            refreshActionsList();
+          });
+        });
+      };
+
+      // Inicializa os botões já presentes no HTML
+      bindActionEvents();
+
+      // Ação: Adicionar Ação
+      const btnAddAction = el.querySelector(".btn-add-action, [data-action='addAction'], [data-action='addLegacyAction']");
+      btnAddAction?.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+        const actionResult = await promptActionDialog();
+        if (actionResult) {
+          currentActions.push(actionResult);
+          refreshActionsList();
+          ui.notifications?.info(`Ação "${actionResult.name}" adicionada.`);
+        }
+      });
+
+      // Ação: Criar/Adicionar Efeito
+      const btnCreateEffect = el.querySelector(".btn-add-effect, [data-action='createEffect']");
+      btnCreateEffect?.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+        const nameInput = el.querySelector("input[name='name']");
+        const effectName = nameInput?.value?.trim() || subEffectData.name || "Efeito da Sub-Habilidade";
+        const fallbackActor = game.user.character || canvas?.tokens?.controlled?.[0]?.actor;
+
+        if (fallbackActor) {
+          const created = await fallbackActor.createEmbeddedDocuments("ActiveEffect", [{
+            name: effectName,
+            img: "icons/svg/aura.svg",
+            icon: "icons/svg/aura.svg",
+            origin: fallbackActor.uuid,
+            description: subEffectData.description || ""
+          }]);
+          created?.[0]?.sheet?.render(true);
+        } else {
+          ui.notifications?.warn("Para criar o ActiveEffect configurável, vincule a um personagem ativo.");
+        }
+      });
+
+      // Ação: Adicionar Tipo de Habilidade (.btn-add-type)
+      const btnAddType = el.querySelector(".btn-add-type, [data-action='addType']");
+      btnAddType?.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        const categoryMeta = el.querySelector(".category-meta");
+        if (!categoryMeta) return;
+
+        const newSelectWrapper = document.createElement("div");
+        newSelectWrapper.className = "single-type-wrapper";
+        newSelectWrapper.style.display = "inline-flex";
+        newSelectWrapper.style.alignItems = "center";
+        newSelectWrapper.style.gap = "4px";
+
+        const optionsHtml = Object.entries(CONFIG.GAIA?.abilitiesTypes ?? {})
+          .map(([key, labelKey]) => `<option value="${key}">${game.i18n.localize(labelKey)}</option>`)
+          .join("");
+
+        newSelectWrapper.innerHTML = `
+          <span class="type-slash" style="color: var(--gaia-purple-dark); font-weight: bold;">|</span>
+          <select name="type" style="background: transparent; border: none; font-weight: bold; color: var(--gaia-text-parchment);">
+            <option value="">-- Tipo --</option>
+            ${optionsHtml}
+          </select>
+          <button type="button" class="btn-remove-type" style="background: transparent; border: none; cursor: pointer; color: var(--gaia-text-parchment);" title="Remover Tipo">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+
+        newSelectWrapper.querySelector(".btn-remove-type")?.addEventListener("click", (e) => {
+          e.preventDefault();
+          newSelectWrapper.remove();
+        });
+
+        categoryMeta.insertBefore(newSelectWrapper, btnAddType);
+      });
+    },
     buttons: [
       {
         action: "confirm",
@@ -295,13 +481,18 @@ export async function promptSubEffectDialog(subEffectData = {}) {
         callback: (event, button, dialog) => {
           const form = dialog.element.querySelector("form");
           const data = new FormDataExtended(form).object;
+          const typeSelects = form.querySelectorAll("select[name='type']");
+          const typeValues = Array.from(typeSelects).map(s => String(s.value || "").trim()).filter(Boolean);
+
           return {
             name: String(data.name || "Nova Sub-Habilidade").trim(),
             typeAction: String(data.typeAction || ""),
-            type: String(data.type || ""),
+            type: typeValues[0] || "",
+            types: typeValues,
             cost: String(data.cost || "").trim(),
             description: String(data.description || "").trim(),
-            note: String(data.note || "").trim()
+            note: String(data.note || "").trim(),
+            actions: currentActions
           };
         }
       },
@@ -348,6 +539,13 @@ export async function promptActionDialog(actionData = {}) {
       type: actionData.damage?.type || "physical",
       criticalBonus: actionData.damage?.criticalBonus || "",
       scaling: actionData.damage?.scaling || ""
+    },
+    healing: {
+      hasHealing: Boolean(actionData.healing?.hasHealing),
+      formula: actionData.healing?.formula || "",
+      type: actionData.healing?.type || "pv",
+      criticalBonus: actionData.healing?.criticalBonus || "",
+      scaling: actionData.healing?.scaling || ""
     },
     check: {
       hasCheck: Boolean(actionData.check?.hasCheck),
@@ -411,6 +609,16 @@ export async function promptActionDialog(actionData = {}) {
     selected: defaultAction.damage.type === key
   }));
 
+  const healingTypeOptions = Object.entries(CONFIG.GAIA?.healingTypes ?? {
+    pv: "GAIA.HealingType.Pv",
+    pe: "GAIA.HealingType.Pe",
+    temp: "GAIA.HealingType.Temp"
+  }).map(([key, labelKey]) => ({
+    key,
+    label: game.i18n.localize(labelKey),
+    selected: defaultAction.healing.type === key
+  }));
+
   const conditionOptions = Object.values(CONFIG.GAIA?.conditions ?? {}).map(c => ({
     id: c.id,
     name: typeof c.name === "string" ? game.i18n.localize(c.name) : String(c.id)
@@ -428,6 +636,7 @@ export async function promptActionDialog(actionData = {}) {
     knowledgeOptions,
     rollTypeOptions,
     damageTypeOptions,
+    healingTypeOptions,
     conditionOptions
   });
 
@@ -516,6 +725,13 @@ export async function promptActionDialog(actionData = {}) {
               type: String(data.damage?.type || "physical"),
               criticalBonus: String(data.damage?.criticalBonus || "").trim(),
               scaling: String(data.damage?.scaling || "").trim()
+            },
+            healing: {
+              hasHealing: Boolean(data.healing?.hasHealing),
+              formula: String(data.healing?.formula || "").trim(),
+              type: String(data.healing?.type || "pv"),
+              criticalBonus: String(data.healing?.criticalBonus || "").trim(),
+              scaling: String(data.healing?.scaling || "").trim()
             },
             check: {
               hasCheck: Boolean(data.check?.hasCheck),

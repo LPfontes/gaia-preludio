@@ -16,14 +16,17 @@ import {
   flowRoll,
   flowParameter,
   flowDamage,
+  flowHealing,
   amplifyRoll,
   maxRoll,
   minRoll,
   defense,
   calculateDamage,
+  calculateHealing,
   flowDeathDie,
   flowRegenerateStabilized
 } from "../helpers/flow.mjs";
+
 
 class TestRunner {
   constructor() {
@@ -84,6 +87,12 @@ export async function runFlowTests() {
 
     const rollMax = await flowRoll("1d6 + 2", {}, { maximize: true });
     runner.assertEquals(rollMax.total, 8, "Aplica opções do evaluate ({ maximize: true })");
+
+    const rollMathFloor = await flowRoll("Math.floor(@energy.max / 2)", { energy: { max: 10 } });
+    runner.assertEquals(rollMathFloor.total, 5, "Avalia fórmula complexa Math.floor(@energy.max / 2)");
+
+    const rollMathDice = await flowRoll("1d6 + Math.floor(@energy.max / 2)", { energy: { max: 10 } }, { maximize: true });
+    runner.assertEquals(rollMathDice.total, 11, "Avalia 1d6 + Math.floor(@energy.max / 2) maximizado (6 + 5 = 11)");
   } catch (err) {
     runner.assert(false, `Erro inesperado em flowRoll: ${err.message}`);
   }
@@ -173,8 +182,32 @@ export async function runFlowTests() {
 
     const rollFormula = await flowDamage({ value: "2d6 + 3" });
     runner.assert(rollFormula.total >= 5 && rollFormula.total <= 15, "Rola dano com fórmula em string (2d6 + 3)");
+
+    const rollDamageMath = await flowDamage({ formula: "Math.floor(@energy.max / 2)" }, { energy: { max: 14 } });
+    runner.assertEquals(rollDamageMath.total, 7, "Rola dano com Math.floor(@energy.max / 2) = 7");
   } catch (err) {
     runner.assert(false, `Erro inesperado em flowDamage: ${err.message}`);
+  }
+  console.groupEnd();
+
+  // ============================================================================
+  // 3.1. Testes: flowHealing
+  // ============================================================================
+  console.group("%c3.1. flowHealing", "color: #2E7D32; font-weight: bold;");
+  try {
+    const healNum = await flowHealing({ value: 10 });
+    runner.assertEquals(healNum.total, 10, "Rola cura numérica fixa");
+
+    const healFormula = await flowHealing({ value: "1d8 + 2" });
+    runner.assert(healFormula.total >= 3 && healFormula.total <= 10, "Rola cura com fórmula em string (1d8 + 2)");
+
+    const healObjFormula = await flowHealing({ formula: "2d4" });
+    runner.assert(healObjFormula.total >= 2 && healObjFormula.total <= 8, "Rola cura com objeto { formula: '2d4' }");
+
+    const healMath = await flowHealing({ formula: "Math.floor(@energy.max / 2)" }, { energy: { max: 10 } });
+    runner.assertEquals(healMath.total, 5, "Rola cura com Math.floor(@energy.max / 2) = 5");
+  } catch (err) {
+    runner.assert(false, `Erro inesperado em flowHealing: ${err.message}`);
   }
   console.groupEnd();
 
@@ -395,6 +428,47 @@ export async function runFlowTests() {
     );
   } catch (err) {
     runner.assert(false, `Erro inesperado em calculateDamage: ${err.message}`);
+  }
+  console.groupEnd();
+
+  // ============================================================================
+  // 7.1. Testes: calculateHealing
+  // ============================================================================
+  console.group("%c7.1. calculateHealing", "color: #2E7D32; font-weight: bold;");
+  try {
+    const targetNormal = {
+      system: {
+        health: { value: 10, max: 30 },
+        energy: { value: 2, max: 6 }
+      }
+    };
+
+    runner.assertEquals(calculateHealing(15, targetNormal), 15, "Cura 15 PV em alvo com 10/30");
+    runner.assertEquals(calculateHealing(25, targetNormal), 20, "Cura 25 PV limitada ao máximo de 30 (faltavam 20)");
+    runner.assertEquals(calculateHealing(0, targetNormal), 0, "Cura de valor 0 retorna 0");
+
+    const sourceWeakened = {
+      system: { hasWeakened: true }
+    };
+    runner.assertEquals(
+      calculateHealing(10, targetNormal, sourceWeakened),
+      5,
+      "Fonte Enfraquecida reduz cura pela metade (10 -> 5)"
+    );
+
+    // Cura de PE
+    runner.assertEquals(
+      calculateHealing({ type: "pe", value: 3 }, targetNormal),
+      3,
+      "Cura 3 PE em alvo com 2/6"
+    );
+    runner.assertEquals(
+      calculateHealing({ type: "pe", value: 10 }, targetNormal),
+      4,
+      "Cura de PE limitada ao máximo (faltavam 4)"
+    );
+  } catch (err) {
+    runner.assert(false, `Erro inesperado em calculateHealing: ${err.message}`);
   }
   console.groupEnd();
 

@@ -6,9 +6,10 @@
  * EN: Event listener registration for interactive buttons in Action Chat cards.
  */
 
-import { flowParameter, flowDifficultyCheck } from "../flow.mjs";
+import { flowParameter, flowDifficultyCheck, flowRoll } from "../flow.mjs";
 import { getTargetedTokens } from "../token-helper.mjs";
 import { applyActionDamage } from "./action-damage.mjs";
+import { applyActionHealing } from "./action-healing.mjs";
 import { applyActionCondition } from "./action-condition.mjs";
 import { placeActionAoETemplate } from "./action-aoe.mjs";
 import { executeAction } from "./action-executor.mjs";
@@ -29,17 +30,29 @@ export function registerActionChatListeners(html, message) {
       const formula = btn.dataset.formula || "1d6";
       const dmgType = btn.dataset.damageType || "Físico";
 
-      const roll = new Roll(formula);
-      await roll.evaluate();
+      const actorId = message?.flags?.["gaia-preludio"]?.actorId;
+      let speakerActor = actorId ? game.actors?.get(actorId) : null;
+      if (!speakerActor && message?.speaker) {
+        if (message.speaker.token && canvas?.tokens) {
+          speakerActor = canvas.tokens.get(message.speaker.token)?.actor;
+        }
+        if (!speakerActor && message.speaker.actor) {
+          speakerActor = game.actors?.get(message.speaker.actor);
+        }
+      }
+      if (!speakerActor) {
+        const fallbackSpeaker = ChatMessage.getSpeaker();
+        if (fallbackSpeaker.token && canvas?.tokens) {
+          speakerActor = canvas.tokens.get(fallbackSpeaker.token)?.actor;
+        }
+        if (!speakerActor && fallbackSpeaker.actor) {
+          speakerActor = game.actors?.get(fallbackSpeaker.actor);
+        }
+      }
 
-      const speaker = ChatMessage.getSpeaker();
-      let speakerActor = null;
-      if (speaker.token && canvas?.tokens) {
-        speakerActor = canvas.tokens.get(speaker.token)?.actor;
-      }
-      if (!speakerActor && speaker.actor) {
-        speakerActor = game.actors.get(speaker.actor);
-      }
+      const speaker = speakerActor ? ChatMessage.getSpeaker({ actor: speakerActor }) : ChatMessage.getSpeaker();
+      const rollData = speakerActor ? speakerActor.getRollData() : {};
+      const roll = await flowRoll(formula, rollData);
 
       let damageTotal = roll.total;
       let weakenedNotice = "";
@@ -89,7 +102,88 @@ export function registerActionChatListeners(html, message) {
     });
   });
 
-  // 3. Fazer Teste de Resistência (Individual por Alvo ou em Lote)
+  // 3. Rolar Cura da Ação
+  rootEl.querySelectorAll("[data-action='rollActionHealing']").forEach(btn => {
+    btn.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+      const formula = btn.dataset.formula || "1d8";
+      const healType = btn.dataset.healingType || "pv";
+      const typeLabel = healType === "pe" ? "PE" : (healType === "temp" ? "PV Temporário" : "PV");
+
+      const actorId = message?.flags?.["gaia-preludio"]?.actorId;
+      let speakerActor = actorId ? game.actors?.get(actorId) : null;
+      if (!speakerActor && message?.speaker) {
+        if (message.speaker.token && canvas?.tokens) {
+          speakerActor = canvas.tokens.get(message.speaker.token)?.actor;
+        }
+        if (!speakerActor && message.speaker.actor) {
+          speakerActor = game.actors?.get(message.speaker.actor);
+        }
+      }
+      if (!speakerActor) {
+        const fallbackSpeaker = ChatMessage.getSpeaker();
+        if (fallbackSpeaker.token && canvas?.tokens) {
+          speakerActor = canvas.tokens.get(fallbackSpeaker.token)?.actor;
+        }
+        if (!speakerActor && fallbackSpeaker.actor) {
+          speakerActor = game.actors?.get(fallbackSpeaker.actor);
+        }
+      }
+
+      const speaker = speakerActor ? ChatMessage.getSpeaker({ actor: speakerActor }) : ChatMessage.getSpeaker();
+      const rollData = speakerActor ? speakerActor.getRollData() : {};
+      const roll = await flowRoll(formula, rollData);
+
+      let healTotal = roll.total;
+      let weakenedNotice = "";
+      if (speakerActor?.system?.hasWeakened) {
+        healTotal = Math.floor(healTotal / 2);
+        weakenedNotice = ` <span style="font-size: 11px; color: var(--gaia-gold-accent, #c9a34b); font-style: italic;">(Enfraquecido: ${roll.total} &rarr; ${healTotal})</span>`;
+      }
+
+      const targets = getTargetedTokens(null, { fallbackToSelected: true });
+      let applyButtons = "";
+      if (targets.length > 0) {
+        applyButtons = `
+          <div class="action-healing-targets-block">
+            ${targets.map(t => `
+              <div class="action-healing-target-row">
+                <span>${t.name}</span>
+                <button type="button" class="btn-apply-healing-target" data-action="applyActionHealingDirect" data-target-token-id="${t.id}" data-amount="${healTotal}" data-heal-type="${healType}">
+                  Aplicar ${healTotal} Cura (${typeLabel})
+                </button>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      const flavor = `<strong>Cura (${typeLabel})</strong>${weakenedNotice}${applyButtons}`;
+
+      await roll.toMessage({
+        speaker,
+        flavor
+      });
+    });
+  });
+
+  // 4. Aplicar Cura Direta a Alvo Específico
+  rootEl.querySelectorAll("[data-action='applyActionHealingDirect']").forEach(btn => {
+    btn.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+      const tokenId = btn.dataset.targetTokenId;
+      const amount = Number(btn.dataset.amount ?? 0);
+      const healType = btn.dataset.healType || "pv";
+      const token = canvas.tokens?.get(tokenId);
+      if (!token || !token.actor) return;
+
+      await applyActionHealing(token.actor, amount, { healType });
+      btn.disabled = true;
+      btn.innerText = "Cura Aplicada";
+    });
+  });
+
+  // 5. Fazer Teste de Resistência (Individual por Alvo ou em Lote)
   rootEl.querySelectorAll("[data-action='rollTargetCheck'], [data-action='rollActionCheck']").forEach(btn => {
     btn.addEventListener("click", async (ev) => {
       ev.preventDefault();

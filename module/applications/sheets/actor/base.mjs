@@ -1,3 +1,4 @@
+import { toggleInventoryGridTableMode } from "../../../helpers/inventory-table.mjs";
 const { ActorSheetV2 } = foundry.applications.sheets;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -35,6 +36,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       primary: "personagem"
     },
     actions: {
+      toggleTableEdit: GaiaBaseActorSheet._onToggleTableEdit,
       levelUp: GaiaBaseActorSheet._onLevelUp,
       addResistance: GaiaBaseActorSheet._onAddResistance,
       removeResistance: GaiaBaseActorSheet._onRemoveResistance,
@@ -81,6 +83,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       promptRollRequestDialog: GaiaBaseActorSheet._onPromptRollRequest,
       rollAction: GaiaBaseActorSheet._onRollItemAction,
       rollItemAction: GaiaBaseActorSheet._onRollItemAction,
+      rollSubEffect: GaiaBaseActorSheet._onRollSubEffect,
       rollLegacyAbility: GaiaBaseActorSheet._onRollLegacyAbility,
       applyLegacyEffect: GaiaBaseActorSheet._onApplyLegacyEffect,
       createEffect: GaiaBaseActorSheet._onCreateEffect,
@@ -90,7 +93,9 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       toggleBound: GaiaBaseActorSheet._onToggleBound,
       rollRelicOverload: GaiaBaseActorSheet._onRollRelicOverload,
       addLanguage: GaiaBaseActorSheet._onAddLanguage,
-      removeLanguage: GaiaBaseActorSheet._onRemoveLanguage
+      removeLanguage: GaiaBaseActorSheet._onRemoveLanguage,
+      toggleAbilityCollapse: GaiaBaseActorSheet._onToggleAbilityCollapse,
+      toggleAllAbilitiesCollapse: GaiaBaseActorSheet._onToggleAllAbilitiesCollapse
     }
   };
 
@@ -107,9 +112,11 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     super._onRender(context, options);
 
     this._syncTabs();
+    toggleInventoryGridTableMode(this.element, false);
 
     this._contextMenuController?.abort();
     this._contextMenuController = new AbortController();
+    const signal = this._contextMenuController.signal;
 
     this.element.addEventListener("contextmenu", (event) => {
       const actionElement = event.target.closest("[data-context-action]");
@@ -120,7 +127,15 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       event.stopImmediatePropagation();
 
       this._onContextMenu(event, actionElement);
-    }, { signal: this._contextMenuController.signal });
+    }, { signal });
+
+    // Ouvinte reativo: troca o item de legado embutido quando o select de legado muda
+    const legacySelect = this.element.querySelector('select[name="system.legacy"]');
+    if (legacySelect) {
+      legacySelect.addEventListener("change", (event) => {
+        this._onChangeLegacySelect(event);
+      }, { signal });
+    }
   }
 
   /**
@@ -149,6 +164,80 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
   }
 
   /**
+   * Troca o item de legado embutido no ator quando o usuário seleciona um novo legado no select.
+   * Busca o documento de legado em ordem: itens embutidos > game.items > compêndios.
+   * Atualiza `system.legacyAbilities` e cria o novo item de legado embutido.
+   * @protected
+   * @param {Event} event - Evento de mudança do select de legado
+   * @returns {Promise<void>}
+   */
+  async _onChangeLegacySelect(event) {
+    const newLegacyName = String(event.target?.value || "").trim();
+    if (!newLegacyName) return;
+
+    // Evita troca desnecessária se o legado já for o mesmo (case-insensitive)
+    const currentLegacy = String(this.actor.system?.legacy || "").trim();
+    if (currentLegacy.toLowerCase() === newLegacyName.toLowerCase()) return;
+
+    // 1. Busca em itens já embutidos no ator
+    let legacyDoc = this.actor.items.find(
+      i => i.type === "legacy" && i.name.toLowerCase() === newLegacyName.toLowerCase()
+    );
+
+    // 2. Busca nos itens globais do mundo
+    if (!legacyDoc) {
+      legacyDoc = game.items?.find(
+        i => i.type === "legacy" && i.name.toLowerCase() === newLegacyName.toLowerCase()
+      ) ?? null;
+    }
+
+    // 3. Busca nos compêndios
+    if (!legacyDoc) {
+      for (const pack of (game.packs?.filter(p => p.documentName === "Item") ?? [])) {
+        const entry = pack.index?.find(
+          e => e.type === "legacy" && e.name?.toLowerCase() === newLegacyName.toLowerCase()
+        );
+        if (entry) {
+          try {
+            legacyDoc = await pack.getDocument(entry._id);
+          } catch (err) {
+            console.warn(`Gaia | Falha ao carregar legado "${newLegacyName}" do compêndio.`, err);
+          }
+          break;
+        }
+      }
+    }
+
+    if (!legacyDoc) {
+      // Legado não encontrado; o submitOnChange já salva o nome, sem mais nada a fazer
+      return;
+    }
+
+    // Remove itens de legado existentes
+    const existingLegacies = this.actor.items.filter(i => i.type === "legacy");
+    if (existingLegacies.length > 0) {
+      await this.actor.deleteEmbeddedDocuments("Item", existingLegacies.map(i => i.id));
+    }
+
+    // Monta objeto de atualização do ator
+    /** @type {Record<string, any>} */
+    const updateData = { "system.legacy": legacyDoc.name };
+    if (Array.isArray(legacyDoc.system?.legacyAbilities)) {
+      updateData["system.legacyAbilities"] = legacyDoc.system.legacyAbilities;
+    }
+    if (legacyDoc.system?.appearance) updateData["system.appearance"] = legacyDoc.system.appearance;
+    if (legacyDoc.system?.origin)     updateData["system.origin"]     = legacyDoc.system.origin;
+    if (legacyDoc.system?.traditions) updateData["system.traditions"] = legacyDoc.system.traditions;
+    if (legacyDoc.system?.inWorld)    updateData["system.inWorld"]    = legacyDoc.system.inWorld;
+
+    // Cria o novo item embutido e atualiza o ator em paralelo
+    await Promise.all([
+      this.actor.createEmbeddedDocuments("Item", [legacyDoc.toObject()]),
+      this.actor.update(updateData)
+    ]);
+  }
+
+  /**
    * Processa o evento de soltar (drop) de um Item na ficha.
    * @override
    * @param {DragEvent} event - Evento de arrastar e soltar
@@ -157,12 +246,48 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
    */
   async _onDropItem(event, data) {
     if (!this.actor.isOwner) return false;
-    const item = await Item.fromDropData(data);
+    let item = null;
+
+    // 1. Se o dado já for uma instância de Documento Item
+    if (data && typeof data.toObject === "function" && data.documentName === "Item") {
+      item = data;
+    } else if (data) {
+      // 2. Se possuir UUID, tenta resolver pelo compêndio ou mundo
+      if (data.uuid) {
+        try {
+          item = await fromUuid(data.uuid);
+        } catch (err) {
+          item = null;
+        }
+      }
+
+      // 3. Se não resolveu via UUID (ou UUID era inválido), mas possui dados embutidos (data.data)
+      if (!item && data.data) {
+        try {
+          item = new CONFIG.Item.documentClass(data.data);
+        } catch (err) {
+          item = null;
+        }
+      }
+
+      // 4. Fallback padrão do Foundry
+      if (!item) {
+        try {
+          item = await Item.fromDropData(data);
+        } catch (err) {
+          item = null;
+        }
+      }
+    }
+
     if (!item) return false;
 
-    if (item.actor?.id === this.actor.id) return false;
+    // Impede duplicar se o mesmo item embutido já pertence ao ator
+    if (item.isEmbedded && item.actor?.id === this.actor.id && this.actor.items.has(item.id)) return false;
 
     const itemData = item.toObject();
+    // Remove _id pré-existente para garantir que o Foundry gere um ID embutido de 16 caracteres válido
+    delete itemData._id;
 
     // Se for um item de Legado, vincula o nome no sistema e substitui legado anterior
     if (item.type === "legacy") {
@@ -171,6 +296,15 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
         await this.actor.deleteEmbeddedDocuments("Item", existingLegacies.map(i => i.id));
       }
       await this.actor.update({ "system.legacy": item.name });
+    }
+
+    // Se for habilidade, avisa se o personagem já possui uma habilidade com o mesmo nome
+    if (item.type === "ability") {
+      const exists = this.actor.items.some(i => i.type === "ability" && i.name.toLowerCase().trim() === itemData.name.toLowerCase().trim());
+      if (exists) {
+        ui.notifications?.warn(`O personagem já possui a habilidade "${itemData.name}".`);
+        return false;
+      }
     }
 
     return await this.actor.createEmbeddedDocuments("Item", [itemData]);
@@ -256,6 +390,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     if (tab && group) {
       this.changeTab(tab, group);
       this._syncTabs();
+    toggleInventoryGridTableMode(this.element, false);
     }
   }
 
@@ -670,14 +805,31 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     const itemId = target.dataset.itemId || target.closest("[data-item-id]")?.dataset.itemId;
     const actionId = target.dataset.actionId;
     const actionIndex = target.dataset.actionIndex ?? target.dataset.index;
+    const subIndex = target.dataset.subeffectIndex ?? target.closest("[data-subeffect-index]")?.dataset.subeffectIndex;
     const item = this.actor.items.get(itemId);
     if (!item) return null;
 
     let action = null;
-    if (actionId) {
-      action = item.system?.actions?.find(a => a.id === actionId);
+    let sub = null;
+    if (subIndex !== undefined) {
+      sub = item.system?.subEffects?.[Number(subIndex)];
     }
-    if (!action && actionIndex !== undefined) {
+
+    if (sub) {
+      if (actionId) action = sub.actions?.find(a => a.id === actionId);
+      if (!action && actionIndex !== undefined) action = sub.actions?.[Number(actionIndex)];
+    }
+
+    if (!action && actionId) {
+      action = item.system?.actions?.find(a => a.id === actionId);
+      if (!action && Array.isArray(item.system?.subEffects)) {
+        for (const s of item.system.subEffects) {
+          action = s.actions?.find(a => a.id === actionId);
+          if (action) break;
+        }
+      }
+    }
+    if (!action && actionIndex !== undefined && !sub) {
       action = item.system?.actions?.[Number(actionIndex)];
     }
     if (!action && item.system?.action) {
@@ -687,6 +839,21 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       return await item.rollAction(action, { event, target });
     }
     return null;
+  }
+
+  /**
+   * Envia uma Sub-Habilidade (subEffect) ao chat.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento com data-index ou data-subeffect-index
+   */
+  static async _onRollSubEffect(event, target) {
+    event.preventDefault();
+    const itemId = target.dataset.itemId || target.closest("[data-item-id]")?.dataset.itemId;
+    const subIndex = target.dataset.index ?? target.dataset.subeffectIndex ?? target.closest("[data-subeffect-index]")?.dataset.subeffectIndex;
+    const item = this.actor.items.get(itemId);
+    if (!item || subIndex === undefined) return null;
+    return await item.rollSubEffect(Number(subIndex));
   }
 
   /**
@@ -734,11 +901,42 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       return await GaiaBaseActorSheet._onApplyLegacyEffect.call(this, event, target);
     }
 
+    const defaultName = target.dataset.effectName || game.i18n.localize("GAIA.Effects.NewEffectDefaultName") || "Novo Efeito";
+    const changes = [];
+    const normName = defaultName.toLowerCase();
+    if (normName.includes("proteção da natureza") || normName.includes("protecao da natureza")) {
+      changes.push(
+        { key: "system.damageResistance", mode: 2, value: "nature" },
+        { key: "system.conditionImmunity", mode: 2, value: "envenenado" }
+      );
+    } else if (normName.includes("abraço da treva") || normName.includes("abraco da treva")) {
+      changes.push(
+        { key: "system.damageResistance", mode: 2, value: "dark" },
+        { key: "system.conditionImmunity", mode: 2, value: "enfraquecido" }
+      );
+    } else if (normName.includes("corpo de ferro")) {
+      changes.push(
+        { key: "system.conditionImmunity", mode: 2, value: "envenenado" },
+        { key: "system.conditionImmunity", mode: 2, value: "sangramento" }
+      );
+    } else if (normName.includes("filho de nolgadan")) {
+      changes.push(
+        { key: "system.conditionImmunity", mode: 2, value: "lentidao" },
+        { key: "system.conditionImmunity", mode: 2, value: "terreno dificil" }
+      );
+    } else if (normName.includes("fortitude ampliada")) {
+      changes.push(
+        { key: "system.hpDie", mode: 2, value: "1d8" },
+        { key: "system.hpFixed", mode: 2, value: "4" }
+      );
+    }
+
     const created = await this.actor.createEmbeddedDocuments("ActiveEffect", [{
-      name: game.i18n.localize("GAIA.Effects.NewEffectDefaultName") || "Novo Efeito",
-      img: "icons/svg/aura.svg",
-      icon: "icons/svg/aura.svg",
-      origin: this.actor.uuid
+      name: defaultName,
+      img: target.dataset.effectImg || "icons/svg/aura.svg",
+      icon: target.dataset.effectImg || "icons/svg/aura.svg",
+      origin: this.actor.uuid,
+      changes
     }]);
     return created[0]?.sheet?.render(true);
   }
@@ -959,6 +1157,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     const changes = [];
     const changeList = Array.isArray(activeEffectData.changes) ? activeEffectData.changes : [];
     for (const ch of changeList) {
+      if (!ch.key) continue;
       if (ch.key === "all_parameters") {
         const val = String(ch.value ?? 1);
         const paramKeys = ["precision", "brutality", "dexterity", "agility", "channeling", "arcane", "spirit", "vigor"];
@@ -966,7 +1165,67 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
           changes.push({ key: `system.parameters.${p}`, mode: 2, value: val });
         }
       } else {
+        const valStr = String(ch.value ?? "").trim();
+        // Ignora placeholders numéricos ou vazios para resistência ou imunidade textual
+        if ((ch.key === "system.damageResistance" || ch.key === "system.conditionImmunity") && (!valStr || valStr === "1" || !isNaN(Number(valStr)))) {
+          continue;
+        }
         changes.push({ key: ch.key, mode: ch.mode ?? 2, value: String(ch.value ?? 1) });
+      }
+    }
+
+    // Suporte específico para regras de Habilidades de Legado
+    const normEffectName = effectName.toLowerCase();
+    if (normEffectName.includes("proteção da natureza") || normEffectName.includes("protecao da natureza")) {
+      const clean = changes.filter(c => !(c.key === "system.damageResistance" && (c.value === "1" || !c.value)) && !(c.key === "system.conditionImmunity" && (c.value === "1" || !c.value)));
+      changes.length = 0;
+      changes.push(...clean);
+      if (!changes.some(c => c.key === "system.damageResistance" && c.value === "nature")) {
+        changes.push({ key: "system.damageResistance", mode: 2, value: "nature" });
+      }
+      if (!changes.some(c => c.key === "system.conditionImmunity" && c.value === "envenenado")) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "envenenado" });
+      }
+    }
+    if (normEffectName.includes("fortitude ampliada")) {
+      if (!changes.some(c => c.key === "system.hpDie")) {
+        changes.push({ key: "system.hpDie", mode: 2, value: "1d8" });
+      }
+      if (!changes.some(c => c.key === "system.hpFixed")) {
+        changes.push({ key: "system.hpFixed", mode: 2, value: "4" });
+      }
+    }
+    if (normEffectName.includes("abraço da treva") || normEffectName.includes("abraco da treva")) {
+      const clean = changes.filter(c => !(c.key === "system.damageResistance" && (c.value === "1" || !c.value)) && !(c.key === "system.conditionImmunity" && (c.value === "1" || !c.value)));
+      changes.length = 0;
+      changes.push(...clean);
+      if (!changes.some(c => c.key === "system.damageResistance" && c.value === "dark")) {
+        changes.push({ key: "system.damageResistance", mode: 2, value: "dark" });
+      }
+      if (!changes.some(c => c.key === "system.conditionImmunity" && c.value === "enfraquecido")) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "enfraquecido" });
+      }
+    }
+    if (normEffectName.includes("corpo de ferro")) {
+      const clean = changes.filter(c => !(c.key === "system.conditionImmunity" && (c.value === "1" || !c.value)));
+      changes.length = 0;
+      changes.push(...clean);
+      if (!changes.some(c => c.key === "system.conditionImmunity" && c.value === "envenenado")) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "envenenado" });
+      }
+      if (!changes.some(c => c.key === "system.conditionImmunity" && c.value === "sangramento")) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "sangramento" });
+      }
+    }
+    if (normEffectName.includes("filho de nolgadan")) {
+      const clean = changes.filter(c => !(c.key === "system.conditionImmunity" && (c.value === "1" || !c.value)));
+      changes.length = 0;
+      changes.push(...clean);
+      if (!changes.some(c => c.key === "system.conditionImmunity" && (c.value === "lentidao" || c.value === "lentidão"))) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "lentidao" });
+      }
+      if (!changes.some(c => c.key === "system.conditionImmunity" && c.value === "terreno dificil")) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "terreno dificil" });
       }
     }
 
@@ -1499,4 +1758,77 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     event.preventDefault();
     await promptLevelUpDialog(this.actor);
   }
+
+    static async _onToggleTableEdit(event, target) {
+    event.preventDefault();
+    const scope = target.closest("tr.item-row") || target.closest(".inventory-table-panel") || target.closest(".inventory-grid-table") || this.element;
+    toggleInventoryGridTableMode(scope);
+  }
+
+  /**
+   * Alterna o estado de sanfona (recolhido/expandido) de um card de habilidade.
+   * @protected
+   * @param {PointerEvent} event
+   * @param {HTMLElement} target
+   */
+  static _onToggleAbilityCollapse(event, target) {
+    event.preventDefault();
+    event.stopPropagation();
+    const card = target.closest(".ability-card-item");
+    if (!card) return;
+
+    card.classList.toggle("is-collapsed");
+
+    if (!this._collapsedAbilities) {
+      this._collapsedAbilities = new Set();
+    }
+
+    const key = card.dataset.itemId || card.dataset.index || card.querySelector(".ability-name-display")?.textContent?.trim();
+    if (key) {
+      if (card.classList.contains("is-collapsed")) {
+        this._collapsedAbilities.add(key);
+      } else {
+        this._collapsedAbilities.delete(key);
+      }
+    }
+  }
+
+  /**
+   * Alterna o estado de sanfona de todos os cards de habilidade na aba/seção.
+   * @protected
+   * @param {PointerEvent} event
+   * @param {HTMLElement} target
+   */
+  static _onToggleAllAbilitiesCollapse(event, target) {
+    event.preventDefault();
+    event.stopPropagation();
+    const container = target.closest(".legacy-abilities-section")
+      || target.closest(".tab-abilities-content")
+      || target.closest(".tab.abilities")
+      || target.closest(".creature-items-list")
+      || this.element;
+
+    const cards = container.querySelectorAll(".ability-card-item");
+    if (!cards.length) return;
+
+    if (!this._collapsedAbilities) {
+      this._collapsedAbilities = new Set();
+    }
+
+    const collapsedCount = Array.from(cards).filter(c => c.classList.contains("is-collapsed")).length;
+    const shouldCollapse = collapsedCount < (cards.length / 2);
+
+    cards.forEach(card => {
+      card.classList.toggle("is-collapsed", shouldCollapse);
+      const key = card.dataset.itemId || card.dataset.index || card.querySelector(".ability-name-display")?.textContent?.trim();
+      if (key) {
+        if (shouldCollapse) {
+          this._collapsedAbilities.add(key);
+        } else {
+          this._collapsedAbilities.delete(key);
+        }
+      }
+    });
+  }
+
 }

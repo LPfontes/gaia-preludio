@@ -67,6 +67,16 @@ export class PathSheet extends GaiaItemSheet {
         }
       }
     });
+
+    // Suporte a arrastar Habilidades (path-ability-card) para a ficha de personagem
+    this.element.querySelectorAll(".path-ability-card").forEach(card => {
+      card.addEventListener("dragstart", (event) => {
+        PathSheet.#onDragStartPathAbility.call(this, event, card);
+      });
+      card.addEventListener("dragend", () => {
+        card.classList.remove("is-dragging");
+      });
+    });
   }
 
   /** @override */
@@ -75,6 +85,10 @@ export class PathSheet extends GaiaItemSheet {
     context.item = this.item;
     context.system = this.item.system;
     context.config = /** @type {any} */ (CONFIG).GAIA;
+
+    context.formattedSpecializations = Array.isArray(context.system?.specializations)
+      ? context.system.specializations.join("\n")
+      : (context.system?.specializations || "");
 
     const rawAbilities = this.item.system?.abilities ?? [];
     context.pathAbilities = rawAbilities.map((ab, index) => {
@@ -134,6 +148,29 @@ export class PathSheet extends GaiaItemSheet {
     return context;
   }
 
+  /** @override */
+  async _processSubmitData(event, form, submitData) {
+    if (typeof submitData["system.specializations"] === "string") {
+      submitData["system.specializations"] = submitData["system.specializations"]
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+    if (typeof submitData["system.keywords"] === "string") {
+      submitData["system.keywords"] = submitData["system.keywords"]
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+    if (typeof submitData["system.parameterSuggestions"] === "string") {
+      submitData["system.parameterSuggestions"] = submitData["system.parameterSuggestions"]
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+    return super._processSubmitData(event, form, submitData);
+  }
+
   static async #onEditImage(event, target) {
     const attr = target.dataset.edit || "img";
     const current = foundry.utils.getProperty(this.item, attr);
@@ -177,6 +214,7 @@ export class PathSheet extends GaiaItemSheet {
       quote: sys.quote || "",
       numberTarget: sys.numberTarget || "",
       range: sys.range || "",
+      actions: Array.isArray(sys.actions) ? sys.actions : (itemDoc.actions || []),
       subEffects: Array.isArray(sys.subEffects) ? sys.subEffects : [],
       improvements: Array.isArray(sys.improvements) ? sys.improvements : [],
       activeEffect: sys.activeEffect || {}
@@ -206,6 +244,7 @@ export class PathSheet extends GaiaItemSheet {
       quote: "",
       numberTarget: "",
       range: "",
+      actions: [],
       subEffects: [],
       improvements: [],
       activeEffect: {
@@ -258,6 +297,7 @@ export class PathSheet extends GaiaItemSheet {
       range: abData.range || "",
       level: abData.level || 1,
       pathId: this.item.id,
+      actions: Array.isArray(abData.actions) ? abData.actions : (abData.system?.actions || []),
       subEffects: Array.isArray(abData.subEffects) ? abData.subEffects : [],
       improvements: Array.isArray(abData.improvements) ? abData.improvements : [],
       activeEffect: abData.activeEffect || {}
@@ -305,6 +345,7 @@ export class PathSheet extends GaiaItemSheet {
         numberTarget: itemObj.system.numberTarget || "",
         range: itemObj.system.range || "",
         description: itemObj.system.description || "",
+        actions: itemObj.system.actions || abData.actions || [],
         subEffects: itemObj.system.subEffects || [],
         improvements: itemObj.system.improvements || [],
         activeEffect: itemObj.system.activeEffect || {}
@@ -327,6 +368,93 @@ export class PathSheet extends GaiaItemSheet {
     const current = Array.isArray(rawList) ? [...rawList] : [];
     current.splice(index, 1);
     await this.item.update({ "system.abilities": current });
+  }
+
+  /**
+   * Trata o início de arrasto de uma carta de habilidade do Caminho.
+   * Empacota os dados da Habilidade no formato nativo de Item do Foundry para que possa ser
+   * solta dentro de qualquer ficha de Personagem (ActorSheet) ou compêndio.
+   */
+  static #onDragStartPathAbility(event, card) {
+    // Se o clique foi em um botão interno (ex: botão de excluir), não inicia o arrasto
+    if (event.target.closest("button") || event.target.closest("[data-action='removePathAbility']")) {
+      event.preventDefault();
+      return;
+    }
+
+    const index = Number(card.dataset.index);
+    if (isNaN(index)) return;
+
+    const rawList = this.item.system?.abilities ?? [];
+    const abData = rawList[index];
+    if (!abData) return;
+
+    card.classList.add("is-dragging");
+
+    const rawTypes = Array.isArray(abData.types)
+      ? abData.types.filter(t => t && t !== "ability")
+      : (abData.typeAbility && abData.typeAbility !== "ability" ? [abData.typeAbility] : []);
+
+    const itemData = {
+      _id: abData.id || foundry.utils.randomID(),
+      name: abData.name || "Habilidade de Caminho",
+      type: "ability",
+      img: abData.img || "icons/svg/item-bag.svg",
+      system: {
+        description: abData.description || "",
+        category: abData.category || "",
+        cost: abData.cost || "",
+        typeAction: abData.typeAction || "",
+        type: rawTypes[0] || "",
+        typeAbility: abData.typeAbility || rawTypes[0] || "",
+        types: rawTypes,
+        quote: abData.quote || "",
+        numberTarget: abData.numberTarget || "",
+        range: abData.range || "",
+        duration: abData.duration || "",
+        level: abData.level || 1,
+        pathId: this.item.id || "",
+        pathName: this.item.name || "",
+        actions: Array.isArray(abData.actions)
+          ? foundry.utils.deepClone(abData.actions)
+          : (abData.system?.actions ? foundry.utils.deepClone(abData.system.actions) : []),
+        subEffects: Array.isArray(abData.subEffects) ? foundry.utils.deepClone(abData.subEffects) : [],
+        improvements: Array.isArray(abData.improvements) ? foundry.utils.deepClone(abData.improvements) : [],
+        activeEffect: abData.activeEffect ? foundry.utils.deepClone(abData.activeEffect) : {}
+      }
+    };
+
+    // Tenta resolver UUID do compêndio se existir e for resolúvel
+    let uuid = abData.uuid || "";
+    if (uuid && typeof globalThis.fromUuidSync === "function") {
+      try {
+        const resolved = fromUuidSync(uuid);
+        if (!resolved) uuid = "";
+      } catch (e) {
+        uuid = "";
+      }
+    }
+    if (!uuid && globalThis.game?.packs) {
+      const packs = game.packs.filter(p => p.documentName === "Item" && p.collection.includes("habilidade"));
+      for (const pack of packs) {
+        const entry = pack.index?.find(e => (abData.id && e._id === abData.id) || (e.name && e.name.toLowerCase() === abData.name?.toLowerCase()));
+        if (entry?.uuid) {
+          uuid = entry.uuid;
+          break;
+        }
+      }
+    }
+
+    const dragData = {
+      type: "Item",
+      data: itemData
+    };
+    if (uuid) {
+      dragData.uuid = uuid;
+    }
+
+    event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
+    event.dataTransfer.effectAllowed = "copy";
   }
 }
 

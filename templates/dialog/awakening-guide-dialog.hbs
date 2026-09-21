@@ -1,34 +1,32 @@
 <div class="gaia-dialog-awakening-guide">
   {{!-- Caixa introdutória e Seletor de Modo (Desperto vs Não-Desperto) --}}
   <div class="gaia-dialog-intro-box">
-    <div class="awakening-mode-selection"
-      style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed rgba(201, 163, 75, 0.4);">
-      <label
-        style="font-weight: bold; font-family: var(--gaia-font-medieval); font-size: 13px; color: var(--gaia-purple-dark);">
+    <div class="awakening-mode-selection">
+      <label class="awakening-mode-label">
         <i class="fa-solid fa-user-shield"></i> {{localize "GAIA.CreateActor.ModeSelectLabel"}}
       </label>
-      <div style="display: flex; gap: 14px;">
-        <label
-          style="display: flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer; color: var(--gaia-text-parchment);">
+      <div class="awakening-mode-options">
+        <label class="awakening-mode-option">
           <input type="radio" name="creationMode" value="awakened" checked class="creation-mode-radio" />
           <strong>{{localize "GAIA.CreateActor.ModeAwakened"}}</strong>
         </label>
-        <label
-          style="display: flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer; color: var(--gaia-text-parchment);">
+        <label class="awakening-mode-option">
           <input type="radio" name="creationMode" value="unawakened" class="creation-mode-radio" />
           <strong>{{localize "GAIA.CreateActor.ModeUnawakened"}}</strong>
         </label>
       </div>
     </div>
-    <p class="gaia-intro-description-text"
-      style="font-size: 12px; margin: 0; line-height: 1.4; color: var(--gaia-text-muted);">
+    <p class="gaia-intro-description-text">
       {{localize "GAIA.CreateActor.AwakeningIntro"}}
     </p>
   </div>
 
   {{!-- Barra de navegação por abas --}}
   <nav class="gaia-dialog-tabs">
-    <button type="button" class="gaia-dialog-tab-btn active" data-tab="parameters">
+    <button type="button" class="gaia-dialog-tab-btn active" data-tab="legacy">
+      {{localize "GAIA.CreateActor.TabLegacy"}}
+    </button>
+    <button type="button" class="gaia-dialog-tab-btn" data-tab="parameters">
       {{localize "GAIA.CreateActor.TabParameters"}}
     </button>
     <button type="button" class="gaia-dialog-tab-btn" data-tab="knowledge">
@@ -45,9 +43,129 @@
   {{!-- Conteúdo das abas --}}
   <div class="gaia-dialog-tab-body">
     {{!-- ==================================================================== --}}
-    {{!-- ETAPA 1: PARÂMETROS --}}
+    {{!-- ETAPA 1: LEGADO --}}
     {{!-- ==================================================================== --}}
-    <div class="gaia-dialog-tab-pane active" data-tab="parameters">
+    <div class="gaia-dialog-tab-pane active" data-tab="legacy">
+      <p class="gaia-dialog-hint-title">
+        <i class="fa-solid fa-feather-pointed"></i> {{localize "GAIA.CreateActor.AwakeningLegacyTitle"}}
+      </p>
+      <p class="gaia-dialog-hint-text">
+        ● {{localize "GAIA.CreateActor.AwakeningLegacyHint"}}
+      </p>
+
+      {{!-- Linha de Seleção do Legado --}}
+      <div class="awakening-legacy-select-row">
+        <select class="gaia-awakening-legacy-select" name="selectedLegacyUuid">
+          <option value="">-- {{localize "GAIA.CreateActor.SelectLegacy"}} --</option>
+          {{#each availableLegacies as |leg|}}
+            <option value="{{leg.uuid}}" {{#if leg.isSelected}}selected{{/if}} data-name="{{leg.name}}">
+              {{leg.name}}{{#if leg.sourceLabel}} ({{leg.sourceLabel}}){{/if}}
+            </option>
+          {{/each}}
+          <option value="__custom__" {{#if isCustomLegacy}}selected{{/if}}>
+            {{localize "GAIA.CreateActor.CustomLegacyOption"}}
+          </option>
+        </select>
+        <button type="button" class="gaia-hp-action-btn btn-open-legacy-browser" title="Abrir Navegador de Itens para explorar e selecionar o Legado">
+          <i class="fa-solid fa-book-open"></i> {{localize "GAIA.CreateActor.OpenLegacyBrowser"}}
+        </button>
+      </div>
+
+      {{!-- Campo para Legado Personalizado --}}
+      <div class="awakening-custom-legacy-box" style="{{#if isCustomLegacy}}display: flex;{{else}}display: none;{{/if}}">
+        <input type="text" class="gaia-awakening-custom-legacy-input" placeholder="{{localize 'GAIA.CreateActor.CustomLegacyPlaceholder'}}" value="{{customLegacyName}}" />
+      </div>
+
+      {{!-- Card de Detalhes / Pré-visualização do Legado Selecionado --}}
+      <div class="awakening-legacy-preview-container">
+        {{#if selectedLegacyData}}
+          <div class="awakening-legacy-preview-card">
+            <div class="awakening-legacy-header">
+              <img src="{{selectedLegacyData.img}}" class="awakening-legacy-img" alt="{{selectedLegacyData.name}}" />
+              <div class="awakening-legacy-title-group">
+                <span class="awakening-legacy-name">{{selectedLegacyData.name}}</span>
+                <div class="awakening-legacy-tags">
+                  {{#if selectedLegacyData.height}}
+                    <span class="awakening-legacy-tag" title="{{localize 'GAIA.CreateActor.LegacyHeight'}}">
+                      <i class="fa-solid fa-ruler-vertical"></i> {{selectedLegacyData.height}}
+                    </span>
+                  {{/if}}
+                  {{#if selectedLegacyData.lifeExpectancy}}
+                    <span class="awakening-legacy-tag" title="{{localize 'GAIA.CreateActor.LegacyLifeExpectancy'}}">
+                      <i class="fa-solid fa-hourglass-half"></i> {{selectedLegacyData.lifeExpectancy}}
+                    </span>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+
+            {{#if (or selectedLegacyData.appearance selectedLegacyData.origin selectedLegacyData.traditions selectedLegacyData.inWorld)}}
+            <div class="awakening-legacy-bio-grid">
+              {{#if selectedLegacyData.appearance}}
+                <div class="awakening-legacy-bio-item">
+                  <span class="awakening-legacy-bio-label"><i class="fa-solid fa-eye"></i> {{localize "GAIA.Legado.Appearance"}}</span>
+                  <span class="awakening-legacy-bio-val">{{selectedLegacyData.appearance}}</span>
+                </div>
+              {{/if}}
+              {{#if selectedLegacyData.origin}}
+                <div class="awakening-legacy-bio-item">
+                  <span class="awakening-legacy-bio-label"><i class="fa-solid fa-landmark"></i> {{localize "GAIA.Legado.Origin"}}</span>
+                  <span class="awakening-legacy-bio-val">{{selectedLegacyData.origin}}</span>
+                </div>
+              {{/if}}
+              {{#if selectedLegacyData.traditions}}
+                <div class="awakening-legacy-bio-item">
+                  <span class="awakening-legacy-bio-label"><i class="fa-solid fa-scroll"></i> {{localize "GAIA.Legado.Traditions"}}</span>
+                  <span class="awakening-legacy-bio-val">{{selectedLegacyData.traditions}}</span>
+                </div>
+              {{/if}}
+              {{#if selectedLegacyData.inWorld}}
+                <div class="awakening-legacy-bio-item">
+                  <span class="awakening-legacy-bio-label"><i class="fa-solid fa-earth-americas"></i> {{localize "GAIA.Legado.InWorld"}}</span>
+                  <span class="awakening-legacy-bio-val">{{selectedLegacyData.inWorld}}</span>
+                </div>
+              {{/if}}
+            </div>
+            {{/if}}
+
+            {{#if selectedLegacyData.legacyAbilities.length}}
+              <div class="awakening-legacy-abilities-section">
+                <span class="awakening-legacy-abilities-title">
+                  <i class="fa-solid fa-crown"></i> {{localize "GAIA.CreateActor.LegacyAbilities"}} ({{selectedLegacyData.legacyAbilities.length}})
+                </span>
+                <div class="awakening-legacy-abilities-list">
+                  {{#each selectedLegacyData.legacyAbilities as |ab|}}
+                    <div class="awakening-legacy-ability-item">
+                      <span class="awakening-legacy-ability-name">
+                        <i class="fa-solid fa-feather-pointed"></i> {{ab.name}}
+                      </span>
+                      {{#if ab.description}}
+                        <span class="awakening-legacy-ability-desc">{{{ab.description}}}</span>
+                      {{/if}}
+                    </div>
+                  {{/each}}
+                </div>
+              </div>
+            {{/if}}
+          </div>
+        {{else}}
+          <div class="empty-abilities-hint gaia-dialog-hint-muted awakening-legacy-empty-hint">
+            {{localize "GAIA.CreateActor.EmptyLegacyHint"}}
+          </div>
+        {{/if}}
+      </div>
+
+      <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="parameters">
+          <span>{{localize "GAIA.CreateActor.Next"}}</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    {{!-- ==================================================================== --}}
+    {{!-- ETAPA 2: PARÂMETROS --}}
+    {{!-- ==================================================================== --}}
+    <div class="gaia-dialog-tab-pane" data-tab="parameters">
       <p class="gaia-dialog-hint-title">
         {{localize "GAIA.CreateActor.AwakeningParamTitle"}}
       </p>
@@ -85,6 +203,9 @@
       </div>
 
       <div class="gaia-dialog-tab-footer">
+        <button type="button" class="gaia-wizard-nav-btn" data-next-tab="legacy">
+          <i class="fa-solid fa-arrow-left"></i> <span>{{localize "GAIA.CreateActor.Previous"}}</span>
+        </button>
         <button type="button" class="gaia-wizard-nav-btn" data-next-tab="knowledge">
           <span>{{localize "GAIA.CreateActor.Next"}}</span> <i class="fa-solid fa-arrow-right"></i>
         </button>
@@ -153,7 +274,7 @@
       {{!-- Painel específico para Personagem Desperto --}}
       <div class="vitals-panel-awakened">
         <ul class="gaia-dialog-hint-list">
-          <li><strong>Pontos de Vida (PV):</strong> 30 + 1d6 (ou 3) + <span class="gaia-vigor-hint-val">0</span> (Vigor)
+          <li><strong>Pontos de Vida (PV):</strong> 30 + <span class="gaia-hp-die-val">{{hpDie}}</span> (ou <span class="gaia-hp-fixed-val">{{fixedHpBase}}</span>) + <span class="gaia-vigor-hint-val">0</span> (Vigor) <span class="badge badge-passive badge-fortitude" style="{{#unless isDwarf}}display: none;{{/unless}}" title="Fortitude Ampliada: 1d8 ou 4 fixo"><i class="fa-solid fa-shield-heart"></i> Fortitude Ampliada</span>
           </li>
           <li><strong>Pontos de Energia (PE):</strong> 5 PE Máx</li>
           <li><strong>Movimentação Base:</strong> 6m (+ bônus de Agilidade)</li>
@@ -166,19 +287,19 @@
               <i class="fa-solid fa-heart-pulse"></i> {{localize "GAIA.CreateActor.RollHPHint"}}
             </span>
             <div class="gaia-vitals-roller-controls">
-              <button type="button" class="gaia-hp-action-btn gaia-roll-hp-btn" data-action="roll">
-                <i class="fa-solid fa-dice-d6"></i> {{localize "GAIA.CreateActor.RollHP"}}
+              <button type="button" class="gaia-hp-action-btn gaia-roll-hp-btn {{#if isDwarf}}active{{/if}}" data-action="roll">
+                <i class="fa-solid {{hpDieIcon}} gaia-hp-roll-icon"></i> <span class="gaia-hp-roll-label">Rolar {{hpDie}}</span>
               </button>
-              <button type="button" class="gaia-hp-action-btn gaia-fixed-hp-btn active" data-action="fixed">
-                {{localize "GAIA.CreateActor.FixedHP"}}
+              <button type="button" class="gaia-hp-action-btn gaia-fixed-hp-btn {{#unless isDwarf}}active{{/unless}}" data-action="fixed">
+                <span class="gaia-hp-fixed-label">Fixo ({{fixedHpBase}})</span>
               </button>
             </div>
           </div>
 
           <div class="gaia-vitals-result-display">
             <span>{{localize "GAIA.CreateActor.CalculatedHP"}}</span>
-            <strong class="gaia-vitals-calculated-hp">33 PV</strong>
-            <input type="hidden" class="gaia-hp-selected-input" value="33" />
+            <strong class="gaia-vitals-calculated-hp">{{initialCalculatedHp}} PV</strong>
+            <input type="hidden" class="gaia-hp-selected-input" value="{{initialCalculatedHp}}" />
           </div>
         </div>
       </div>
@@ -253,7 +374,7 @@
 
           <div class="awakening-chosen-abilities-container">
             <div class="awakening-chosen-abilities-header">
-              <span class="gaia-distributor-title" style="font-size: 12px;">
+              <span class="gaia-distributor-title awakening-chosen-title">
                 <i class="fa-solid fa-list-check"></i> {{localize "GAIA.CreateActor.SelectedAbilitiesLabel"}}
               </span>
               <span class="gaia-points-tracker">

@@ -83,8 +83,29 @@ export class ActionDataModel extends foundry.abstract.DataModel {
       }),
 
       // ========================================================================
-      // 4. CONDIÇÃO / EFEITO DE STATUS
+      // 4. CURA
       // ========================================================================
+      healing: new SchemaField({
+        // PT: Indica se a ação realiza cura
+        hasHealing: new BooleanField({ required: true, initial: false }),
+
+        // PT: Fórmula ou valor numérico de cura (ex: "1d8 + @spirit", "2d6", "10")
+        formula: new StringField({ required: false, initial: "" }),
+
+        // PT: Tipo de recurso restaurado (pv, pe, temp)
+        type: new StringField({ required: false, initial: "pv" }),
+
+        // PT: Bônus extra de cura em acerto crítico
+        criticalBonus: new StringField({ required: false, initial: "" }),
+
+        // PT: Escalonamento adicional
+        scaling: new StringField({ required: false, initial: "" })
+      }),
+
+      // ========================================================================
+      // 5. CONDIÇÃO / EFEITO DE STATUS
+      // ========================================================================
+
       condition: new SchemaField({
         // PT: Indica se a ação aplica uma condição de status
         hasCondition: new BooleanField({ required: true, initial: false }),

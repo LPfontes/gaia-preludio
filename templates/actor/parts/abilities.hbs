@@ -10,18 +10,24 @@
             {{localize "GAIA.Ability.LegacyAbilitiesSection"}} {{#if
             selectedLegacyName}}({{selectedLegacyName}}){{/if}}
           </h3>
-          {{#if legacyItem}}
-          <button type="button" class="btn-open-legacy-sheet" data-action="openLegacyItem"
-            data-item-id="{{legacyItem.id}}" data-item-uuid="{{legacyItem.uuid}}"
-            title="Abrir Ficha do Legado ({{legacyItem.name}})">
-            <i class="fa-solid fa-feather-pointed"></i> Ver Legado
-          </button>
-          {{/if}}
+          <div class="section-actions">
+            <button type="button" class="btn-toggle-all-abilities" data-action="toggleAllAbilitiesCollapse"
+              title="Recolher / Expandir Habilidades de Legado">
+              <i class="fa-solid fa-angles-up-down"></i> Recolher / Expandir
+            </button>
+            {{#if legacyItem}}
+            <button type="button" class="btn-open-legacy-sheet" data-action="openLegacyItem"
+              data-item-id="{{legacyItem.id}}" data-item-uuid="{{legacyItem.uuid}}"
+              title="Abrir Ficha do Legado ({{legacyItem.name}})">
+              <i class="fa-solid fa-feather-pointed"></i> Ver Legado
+            </button>
+            {{/if}}
+          </div>
         </div>
 
         <div class="abilities-list-grid">
           {{#each legacyAbilitiesList}}
-          <div class="ability-card-item legacy-ability-card-item">
+          <div class="ability-card-item legacy-ability-card-item {{#if this.isCollapsed}}is-collapsed{{/if}}" data-index="{{@index}}">
             <div class="ability-card-controls">
               {{#if this.activeEffectText}}
               <button type="button" class="btn-item-control btn-create-effect {{#if this.isEffectActive}}active{{/if}}"
@@ -34,10 +40,14 @@
                 data-index="{{@index}}" title="{{localize 'GAIA.Ability.SendToChat'}}">
                 <i class="fas fa-comment-alt"></i>
               </button>
+              <button type="button" class="btn-item-control btn-toggle-ability-collapse" data-action="toggleAbilityCollapse"
+                title="Recolher / Expandir Habilidade">
+                <i class="fa-solid fa-chevron-down toggle-icon"></i>
+              </button>
             </div>
 
             <div class="gaia-ability-card actor-sheet-card">
-              <div class="ability-card-header">
+              <div class="ability-card-header" data-action="toggleAbilityCollapse" title="Clique para recolher ou expandir">
                 <div class="ability-title-row">
                   <img class="ability-icon" src="icons/svg/book.svg" title="{{this.name}}" />
                   <h2 class="ability-name-display">{{this.name}}</h2>
@@ -86,9 +96,6 @@
                         <i class="fa-solid fa-dice-d20"></i>
                       </button>
                     </div>
-                    {{#if this.action.description}}
-                    <div class="ability-action-desc">{{{this.action.description}}}</div>
-                    {{/if}}
                   </div>
                 </div>
                 {{/if}}
@@ -100,9 +107,13 @@
       </div>
       {{/if}}
 
+      <div class="abilities-header-bar">
+        <h3 class="section-title">{{localize "GAIA.title.Abilities"}}</h3>
+      </div>
+
       <div class="abilities-list-grid">
         {{#each abilities}}
-        <div class="ability-card-item" data-item-id="{{this.id}}">
+        <div class="ability-card-item {{#if this.isCollapsed}}is-collapsed{{/if}}" data-item-id="{{this.id}}">
 
           <!-- MINI CABEÇALHO COM CONTROLES -->
           <div class="ability-card-controls">
@@ -118,15 +129,19 @@
               data-item-id="{{this.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
               <i class="fas fa-trash"></i>
             </button>
+            <button type="button" class="btn-item-control btn-toggle-ability-collapse" data-action="toggleAbilityCollapse"
+              title="Recolher / Expandir Habilidade">
+              <i class="fa-solid fa-chevron-down toggle-icon"></i>
+            </button>
           </div>
 
           <!-- TEMPLATE VISUAL DA CARTA DE HABILIDADE DA FICHA DO ATOR -->
           <div class="gaia-ability-card actor-sheet-card">
-            <div class="ability-card-header">
+            <div class="ability-card-header" data-action="toggleAbilityCollapse" title="Clique para recolher ou expandir">
               <div class="ability-title-row">
                 <img class="ability-icon" src="{{this.img}}" data-action="openItem" data-item-id="{{this.id}}"
                   title="{{this.name}}" />
-                <h2 class="ability-name-display" data-action="openItem" data-item-id="{{this.id}}">
+                <h2 class="ability-name-display">
                   {{this.name}}
                 </h2>
               </div>
@@ -181,9 +196,6 @@
                       <i class="fa-solid fa-dice-d20"></i>
                     </button>
                   </div>
-                  {{#if this.description}}
-                  <div class="ability-action-desc">{{{this.description}}}</div>
-                  {{/if}}
                 </div>
                 {{/each}}
               </div>
@@ -192,20 +204,50 @@
               {{#if this.formattedSubEffects.length}}
               <div class="subeffects-display-section">
                 {{#each this.formattedSubEffects}}
-                <div class="subeffect-display-block">
+                <div class="subeffect-display-block" data-subeffect-index="{{@index}}">
                   <div class="subeffect-display-header">
-                    <span class="subeffect-title-text">{{this.name}}</span>
-                    <div class="subeffect-meta-badges">
-                      {{#if this.actionTypeLabel}}<span
-                        class="subeffect-meta-badge action-badge">{{this.actionTypeLabel}}</span>{{/if}}
-                      {{#if this.typeLabel}}<span
-                        class="subeffect-meta-badge type-badge">{{this.typeLabel}}</span>{{/if}}
-                      {{#if this.cost}}<span class="subeffect-cost-text">{{this.cost}}</span>{{/if}}
+                    <div class="subeffect-identity">
+                      <span class="subeffect-title-text">{{this.name}}</span>
+                      <div class="subeffect-meta-badges">
+                        {{#if this.actionTypeLabel}}<span
+                          class="subeffect-meta-badge action-badge">{{this.actionTypeLabel}}</span>{{/if}}
+                        {{#if this.typeLabel}}<span
+                          class="subeffect-meta-badge type-badge">{{this.typeLabel}}</span>{{/if}}
+                        {{#if this.cost}}<span class="subeffect-cost-text">{{this.cost}}</span>{{/if}}
+                      </div>
+                    </div>
+                    <div class="subeffect-controls">
+                      <button type="button" class="btn-roll-subeffect" data-action="rollSubEffect"
+                        data-item-id="{{../id}}" data-index="{{@index}}" title="Enviar Sub-Habilidade para o Chat">
+                        <i class="fas fa-comment-alt"></i>
+                      </button>
                     </div>
                   </div>
 
+                  {{#if this.description}}
                   <div class="subeffect-desc-text">{{this.description}}</div>
+                  {{/if}}
                   {{#if this.note}}<div class="subeffect-note-text">{{this.note}}</div>{{/if}}
+
+                  {{#if this.actions.length}}
+                  <div class="subeffect-actions-list ability-actions-section">
+                    {{#each this.actions}}
+                    <div class="ability-action-item">
+                      <div class="ability-action-header-row">
+                        <div class="ability-action-info">
+                          <span class="ability-action-name">{{this.name}}</span>
+                          {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
+                        </div>
+                        <button type="button" class="btn-roll-ability-action" data-action="rollAction"
+                          data-item-id="{{../../id}}" data-subeffect-index="{{@../index}}" data-action-id="{{this.id}}" data-action-index="{{@index}}"
+                          title="Rolar {{this.name}}">
+                          <i class="fa-solid fa-dice-d20"></i>
+                        </button>
+                      </div>
+                    </div>
+                    {{/each}}
+                  </div>
+                  {{/if}}
                 </div>
                 {{/each}}
               </div>

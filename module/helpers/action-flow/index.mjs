@@ -10,6 +10,8 @@ export * from "./action-cost.mjs";
 export * from "./action-attack.mjs";
 export * from "./action-card.mjs";
 export * from "./action-damage.mjs";
+export * from "./action-healing.mjs";
+
 export * from "./action-condition.mjs";
 export * from "./action-aoe.mjs";
 export * from "./action-chat-listeners.mjs";

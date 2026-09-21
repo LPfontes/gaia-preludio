@@ -6,6 +6,35 @@
  * para renderização nos templates Handlebars da ficha de personagem (Legado).
  */
 
+import { GAIA } from "./config.mjs";
+
+/**
+ * Lista canônica dos 21 Legados Oficiais de Auroria.
+ */
+export const CANONICAL_LEGACIES = [
+  "Alraune",
+  "Anão",
+  "Daeva",
+  "Delahk",
+  "Draenum",
+  "Elemental",
+  "Elfo",
+  "Forjado",
+  "Humano",
+  "Inari",
+  "Kahatsza",
+  "Kitari",
+  "Minotauro",
+  "Netune",
+  "Orkrash",
+  "Seiko",
+  "Ursar",
+  "Valdrak",
+  "Venneli",
+  "Yuansu",
+  "Zaokan"
+];
+
 /**
  * Constrói um array de pips/diamantes com seus estados ativos/inativos.
  * @param {number} value - Valor atual preenchido
@@ -356,16 +385,32 @@ export function prepareSidebarContext(actor, context) {
       || "Dado de Morte (1d12): 1-6 = Sentença do Corruptor (2 = Morte) | 7-12 = Dádiva do Artesão (2 = Estabilizado). A cada 10 min estabilizado, regenera 1d4 PV."
   };
 
-  // Coleta as opções de Legado (Itens do tipo 'legacy')
+  // Coleta as opções de Legado (Config canônica dos 21 legados, Itens do Mundo, do Ator e Compêndios)
   const items = actor.items ?? [];
+  const configLegacies = Object.values(CONFIG.GAIA?.legacies ?? {});
   const worldLegacies = (game.items?.filter(i => i.type === "legacy") ?? []).map(i => i.name);
   const actorLegacies = (items.filter(i => i.type === "legacy") ?? []).map(i => i.name);
-  const allLegacies = Array.from(new Set([...worldLegacies, ...actorLegacies])).filter(Boolean);
+  const compendiumLegacies = [];
+  for (const pack of (game.packs?.filter(p => p.documentName === "Item") ?? [])) {
+    if (pack.index) {
+      for (const entry of pack.index) {
+        if (entry.type === "legacy" && entry.name) compendiumLegacies.push(entry.name);
+      }
+    }
+  }
+
+  const allLegacies = Array.from(new Set([
+    ...CANONICAL_LEGACIES,
+    ...configLegacies,
+    ...worldLegacies,
+    ...actorLegacies,
+    ...compendiumLegacies
+  ])).filter(Boolean);
 
   if (system.legacy && !allLegacies.includes(system.legacy)) {
     allLegacies.push(system.legacy);
   }
-  allLegacies.sort((a, b) => a.localeCompare(b));
+  allLegacies.sort((a, b) => a.localeCompare(b, "pt-BR"));
 
   const legacySelectOptions = {};
   for (const name of allLegacies) {
@@ -381,6 +426,17 @@ export function prepareSidebarContext(actor, context) {
     legacyItem = items.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
     if (!legacyItem) {
       legacyItem = game.items?.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
+    }
+    if (!legacyItem) {
+      for (const pack of (game.packs?.filter(p => p.documentName === "Item") ?? [])) {
+        if (pack.index) {
+          const entry = pack.index.find(e => e.type === "legacy" && e.name?.toLowerCase() === selectedLegacyName.toLowerCase());
+          if (entry) {
+            legacyItem = pack.get(entry._id) || entry;
+            break;
+          }
+        }
+      }
     }
   }
   if (!legacyItem) {
@@ -412,8 +468,8 @@ export function prepareInventoryContext(actor, context) {
   context.inventoryWeapons = items.filter(i => (i.type === "weapon" || i.system?.category === "weapon")).map(formatItem);
   context.inventoryArmor = items.filter(i => (i.type === "armor" || ["armor", "vestuary", "shield", "clothing"].includes(i.system?.category))).map(formatItem);
   context.inventoryRelics = items.filter(i => (i.type === "relic" || i.system?.category === "relic")).map(formatItem);
-  context.inventoryConsumables = items.filter(i => ["potion", "consumable", "toxic"].includes(i.system?.category)).map(formatItem);
-  context.inventoryCommon = items.filter(i => i.type !== "ability" && i.type !== "weapon" && i.type !== "armor" && i.type !== "relic" && !["weapon", "armor", "vestuary", "shield", "clothing", "potion", "consumable", "toxic", "relic"].includes(i.system?.category)).map(formatItem);
+  const nonInventoryTypes = ["ability", "legacy", "path", "feature", "weapon", "armor", "relic"];
+  context.inventoryCommon = items.filter(i => !nonInventoryTypes.includes(i.type) && !["weapon", "armor", "vestuary", "shield", "clothing", "potion", "consumable", "toxic", "relic"].includes(i.system?.category)).map(formatItem);
 
   // Monitoramento de Potência de Véu das Relíquias Vinculadas
   const boundRelics = items.filter(i => (i.type === "relic" || i.system?.category === "relic") && Boolean(i.system?.isBound));
@@ -435,7 +491,7 @@ export function prepareInventoryContext(actor, context) {
 /**
  * Prepara o contexto para a Aba de Habilidades (Caminho e Legado).
  */
-export function prepareAbilitiesContext(actor, context) {
+export function prepareAbilitiesContext(actor, context, collapsedSet = null) {
   const system = actor.system;
   const items = actor.items ?? [];
   const config = /** @type {any} */ (CONFIG).GAIA;
@@ -446,6 +502,17 @@ export function prepareAbilitiesContext(actor, context) {
     legacyItem = items.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
     if (!legacyItem) {
       legacyItem = game.items?.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
+    }
+    if (!legacyItem) {
+      for (const pack of (game.packs?.filter(p => p.documentName === "Item") ?? [])) {
+        if (pack.index) {
+          const entry = pack.index.find(e => e.type === "legacy" && e.name?.toLowerCase() === selectedLegacyName.toLowerCase());
+          if (entry) {
+            legacyItem = pack.get(entry._id) || entry;
+            break;
+          }
+        }
+      }
     }
   }
   if (!legacyItem) {
@@ -479,6 +546,9 @@ export function prepareAbilitiesContext(actor, context) {
       : (rawType !== "ability" ? rawType : "");
 
     const isEffectActive = (actor.effects ?? []).some(e => !e.disabled && (e.name === ab.name || e.flags?.gaia?.abilityName === ab.name));
+    const idKey = String(index);
+    const nameKey = String(ab.name || "").trim();
+    const isCollapsed = Boolean(collapsedSet?.has(idKey) || collapsedSet?.has(nameKey));
 
     return {
       index,
@@ -489,7 +559,8 @@ export function prepareAbilitiesContext(actor, context) {
       actionTypeLabel,
       typeLabel,
       activeEffectText,
-      isEffectActive
+      isEffectActive,
+      isCollapsed
     };
   });
 
@@ -551,7 +622,8 @@ export function prepareAbilitiesContext(actor, context) {
       metaRow1,
       activeImprovements,
       hasActiveImprovements: activeImprovements.length > 0,
-      formattedSubEffects
+      formattedSubEffects,
+      isCollapsed: Boolean(collapsedSet?.has(item.id) || collapsedSet?.has(item.name?.trim()))
     };
   };
 
@@ -610,23 +682,110 @@ export function prepareActiveEffectCategories(doc) {
   const inactive = [];
 
   for (const effect of effects) {
-    const changesSummary = (effect.changes || []).map(c => {
-      const rawKey = c.key?.replace(/^system\./, "") || c.key;
+    const effectImg = String(effect.img || effect.icon || "").toLowerCase();
+    let displayName = effect.name || "Efeito Sem Nome";
+    const docName = String(doc?.name || "").toLowerCase();
+
+    if (displayName === "Novo Efeito") {
+      if (effectImg.includes("leaf-glowing-green") || docName.includes("proteção da natureza") || docName.includes("protecao da natureza")) {
+        displayName = "Proteção da Natureza";
+      } else if (effectImg.includes("skull-horned-goat-purple") || docName.includes("abraço da treva") || docName.includes("abraco da treva")) {
+        displayName = "Abraço da Treva";
+      } else if (effectImg.includes("breastplate-helmet-metal") || docName.includes("corpo de ferro")) {
+        displayName = "Corpo de Ferro";
+      } else if (effectImg.includes("weapons-crossed-axes-bull") || docName.includes("filho de nolgadan")) {
+        displayName = "Filho de Nolgadan";
+      }
+    }
+
+    const validChanges = (effect.changes || []).map(c => {
+      if (!c.key && !c.value) return null;
+      const rawKey = c.key?.replace(/^system\./, "") || c.key || "";
+      if (!rawKey && !c.value) return null;
+
+      // Tratamentos específicos de regras de GAIA
+      if (rawKey === "damageResistance") {
+        const typeKey = String(c.value || "").toLowerCase().trim();
+        if (!typeKey || typeKey === "1" || !isNaN(Number(typeKey))) return null;
+        const locKey = CONFIG.GAIA?.damageTypesFlat?.[typeKey] ?? CONFIG.GAIA?.damageTypes?.[typeKey];
+        const typeLoc = locKey ? game.i18n.localize(locKey) : (typeKey ? typeKey.charAt(0).toUpperCase() + typeKey.slice(1) : "Natureza");
+        return `Resistência: ${typeLoc || "Natureza"}`;
+      }
+      if (rawKey === "conditionImmunity") {
+        const cond = String(c.value || "").trim().toLowerCase();
+        if (!cond || cond === "1" || !isNaN(Number(cond))) return null;
+        let label = cond ? (cond.charAt(0).toUpperCase() + cond.slice(1)) : "Envenenado";
+        if (cond === "lentidao" || cond === "lentidão") label = "Lentidão";
+        if (cond === "terreno dificil" || cond === "terrenos dificeis") label = "Terreno Difícil";
+        return `Imunidade: ${label}`;
+      }
+      if (rawKey === "movement.walk" || rawKey === "movement") {
+        return `Deslocamento: ${Number(c.value) > 0 ? `+${c.value}` : c.value}m`;
+      }
+      if (rawKey === "encumbrance.max" || rawKey === "encumbrance") {
+        return `Carga Máx: ${Number(c.value) > 0 ? `+${c.value}` : c.value}`;
+      }
+      if (rawKey === "all_parameters") {
+        return `Todos Parâmetros: ${Number(c.value) > 0 ? `+${c.value}` : c.value}`;
+      }
+      if (rawKey === "hpDie") {
+        return `Dado de PV: ${c.value}`;
+      }
+      if (rawKey === "hpFixed") {
+        return `PV Fixo: ${c.value}`;
+      }
+
       const keyLabel = CONFIG.GAIA?.parameters?.[rawKey]
         ? game.i18n.localize(CONFIG.GAIA.parameters[rawKey])
         : (CONFIG.GAIA?.ChangeKey?.[rawKey] ? game.i18n.localize(CONFIG.GAIA.ChangeKey[rawKey]) : rawKey);
-      const modSign = Number(c.value) > 0 ? `+${c.value}` : String(c.value);
-      return `${keyLabel}: ${modSign}`;
-    }).join(", ");
+
+      if (!keyLabel && !c.value) return null;
+      const numVal = Number(c.value);
+      const modSign = !isNaN(numVal) && numVal > 0 ? `+${c.value}` : String(c.value ?? "");
+
+      if (keyLabel && modSign) return `${keyLabel}: ${modSign}`;
+      if (keyLabel) return keyLabel;
+      if (modSign) return modSign;
+      return null;
+    }).filter(Boolean);
+
+    let changesSummary = validChanges.join(", ");
+    if (!changesSummary && (displayName.toLowerCase().includes("proteção da natureza") || displayName.toLowerCase().includes("protecao da natureza"))) {
+      changesSummary = "Resistência: Natureza, Imunidade: Envenenado";
+    }
+    if (!changesSummary && displayName.toLowerCase().includes("fortitude ampliada")) {
+      changesSummary = "Dado de PV: 1d8 (ou 4 fixo)";
+    }
+    const normDisplayName = displayName.toLowerCase();
+    if (!changesSummary && (normDisplayName.includes("abraço da treva") || normDisplayName.includes("abraco da treva"))) {
+      changesSummary = "Resistência: Trevas, Imunidade: Enfraquecido";
+    }
+    if (!changesSummary && normDisplayName.includes("corpo de ferro")) {
+      changesSummary = "Imunidade: Envenenado, Sangramento";
+    }
+    if (!changesSummary && normDisplayName.includes("filho de nolgadan")) {
+      changesSummary = "Imunidade: Lentidão, Terreno Difícil";
+    }
+
+    const rawDurationLabel = String(effect.duration?.label ?? "").trim();
+    const isNoneDuration = !rawDurationLabel || rawDurationLabel.toLowerCase() === "none" || rawDurationLabel.toLowerCase() === "nenhum";
+    let durationText = "";
+    if (!isNoneDuration) {
+      durationText = rawDurationLabel;
+    } else if (effect.duration?.seconds) {
+      durationText = `${effect.duration.seconds}s`;
+    } else if (effect.duration?.rounds) {
+      durationText = `${effect.duration.rounds} rodadas`;
+    }
 
     const formattedEffect = {
       id: effect.id,
-      name: effect.name || "Efeito Sem Nome",
+      name: displayName,
       img: effect.img || effect.icon || "icons/svg/aura.svg",
       disabled: Boolean(effect.disabled),
       isSuppressed: Boolean(effect.isSuppressed),
       sourceName: effect.sourceName || (effect.parent?.name ?? ""),
-      durationText: effect.duration?.label || (effect.duration?.seconds ? `${effect.duration.seconds}s` : (effect.duration?.rounds ? `${effect.duration.rounds} rodadas` : "")),
+      durationText,
       changes: changesSummary
     };
 
@@ -702,12 +861,20 @@ export function formatInventoryItem(item) {
 
   const rawCat = iSys.category || item.type;
   const config = /** @type {any} */ (CONFIG).GAIA;
-  let categoryLabel = rawCat || "-";
+  let categoryLabel = "-";
   if (item.type === "relic" || rawCat === "relic" || config?.relicCategories?.[rawCat]) {
     const relicCatObj = config?.relicCategories?.[rawCat];
     categoryLabel = relicCatObj ? game.i18n.localize(relicCatObj.label) : (game.i18n.localize("GAIA.Relic.Name") || "Relíquia");
   } else if (config?.equipmentCategories?.[rawCat]) {
     categoryLabel = game.i18n.localize(config.equipmentCategories[rawCat]);
+  } else if (rawCat && game.i18n.has(`GAIA.EquipmentCategory.${rawCat}`)) {
+    categoryLabel = game.i18n.localize(`GAIA.EquipmentCategory.${rawCat}`);
+  } else if (rawCat && game.i18n.has(`TYPES.Item.${rawCat}`)) {
+    categoryLabel = game.i18n.localize(`TYPES.Item.${rawCat}`);
+  } else if (rawCat === "legacy") {
+    categoryLabel = game.i18n.localize("GAIA.title.Legacy") || "Legado";
+  } else if (rawCat) {
+    categoryLabel = rawCat;
   }
 
   const defaultPotency = config?.relicCategories?.[rawCat]?.potency ?? 0;

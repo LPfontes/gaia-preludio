@@ -6,7 +6,6 @@
 
 .gaia-ability-sheet {
   padding: 8px;
-  background: #f4ede2;
   font-family: var(--gaia-font-medieval), Georgia, serif;
   color: var(--gaia-text-parchment);
   overflow-y: auto !important;
@@ -99,7 +98,6 @@
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
   margin: 4px 0;
-  border-bottom: 1px solid var(--gaia-text-parchment);
   padding-bottom: 6px;
 }
 
@@ -268,7 +266,8 @@
 }
 
 /* ALVOS E ALCANCE */
-.ability-targets-range-row {
+.ability-targets-range-row,
+.ability-requirement-row {
   display: flex;
   gap: 8px;
   margin-bottom: 8px;
@@ -315,15 +314,14 @@
 /* EFEITO PRINCIPAL / DESCRIÇÃO */
 .ability-main-description textarea {
   width: 100%;
-  min-height: 100px;
-  border: 1px solid #dcd6e8;
+  min-height: 300px;
   border-radius: var(--gaia-radius);
   padding: 6px 8px;
   font-size: var(--gaia-font-base);
   line-height: 1.5;
   color: var(--gaia-text-primary);
   resize: vertical;
-  background: #ffffff;
+  background: transparent;
   font-family: inherit;
 }
 
@@ -338,6 +336,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  border-bottom: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
   padding-bottom: 4px;
 }
 
@@ -388,7 +387,7 @@
 }
 
 .subeffect-title-text {
-  font-size: 13px;
+  font-size: var(--gaia-font-base);
   font-weight: 700;
   color: var(--gaia-purple-dark, #4a154b);
   text-transform: uppercase;
@@ -396,7 +395,7 @@
 }
 
 .subeffect-cost-badge {
-  font-size: 11px;
+  font-size: var(--gaia-font-base);
   font-weight: 600;
   padding: 1px 6px;
   border-radius: var(--gaia-radius);
@@ -418,7 +417,7 @@
   border: none;
   cursor: pointer;
   padding: 2px 4px;
-  font-size: 13px;
+  font-size: var(--gaia-font-base);
   transition: color 0.15s ease, transform 0.15s ease;
 }
 
@@ -428,7 +427,7 @@
 
 .btn-roll-subeffect:hover {
   color: var(--gaia-purple, #942ce4);
-  transform: scale(1.15);
+  transform: scale(1.1);
 }
 
 .btn-edit-subeffect {
@@ -484,13 +483,31 @@
 }
 
 .subeffect-meta-badge {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--gaia-font-xs);
+  font-family: var(--gaia-font-medieval);
+  font-weight: 700;
   padding: 1px 6px;
   border-radius: var(--gaia-radius);
-  background: rgba(148, 44, 228, 0.08);
-  border: 1px solid #d4cae8;
-  color: var(--gaia-text-primary);
+  background: rgba(93, 28, 143, 0.08);
+  border: 1px solid var(--gaia-border-subtle);
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.subeffect-meta-badge.action-badge {
+  background: rgba(93, 28, 143, 0.12);
+  border: 1px solid var(--gaia-purple-dark);
+  color: var(--gaia-purple-dark);
+}
+
+.subeffect-meta-badge.type-badge {
+  background: rgba(87, 76, 67, 0.1);
+  border: 1px solid var(--gaia-border-frame);
+  color: var(--gaia-text-parchment);
 }
 
 
@@ -519,6 +536,21 @@
   border: none;
   background: transparent;
   margin-top: 4px;
+}
+
+.subeffect-description {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  line-height: 1.5;
+  margin-top: 6px;
+  padding: 4px;
+}
+
+.subeffect-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
 }
 
 /* APRIMORAMENTOS */
@@ -863,18 +895,25 @@
   gap: 6px;
 }
 
-/* SEÇÃO DE HABILIDADES DE LEGADO NA FICHA DO ATOR */
+/* SEÇÃO DE HABILIDADES NA FICHA DO ATOR */
 .legacy-abilities-section {
   margin-bottom: 6px;
 }
 
-.legacy-abilities-section .section-header {
-  padding: 6px;
+.legacy-abilities-section .section-header,
+.abilities-header-bar {
+  padding: 4px 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.abilities-header-bar {
+  margin: 8px 0 6px 0;
+}
+
+.abilities-panel .section-title,
+.abilities-header-bar .section-title,
 .legacy-abilities-section .section-title,
 .legacy-abilities-section .section-header h3 {
   margin: 0;
@@ -885,6 +924,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.abilities-header-bar .section-actions,
+.legacy-abilities-section .section-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
 .btn-open-legacy-sheet {
@@ -997,11 +1043,75 @@
   border-radius: var(--gaia-radius);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 12px;
+  transition: all 0.2s ease;
 }
 
 .gaia-ability-card.actor-sheet-card:hover {
   border-color: var(--gaia-purple-dark);
   box-shadow: 0 4px 12px rgba(87, 76, 67, 0.2);
+}
+
+/* Acordeão de Habilidades (.ability-card-item & .legacy-ability-card-item) */
+.actor-sheet-card .ability-card-header {
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--gaia-radius);
+  padding: 2px 4px;
+  transition: background 0.15s ease, margin-bottom 0.15s ease;
+}
+
+.actor-sheet-card .ability-card-header:hover {
+  background: rgba(93, 28, 143, 0.05);
+}
+
+.actor-sheet-card .ability-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 140px;
+  position: relative;
+}
+
+.ability-card-item.is-collapsed .ability-card-body {
+  display: none;
+}
+
+.ability-card-item.is-collapsed .ability-card-header {
+  margin-bottom: 0;
+}
+
+.ability-card-item.is-collapsed .gaia-ability-card.actor-sheet-card {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.btn-toggle-ability-collapse .toggle-icon {
+  transition: transform 0.2s ease;
+}
+
+.ability-card-item.is-collapsed .btn-toggle-ability-collapse .toggle-icon {
+  transform: rotate(-90deg);
+}
+
+.btn-toggle-all-abilities {
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-xs);
+  font-weight: 700;
+  padding: 3px 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.btn-toggle-all-abilities:hover {
+  border-color: var(--gaia-purple);
+  color: var(--gaia-purple-dark);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
 .ability-name-display {
@@ -1069,6 +1179,20 @@
   font-weight: 700;
   font-size: var(--gaia-font-base);
   color: var(--gaia-purple-dark);
+  gap: 6px;
+}
+
+.subeffect-display-header .subeffect-identity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-direction: row;
+}
+
+.subeffect-display-header .subeffect-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .subeffect-title-text {
@@ -1078,8 +1202,14 @@
 .subeffect-cost-text {
   background: var(--gaia-purple-dark);
   color: #ffffff;
-  padding: 2px 4px;
-  font-size: var(--gaia-font-base);
+  padding: 1px 6px;
+  font-size: var(--gaia-font-xs);
+  font-family: var(--gaia-font-medieval);
+  font-weight: 700;
+  border-radius: var(--gaia-radius);
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
 }
 
 .subeffect-divider {
@@ -1099,6 +1229,15 @@
   font-style: italic;
   color: var(--gaia-text-parchment);
   margin-top: 2px;
+}
+
+.subeffect-display-block .subeffect-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--gaia-border-subtle);
 }
 
 .improvements-display-section {
@@ -1168,13 +1307,6 @@
   width: 100%;
 }
 
-.gaia-ability-card .ability-action-desc {
-  font-size: var(--gaia-font-base, 12px);
-  color: var(--gaia-text-parchment);
-  line-height: 1.4;
-  margin-top: 2px;
-}
-
 .gaia-ability-card .ability-action-info {
   display: flex;
   align-items: center;
@@ -1224,7 +1356,6 @@
 }
 
 .gaia-ability-card .item-effects-panel .effects-main-title {
-  color: var(--gaia-purple-dark, #5d1c8f);
   font-size: var(--gaia-font-base);
 }
 

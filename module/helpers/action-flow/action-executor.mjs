@@ -11,6 +11,7 @@ import { processActionCost } from "./action-cost.mjs";
 import { processActionAttack } from "./action-attack.mjs";
 import {
   processActionDamageSection,
+  processActionHealingSection,
   processActionCheckSection,
   processActionConditionSection,
   processActionAoESection,
@@ -49,6 +50,7 @@ export async function executeAction(action, context = {}) {
   // 3. Processa seções modulares
   const { attackRoll, attackHtml } = await processActionAttack(action, actor, targets, fitness);
   const damageHtml = processActionDamageSection(action, config);
+  const healingHtml = processActionHealingSection(action, config);
   const checkHtml = processActionCheckSection(action, config);
   const conditionHtml = processActionConditionSection(action);
   const aoeHtml = processActionAoESection(action);
@@ -61,10 +63,12 @@ export async function executeAction(action, context = {}) {
     badgesHtml,
     attackHtml,
     damageHtml,
+    healingHtml,
     checkHtml,
     conditionHtml,
     aoeHtml
   });
+
 
   const speaker = ChatMessage.getSpeaker({ actor, item });
   const msgData = {

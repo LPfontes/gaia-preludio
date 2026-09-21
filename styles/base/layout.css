@@ -135,7 +135,7 @@
 .sheet-navigation-tabs,
 .gaia-preludio.sheet.actor .sheet-navigation-tabs,
 .gaia-preludio.sheet.actor nav.sheet-navigation-tabs {
-  background: var(--gaia-bg-banner);
+  background-color: var(--gaia-bg-window);
   border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
   display: flex;
@@ -205,3 +205,103 @@
   color: var(--gaia-text-dim);
   font-style: italic;
 }
+
+/* Estilos para Tabela de Inventário em Modo Leitura (Select/Input -> Span) */
+.inventory-grid-table span.grid-cell-value {
+  display: inline-block;
+  padding: 4px 6px;
+  font-family: var(--gaia-font-sans, sans-serif);
+  font-size: 0.9em;
+  font-weight: 600;
+  text-align: center;
+  color: var(--gaia-text-parchment, #e0e0e0);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  min-width: 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.inventory-grid-table.is-readonly td {
+  text-align: center;
+}
+
+
+/* Estilos para o texto de descrição em modo de leitura (Textarea -> Span) */
+.description-value {
+  display: block;
+  min-height: auto;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: var(--gaia-font-base);
+  line-height: 1.5;
+  color: var(--gaia-text-parchment);
+  box-sizing: border-box;
+}
+
+.description-value:last-child {
+  margin-bottom: 0;
+}
+
+.description-value .spec-name {
+  display: block;
+  font-weight: bold;
+  color: var(--gaia-purple);
+  margin-bottom: 4px;
+}
+
+.description-value .spec-desc {
+  display: block;
+  color: var(--gaia-text-parchment);
+}
+
+/* Coluna e Botão de Edição da Tabela */
+.inventory-grid-table th.col-edit,
+.inventory-grid-table td.col-edit {
+  width: 36px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.inventory-grid-table .btn-toggle-table-edit {
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--gaia-text-parchment);
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.inventory-grid-table .btn-toggle-table-edit:hover {
+  color: var(--gaia-gold, #e5c158);
+}
+
+/* Badge de Dado de PV / Fortitude Ampliada */
+.badge-hp-die,
+.badge.badge-hp-die {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--gaia-font-2xs, 10px);
+  padding: 1px 4px;
+  font-weight: bold;
+  margin-left: 4px;
+  line-height: 1;
+  vertical-align: middle;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.badge-hp-die i,
+.badge.badge-hp-die i {
+  font-size: 0.9em;
+}
+

@@ -34,6 +34,57 @@
     </div>
   </div>
 
+  {{!-- SEÇÃO DE LORE DO LEGADO (ORIGEM, TRADIÇÕES, NO MUNDO) --}}
+  {{#if legacyItem}}
+  <div class="bio-legacy-lore-panel">
+    <div class="bio-legacy-lore-header">
+      <h3 class="bio-legacy-lore-title">
+        <i class="fa-solid fa-book-atlas"></i> {{legacyItem.name}} - {{localize "GAIA.Banner.Legacy"}}
+      </h3>
+      <button type="button" class="btn-open-legacy-sheet" data-action="openLegacyItem"
+        data-item-id="{{legacyItem.id}}" data-item-uuid="{{legacyItem.uuid}}"
+        title="Abrir Ficha do Legado ({{legacyItem.name}})">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Ficha do Legado
+      </button>
+    </div>
+
+    <div class="legacy-lore-sections">
+      {{#if legacyItem.system.origin}}
+      <details class="legacy-lore-card">
+        <summary class="legacy-lore-summary">
+          <i class="fa-solid fa-landmark"></i> {{localize "GAIA.Legado.Origin"}}
+        </summary>
+        <div class="legacy-lore-body">
+          {{legacyItem.system.origin}}
+        </div>
+      </details>
+      {{/if}}
+
+      {{#if legacyItem.system.traditions}}
+      <details class="legacy-lore-card">
+        <summary class="legacy-lore-summary">
+          <i class="fa-solid fa-scroll"></i> {{localize "GAIA.Legado.Traditions"}}
+        </summary>
+        <div class="legacy-lore-body">
+          {{legacyItem.system.traditions}}
+        </div>
+      </details>
+      {{/if}}
+
+      {{#if legacyItem.system.inWorld}}
+      <details class="legacy-lore-card">
+        <summary class="legacy-lore-summary">
+          <i class="fa-solid fa-earth-americas"></i> {{localize "GAIA.Legado.InWorld"}}
+        </summary>
+        <div class="legacy-lore-body">
+          {{legacyItem.system.inWorld}}
+        </div>
+      </details>
+      {{/if}}
+    </div>
+  </div>
+  {{/if}}
+
   {{!-- SEÇÃO DE BIOGRAFIA E ANOTAÇÕES --}}
   <div class="bio-notes-panel">
     <h2 class="panel-main-title">{{localize "GAIA.title.Bio"}}</h2>

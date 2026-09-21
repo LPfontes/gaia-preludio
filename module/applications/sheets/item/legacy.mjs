@@ -53,6 +53,9 @@ export class LegacySheet extends GaiaItemSheet {
         if (act.damage?.hasDamage && act.damage.formula) {
           summaries.push(`Dano: ${act.damage.formula}`);
         }
+        if (act.healing?.hasHealing && act.healing.formula) {
+          summaries.push(`Cura: ${act.healing.formula}`);
+        }
         if (act.check?.hasCheck) {
           summaries.push(`Dif. ${act.check.difficulty ?? 10}`);
         }

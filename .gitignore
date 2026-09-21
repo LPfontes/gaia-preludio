@@ -7,3 +7,5 @@ Thumbs.db
 .idea/
 dist/
 *.zip
+scratch/
+*.code-workspace

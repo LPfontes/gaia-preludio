@@ -53,7 +53,9 @@
       "Unequip": "Desequipar",
       "ClickToRemove": "Clique para remover",
       "Bio": "Biografia",
-      "Effects": "Efeitos"
+      "Effects": "Efeitos",
+      "ToggleCollapse": "Recolher / Expandir",
+      "ToggleAllCollapse": "Recolher / Expandir Todas"
     },
     "ItemTabs": {
       "Table": "Tabela",
@@ -301,6 +303,10 @@
       "ImportTitle": "Adicionar Item à Ficha",
       "Import": "Adicionar",
       "CreateItem": "Criar Item",
+      "FilterPath": "Caminho",
+      "AllPaths": "Todos os Caminhos",
+      "OtherAbilities": "Outras Habilidades",
+      "OtherItems": "Outros Itens",
       "EmptyState": "Nenhum item ou habilidade encontrado com os filtros selecionados."
     },
     "CreatureType": {
@@ -325,7 +331,8 @@
       "iniciativa": "Iniciativa",
       "movimento": "Movimento",
       "passiva": "Passiva",
-      "foco": "Foco"
+      "foco": "Foco",
+      "transformacao": "Transformação"
     },
     "ActionType": {
       "name": "Tipo de Ação",
@@ -430,7 +437,13 @@
       "ActiveEffectLabel": "Efeito Ativo",
       "ActiveEffectPlaceholder": "Efeito ativo quando esta habilidade é usada...",
       "EmptyActiveEffectHint": "Nenhum efeito ativo configurado.",
-      "EmptyAbilitiesHint": "Nenhuma habilidade de legado cadastrada."
+      "EmptyAbilitiesHint": "Nenhuma habilidade de legado cadastrada.",
+      "Origin": "Origem",
+      "OriginPlaceholder": "Descreva a origem do Legado...",
+      "Traditions": "Tradições",
+      "TraditionsPlaceholder": "Descreva as tradições...",
+      "InWorld": "No Mundo",
+      "InWorldPlaceholder": "Descreva a presença no mundo..."
     },
     "Equipment": {
       "NamePlaceholder": "Nome do Equipamento",
@@ -570,6 +583,29 @@
       "Vestuary": "Vestuário",
       "Rides": "Montarias"
     },
+    "Legacies": {
+      "alraune": "Alraune",
+      "anao": "Anão",
+      "daeva": "Daeva",
+      "delahk": "Delahk",
+      "draenum": "Draenum",
+      "elemental": "Elemental",
+      "elfo": "Elfo",
+      "forjado": "Forjado",
+      "humano": "Humano",
+      "inari": "Inari",
+      "kahatsza": "Kahatsza",
+      "kitari": "Kitari",
+      "minotauro": "Minotauro",
+      "netune": "Netune",
+      "orkrash": "Orkrash",
+      "seiko": "Seiko",
+      "ursar": "Ursar",
+      "valdrak": "Valdrak",
+      "venneli": "Venneli",
+      "yuansu": "Yuansu",
+      "zaokan": "Zaokan"
+    },
     "Sheet": {
       "Relic": "Ficha de Relíquia",
       "Legacy": "Ficha de Legado",
@@ -673,10 +709,22 @@
       "TypeNpc": "Legado (NPC)",
       "Submit": "Criar Personagem",
       "TabGeneral": "Identificação",
-      "TabParameters": "1. Parâmetros",
-      "TabKnowledge": "2. Conhecimentos",
-      "TabVitals": "3. Recursos & Idiomas",
-      "TabAbilities": "4. Habilidades",
+      "TabLegacy": "Legado",
+      "TabParameters": "Parâmetros",
+      "TabKnowledge": "Conhecimentos",
+      "TabVitals": "Recursos & Idiomas",
+      "TabAbilities": "Habilidades",
+      "AwakeningLegacyTitle": "Escolha e Definição do Legado",
+      "AwakeningLegacyHint": "O Legado define a ancestralidade e características biológicas e culturais únicas do personagem, concedendo Habilidades de Legado naturais.",
+      "SelectLegacy": "Selecione um Legado...",
+      "OpenLegacyBrowser": "Navegador de Legados",
+      "CustomLegacyOption": "-- Outro / Personalizado --",
+      "CustomLegacyPlaceholder": "Digite o nome do Legado personalizado...",
+      "EmptyLegacyHint": "Nenhum legado selecionado. Escolha um legado acima ou utilize o Navegador de Itens para explorar os legados disponíveis.",
+      "LegacyAbilities": "Habilidades de Legado",
+      "LegacyBioTitle": "Informações e Lore do Legado",
+      "LegacyHeight": "Altura Média",
+      "LegacyLifeExpectancy": "Expectativa de Vida",
       "AwakeningRulesTitle": "Guia de Criação: Despertar Inicial",
       "AwakeningIntro": "Defina o estado de Despertar do personagem e distribua seus Parâmetros e Conhecimentos iniciais.",
       "ModeSelectLabel": "Condição de Despertar:",
@@ -877,6 +925,15 @@
       "DamageType": "Tipo de Dano:",
       "CriticalBonus": "Bônus Crítico:",
       "CriticalBonusPlaceholder": "+1d6, +5...",
+      "HealingLegend": "Cura",
+      "HealingFormula": "Fórmula de Cura:",
+      "HealingFormulaPlaceholder": "1d8 + @spirit",
+      "HealingType": "Tipo de Cura:",
+      "HealingPv": "Pontos de Vida (PV)",
+      "HealingPe": "Pontos de Energia (PE)",
+      "HealingTemp": "PV Temporário",
+      "CriticalHealingBonus": "Bônus Crítico:",
+      "CriticalHealingBonusPlaceholder": "+1d8, +5...",
       "CheckLegend": "Resistência",
       "CheckCategory": "Categoria:",
       "CheckCategoryParameter": "Parâmetro",
@@ -973,6 +1030,11 @@
       "Uncommon": "Incomum",
       "Rare": "Rara",
       "Legendary": "Lendária"
+    },
+    "HealingType": {
+      "Pv": "Pontos de Vida (PV)",
+      "Pe": "Pontos de Energia (PE)",
+      "Temp": "PV Temporário"
     }
   }
-}
+}

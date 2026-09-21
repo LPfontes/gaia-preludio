@@ -36,7 +36,7 @@
     {{!-- ==================================================================== --}}
     <div class="gaia-dialog-tab-pane active" data-tab="vitals">
       <div class="level-up-section">
-        <h4>{{localize "GAIA.LevelUp.HealthGain"}}</h4>
+        <h4>{{localize "GAIA.LevelUp.HealthGain"}}{{#if hasFortitude}} <span class="badge badge-passive" style="font-size: var(--gaia-font-base);" title="Fortitude Ampliada: 1d8 ou 4 fixo"><i class="fa-solid fa-shield-heart"></i> Fortitude Ampliada</span>{{/if}}</h4>
 
         <div class="form-row">
           <div style="flex: 1;">
@@ -46,19 +46,19 @@
             <div class="hp-method-options">
               <label>
                 <input type="radio" name="hpMethod" value="fixed" checked />
-                Média (3 + {{vigor}} = <strong>{{add 3 vigor}} PV</strong>)
+                Média ({{fixedHpBase}} + {{vigor}} = <strong>{{add fixedHpBase vigor}} PV</strong>)
               </label>
               <label>
                 <input type="radio" name="hpMethod" value="roll" />
-                Rolar (1d6 + {{vigor}})
+                Rolar ({{hpDie}} + {{vigor}})
               </label>
             </div>
           </div>
           <div style="flex: 0.6; display: flex; align-items: center; gap: 6px; flex-direction: column;">
             <button type="button" class="btn-roll-hp-gain" style="display: none;">
-              Rolar 1d6
+              Rolar {{hpDie}}
             </button>
-            <span class="hp-gain-preview">+{{add 3 vigor}} PV</span>
+            <span class="hp-gain-preview">+{{add fixedHpBase vigor}} PV</span>
           </div>
         </div>
       </div>
@@ -170,6 +170,9 @@
           <button type="button" class="btn-open-abilities-browser">
             {{localize "GAIA.ItemBrowser.OpenAbilitiesBrowser"}}
           </button>
+        </div>
+        <div class="selected-abilities-tags" style="display: none;">
+          {{!-- Populado dinamicamente via JS após seleção --}}
         </div>
       </div>
     </div>

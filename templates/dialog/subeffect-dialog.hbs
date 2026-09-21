@@ -1,42 +1,133 @@
-<form class="gaia-dialog-form subeffect-dialog-form">
-  <div class="form-group">
-    <input type="text" name="name" value="{{subEffect.name}}" placeholder="Ex: ATAQUE SINCRONIZADO" required autofocus />
-  </div>
+<section class="gaia-sheet-content gaia-ability-sheet">
+  <form class="gaia-dialog-form subeffect-dialog-form gaia-ability-card">
 
-  <div class="form-row" style="display: flex; gap: 8px;">
-    <div class="form-group" style="flex: 1;">
-      <label class="form-label">Tipo de Ação:</label>
-      <select name="typeAction">
-        <option value="">-- Selecione a Ação --</option>
-        {{#each actionTypeOptions}}
-          <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
-        {{/each}}
-      </select>
+    <!-- CABEÇALHO -->
+    <div class="ability-card-header">
+      <div class="ability-title-row">
+        <i class="fas fa-bolt ability-icon"
+          style="display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--gaia-gold); text-shadow: 1px 1px 2px #000;"></i>
+        <h2 class="ability-name">
+          <input name="name" type="text" value="{{subEffect.name}}" placeholder="Nome da Sub-Habilidade" required
+            autofocus />
+        </h2>
+      </div>
+
+      <div class="ability-meta-bar">
+        <div class="meta-row-1">
+          <div class="meta-item cost-meta">
+            <input name="cost" type="text" value="{{subEffect.cost}}" placeholder="Custo (ex: 1 PE)" />
+          </div>
+          <span class="meta-divider">|</span>
+          <div class="meta-item action-meta">
+            <select name="typeAction">
+              <option value="">-- Ação --</option>
+              {{#each actionTypeOptions}}
+              <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <span class="meta-divider">|</span>
+          <div class="meta-item category-meta">
+            <select name="type">
+              <option value="">-- Tipo --</option>
+              {{#each abilityTypeOptions}}
+              <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
+            <button type="button" class="btn-add-type" data-action="addType" title="Adicionar Tipo de Habilidade" style="">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="form-group" style="flex: 1;">
-      <label class="form-label">Tipo de Habilidade:</label>
-      <select name="type">
-        <option value="">-- Selecione o Tipo --</option>
-        {{#each abilityTypeOptions}}
-          <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
-        {{/each}}
-      </select>
+    <!-- NAVEGAÇÃO PRINCIPAL -->
+    <nav class="sheet-navigation-tabs item-tabs tabs ability-navigation-tabs" data-group="primary" style="">
+      <a class="tab-item active" data-action="tab" data-group="primary" data-tab="tabela" style="">Tabela</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="acoes" style="">Ações</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="efeitos">Efeitos</a>
+    </nav>
+
+    <!-- CORPO -->
+    <div class="ability-card-body">
+      <section class="sheet-tabs-content item-tabs-content" style="padding-top: 10px;">
+        <!-- ABA TABELA -->
+        <div class="tab tabela active" data-group="primary" data-tab="tabela">
+          <div class="ability-quote-field" style="margin-bottom: 10px;">
+            <input name="note" type="text" value="{{subEffect.note}}" placeholder="Nota / Regra Especial (Opcional)" />
+          </div>
+
+          <div class="ability-main-description">
+            <textarea name="description"
+              placeholder="Descreva os efeitos detalhados desta sub-habilidade...">{{subEffect.description}}</textarea>
+          </div>
+        </div>
+
+        <!-- ABA AÇÕES -->
+        <div class="tab acoes" data-group="primary" data-tab="acoes">
+          <div class="ability-subeffects-container">
+            <div class="subeffects-header">
+              <span class="subeffects-title">Ações da Sub-Habilidade</span>
+              <button type="button" class="btn-add-action" data-action="addAction" title="Adicionar Ação">
+                <i class="fa-solid fa-plus"></i> Adicionar Ação
+              </button>
+            </div>
+            <div class="actions-list">
+              {{#each subEffect.actions}}
+                <div class="action-card" >
+                  <div class="action-card-header">
+                    <div class="action-card-title-group">
+                      <strong class="action-card-name" data-action="editAction" data-index="{{@index}}" style="cursor: pointer;" title="Editar Ação">{{this.name}}</strong>
+                      <div class="action-badges">
+                        {{#if this.cost}}<span class="badge cost-badge"><i class="fas fa-bolt"></i> {{this.cost}}</span>{{/if}}
+                        {{#if this.actionTypeLabel}}
+                          <span class="badge type-badge">{{this.actionTypeLabel}}</span>
+                        {{else if this.type.actionType}}
+                          <span class="badge type-badge">{{localize (concat "GAIA.ActionType." this.type.actionType)}}</span>
+                        {{/if}}
+                      </div>
+                    </div>
+                    <div class="action-card-controls">
+                      <button type="button" class="btn-edit-action" data-action="editAction" data-index="{{@index}}" title="Editar Ação">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button type="button" class="btn-remove-action" data-action="removeAction" data-index="{{@index}}" title="Remover Ação">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  {{#if this.description}}
+                    <div class="action-card-desc" >
+                      {{this.description}}
+                    </div>
+                  {{/if}}
+                </div>
+              {{else}}
+                <div class="empty-hint" style="font-size: 12px; font-style: italic; color: var(--gaia-text-muted); text-align: center; padding: 10px;">
+                  Nenhuma ação específica vinculada a esta sub-habilidade.
+                </div>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA EFEITOS -->
+        <div class="tab efeitos" data-group="primary" data-tab="efeitos">
+          <div class="item-effects-panel">
+            <div class="effects-section-header">
+              <span class="effects-main-title">Efeitos Ativos & Condições</span>
+              <button type="button" class="btn-add-effect" data-action="createEffect" title="Adicionar Efeito Ativo">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+            <div class="empty-hint" style="font-size: 12px; font-style: italic; color: var(--gaia-text-muted); text-align: center; padding: 10px;">
+              Efeitos e modificadores adicionais aplicados por esta sub-habilidade.
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
 
-    <div class="form-group" style="flex: 1;">
-      <label class="form-label">Custo em PE (Opcional):</label>
-      <input type="text" name="cost" value="{{subEffect.cost}}" placeholder="Ex: 1 PE, 2 PE..." />
-    </div>
-  </div>
-
-  <div class="form-group">
-    <label class="form-label">Descrição das Regras e Efeitos:</label>
-    <textarea name="description" rows="5" placeholder="Descreva os efeitos detalhados desta sub-habilidade...">{{subEffect.description}}</textarea>
-  </div>
-
-  <div class="form-group">
-    <label class="form-label">Nota Adicional / Regra Especial (Opcional):</label>
-    <input type="text" name="note" value="{{subEffect.note}}" placeholder="Ex: Válido uma vez por turno..." />
-  </div>
-</form>
+  </form>
+</section>

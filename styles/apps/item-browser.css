@@ -132,9 +132,69 @@
   padding-right: 4px;
 }
 
+.browser-group-section {
+  margin-bottom: 14px;
+}
+
+.browser-group-section:last-child {
+  margin-bottom: 0;
+}
+
+.browser-path-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(93, 28, 143, 0.08);
+  border-left: 4px solid var(--gaia-purple-dark, #5d1c8f);
+  border-radius: var(--gaia-radius);
+  padding: 6px 12px;
+  margin: 6px 6px 8px 6px;
+  border-top: 1px solid var(--gaia-border-subtle);
+  border-bottom: 1px solid var(--gaia-border-subtle);
+  border-right: 1px solid var(--gaia-border-subtle);
+}
+
+.browser-path-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.browser-path-icon {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-purple-dark, #5d1c8f);
+}
+
+.browser-path-title {
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  letter-spacing: 0.5px;
+}
+
+.browser-path-count-badge {
+  background: var(--gaia-purple-dark, #5d1c8f);
+  color: #ffffff;
+  font-size: var(--gaia-font-xs);
+  font-weight: bold;
+  padding: 2px 7px;
+  border-radius: 10px;
+  line-height: 1;
+}
+
+.browser-path-divider {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gaia-border-gold, #8c7355), transparent);
+  opacity: 0.4;
+}
+
 .browser-items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 6px;
   padding: 6px;
 }
@@ -207,6 +267,20 @@
   color: var(--gaia-text-parchment);
 }
 
+.badge.path-badge {
+  background: rgba(93, 28, 143, 0.12);
+  color: var(--gaia-purple-dark, #5d1c8f);
+  border: 1px solid rgba(93, 28, 143, 0.4);
+  border-radius: var(--gaia-radius);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.badge.path-badge i {
+  font-size: 0.9em;
+}
+
 .browser-item-card .card-body {
   margin: 8px 0;
   font-size: var(--gaia-font-base);
@@ -241,9 +315,7 @@
   gap: 4px;
 }
 
-.btn-action.preview-btn {
-  background: var(--gaia-border-frame);
-}
+
 
 .btn-action.preview-btn:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);

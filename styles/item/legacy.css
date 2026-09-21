@@ -14,8 +14,6 @@
 .gaia-preludio.sheet.item.legado .legacy-table-frame {
   background: var(--gaia-bg-box);
   padding: 4px;
-  border-radius: var(--gaia-radius);
-  border: 1px solid var(--gaia-border-frame);
 }
 
 .gaia-preludio.sheet.item.legado .legacy-abilities-section {
@@ -42,12 +40,12 @@
   border: 1px solid var(--gaia-border-subtle, #444);
   padding: 10px;
   margin-bottom: 10px;
-  background: rgba(0, 0, 0, 0.15);
+  background: transparent;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .gaia-preludio.sheet.item.legado .legacy-ability-card:hover {
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.005);
 }
 
 .gaia-preludio.sheet.item.legado .legacy-ability-header {
@@ -98,6 +96,68 @@
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
   padding: 4px 8px;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-actions-list {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-top: 6px;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-action-row,
+.legacy-ability-action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  padding: 4px 8px;
+  border-radius: var(--gaia-radius, 4px);
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-action-row:hover,
+.legacy-ability-action-row:hover {
+  background: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-action-row .action-name,
+.legacy-ability-action-row .action-name {
+  font-weight: 600;
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-action-row .action-summary,
+.legacy-ability-action-row .action-summary {
+  color: var(--gaia-gold-light, #e0cb8d);
+  font-size: 10px;
+  margin-left: 4px;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-action-row .btn-roll-legacy-action,
+.legacy-ability-action-row .btn-roll-legacy-action {
+  background: transparent;
+  border: none;
+  color: var(--gaia-text-parchment);
+  cursor: pointer;
+  padding: 2px 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: color 0.15s ease, transform 0.1s ease;
+}
+
+.gaia-preludio.sheet.item.legado .legacy-ability-action-row .btn-roll-legacy-action:hover,
+.legacy-ability-action-row .btn-roll-legacy-action:hover {
+  color: var(--gaia-gold-light, #e0cb8d);
+  transform: scale(1.15);
 }
 
 .gaia-preludio.sheet.item.legado .legacy-abilities-section .empty-hint {

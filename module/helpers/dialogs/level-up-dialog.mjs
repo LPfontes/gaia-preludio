@@ -75,6 +75,10 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
     knowPoints = 2;
   }
 
+  const hasFortitude = Boolean(actor?.hasFortitudeAmpliada);
+  const hpDie = hasFortitude ? "1d8" : "1d6";
+  const fixedHpBase = hasFortitude ? 4 : 3;
+
   const content = await renderTemplate("systems/gaia-preludio/templates/dialog/level-up-dialog.hbs", {
     currentLevel,
     newLevel,
@@ -83,7 +87,10 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
     paramPoints,
     knowPoints,
     parameters,
-    knowledge
+    knowledge,
+    hasFortitude,
+    hpDie,
+    fixedHpBase
   });
 
   let rolledHpValue = null;
@@ -128,7 +135,7 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
           }
         } else {
           if (btnRollHp) btnRollHp.style.display = "none";
-          previewHp.textContent = `+${3 + currentVigor} PV`;
+          previewHp.textContent = `+${fixedHpBase + currentVigor} PV`;
         }
       };
 
@@ -136,9 +143,16 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
 
       btnRollHp?.addEventListener("click", async (e) => {
         e.preventDefault();
-        const r = new Roll("1d6");
+        const r = new Roll(hpDie);
         await r.evaluate();
+        if (game.dice3d) {
+          await game.dice3d.showForRoll(r, game.user, true);
+        }
         rolledHpValue = r.total;
+        await r.toMessage({
+          speaker: ChatMessage.getSpeaker({ actor }),
+          flavor: `Rolagem de Ganho de PV (${hpDie})${hasFortitude ? " [Fortitude Ampliada]" : ""}`
+        });
         updateHpPreview();
       });
 
@@ -208,12 +222,64 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
         });
       });
 
-      // Botão para abrir o Navegador de Habilidades
+      // Botão para abrir o Navegador de Habilidades (modo seleção)
       const btnOpenBrowser = html.querySelector(".btn-open-abilities-browser");
+      const tagsContainer  = html.querySelector(".selected-abilities-tags");
+
+      /** Renderiza as tags acumuladas de habilidades escolhidas. */
+      const renderAbilityTags = (namesArr) => {
+        if (!tagsContainer) return;
+        if (!namesArr.length) {
+          tagsContainer.style.display = "none";
+          tagsContainer.innerHTML = "";
+          return;
+        }
+        tagsContainer.style.display = "flex";
+        tagsContainer.innerHTML = namesArr
+          .map((name, i) =>
+            `<span class="selected-ability-tag" data-index="${i}">
+              <i class="fa-solid fa-wand-sparkles"></i>
+              ${name}
+            </span>`
+          )
+          .join("");
+      };
+
+      /** Lista acumulada de nomes de habilidades escolhidas nesta sessão. */
+      const chosenAbilityNames = [];
+
       btnOpenBrowser?.addEventListener("click", async (e) => {
         e.preventDefault();
         const { GaiaItemBrowser } = await import("../../applications/item-browser.mjs");
-        GaiaItemBrowser.open(actor, { type: "ability" });
+        GaiaItemBrowser.open(actor, {
+          type: "ability",
+          selectionMode: true,
+          onSelect: async (selectedItems) => {
+            if (!selectedItems?.length) return;
+            const toCreate = [];
+            for (const entry of selectedItems) {
+              try {
+                const doc = await fromUuid(entry.uuid);
+                if (doc) {
+                  toCreate.push(doc.toObject());
+                  // Adiciona à lista acumulada (evita duplicatas por nome)
+                  if (!chosenAbilityNames.includes(entry.name)) {
+                    chosenAbilityNames.push(entry.name);
+                  }
+                }
+              } catch (err) {
+                console.warn(`Gaia | Falha ao carregar habilidade "${entry.name}":`, err);
+              }
+            }
+            if (toCreate.length > 0) {
+              await actor.createEmbeddedDocuments("Item", toCreate);
+              ui.notifications?.info(
+                `${toCreate.length} habilidade${toCreate.length !== 1 ? "s" : ""} adicionada${toCreate.length !== 1 ? "s" : ""} a ${actor.name}.`
+              );
+            }
+            renderAbilityTags(chosenAbilityNames);
+          }
+        });
       });
     },
     ok: {
@@ -224,11 +290,18 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
 
         // 1. Calcula PV Ganho
         const method = html.querySelector("input[name='hpMethod']:checked")?.value || "fixed";
-        let hpGainBase = 3;
+        let hpGainBase = fixedHpBase;
         if (method === "roll") {
           if (rolledHpValue === null) {
-            const r = new Roll("1d6");
+            const r = new Roll(hpDie);
             await r.evaluate();
+            if (game.dice3d) {
+              await game.dice3d.showForRoll(r, game.user, true);
+            }
+            await r.toMessage({
+              speaker: ChatMessage.getSpeaker({ actor }),
+              flavor: `Rolagem de Ganho de PV (${hpDie})${hasFortitude ? " [Fortitude Ampliada]" : ""}`
+            });
             hpGainBase = r.total;
           } else {
             hpGainBase = rolledHpValue;
@@ -302,7 +375,7 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
 
         const vigorNoticeHtml = extraVigorHp > 0 ? `
           <div style="font-size: 11px; color: var(--gaia-green, #2e8b57); margin-top: 2px;">
-            <i class="fa-solid fa-shield-heart"></i> +${extraVigorHp} PV bônus por aumento de Vigor (Nível ${newLevel})
+            ${extraVigorHp} PV bônus por aumento de Vigor (Nível ${newLevel})
           </div>
         ` : "";
 

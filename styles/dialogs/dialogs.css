@@ -224,7 +224,7 @@
  * DIÁLOGO DE SUB-HABILIDADE / SUB-EFFECT DIALOG (.subeffect-dialog)
  * ============================================================================== */
 .subeffect-dialog .window-content {
-  background: var(--gaia-bg-banner);
+  background: #ffffff;
   color: var(--gaia-text-parchment);
   padding: 12px;
 }
@@ -269,7 +269,6 @@
 .subeffect-dialog-form textarea {
   width: 100%;
   padding: 4px 8px;
-  border: 1px solid var(--gaia-border-frame);
   font-size: var(--gaia-font-base);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -288,7 +287,7 @@
 .subeffect-dialog textarea,
 .subeffect-dialog-form textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: 300px;
   line-height: 1.4;
   font-family: inherit;
 }
@@ -296,6 +295,23 @@
 .subeffect-dialog .form-footer,
 .subeffect-dialog-form .form-footer {
   display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.subeffect-dialog .subeffect-description,
+.subeffect-dialog-form .subeffect-description {
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  line-height: 1.5;
+  margin-top: 6px;
+  padding: 4px;
+}
+
+.subeffect-dialog .subeffect-actions-list,
+.subeffect-dialog-form .subeffect-actions-list {
+  display: flex;
+  flex-direction: column;
   gap: 6px;
   margin-top: 8px;
 }
@@ -318,6 +334,10 @@
 
 .subeffect-dialog button[data-action="cancel"]:hover {
   background: rgba(93, 28, 143, 0.1);
+}
+
+.subeffect-dialog .sheet-navigation-tabs {
+  background: transparent;
 }
 
 /* ==============================================================================

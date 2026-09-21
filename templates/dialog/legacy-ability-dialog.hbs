@@ -1,63 +1,88 @@
-<form class="gaia-dialog gaia-dialog-legacy-ability">
-  <div class="form-group">
-    <label>
-      {{localize "GAIA.Legado.AbilityNameLabel"}}
-    </label>
-    <input type="text" name="name" value="{{name}}" placeholder="{{localize 'GAIA.Legado.AbilityNamePlaceholder'}}"
-      required />
-  </div>
-
-  <div class="form-group">
-    <label>
-      {{localize "GAIA.Legado.AbilityDescriptionLabel"}}
-    </label>
-    <textarea name="description" rows="3"
-      placeholder="{{localize 'GAIA.Legado.AbilityDescriptionPlaceholder'}}">{{description}}</textarea>
-  </div>
-
-  <div class="form-group">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-      <label class="active-effect-label" style="font-weight: bold; margin-bottom: 0;">
-        Efeito Ativo
-      </label>
-      <button type="button" class="btn-add-effect" data-action="createEffect" style="cursor: pointer; padding: 2px 8px; font-size: 12px; background: transparent; border: 1px solid var(--gaia-border-frame); border-radius: var(--gaia-radius); color: var(--gaia-text-parchment);">
-        <i class="fa-solid fa-plus"></i> Criar Efeito
-      </button>
+<section class="gaia-sheet-content gaia-ability-sheet">
+  <form class="gaia-dialog gaia-dialog-legacy-ability gaia-ability-card">
+    
+    <!-- CABEÇALHO DA CARTA DE HABILIDADE -->
+    <div class="ability-card-header">
+      <div class="ability-title-row">
+        <i class="fas fa-crown ability-icon" style="display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--gaia-gold); text-shadow: 1px 1px 2px #000;" title="{{localize 'GAIA.Legado.AbilityNameLabel'}}"></i>
+        <h2 class="ability-name">
+          <input name="name" type="text" value="{{name}}" placeholder="{{localize 'GAIA.Legado.AbilityNamePlaceholder'}}" required autofocus />
+        </h2>
+      </div>
     </div>
-    <textarea name="activeEffectText" rows="2" placeholder="{{localize 'GAIA.Legado.EmptyActiveEffectHint'}}">{{activeEffectText}}</textarea>
-  </div>
 
-  {{!-- AÇÕES DA HABILIDADE DE LEGADO --}}
-  <div class="form-group" style="margin-top: 10px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-      <label class="form-label" style="margin-bottom: 0; font-weight: bold;">
-        {{localize "GAIA.Action.SectionTitle"}}
-      </label>
-      <button type="button" class="btn-add-legacy-action" data-action="addLegacyAction"
-        style="cursor: pointer; padding: 2px 8px; font-size: 12px;">
-        <i class="fa-solid fa-plus"></i> {{localize "GAIA.Action.AddActionBtn"}}
-      </button>
-    </div>
-    <div class="legacy-actions-preview-list" style="display: flex; flex-direction: column; gap: 4px;">
-      {{#each formattedActions}}
-      <div class="legacy-action-preview-item"
-        style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: var(--gaia-radius); font-size: 12px;">
-        <span><strong>{{this.name}}</strong> {{#if this.summary}}<small
-            style="color: #aaa;">({{this.summary}})</small>{{/if}}</span>
-        <div style="display: flex; gap: 4px;">
-          <button type="button" class="btn-edit-dialog-action" data-index="{{@index}}"
-            style="background: transparent; border: none; cursor: pointer; color: var(--gaia-text-parchment);"><i
-              class="fa-solid fa-pen-to-square"></i></button>
-          <button type="button" class="btn-remove-dialog-action" data-index="{{@index}}"
-            style="background: transparent; border: none; cursor: pointer; color: var(--gaia-text-parchment);"><i
-              class="fa-solid fa-trash"></i></button>
+    <!-- NAVEGAÇÃO PRINCIPAL -->
+    <nav class="sheet-navigation-tabs item-tabs tabs ability-navigation-tabs" data-group="primary">
+      <a class="tab-item active" data-action="tab" data-group="primary" data-tab="tabela">Tabela</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="acoes">Ações</a>
+      <a class="tab-item" data-action="tab" data-group="primary" data-tab="efeitos">Efeitos</a>
+    </nav>
+
+    <!-- CORPO DA HABILIDADE -->
+    <div class="ability-card-body">
+      <section class="sheet-tabs-content item-tabs-content" style="padding-top: 10px;">
+        <!-- ABA TABELA (DESCRIÇÃO) -->
+        <div class="tab tabela active" data-group="primary" data-tab="tabela">
+          <div class="ability-main-description">
+            <textarea name="description" placeholder="{{localize 'GAIA.Legado.AbilityDescriptionPlaceholder'}}" style="min-height: 120px;">{{description}}</textarea>
+          </div>
         </div>
-      </div>
-      {{else}}
-      <div class="empty-hint" style="font-size: 11px; font-style: italic; color: var(--gaia-text-muted);">
-        {{localize "GAIA.Action.EmptyActionsHint"}}
-      </div>
-      {{/each}}
+
+        <!-- ABA AÇÕES -->
+        <div class="tab acoes" data-group="primary" data-tab="acoes">
+          <div class="ability-subeffects-container">
+            <div class="subeffects-header">
+              <span class="subeffects-title">{{localize "GAIA.Action.SectionTitle"}}</span>
+              <button type="button" class="btn-add-action btn-add-subeffect" data-action="addLegacyAction" title="{{localize 'GAIA.Action.AddActionBtn'}}">
+                <i class="fas fa-plus"></i> {{localize "GAIA.Action.AddActionBtn"}}
+              </button>
+            </div>
+            
+            <div class="legacy-actions-preview-list" style="display: flex; flex-direction: column; gap: 4px; margin-top: 8px;">
+              {{#each formattedActions}}
+              <div class="subeffect-card legacy-action-preview-item" data-index="{{@index}}" style="cursor: default;">
+                <div class="subeffect-card-header">
+                  <div class="subeffect-identity">
+                    <strong class="subeffect-title-text">{{this.name}}</strong>
+                    {{#if this.summary}}
+                    <div class="subeffect-meta-badges">
+                      <span class="subeffect-meta-badge type-badge">{{this.summary}}</span>
+                    </div>
+                    {{/if}}
+                  </div>
+                  <div class="subeffect-controls">
+                    <button type="button" class="btn-edit-dialog-action" data-index="{{@index}}" title="Editar Ação">
+                      <i class="fas fa-pen-to-square"></i>
+                    </button>
+                    <button type="button" class="btn-remove-dialog-action" data-index="{{@index}}" title="Remover Ação">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {{else}}
+              <div class="empty-hint" style="font-size: 12px; font-style: italic; color: var(--gaia-text-muted); text-align: center; padding: 10px;">
+                {{localize "GAIA.Action.EmptyActionsHint"}}
+              </div>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA EFEITOS -->
+        <div class="tab efeitos" data-group="primary" data-tab="efeitos">
+          <div class="item-effects-panel">
+            <div class="effects-section-header">
+              <span class="effects-main-title">Efeito Ativo</span>
+              <button type="button" class="btn-add-effect" data-action="createEffect" title="Criar Efeito Ativo">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <textarea name="activeEffectText" rows="3" placeholder="{{localize 'GAIA.Legado.EmptyActiveEffectHint'}}" style="width: 100%; background: transparent; color: var(--gaia-text-primary); border-radius: var(--gaia-radius); padding: 5px; border: 1px solid #dcd6e8; font-family: inherit; resize: vertical;">{{activeEffectText}}</textarea>
+          </div>
+        </div>
+      </section>
     </div>
-  </div>
-</form>
+
+  </form>
+</section>

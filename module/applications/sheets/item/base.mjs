@@ -1,3 +1,4 @@
+import { toggleInventoryGridTableMode, toggleDescriptionMode } from "../../../helpers/inventory-table.mjs";
 /**
  * ==============================================================================
  * BASE ITEM SHEET / FICHA BASE DE ITEM (ApplicationV2)
@@ -32,6 +33,8 @@ export class GaiaItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       createEffect: GaiaItemSheet.#onCreateEffect,
       editEffect: GaiaItemSheet.#onEditEffect,
       deleteEffect: GaiaItemSheet.#onDeleteEffect,
+      toggleTableEdit: GaiaItemSheet._onToggleTableEdit,
+      toggleDescriptionEdit: GaiaItemSheet._onToggleDescriptionEdit,
       toggleEffect: GaiaItemSheet.#onToggleEffect
     }
   };
@@ -40,6 +43,9 @@ export class GaiaItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   _onRender(context, options) {
     super._onRender(context, options);
     this._syncTabs();
+    toggleInventoryGridTableMode(this.element, false);
+    toggleDescriptionMode(this.element, false);
+
     this.element.querySelectorAll("[data-edit='img']").forEach(img => {
       img.addEventListener("click", (event) => {
         GaiaItemSheet.#onEditImage.call(this, event, img);
@@ -69,6 +75,9 @@ export class GaiaItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     if (tab && group) {
       this.changeTab(tab, group);
       this._syncTabs();
+    toggleInventoryGridTableMode(this.element, false);
+    toggleDescriptionMode(this.element, false);
+
     }
   }
 
@@ -115,6 +124,9 @@ export class GaiaItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       }
       if (act.damage?.hasDamage && act.damage.formula) {
         summaries.push(`Dano: ${act.damage.formula}`);
+      }
+      if (act.healing?.hasHealing && act.healing.formula) {
+        summaries.push(`Cura: ${act.healing.formula}`);
       }
       if (act.check?.hasCheck) {
         summaries.push(`Dif. ${act.check.difficulty ?? 10}`);
@@ -204,11 +216,74 @@ export class GaiaItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   static async #onCreateEffect(event, target) {
     event.preventDefault();
+    const effectName = this.item.name || game.i18n.localize("GAIA.Effects.NewEffectDefaultName") || "Novo Efeito";
+    const changes = [];
+    if (this.item.system?.activeEffect?.changes?.length) {
+      for (const ch of this.item.system.activeEffect.changes) {
+        const valStr = String(ch.value ?? "").trim();
+        if ((ch.key === "system.damageResistance" || ch.key === "system.conditionImmunity") && (!valStr || valStr === "1" || !isNaN(Number(valStr)))) {
+          continue;
+        }
+        changes.push(ch);
+      }
+    }
+    const normName = (this.item.name || "").toLowerCase();
+    if (normName.includes("proteção da natureza") || normName.includes("protecao da natureza")) {
+      const clean = changes.filter(c => !(c.key === "system.damageResistance" && (c.value === "1" || !c.value)) && !(c.key === "system.conditionImmunity" && (c.value === "1" || !c.value)));
+      changes.length = 0;
+      changes.push(...clean);
+      if (!changes.some(c => c.key === "system.damageResistance" && c.value === "nature")) {
+        changes.push({ key: "system.damageResistance", mode: 2, value: "nature" });
+      }
+      if (!changes.some(c => c.key === "system.conditionImmunity" && c.value === "envenenado")) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "envenenado" });
+      }
+    } else if (normName.includes("abraço da treva") || normName.includes("abraco da treva")) {
+      const clean = changes.filter(c => !(c.key === "system.damageResistance" && (c.value === "1" || !c.value)) && !(c.key === "system.conditionImmunity" && (c.value === "1" || !c.value)));
+      changes.length = 0;
+      changes.push(...clean);
+      if (!changes.some(c => c.key === "system.damageResistance" && c.value === "dark")) {
+        changes.push({ key: "system.damageResistance", mode: 2, value: "dark" });
+      }
+      if (!changes.some(c => c.key === "system.conditionImmunity" && c.value === "enfraquecido")) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "enfraquecido" });
+      }
+    } else if (normName.includes("corpo de ferro")) {
+      const clean = changes.filter(c => !(c.key === "system.conditionImmunity" && (c.value === "1" || !c.value)));
+      changes.length = 0;
+      changes.push(...clean);
+      if (!changes.some(c => c.key === "system.conditionImmunity" && c.value === "envenenado")) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "envenenado" });
+      }
+      if (!changes.some(c => c.key === "system.conditionImmunity" && c.value === "sangramento")) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "sangramento" });
+      }
+    } else if (normName.includes("filho de nolgadan")) {
+      const clean = changes.filter(c => !(c.key === "system.conditionImmunity" && (c.value === "1" || !c.value)));
+      changes.length = 0;
+      changes.push(...clean);
+      if (!changes.some(c => c.key === "system.conditionImmunity" && (c.value === "lentidao" || c.value === "lentidão"))) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "lentidao" });
+      }
+      if (!changes.some(c => c.key === "system.conditionImmunity" && c.value === "terreno dificil")) {
+        changes.push({ key: "system.conditionImmunity", mode: 2, value: "terreno dificil" });
+      }
+    } else if (normName.includes("fortitude ampliada")) {
+      if (!changes.some(c => c.key === "system.hpDie")) {
+        changes.push({ key: "system.hpDie", mode: 2, value: "1d8" });
+      }
+      if (!changes.some(c => c.key === "system.hpFixed")) {
+        changes.push({ key: "system.hpFixed", mode: 2, value: "4" });
+      }
+    }
+
     const created = await this.item.createEmbeddedDocuments("ActiveEffect", [{
-      name: game.i18n.localize("GAIA.Effects.NewEffectDefaultName") || "Novo Efeito",
+      name: effectName,
       img: this.item.img || "icons/svg/aura.svg",
       icon: this.item.img || "icons/svg/aura.svg",
-      origin: this.item.uuid
+      origin: this.item.uuid,
+      transfer: true,
+      changes
     }]);
     return created[0]?.sheet?.render(true);
   }
@@ -235,4 +310,17 @@ export class GaiaItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       return await effect.update({ disabled: !effect.disabled });
     }
   }
+
+    static async _onToggleTableEdit(event, target) {
+    event.preventDefault();
+    const scope = target.closest("tr.item-row") || target.closest(".inventory-table-panel") || target.closest(".inventory-grid-table") || this.element;
+    toggleInventoryGridTableMode(scope);
+  }
+
+  static async _onToggleDescriptionEdit(event, target) {
+    event.preventDefault();
+    const scope = target.closest(".weapon-description-panel") || target.closest(".armor-description-panel") || target.closest(".equipment-description-panel") || target.closest(".legacy-description-panel") || target.closest(".path-description-panel") || target.closest(".path-specializations-panel") || this.element;
+    toggleDescriptionMode(scope);
+  }
 }
+

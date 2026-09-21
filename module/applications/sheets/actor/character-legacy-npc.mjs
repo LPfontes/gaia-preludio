@@ -41,6 +41,7 @@ export class CharacterLegacyNpcSheet extends GaiaBaseActorSheet {
     context.actor = this.actor;
     context.system = this.actor.system;
     context.config = /** @type {any} */ (CONFIG).GAIA;
+    prepareSidebarContext(this.actor, context);
     return context;
   }
 

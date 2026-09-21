@@ -16,6 +16,7 @@
             <th style="width: 30%;">{{localize "GAIA.Path.Keywords"}}</th>
             <th style="width: 33%;">{{localize "GAIA.Path.ParameterSuggestions"}}</th>
             <th style="width: 12%;">{{localize "GAIA.Path.AbilitiesCount"}}</th>
+            <th class="col-edit" style="width: 36px; text-align: center;"><i class="fa-solid fa-gear"></i></th>
           </tr>
         </thead>
         <tbody>
@@ -29,19 +30,28 @@
             <td style="text-align: center; font-weight: bold; color: var(--gaia-text-parchment);">
               {{pathAbilities.length}}
             </td>
+            <td class="col-edit" style="text-align: center; vertical-align: middle;">
+              <button type="button" class="btn-toggle-table-edit" data-action="toggleTableEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen"></i></button>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="path-specializations-panel">
-      <label class="description-title">{{localize "GAIA.Path.Specializations"}}</label>
-      <textarea name="system.specializations" class="path-specializations-textarea" placeholder="{{localize 'GAIA.Path.SpecializationsPlaceholder'}}">{{system.specializations}}</textarea>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label class="description-title">{{localize "GAIA.Path.Specializations"}}</label>
+        <button type="button" class="btn-toggle-description-edit" data-action="toggleDescriptionEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment); padding: 0 4px;"><i class="fa-solid fa-pen"></i></button>
+      </div>
+      <textarea name="system.specializations" class="path-specializations-textarea" placeholder="{{localize 'GAIA.Path.SpecializationsPlaceholder'}}">{{#if formattedSpecializations}}{{formattedSpecializations}}{{else}}{{system.specializations}}{{/if}}</textarea>
     </div>
 
     <div class="path-description-panel">
-      <label class="description-title">{{localize "GAIA.Path.Description"}}</label>
-      <textarea name="system.description" class="path-description-textarea" placeholder="{{localize 'GAIA.Path.DescriptionPlaceholder'}}">{{system.description}}</textarea>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label class="description-title">{{localize "GAIA.Path.Description"}}</label>
+            <button type="button" class="btn-toggle-description-edit" data-action="toggleDescriptionEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment); padding: 0 4px;"><i class="fa-solid fa-pen"></i></button>
+          </div>
+          <textarea name="system.description" class="path-description-textarea" placeholder="{{localize 'GAIA.Path.DescriptionPlaceholder'}}">{{system.description}}</textarea>
     </div>
 
     <div class="path-abilities-section">
@@ -61,10 +71,10 @@
             </div>
             <div class="path-category-grid">
               {{#each group.abilities as |ability|}}
-                <div class="path-ability-card" data-action="editPathAbility" data-index="{{ability.index}}" style="cursor: pointer;" title="Clique para abrir a Habilidade (AbilitySheet)">
+                <div class="path-ability-card" draggable="true" data-action="editPathAbility" data-index="{{ability.index}}" data-entry-id="{{ability.id}}" data-uuid="{{ability.uuid}}" title="Arraste para a ficha de personagem ou clique para abrir">
                   <div class="path-ability-header">
                     <div class="path-ability-identity">
-                      <img class="path-ability-icon" src="{{#if ability.img}}{{ability.img}}{{else}}icons/svg/item-bag.svg{{/if}}" title="{{ability.name}}"/>
+                      <img class="path-ability-icon" src="{{#if ability.img}}{{ability.img}}{{else}}icons/svg/item-bag.svg{{/if}}" draggable="false" title="{{ability.name}}"/>
                       <div class="path-ability-titles">
                         <h4 class="path-ability-title">{{ability.name}}</h4>
                         <div class="path-ability-meta-badges">
@@ -75,7 +85,7 @@
                       </div>
                     </div>
                     <div class="path-ability-controls">
-                      <button type="button" class="btn-remove-ability" data-action="removePathAbility" data-index="{{ability.index}}" title="{{localize 'GAIA.Path.RemoveAbilityTitle'}}">
+                      <button type="button" class="btn-remove-ability" data-action="removePathAbility" data-index="{{ability.index}}" draggable="false" title="{{localize 'GAIA.Path.RemoveAbilityTitle'}}">
                         <i class="fa-solid fa-trash"></i>
                       </button>
                     </div>

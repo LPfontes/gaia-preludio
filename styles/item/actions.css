@@ -30,6 +30,7 @@
   text-transform: uppercase;
 }
 
+.btn-add-action,
 .item-actions-panel .btn-add-action {
   padding: 4px 10px;
   font-family: var(--gaia-font-medieval);
@@ -44,43 +45,50 @@
   gap: 6px;
 }
 
+.btn-add-action:hover,
 .item-actions-panel .btn-add-action:hover {
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
-.item-actions-panel .actions-list {
+.item-actions-panel .actions-list,
+.subeffect-dialog .actions-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 /* Card individual da ação */
-.item-actions-panel .action-card {
+.item-actions-panel .action-card,
+.subeffect-dialog .action-card {
   border: 1px solid var(--gaia-border-subtle);
   background: rgba(0, 0, 0, 0.05);
   padding: 8px 10px;
   transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.item-actions-panel .action-card:hover {
+.item-actions-panel .action-card:hover,
+.subeffect-dialog .action-card:hover {
   background: rgba(0, 0, 0, 0.1);
 }
 
-.item-actions-panel .action-card-header {
+.item-actions-panel .action-card-header,
+.subeffect-dialog .action-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 6px;
 }
 
-.item-actions-panel .action-card-title-group {
+.item-actions-panel .action-card-title-group,
+.subeffect-dialog .action-card-title-group {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
 }
 
-.item-actions-panel .action-card-name {
+.item-actions-panel .action-card-name,
+.subeffect-dialog .action-card-name {
   cursor: pointer;
   font-family: var(--gaia-font-medieval);
   font-size: var(--gaia-font-base);
@@ -89,7 +97,8 @@
   transition: color 0.15s ease;
 }
 
-.item-actions-panel .action-card-name:hover {
+.item-actions-panel .action-card-name:hover,
+.subeffect-dialog .action-card-name:hover {
   color: var(--gaia-purple-dark);
   text-decoration: underline;
 }
@@ -115,14 +124,14 @@
 .badge.cost-badge {
   background: transparent;
   color: var(--gaia-energy);
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 
 }
 
 .badge.type-badge {
   background: transparent;
   color: var(--gaia-text-parchment);
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .badge.category-badge {
@@ -131,14 +140,22 @@
   border: 1px solid var(--gaia-border-subtle);
 }
 
+.badge.action-badge {
+  background: rgba(93, 28, 143, 0.1);
+  color: var(--gaia-purple-dark);
+  border: 1px solid var(--gaia-purple-dark);
+}
+
 /* Controles do Card (Rolar, Editar, Excluir) */
-.item-actions-panel .action-card-controls {
+.item-actions-panel .action-card-controls,
+.subeffect-dialog .action-card-controls {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.item-actions-panel .action-card-controls button {
+.item-actions-panel .action-card-controls button,
+.subeffect-dialog .action-card-controls button {
   background: transparent;
   border: none;
   color: var(--gaia-text-parchment);
@@ -148,7 +165,8 @@
   transition: color 0.15s ease, background 0.15s ease, transform 0.1s ease;
 }
 
-.item-actions-panel .action-card-controls button:hover {
+.item-actions-panel .action-card-controls button:hover,
+.subeffect-dialog .action-card-controls button:hover {
   background: rgba(0, 0, 0, 0.1);
   transform: scale(1.1);
 }
@@ -157,16 +175,19 @@
   color: var(--gaia-purple-dark);
 }
 
-.item-actions-panel .action-card-controls .btn-edit-action:hover {
+.item-actions-panel .action-card-controls .btn-edit-action:hover,
+.subeffect-dialog .action-card-controls .btn-edit-action:hover {
   color: #1d4ed8;
 }
 
-.item-actions-panel .action-card-controls .btn-remove-action:hover {
+.item-actions-panel .action-card-controls .btn-remove-action:hover,
+.subeffect-dialog .action-card-controls .btn-remove-action:hover {
   color: var(--gaia-health);
 }
 
 /* Descrição e Sumário */
-.item-actions-panel .action-card-desc {
+.item-actions-panel .action-card-desc,
+.subeffect-dialog .action-card-desc {
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
   margin-top: 4px;
@@ -261,6 +282,7 @@
   font-size: var(--gaia-font-lg);
   font-weight: 700;
   display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
@@ -273,11 +295,11 @@
 }
 
 .gaia-action-chat-card .action-section-title.condition-title {
-  color: #9165dd98;
+  color: var(--gaia-purple)
 }
 
 .gaia-action-chat-card .action-section-title.aoe-title {
-  color: #679bb4c2;
+  color: var(--gaia-energy);
 }
 
 /* Seção de Alvos para Aplicação de Dano de Ação */
@@ -315,7 +337,8 @@
 }
 
 .gaia-action-chat-card button.btn-action-chat:hover,
-.action-damage-targets-block button.btn-apply-damage-target:hover {
+.action-damage-targets-block button.btn-apply-damage-target:hover,
+.action-healing-targets-block button.btn-apply-healing-target:hover {
   background: rgba(0, 0, 0, 0.1);
   border-color: var(--gaia-border-gold);
   transform: translateY(-1px);
@@ -324,6 +347,12 @@
 .gaia-action-chat-card .btn-roll-action-damage:hover {
   background: var(--gaia-health);
 }
+
+.gaia-action-chat-card .btn-roll-action-healing:hover {
+  background: var(--gaia-green);
+  color: #fff;
+}
+
 
 .gaia-action-chat-card .btn-roll-action-check:hover {
   background: #d3aa7a;
@@ -424,6 +453,108 @@
   color: #fff;
   border-color: #991b1bb0;
 }
+
+/* Bloco de alvos pós-rolagem de cura */
+.action-healing-targets-block {
+  margin-top: 4px;
+  padding-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.action-healing-targets-block .action-healing-target-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 6px 10px;
+  font-size: var(--gaia-font-base);
+  gap: 4px;
+}
+
+.action-healing-targets-block button.btn-apply-healing-target:hover {
+  background: var(--gaia-green);
+  color: #fff;
+  border-color: var(--gaia-green-dark);
+}
+
+/* Card de Cura Aplicada no Chat */
+.gaia-chat-card.healing-applied-card {
+  border-left: 4px solid var(--gaia-green);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 6px 10px;
+  border-radius: var(--gaia-radius);
+  margin-top: 4px;
+}
+
+.healing-applied-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.healing-applied-title {
+  font-family: var(--gaia-font-medieval);
+  font-weight: 700;
+  color: var(--gaia-green);
+  font-size: var(--gaia-font-base);
+}
+
+.healing-applied-badge {
+  font-size: var(--gaia-font-2xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--gaia-green-dark);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: var(--gaia-radius);
+}
+
+.healing-applied-target {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.healing-target-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--gaia-border-frame);
+}
+
+.healing-target-info {
+  flex: 1;
+  font-size: var(--gaia-font-sm);
+}
+
+.healing-target-name {
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+}
+
+.healing-highlight {
+  color: var(--gaia-green);
+  font-weight: 700;
+}
+
+.healing-revived-alert {
+  margin-top: 6px;
+  padding: 4px 6px;
+  font-size: var(--gaia-font-xs);
+  font-weight: 600;
+  background: rgba(46, 139, 87, 0.15);
+  border: 1px solid var(--gaia-green);
+  color: var(--gaia-green-dark);
+  border-radius: var(--gaia-radius);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 
 /* Card de Resultado de Teste / Embate no Chat */
 .gaia-outcome-card {

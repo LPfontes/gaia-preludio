@@ -7,8 +7,6 @@
 .gaia-preludio.sheet.item.caminho .path-table-frame {
   background: var(--gaia-bg-box);
   padding: 4px;
-  border-radius: var(--gaia-radius);
-  border: 1px solid var(--gaia-border-frame);
 }
 
 .gaia-preludio.sheet.item.caminho .path-specializations-panel,
@@ -123,15 +121,26 @@
 }
 
 .gaia-preludio.sheet.item.caminho .path-ability-card {
-  border: 1px solid var(--gaia-border-subtle, #444);
   padding: 8px 10px;
   margin-bottom: 6px;
-  background: rgba(0, 0, 0, 0.15);
-  transition: border-color 0.2s ease, background 0.2s ease;
+  background: transparent;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  cursor: grab;
+  user-select: none;
 }
 
 .gaia-preludio.sheet.item.caminho .path-ability-card:hover {
   background: rgba(0, 0, 0, 0.25);
+  border-color: var(--gaia-gold-accent, #c9a34b);
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-card:active {
+  cursor: grabbing;
+}
+
+.gaia-preludio.sheet.item.caminho .path-ability-card.is-dragging {
+  opacity: 0.45;
+  border-style: dashed;
 }
 
 .gaia-preludio.sheet.item.caminho .path-ability-header {
@@ -147,8 +156,8 @@
 }
 
 .gaia-preludio.sheet.item.caminho .path-ability-icon {
-  width: 32px;
-  height: 32px;
+  width: 60px;
+  height: 60px;
   object-fit: cover;
   border-radius: var(--gaia-radius);
   border: 1px solid var(--gaia-border-frame, #666);

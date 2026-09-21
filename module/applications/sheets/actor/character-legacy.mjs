@@ -60,6 +60,7 @@ export class CharacterLegacySheet extends GaiaBaseActorSheet {
     context.actor = this.actor;
     context.system = this.actor.system;
     context.config = /** @type {any} */ (CONFIG).GAIA;
+    prepareSidebarContext(this.actor, context);
     return context;
   }
 
@@ -82,7 +83,7 @@ export class CharacterLegacySheet extends GaiaBaseActorSheet {
         prepareInventoryContext(actor, context);
         break;
       case "tabAbilities":
-        prepareAbilitiesContext(actor, context);
+        prepareAbilitiesContext(actor, context, this._collapsedAbilities);
         break;
       case "tabBiografia":
         prepareBioContext(actor, context);

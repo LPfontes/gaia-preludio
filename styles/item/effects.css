@@ -45,7 +45,6 @@
  * PAINEL DE EFEITOS DO ITEM (.item-effects-panel)
  * ============================================================================== */
 .item-effects-panel {
-  background-color: var(--gaia-bg-window);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -54,6 +53,7 @@
   border-radius: var(--gaia-radius);
 }
 
+.effects-section-header,
 .item-effects-panel .effects-section-header {
   display: flex;
   justify-content: space-between;
@@ -238,7 +238,7 @@
 }
 
 .effect-changes-summary {
-  font-size: var(--gaia-font-xs);
+  font-size: var(--gaia-font-base);
   color: var(--gaia-purple-dark, #5d1c8f);
   font-weight: 500;
   white-space: nowrap;

@@ -69,7 +69,8 @@ export class AbilitySheet extends GaiaItemSheet {
         type: sub.type || "",
         typeLabel: typeRaw ? game.i18n.localize(typeRaw) : "",
         description: sub.description || "",
-        note: sub.note || ""
+        note: sub.note || "",
+        actions: Array.isArray(sub.actions) ? sub.actions : []
       };
     });
 

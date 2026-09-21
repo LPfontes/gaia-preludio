@@ -81,7 +81,8 @@ export class CreatureSheet extends GaiaBaseActorSheet {
         cost,
         metaRow1,
         activeImprovements,
-        hasActiveImprovements: activeImprovements.length > 0
+        hasActiveImprovements: activeImprovements.length > 0,
+        isCollapsed: Boolean(this._collapsedAbilities?.has(item.id) || this._collapsedAbilities?.has(item.name?.trim()))
       };
     });
     context.inventory = this.actor.items.filter((i) => i.type === "equipment" || i.type === "armor");

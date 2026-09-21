@@ -41,6 +41,48 @@ export class GaiaActor extends Actor {
    * EN: Performs initial Actor data preparation before embedded documents (Items, ActiveEffects) are prepared.
    * @override
    */
+  /**
+   * Indica se o ator possui a habilidade Fortitude Ampliada (Anão, item ou efeito ativo).
+   * @type {boolean}
+   */
+  get hasFortitudeAmpliada() {
+    // 1. Efeitos ativos
+    if (this.effects?.some(e => !e.disabled && (String(e.name || "").toLowerCase().includes("fortitude ampliada") || (e.changes || []).some(c => c.key === "system.hpDie" && c.value === "1d8")))) {
+      return true;
+    }
+    // 2. Itens do ator (habilidade)
+    if (this.items?.some(i => String(i.name || "").toLowerCase().includes("fortitude ampliada"))) {
+      return true;
+    }
+    // 3. Legado do ator (Anão / Anao)
+    const leg = String(this.system?.legacy || "").toLowerCase();
+    if (leg.includes("anão") || leg.includes("anao")) {
+      return true;
+    }
+    // 4. Lista de habilidades de legado
+    const legacyAbilities = this.system?.legacyAbilities || this.items?.find(i => i.type === "legacy")?.system?.legacyAbilities;
+    if (Array.isArray(legacyAbilities) && legacyAbilities.some(a => String(a.name || "").toLowerCase().includes("fortitude ampliada"))) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Dado de PV utilizado na criação e em Níveis de Despertar (1d8 para Fortitude Ampliada, senão 1d6).
+   * @type {string}
+   */
+  get hpDie() {
+    return this.hasFortitudeAmpliada ? "1d8" : "1d6";
+  }
+
+  /**
+   * Valor fixo de PV por nível (4 para Fortitude Ampliada, senão 3).
+   * @type {number}
+   */
+  get fixedHp() {
+    return this.hasFortitudeAmpliada ? 4 : 3;
+  }
+
   prepareBaseData() {
     super.prepareBaseData();
   }
@@ -205,6 +247,11 @@ export class GaiaActor extends Actor {
       if (system.health) system.health.temp = 0; // Perde Pontos de Vida Temporários
     }
 
+    // Automação de Fortitude Ampliada (Anão / 1d8 de PV ou 4 fixo)
+    system.hasFortitudeAmpliada = this.hasFortitudeAmpliada;
+    system.hpDie = this.hpDie;
+    system.fixedHp = this.fixedHp;
+
     // Bônus de Parâmetros
     system.bonusesCalculated = prepareParameterBonuses(this);
 
@@ -215,6 +262,72 @@ export class GaiaActor extends Actor {
 
     // PT: Condições Especiais: Atordoado, Enfraquecido, Lentidão, Caído, Envenenado, Fratura, Imóvel, Sangramento
     // EN: Special Conditions: Stunned, Weakened, Slowed, Prone, Poisoned, Fracture, Immobilized, Bleeding
+    // PT: Integração de Resistências e Imunidades a Condições vindas de Efeitos Ativos
+    const rawResistances = Array.isArray(system.damageResistance) ? [...system.damageResistance] : [];
+    const activeResistances = [];
+    const conditionImmunities = new Set(
+      (Array.isArray(system.conditionImmunity) ? system.conditionImmunity : [])
+        .map(c => String(c?.type || c).toLowerCase().trim())
+        .filter(Boolean)
+    );
+
+    for (const effect of (this.effects ?? [])) {
+      if (effect.disabled) continue;
+      const effectName = String(effect.name || "").toLowerCase();
+      
+      for (const ch of (effect.changes ?? [])) {
+        if (ch.key === "system.damageResistance" && ch.value) {
+          const val = String(ch.value).toLowerCase().trim();
+          if (val && val !== "1" && isNaN(Number(val))) {
+            activeResistances.push(val);
+          }
+        }
+        if (ch.key === "system.conditionImmunity" && ch.value) {
+          const val = String(ch.value).toLowerCase().trim();
+          if (val && val !== "1" && isNaN(Number(val))) {
+            conditionImmunities.add(val);
+          }
+        }
+      }
+
+      const effectImg = String(effect.img || effect.icon || "").toLowerCase();
+      if (effectName.includes("proteção da natureza") || effectName.includes("protecao da natureza") || (effectName === "novo efeito" && effectImg.includes("leaf-glowing-green"))) {
+        activeResistances.push("nature");
+        conditionImmunities.add("envenenado");
+      }
+      if (effectName.includes("abraço da treva") || effectName.includes("abraco da treva") || (effectName === "novo efeito" && effectImg.includes("skull-horned-goat-purple"))) {
+        activeResistances.push("dark");
+        conditionImmunities.add("enfraquecido");
+      }
+      if (effectName.includes("corpo de ferro") || (effectName === "novo efeito" && effectImg.includes("breastplate-helmet-metal"))) {
+        conditionImmunities.add("envenenado");
+        conditionImmunities.add("sangramento");
+      }
+      if (effectName.includes("filho de nolgadan") || (effectName === "novo efeito" && effectImg.includes("weapons-crossed-axes-bull"))) {
+        conditionImmunities.add("lentidao");
+        conditionImmunities.add("terreno dificil");
+      }
+    }
+
+    for (const rType of activeResistances) {
+      if (!rawResistances.some(r => String(r?.type || r).toLowerCase().trim() === rType)) {
+        rawResistances.push({ type: rType });
+      }
+    }
+    system.damageResistance = rawResistances.map(r => typeof r === "string" ? { type: r } : r);
+    system.conditionImmunities = Array.from(conditionImmunities);
+    const isImmunePoison = conditionImmunities.has("envenenado") || conditionImmunities.has("poisoned");
+    const isImmuneWeakened = conditionImmunities.has("enfraquecido") || conditionImmunities.has("weakened");
+    const isImmuneSlowed = conditionImmunities.has("lentidao") || conditionImmunities.has("lentidão") || conditionImmunities.has("slowed");
+    const isImmuneBleeding = conditionImmunities.has("sangramento") || conditionImmunities.has("bleeding");
+    const isImmuneDifficultTerrain = conditionImmunities.has("terreno dificil") || conditionImmunities.has("terrenos dificeis") || conditionImmunities.has("difficult-terrain") ;
+
+    system.isImmunePoison = isImmunePoison;
+    system.isImmuneWeakened = isImmuneWeakened;
+    system.isImmuneSlowed = isImmuneSlowed;
+    system.isImmuneBleeding = isImmuneBleeding;
+    system.isImmuneDifficultTerrain = conditionImmunities.has("terreno dificil") || conditionImmunities.has("terrenos dificeis");
+
     const hasStunned = Boolean(
       this.statuses?.has?.("atordoado") || 
       this.statuses?.has?.("stunned") || 
@@ -223,7 +336,7 @@ export class GaiaActor extends Actor {
         return n === "atordoado" || n === "stunned";
       })
     );
-    const hasWeakened = Boolean(
+    const hasWeakened = !isImmuneWeakened && Boolean(
       this.statuses?.has?.("enfraquecido") || 
       this.statuses?.has?.("weakened") || 
       this.effects?.some(e => {
@@ -231,7 +344,7 @@ export class GaiaActor extends Actor {
         return n === "enfraquecido" || n === "weakened";
       })
     );
-    const hasSlowed = Boolean(
+    const hasSlowed = !isImmuneSlowed && Boolean(
       this.statuses?.has?.("lentidao") || 
       this.statuses?.has?.("lentidão") || 
       this.statuses?.has?.("slowed") || 
@@ -249,10 +362,11 @@ export class GaiaActor extends Actor {
         return n === "caído" || n === "caido" || n === "prone";
       })
     );
-    const hasPoisoned = Boolean(
+    const hasPoisoned = !isImmunePoison && Boolean(
       this.statuses?.has?.("envenenado") || 
       this.statuses?.has?.("poisoned") || 
       this.effects?.some(e => {
+        if (e.disabled) return false;
         const n = String(e.name || "").toLowerCase();
         return n === "envenenado" || n === "poisoned";
       })
@@ -266,7 +380,7 @@ export class GaiaActor extends Actor {
         return n === "imóvel" || n === "imovel" || n === "immobilized";
       })
     );
-    const hasBleeding = Boolean(
+    const hasBleeding = !isImmuneBleeding && Boolean(
       this.statuses?.has?.("sangramento") || 
       this.statuses?.has?.("bleeding") || 
       this.effects?.some(e => {
@@ -438,32 +552,80 @@ export class GaiaActor extends Actor {
     /** @type {any} */
     const system = this.system;
 
-    // PT: Mapeia parâmetros (atributos) para acesso simplificado em fórmulas (ex: @params.strength)
-    // EN: Maps parameters (attributes) for simplified formula access (e.g. @params.strength)
+    // Recursos vitais com acesso estruturado e atalhos diretos (@energy.max, @pe, @health.max, @pv)
+    data.energy = {
+      value: Number(system?.energy?.value ?? 0),
+      max: Number(system?.energy?.max ?? 0),
+      temp: Number(system?.energy?.temp ?? 0)
+    };
+    data.health = {
+      value: Number(system?.health?.value ?? 0),
+      max: Number(system?.health?.max ?? 0),
+      temp: Number(system?.health?.temp ?? 0)
+    };
+    data.pe = data.energy.value;
+    data.maxPe = data.energy.max;
+    data.pv = data.health.value;
+    data.maxPv = data.health.max;
+    data.nivel = Number(system?.nivel ?? 1);
+    data.level = data.nivel;
+
+    const paramTranslation = {
+      brutalidade: "brutality",
+      precisao: "precision",
+      precisão: "precision",
+      agilidade: "agility",
+      destreza: "dexterity",
+      arcanismo: "arcane",
+      canalizacao: "channeling",
+      canalização: "channeling",
+      espirito: "spirit",
+      espírito: "spirit",
+      vigor: "vigor"
+    };
+
+    // PT: Mapeia parâmetros (atributos) para acesso simplificado em fórmulas (ex: @params.vigor, @brutality, @vigor)
+    // EN: Maps parameters (attributes) for simplified formula access (e.g. @params.vigor, @brutality, @vigor)
+    data.params = data.params || {};
     if (system?.parameters && Array.isArray(system.parameters)) {
-      data.params = {};
       for (const param of system.parameters) {
         if (param.name) {
-          const key = param.name.toLowerCase().replace(/\s+/g, "_");
-          data.params[key] = param.value;
+          const rawKey = param.name.toLowerCase().trim().replace(/\s+/g, "_");
+          const normKey = rawKey.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const val = Number(param.value ?? 0);
+          data.params[rawKey] = val;
+          data.params[normKey] = val;
+          data[rawKey] = val;
+          data[normKey] = val;
+          const engKey = paramTranslation[normKey];
+          if (engKey) {
+            data.params[engKey] = val;
+            data[engKey] = val;
+          }
         }
       }
     }
 
     // PT: Mapeia conhecimentos (perícias) para acesso simplificado em fórmulas (ex: @knowledge.arcana)
     // EN: Maps knowledge (skills) for simplified formula access (e.g. @knowledge.arcana)
+    data.knowledge = data.knowledge || {};
     if (system?.knowledge && Array.isArray(system.knowledge)) {
-      data.knowledge = {};
       for (const item of system.knowledge) {
         if (item.name) {
-          const key = item.name.toLowerCase().replace(/\s+/g, "_");
-          data.knowledge[key] = item.value;
+          const key = item.name.toLowerCase().trim().replace(/\s+/g, "_");
+          const normKey = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const val = Number(item.value ?? 0);
+          data.knowledge[key] = val;
+          data.knowledge[normKey] = val;
+          data[key] = val;
+          data[normKey] = val;
         }
       }
     }
 
     return data;
   }
+
   /**
    * Sobrescreve a janela padrão de criação de Ator para o diálogo de Identificação.
    * @param {object} data - Dados iniciais

@@ -37,8 +37,9 @@
                 <th class="col-equip-price">{{localize "GAIA.TableLabels.Price"}}</th>
                 <th class="col-equip-qty">{{localize "GAIA.TableLabels.Quantity"}}</th>
                 <th class="col-equip-unity">{{localize "GAIA.TableLabels.Unity"}}</th>
-              </tr>
-            </thead>
+            <th class="col-edit" style="width: 36px; text-align: center;"><i class="fa-solid fa-gear"></i></th>
+          </tr>
+        </thead>
             <tbody>
               <tr class="item-row">
                 <td class="col-relic-bound">
@@ -61,7 +62,10 @@
                 <td class="col-equip-unity">
                   <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
                 </td>
-              </tr>
+            <td class="col-edit" style="text-align: center; vertical-align: middle;">
+              <button type="button" class="btn-toggle-table-edit" data-action="toggleTableEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen"></i></button>
+            </td>
+          </tr>
             </tbody>
           </table>
         </div>
@@ -69,7 +73,10 @@
       
         {{!-- DESCRIÇÃO E PROPRIEDADES --}}
         <div class="weapon-description-panel">
-          <label class="description-title">{{localize "GAIA.Relic.Description"}}</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label class="description-title">{{localize "GAIA.Relic.Description"}}</label>
+            <button type="button" class="btn-toggle-description-edit" data-action="toggleDescriptionEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment); padding: 0 4px;"><i class="fa-solid fa-pen"></i></button>
+          </div>
           <textarea name="system.description" class="equipment-description-textarea" placeholder="{{localize 'GAIA.Relic.DescriptionPlaceholder'}}">{{system.description}}</textarea>
         </div>
       </div>

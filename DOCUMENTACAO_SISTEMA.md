@@ -217,15 +217,18 @@ flowchart TD
 2. Se o tipo selecionado for `legacy`, dispara automaticamente o Wizard de Despertar / Criação (`promptAwakeningGuideDialog`).
 3. O Guia permite alternar entre **Desperto (Nível 1)** e **Não-Desperto (Nível 0)**:
    * **Modo Desperto (Nível 1)**:
-     * **Aba 1 (Parâmetros)**: Distribuição de 7 pontos entre os 8 parâmetros (máximo 2 por atributo).
-     * **Aba 2 (Conhecimentos)**: Distribuição de 7 pontos entre os 14 conhecimentos (máximo 2 por perícia).
-     * **Aba 3 (Recursos & Idiomas)**: PV base (30 + 1d6 ou 3 fixo + Vigor), 5 PE Máx, Deslocamento base 6m (+ bônus de Agilidade / 2).
+     * **Aba 1 (Legado)**: Seleção ou definição do Legado (ancestralidade, lore, altura, expectativa de vida e Habilidades de Legado naturais), via lista de mundo/compêndio, `GaiaItemBrowser` ou nome personalizado.
+     * **Aba 2 (Parâmetros)**: Distribuição de 7 pontos entre os 8 parâmetros (máximo 2 por atributo).
+     * **Aba 3 (Conhecimentos)**: Distribuição de 7 pontos entre os 14 conhecimentos (máximo 2 por perícia).
+     * **Aba 4 (Recursos & Idiomas)**: PV base (30 + 1d6 ou 3 fixo + Vigor), 5 PE Máx, Deslocamento base 6m (+ bônus de Agilidade / 2).
+     * **Aba 5 (Habilidades de Caminho)**: Seleção de até 2 Habilidades de Caminho (Capítulo 3) via navegador.
    * **Modo Não-Desperto (Nível 0)**:
      * Mantém apenas Habilidades de Legado naturais.
-     * **Aba 1 (Parâmetros)**: Distribuição de 4 pontos entre os parâmetros (máximo 2 por atributo).
-     * **Aba 2 (Conhecimentos)**: Distribuição de 7 pontos entre os conhecimentos (máximo 2 por perícia).
-     * **Aba 3 (Recursos & Idiomas)**: 12 PV fixos, 0 PE, Movimentação de 6 metros, Idioma Comum + 1 Idioma adicional à escolha.
-4. Ao confirmar, o ator salva os atributos, recalcula os bônus derivados e atualiza o documento.
+     * **Aba 1 (Legado)**: Seleção ou definição do Legado.
+     * **Aba 2 (Parâmetros)**: Distribuição de 4 pontos entre os parâmetros (máximo 2 por atributo).
+     * **Aba 3 (Conhecimentos)**: Distribuição de 7 pontos entre os conhecimentos (máximo 2 por perícia).
+     * **Aba 4 (Recursos & Idiomas)**: 12 PV fixos, 0 PE, Movimentação de 6 metros, Idioma Comum + 1 Idioma adicional à escolha.
+4. Ao confirmar, o ator vincula e embute o Legado, salva os atributos, recalcula os bônus derivados e atualiza o documento.
 
 ### 2.3. Fluxo de Atualização de Dados e Prevenção de Loop de Bônus (`_preUpdate` & `prepareDerivedData`)
 1. **`prepareDerivedData`**:
@@ -332,14 +335,18 @@ O Navegador de Itens (`module/applications/item-browser.mjs`) permite buscar, fi
 
 | Função | Assinatura | Descrição |
 | :--- | :--- | :--- |
-| **`flowRoll()`** | `async flowRoll(formula, data, options): Promise<Roll>` | Instancia e avalia assincronamente uma fórmula de rolagem de dados (`Roll`). |
+| **`cleanFormula()`** | `cleanFormula(formula): string` | Normaliza fórmulas convertendo funções `Math.floor`, `Math.ceil`, `Math.round`, `Math.abs`, `Math.min`, `Math.max`, `Math.trunc` e mapeando atalhos (`@pe.max`, `@pv.max`). |
+| **`resolveStaticMath()`** | `resolveStaticMath(formula, data): string` | Pré-avalia e simplifica chamadas matemáticas e aritméticas estáticas sem dados para compatibilidade universal no Foundry. |
+| **`flowRoll()`** | `async flowRoll(formula, data, options): Promise<Roll>` | Instancia e avalia assincronamente uma fórmula de rolagem de dados (`Roll`) com suporte total a expressões como `Math.floor(@energy.max / 2)`. |
 | **`flowParameter()`** | `async flowParameter(parameter, fitness, modifier): Promise<Roll>` | Executa a rolagem de um parâmetro aplicante o tipo de dado d12 (aptidão selecionada) e modificadores. |
-| **`flowDamage()`** | `async flowDamage(damage): Promise<Roll>` | Executa a rolagem de uma fórmula de dano. |
+| **`flowDamage()`** | `async flowDamage(damage, data): Promise<Roll>` | Executa a rolagem de uma fórmula de dano com suporte a expressões matemáticas e dados do ator. |
+| **`flowHealing()` / `flowCura()`** | `async flowHealing(healing, data): Promise<Roll>` | Executa a rolagem de uma fórmula de cura (PV, PE ou PV Temp) com suporte a expressões matemáticas e dados do ator. |
 | **`amplifyRoll()`** | `amplifyRoll(roll, energyPoints): number` | Adiciona pontos de energia/amplificação ao total numérico de uma rolagem. |
 | **`maxRoll()`** | `async maxRoll(formula, data): Promise<Roll>` | Avalia uma rolagem com valor máximo maximizado. |
 | **`minRoll()`** | `async minRoll(formula, data): Promise<Roll>` | Avalia uma rolagem com valor mínimo minimizado. |
 | **`defense()`** | `async defense(type, actor, fitness): Promise<Roll>` | Executa um teste de defesa do ator (teste de Agilidade para esquiva ou Bloqueio para armaduras/escudos). |
-| **`calculateDamage()`** | `calculateDamage(damage, target): number` | Executa a lógica de redução, imunidade, resistência e vulnerabilidade de dano no alvo. |
+| **`calculateDamage()`** | `calculateDamage(damage, target, source): number` | Executa a lógica de redução, imunidade, resistência e vulnerabilidade de dano no alvo. |
+| **`calculateHealing()` / `calculateCura()`** | `calculateHealing(healing, target, source): number` | Calcula o valor final de cura considerando a condição Enfraquecido da fonte e os limites máximos de PV/PE do alvo. |
 | **`modifyDieCategory()`** | `modifyDieCategory(dieOrFormula, steps): string\|number` | Aumenta ou reduz a categoria de um dado ou fórmula seguindo a escala: d4 -> d6 -> d8 -> d10 -> d12 -> d20. |
 | **`isCriticalHit()`** | `isCriticalHit(attack, defense, options): object` | Valida se a diferença entre o ataque (Precisão/Canalização) e a Defesa do alvo é >= 10, retornando se foi Acerto Crítico. |
 | **`flowClash()` / `flowEmbate()`** | `flowClash(roll1, roll2): object` | Executa a comparação de um Embate entre dois Alvos, retornando o vencedor (1, 2 ou 0 em empate) e a diferença. |

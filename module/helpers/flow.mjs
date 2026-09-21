@@ -1,17 +1,138 @@
 import { GAIA } from "./config.mjs";
 
 /**
+ * Normaliza fórmulas de rolagem convertendo funções JavaScript como Math.floor,
+ * Math.ceil, etc. para as funções nativas reconhecidas pelo analisador de Roll do Foundry,
+ * além de mapear atalhos comuns de recursos vitais (@pe.max -> @energy.max).
+ * Exemplo: "Math.floor(@energy.max / 2)" -> "floor(@energy.max / 2)"
+ * @param {string} formula - Fórmula de rolagem bruta
+ * @returns {string} Fórmula normalizada
+ */
+export function cleanFormula(formula) {
+  if (typeof formula !== "string") return String(formula ?? "");
+  return formula
+    .replace(/@pe\.max\b/gi, "@energy.max")
+    .replace(/@pe\.value\b/gi, "@energy.value")
+    .replace(/@pe\.temp\b/gi, "@energy.temp")
+    .replace(/@pv\.max\b/gi, "@health.max")
+    .replace(/@pv\.value\b/gi, "@health.value")
+    .replace(/@pv\.temp\b/gi, "@health.temp")
+    .replace(/Math\.floor\b/gi, "floor")
+    .replace(/Math\.ceil\b/gi, "ceil")
+    .replace(/Math\.round\b/gi, "round")
+    .replace(/Math\.abs\b/gi, "abs")
+    .replace(/Math\.min\b/gi, "min")
+    .replace(/Math\.max\b/gi, "max")
+    .replace(/Math\.trunc\b/gi, "trunc");
+}
+
+/**
+ * Pré-avalia chamadas matemáticas estáticas (sem dados de rolagem) como
+ * floor(@energy.max / 2) ou expressões aritméticas completas para compatibilidade total.
+ * @param {string} formula - Fórmula de rolagem
+ * @param {object} [data={}] - Objeto de dados para substituição de @variáveis
+ * @returns {string} Fórmula com expressões estáticas simplificadas
+ */
+export function resolveStaticMath(formula, data = {}) {
+  let cleaned = cleanFormula(formula);
+
+  // Substitui variáveis @path usando os dados fornecidos
+  cleaned = cleaned.replace(/@([a-zA-Z0-9_.]+)/g, (match, path) => {
+    const val = foundry.utils?.getProperty
+      ? foundry.utils.getProperty(data, path)
+      : path.split(".").reduce((acc, part) => acc?.[part], data);
+    return val !== undefined && val !== null ? String(Number(val) || 0) : match;
+  });
+
+  const allowedFns = new Set(["floor", "ceil", "round", "abs", "min", "max", "trunc"]);
+  const staticMathRegex = /\b(floor|ceil|round|abs|min|max|trunc)\s*\(([^()]+)\)/gi;
+
+  let prev = "";
+  let iterations = 0;
+  while (cleaned !== prev && iterations < 10) {
+    prev = cleaned;
+    iterations++;
+    cleaned = cleaned.replace(staticMathRegex, (match, fn, args) => {
+      const lowerFn = fn.toLowerCase();
+      if (!allowedFns.has(lowerFn)) return match;
+      if (!/^[0-9+\-*/().,\s]+$/.test(args)) return match;
+      try {
+        const res = Function(`"use strict"; return Math.${lowerFn}(${args});`)();
+        return String(res);
+      } catch (e) {
+        return match;
+      }
+    });
+  }
+
+  // Se a fórmula inteira for uma expressão puramente aritmética sem dados (sem sufixo 'd')
+  if (!/\b\d*d\d+\b/i.test(cleaned) && /^[0-9+\-*/().\s]+$/.test(cleaned)) {
+    try {
+      const total = Function(`"use strict"; return (${cleaned});`)();
+      return String(total);
+    } catch (e) {}
+  }
+
+  return cleaned;
+}
+
+/**
  * Roll.prototype.evaluate() é Assíncrono (Promise)
- * Avalia uma rolagem de dados no Foundry VTT.
+ * Avalia uma rolagem de dados no Foundry VTT com suporte a funções Math e variáveis.
  * @param {string} formula - A fórmula da rolagem
  * @param {object} [data={}] - Objeto com variáveis apontadas na fórmula
  * @param {object} [options={}] - Opções passadas ao evaluate (ex: { maximize: true })
  * @returns {Promise<Roll>} Objeto Roll avaliado
  */
 export async function flowRoll(formula, data = {}, options = {}) {
-  const roll = new Roll(formula, data);
-  await roll.evaluate(options);
-  return roll;
+  const safeData = {
+    energy: { value: 0, max: 0, temp: 0 },
+    health: { value: 0, max: 0, temp: 0 },
+    pe: 0,
+    maxPe: 0,
+    pv: 0,
+    maxPv: 0,
+    level: 1,
+    nivel: 1,
+    ...data
+  };
+  if (data?.energy) safeData.energy = { ...safeData.energy, ...data.energy };
+  if (data?.health) safeData.health = { ...safeData.health, ...data.health };
+
+  const resolved = resolveStaticMath(formula, safeData);
+
+  try {
+    const roll = new Roll(resolved, safeData);
+    await roll.evaluate(options);
+    return roll;
+  } catch (err) {
+    // Fallback: se a fórmula for uma expressão puramente matemática com variáveis
+    try {
+      const substituted = cleanFormula(formula).replace(/@([a-zA-Z0-9_.]+)/g, (match, path) => {
+        const val = foundry.utils?.getProperty
+          ? foundry.utils.getProperty(safeData, path)
+          : path.split(".").reduce((acc, part) => acc?.[part], safeData);
+        return val !== undefined && val !== null ? Number(val) || 0 : 0;
+      });
+      const safeMathExpr = substituted
+        .replace(/\bfloor\b/gi, "Math.floor")
+        .replace(/\bceil\b/gi, "Math.ceil")
+        .replace(/\bround\b/gi, "Math.round")
+        .replace(/\babs\b/gi, "Math.abs")
+        .replace(/\bmin\b/gi, "Math.min")
+        .replace(/\bmax\b/gi, "Math.max")
+        .replace(/\btrunc\b/gi, "Math.trunc");
+      if (/^[0-9+\-*/()., Math\s]+$/.test(safeMathExpr)) {
+        const evaluatedVal = Function(`"use strict"; return (${safeMathExpr});`)();
+        const fallbackRoll = new Roll(String(evaluatedVal));
+        await fallbackRoll.evaluate(options);
+        return fallbackRoll;
+      }
+    } catch (e) {
+      // Repassa erro original se fallback falhar
+    }
+    throw err;
+  }
 }
 
 // PT: Cálculos de Parâmetros (com suporte a modificador e penalidade de exaustão)
@@ -40,11 +161,26 @@ export async function flowParameter(parameter, fitness, modifier = 0, exhaustion
 
 // PT: Cálculo de Dano
 // EN: Damage Calculation
-export async function flowDamage(damage) {
-  // Se damage for um objeto com fórmula em string, rola a fórmula; se for número, insere na variável
-  const formula = typeof damage.value === "string" ? damage.value : "@damage";
-  return await flowRoll(formula, { damage: damage.value });
+export async function flowDamage(damage, data = {}) {
+  const val = typeof damage === "object" ? (damage.value ?? damage.formula ?? "@damage") : damage;
+  const formula = typeof val === "string" ? val : "@damage";
+  const numValue = typeof val === "number" ? val : (Number(val) || 0);
+  const rollData = typeof damage === "object" && typeof damage.value === "number" ? { damage: damage.value, ...data } : { damage: numValue, ...data };
+  return await flowRoll(formula, rollData);
 }
+
+// PT: Cálculo de Cura
+// EN: Healing Calculation
+export async function flowHealing(healing, data = {}) {
+  const val = typeof healing === "object" ? (healing.value ?? healing.formula ?? "@healing") : healing;
+  const formula = typeof val === "string" ? val : "@healing";
+  const numValue = typeof val === "number" ? val : (Number(val) || 0);
+  const rollData = typeof healing === "object" && typeof healing.value === "number" ? { healing: healing.value, ...data } : { healing: numValue, ...data };
+  return await flowRoll(formula, rollData);
+}
+export { flowHealing as flowCura };
+
+
 
 // PT: Amplificação de Rolagem
 // EN: Roll Amplification
@@ -343,6 +479,53 @@ export function calculateDamage(damage, target, source = null) {
 
   return clampedDamage;
 }
+
+/**
+ * Calcula a cura final considerando a condição Enfraquecido da fonte e os limites do alvo.
+ * @param {{ type?: string, value: number }|number} healing - Tipo e valor da cura (ou valor numérico)
+ * @param {Actor} [target=null] - Documento do Ator alvo opcional
+ * @param {Actor} [source=null] - Documento do Ator que originou a cura
+ * @returns {number} A cura final calculada
+ */
+export function calculateHealing(healing, target = null, source = null) {
+  const rawValue = typeof healing === "number" ? healing : Number(healing?.value ?? healing?.amount ?? 0);
+  let baseHealing = Math.max(0, rawValue);
+  if (baseHealing <= 0) return 0;
+
+  // Enfraquecido: Ao causar qualquer tipo de dano ou cura, esse valor é reduzido pela metade
+  if (source?.system?.hasWeakened) {
+    baseHealing = Math.floor(baseHealing / 2);
+    if (baseHealing <= 0) return 0;
+  }
+
+  const healType = typeof healing === "object" ? (healing?.type || "pv") : "pv";
+  const targetSystem = target?.system;
+  if (!targetSystem) return baseHealing;
+
+  if (healType === "pe") {
+    const currentPe = Number(targetSystem.energy?.value ?? 0);
+    const maxPe = Number(targetSystem.energy?.max ?? 0);
+    if (maxPe > 0) {
+      return Math.min(baseHealing, Math.max(0, maxPe - currentPe));
+    }
+    return baseHealing;
+  }
+
+  if (healType === "temp") {
+    return baseHealing;
+  }
+
+  // Padrão: PV
+  const currentHp = Number(targetSystem.health?.value ?? 0);
+  const maxHp = Number(targetSystem.health?.max ?? 0);
+  if (maxHp > 0) {
+    return Math.min(baseHealing, Math.max(0, maxHp - currentHp));
+  }
+
+  return baseHealing;
+}
+export { calculateHealing as calculateCura };
+
 
 /**
  * Escala ordenada das categorias de dados do sistema Gaia: Prelúdio.

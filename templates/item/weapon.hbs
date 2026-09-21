@@ -30,8 +30,9 @@
                 <th class="col-weapon-range">{{localize "GAIA.Weapon.Range"}}</th>
                 <th class="col-weapon-price">{{localize "GAIA.Weapon.Price"}}</th>
                 <th class="col-weapon-unity">{{localize "GAIA.Weapon.Weight"}}</th>
-              </tr>
-            </thead>
+            <th class="col-edit" style="width: 36px; text-align: center;"><i class="fa-solid fa-gear"></i></th>
+          </tr>
+        </thead>
             <tbody>
               <tr class="item-row">
                 <td class="col-weapon-type">
@@ -61,7 +62,10 @@
                 <td class="col-weapon-unity">
                   <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
                 </td>
-              </tr>
+            <td class="col-edit" style="text-align: center; vertical-align: middle;">
+              <button type="button" class="btn-toggle-table-edit" data-action="toggleTableEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen"></i></button>
+            </td>
+          </tr>
             </tbody>
           </table>
         </div>
@@ -83,8 +87,9 @@
                   <th style="width: 35%;">{{localize "GAIA.Weapon.PropertyNameLabel"}}</th>
                   <th style="width: 55%;">{{localize "GAIA.Weapon.PropertyDescriptionLabel"}}</th>
                   <th style="width: 10%; text-align: center;"></th>
-                </tr>
-              </thead>
+            <th class="col-edit" style="width: 36px; text-align: center;"><i class="fa-solid fa-gear"></i></th>
+          </tr>
+        </thead>
               <tbody>
                 {{#each weaponProperties as |prop index|}}
                   <tr class="item-row">
@@ -99,7 +104,10 @@
                         <i class="fa-solid fa-trash"></i>
                       </button>
                     </td>
-                  </tr>
+            <td class="col-edit" style="text-align: center; vertical-align: middle;">
+              <button type="button" class="btn-toggle-table-edit" data-action="toggleTableEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen"></i></button>
+            </td>
+          </tr>
                 {{else}}
                   <tr>
                     <td colspan="3" class="empty-hint" style="text-align: center; font-style: italic; color: var(--gaia-text-muted); padding: 8px;">
@@ -113,7 +121,10 @@
         </div>
 
         <div class="weapon-description-panel" style="margin-top: 15px;">
-          <label class="description-title">{{localize "GAIA.Weapon.Description"}}</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label class="description-title">{{localize "GAIA.Weapon.Description"}}</label>
+            <button type="button" class="btn-toggle-description-edit" data-action="toggleDescriptionEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment); padding: 0 4px;"><i class="fa-solid fa-pen"></i></button>
+          </div>
           <textarea name="system.description" class="weapon-description-textarea" placeholder="{{localize 'GAIA.Weapon.DescriptionPlaceholder'}}">{{system.description}}</textarea>
         </div>
       </div>

@@ -90,19 +90,149 @@ export async function promptAwakeningGuideDialog(actor = null) {
     }
   }
 
+  const checkIsDwarf = (legName, legData) => {
+    const check = (str) => {
+      const s = String(str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      return s.includes("anao");
+    };
+    if (check(legName)) return true;
+    if (legData) {
+      if (check(legData.name)) return true;
+      const abilities = legData.legacyAbilities || [];
+      if (Array.isArray(abilities)) {
+        if (abilities.some(a => {
+          const n = String(a.name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+          return n.includes("fortitude ampliada");
+        })) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  // Coleta de Legados Disponíveis (Mundo, Compêndios e Ator)
+  const currentActorLegacyName = actor?.system?.legacy || "";
+  const currentActorLegacyItem = actor?.items?.find(i => i.type === "legacy") || null;
+
+  const availableLegacies = [];
+  const seenLegacyNames = new Set();
+
+  if (currentActorLegacyItem) {
+    seenLegacyNames.add(currentActorLegacyItem.name.toLowerCase());
+    availableLegacies.push({
+      uuid: currentActorLegacyItem.uuid,
+      id: currentActorLegacyItem.id,
+      name: currentActorLegacyItem.name,
+      img: currentActorLegacyItem.img || "icons/svg/aura.svg",
+      sourceLabel: "Ficha Atual",
+      height: currentActorLegacyItem.system?.height || "",
+      lifeExpectancy: currentActorLegacyItem.system?.lifeExpectancy || "",
+      appearance: currentActorLegacyItem.system?.appearance || "",
+      origin: currentActorLegacyItem.system?.origin || "",
+      traditions: currentActorLegacyItem.system?.traditions || "",
+      inWorld: currentActorLegacyItem.system?.inWorld || "",
+      legacyAbilities: Array.isArray(currentActorLegacyItem.system?.legacyAbilities) ? currentActorLegacyItem.system.legacyAbilities : [],
+      isSelected: true
+    });
+  }
+
+  for (const item of (game.items?.filter(i => i.type === "legacy") ?? [])) {
+    const isSelected = !currentActorLegacyItem && currentActorLegacyName && item.name.toLowerCase() === currentActorLegacyName.toLowerCase();
+    availableLegacies.push({
+      uuid: item.uuid,
+      id: item.id,
+      name: item.name,
+      img: item.img || "icons/svg/aura.svg",
+      sourceLabel: "Mundo",
+      height: item.system?.height || "",
+      lifeExpectancy: item.system?.lifeExpectancy || "",
+      appearance: item.system?.appearance || "",
+      origin: item.system?.origin || "",
+      traditions: item.system?.traditions || "",
+      inWorld: item.system?.inWorld || "",
+      legacyAbilities: Array.isArray(item.system?.legacyAbilities) ? item.system.legacyAbilities : [],
+      isSelected: Boolean(isSelected)
+    });
+    seenLegacyNames.add(item.name.toLowerCase());
+  }
+
+  const itemPacks = game.packs.filter(p => p.documentName === "Item");
+  for (const pack of itemPacks) {
+    try {
+      const index = await pack.getIndex({
+        fields: [
+          "type", "img",
+          "system.origin", "system.traditions", "system.inWorld",
+          "system.appearance", "system.height", "system.lifeExpectancy",
+          "system.legacyAbilities"
+        ]
+      });
+      for (const entry of index) {
+        if (entry.type !== "legacy") continue;
+        const isSelected = !currentActorLegacyItem && currentActorLegacyName && entry.name.toLowerCase() === currentActorLegacyName.toLowerCase();
+        availableLegacies.push({
+          uuid: pack.getUuid(entry._id),
+          id: entry._id,
+          name: entry.name,
+          img: entry.img || "icons/svg/aura.svg",
+          sourceLabel: pack.metadata.label,
+          height: entry.system?.height || "",
+          lifeExpectancy: entry.system?.lifeExpectancy || "",
+          appearance: entry.system?.appearance || "",
+          origin: entry.system?.origin || "",
+          traditions: entry.system?.traditions || "",
+          inWorld: entry.system?.inWorld || "",
+          legacyAbilities: Array.isArray(entry.system?.legacyAbilities) ? entry.system.legacyAbilities : [],
+          isSelected: Boolean(isSelected)
+        });
+        seenLegacyNames.add(entry.name.toLowerCase());
+      }
+    } catch (err) {
+      console.warn(`Gaia: Prelúdio | Falha ao indexar legado no compêndio ${pack.collection}:`, err);
+    }
+  }
+
+  let isCustomLegacy = false;
+  let customLegacyName = "";
+  if (currentActorLegacyName && !availableLegacies.some(l => l.isSelected)) {
+    isCustomLegacy = true;
+    customLegacyName = currentActorLegacyName;
+  }
+
+  const selectedLegacyData = availableLegacies.find(l => l.isSelected) || null;
+  const isDwarf = Boolean(actor?.hasFortitudeAmpliada) || checkIsDwarf(currentActorLegacyName || customLegacyName, selectedLegacyData);
+  const hpDie = isDwarf ? "1d8" : "1d6";
+  const fixedHpBase = isDwarf ? 4 : 3;
+  const hpDieIcon = isDwarf ? "fa-dice-d8" : "fa-dice-d6";
+  const initialCalculatedHp = 30 + fixedHpBase;
+
   const content = await renderTemplate("systems/gaia-preludio/templates/dialog/awakening-guide-dialog.hbs", {
     parameters,
     knowledge,
     availableLanguages,
     initialAbilities: initialAbilities.slice(0, 2),
-    hasActor: !!actor
+    hasActor: !!actor,
+    hasFortitude: isDwarf,
+    isDwarf,
+    hpDie,
+    fixedHpBase,
+    hpDieIcon,
+    initialCalculatedHp,
+    availableLegacies,
+    selectedLegacyData,
+    isCustomLegacy,
+    customLegacyName
   });
+
+  let chosenAbilities = [...initialAbilities.slice(0, 2)];
+  const MAX_ABILITIES = 2;
 
   return await DialogV2.prompt({
     classes: ["gaia-preludio", "gaia-dialog", "gaia-awakening-dialog"],
     window: { title },
     content,
-    position: { width: 620, height: "auto" },
+    position: { width: 900, height: "auto" },
     render: (event, dialog) => {
       const html = dialog.element;
       const tabButtons = html.querySelectorAll(".gaia-dialog-tab-btn");
@@ -154,7 +284,58 @@ export async function promptAwakeningGuideDialog(actor = null) {
       const calculatedHpDisplay = html.querySelector(".gaia-vitals-calculated-hp");
       const hpInput = html.querySelector(".gaia-hp-selected-input");
 
-      let currentDieVal = 3;
+      let currentHasFortitude = isDwarf;
+      let currentHpDie = hpDie;
+      let currentFixedHpBase = fixedHpBase;
+      let currentHpDieIcon = hpDieIcon;
+      let currentDieVal = fixedHpBase;
+      let hasRolledHp = false;
+
+      const updateFortitudeAndHp = (dwarfActive) => {
+        const changed = currentHasFortitude !== dwarfActive;
+        currentHasFortitude = dwarfActive;
+        currentHpDie = dwarfActive ? "1d8" : "1d6";
+        currentFixedHpBase = dwarfActive ? 4 : 3;
+        currentHpDieIcon = dwarfActive ? "fa-dice-d8" : "fa-dice-d6";
+
+        // Atualiza textos na descrição de vitais
+        const hpDieValEl = html.querySelector(".gaia-hp-die-val");
+        const hpFixedValEl = html.querySelector(".gaia-hp-fixed-val");
+        const badgeFortitudeEl = html.querySelector(".badge-fortitude");
+        if (hpDieValEl) hpDieValEl.textContent = currentHpDie;
+        if (hpFixedValEl) hpFixedValEl.textContent = String(currentFixedHpBase);
+        if (badgeFortitudeEl) badgeFortitudeEl.style.display = dwarfActive ? "inline-flex" : "none";
+
+        // Atualiza botões
+        const rollLabelEl = html.querySelector(".gaia-hp-roll-label");
+        const fixedLabelEl = html.querySelector(".gaia-hp-fixed-label");
+        const rollIconEl = html.querySelector(".gaia-hp-roll-icon");
+
+        if (rollLabelEl) rollLabelEl.textContent = `Rolar ${currentHpDie}`;
+        if (fixedLabelEl) fixedLabelEl.textContent = `Fixo (${currentFixedHpBase})`;
+        if (rollIconEl) {
+          rollIconEl.classList.remove("fa-dice-d6", "fa-dice-d8");
+          rollIconEl.classList.add(currentHpDieIcon);
+        }
+
+        if (dwarfActive) {
+          rollHpBtn?.classList.add("active");
+          fixedHpBtn?.classList.remove("active");
+          if (changed) {
+            hasRolledHp = false;
+            currentDieVal = currentFixedHpBase;
+          }
+        } else {
+          if (changed) {
+            hasRolledHp = false;
+            rollHpBtn?.classList.remove("active");
+            fixedHpBtn?.classList.add("active");
+            currentDieVal = currentFixedHpBase;
+          }
+        }
+
+        updateCalculatedHP();
+      };
 
       const updateCalculatedHP = () => {
         if (currentMode === "unawakened") {
@@ -339,16 +520,17 @@ export async function promptAwakeningGuideDialog(actor = null) {
       if (rollHpBtn) {
         rollHpBtn.addEventListener("click", async (e) => {
           e.preventDefault();
-          const roll = await new Roll("1d6").evaluate();
+          const roll = await new Roll(currentHpDie).evaluate();
           if (game.dice3d) {
             await game.dice3d.showForRoll(roll, game.user, true);
           }
           currentDieVal = roll.total;
+          hasRolledHp = true;
           rollHpBtn.classList.add("active");
           fixedHpBtn?.classList.remove("active");
           await roll.toMessage({
             speaker: ChatMessage.getSpeaker({ actor }),
-            flavor: "Rolagem de PV Inicial (1d6)"
+            flavor: `Rolagem de PV Inicial (${currentHpDie})${currentHasFortitude ? " [Fortitude Ampliada]" : ""}`
           });
           updateCalculatedHP();
         });
@@ -357,7 +539,8 @@ export async function promptAwakeningGuideDialog(actor = null) {
       if (fixedHpBtn) {
         fixedHpBtn.addEventListener("click", (e) => {
           e.preventDefault();
-          currentDieVal = 3;
+          hasRolledHp = false;
+          currentDieVal = currentFixedHpBase;
           fixedHpBtn.classList.add("active");
           rollHpBtn?.classList.remove("active");
           updateCalculatedHP();
@@ -365,12 +548,9 @@ export async function promptAwakeningGuideDialog(actor = null) {
       }
 
       // Seleção de Habilidades de Caminho (Capítulo 3) para Despertos
-      let chosenAbilities = [...initialAbilities.slice(0, 2)];
-      const MAX_ABILITIES = 2;
-
       const renderChosenAbilities = () => {
         const countEl = html.querySelector(".awakening-selected-abilities-count");
-        const listEl = html.querySelector(".awakening-chosen-abilities-list");
+        const listEl = html.querySelector(".awakening-chosen-abilities-container .awakening-chosen-abilities-list");
         if (countEl) countEl.textContent = chosenAbilities.length;
         if (!listEl) return;
 
@@ -383,20 +563,26 @@ export async function promptAwakeningGuideDialog(actor = null) {
           return;
         }
 
-        listEl.innerHTML = chosenAbilities.map((ab, idx) => `
-          <div class="awakening-ability-card" data-index="${idx}">
-            <div class="awakening-ability-info">
-              <img src="${ab.img || 'icons/svg/item-bag.svg'}" class="awakening-ability-img" alt="${ab.name}" />
-              <div class="awakening-ability-text">
-                <strong class="awakening-ability-name">${ab.name}</strong>
-                ${ab.category ? `<span class="awakening-ability-category">${ab.category}</span>` : ''}
+        listEl.innerHTML = chosenAbilities.map((ab, idx) => {
+          const categoryBadge = ab.pathShortName
+            ? `<span class="awakening-ability-category"><i class="${ab.pathIcon || 'fa-solid fa-route'}"></i> ${ab.pathShortName}</span>`
+            : (ab.category ? `<span class="awakening-ability-category">${ab.category}</span>` : '');
+
+          return `
+            <div class="awakening-ability-card" data-index="${idx}">
+              <div class="awakening-ability-info">
+                <img src="${ab.img || 'icons/svg/item-bag.svg'}" class="awakening-ability-img" alt="${ab.name}" />
+                <div class="awakening-ability-text">
+                  <strong class="awakening-ability-name">${ab.name}</strong>
+                  ${categoryBadge}
+                </div>
               </div>
+              <button type="button" class="btn-remove-chosen-ability" data-index="${idx}" title="Remover Habilidade">
+                <i class="fa-solid fa-trash"></i>
+              </button>
             </div>
-            <button type="button" class="btn-remove-chosen-ability" data-index="${idx}" title="Remover Habilidade">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        `).join("");
+          `;
+        }).join("");
 
         listEl.querySelectorAll(".btn-remove-chosen-ability").forEach(btn => {
           btn.addEventListener("click", (e) => {
@@ -434,10 +620,222 @@ export async function promptAwakeningGuideDialog(actor = null) {
         });
       });
 
+      // Seleção e Pré-visualização do Legado
+      let currentChosenLegacy = selectedLegacyData;
+      let currentChosenLegacyUuid = selectedLegacyData?.uuid || (isCustomLegacy ? "__custom__" : "");
+
+      const legacySelect = html.querySelector(".gaia-awakening-legacy-select");
+      const customLegacyBox = html.querySelector(".awakening-custom-legacy-box");
+      const customLegacyInput = html.querySelector(".gaia-awakening-custom-legacy-input");
+      const btnOpenLegacyBrowser = html.querySelector(".btn-open-legacy-browser");
+
+      const renderLegacyPreview = (legData) => {
+        const container = html.querySelector(".awakening-legacy-preview-container");
+        if (!container) return;
+
+        if (!legData) {
+          container.innerHTML = `
+            <div class="empty-abilities-hint gaia-dialog-hint-muted awakening-legacy-empty-hint">
+              ${game.i18n.localize("GAIA.CreateActor.EmptyLegacyHint") || "Nenhum legado selecionado. Escolha um legado acima ou utilize o Navegador de Itens para explorar os legados disponíveis."}
+            </div>
+          `;
+          return;
+        }
+
+        const heightHtml = legData.height ? `
+          <span class="awakening-legacy-tag" title="${game.i18n.localize('GAIA.CreateActor.LegacyHeight') || 'Altura Média'}">
+            <i class="fa-solid fa-ruler-vertical"></i> ${legData.height}
+          </span>
+        ` : "";
+
+        const lifeHtml = legData.lifeExpectancy ? `
+          <span class="awakening-legacy-tag" title="${game.i18n.localize('GAIA.CreateActor.LegacyLifeExpectancy') || 'Expectativa de Vida'}">
+            <i class="fa-solid fa-hourglass-half"></i> ${legData.lifeExpectancy}
+          </span>
+        ` : "";
+
+        const bioItems = [];
+        if (legData.appearance) {
+          bioItems.push(`
+            <div class="awakening-legacy-bio-item">
+              <span class="awakening-legacy-bio-label"><i class="fa-solid fa-eye"></i> ${game.i18n.localize("GAIA.Legado.Appearance") || "Aparência"}</span>
+              <span class="awakening-legacy-bio-val">${legData.appearance}</span>
+            </div>
+          `);
+        }
+        if (legData.origin) {
+          bioItems.push(`
+            <div class="awakening-legacy-bio-item">
+              <span class="awakening-legacy-bio-label"><i class="fa-solid fa-landmark"></i> ${game.i18n.localize("GAIA.Legado.Origin") || "Origem"}</span>
+              <span class="awakening-legacy-bio-val">${legData.origin}</span>
+            </div>
+          `);
+        }
+        if (legData.traditions) {
+          bioItems.push(`
+            <div class="awakening-legacy-bio-item">
+              <span class="awakening-legacy-bio-label"><i class="fa-solid fa-scroll"></i> ${game.i18n.localize("GAIA.Legado.Traditions") || "Tradições"}</span>
+              <span class="awakening-legacy-bio-val">${legData.traditions}</span>
+            </div>
+          `);
+        }
+        if (legData.inWorld) {
+          bioItems.push(`
+            <div class="awakening-legacy-bio-item">
+              <span class="awakening-legacy-bio-label"><i class="fa-solid fa-earth-americas"></i> ${game.i18n.localize("GAIA.Legado.InWorld") || "No Mundo"}</span>
+              <span class="awakening-legacy-bio-val">${legData.inWorld}</span>
+            </div>
+          `);
+        }
+
+        const bioGridHtml = bioItems.length ? `
+          <div class="awakening-legacy-bio-grid">
+            ${bioItems.join("")}
+          </div>
+        ` : "";
+
+        const abilitiesList = Array.isArray(legData.legacyAbilities) ? legData.legacyAbilities : [];
+        const abilitiesHtml = abilitiesList.length ? `
+          <div class="awakening-legacy-abilities-section">
+            <span class="awakening-legacy-abilities-title">
+              <i class="fa-solid fa-crown"></i> ${game.i18n.localize("GAIA.CreateActor.LegacyAbilities") || "Habilidades de Legado"} (${abilitiesList.length})
+            </span>
+            <div class="awakening-legacy-abilities-list">
+              ${abilitiesList.map(ab => `
+                <div class="awakening-legacy-ability-item">
+                  <span class="awakening-legacy-ability-name">
+                    <i class="fa-solid fa-feather-pointed"></i> ${ab.name || "Habilidade"}
+                  </span>
+                  ${ab.description ? `<span class="awakening-legacy-ability-desc">${ab.description}</span>` : ""}
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        ` : "";
+
+        container.innerHTML = `
+          <div class="awakening-legacy-preview-card">
+            <div class="awakening-legacy-header">
+              <img src="${legData.img || 'icons/svg/aura.svg'}" class="awakening-legacy-img" alt="${legData.name}" />
+              <div class="awakening-legacy-title-group">
+                <span class="awakening-legacy-name">${legData.name}</span>
+                <div class="awakening-legacy-tags">
+                  ${heightHtml}
+                  ${lifeHtml}
+                </div>
+              </div>
+            </div>
+            ${bioGridHtml}
+            ${abilitiesHtml}
+          </div>
+        `;
+      };
+
+      legacySelect?.addEventListener("change", async (e) => {
+        const val = e.target.value;
+        currentChosenLegacyUuid = val;
+
+        if (val === "__custom__") {
+          if (customLegacyBox) customLegacyBox.style.display = "flex";
+          currentChosenLegacy = null;
+          renderLegacyPreview(null);
+          updateFortitudeAndHp(checkIsDwarf(customLegacyInput?.value, null));
+        } else if (!val) {
+          if (customLegacyBox) customLegacyBox.style.display = "none";
+          currentChosenLegacy = null;
+          renderLegacyPreview(null);
+          updateFortitudeAndHp(false);
+        } else {
+          if (customLegacyBox) customLegacyBox.style.display = "none";
+          let found = availableLegacies.find(l => l.uuid === val);
+          if (!found) {
+            const doc = await fromUuid(val);
+            if (doc) {
+              found = {
+                uuid: doc.uuid,
+                id: doc.id,
+                name: doc.name,
+                img: doc.img || "icons/svg/aura.svg",
+                height: doc.system?.height || "",
+                lifeExpectancy: doc.system?.lifeExpectancy || "",
+                appearance: doc.system?.appearance || "",
+                origin: doc.system?.origin || "",
+                traditions: doc.system?.traditions || "",
+                inWorld: doc.system?.inWorld || "",
+                legacyAbilities: Array.isArray(doc.system?.legacyAbilities) ? doc.system.legacyAbilities : []
+              };
+            }
+          }
+          currentChosenLegacy = found || null;
+          renderLegacyPreview(currentChosenLegacy);
+          updateFortitudeAndHp(checkIsDwarf(currentChosenLegacy?.name, currentChosenLegacy));
+        }
+      });
+
+      customLegacyInput?.addEventListener("input", (e) => {
+        const val = e.target.value;
+        updateFortitudeAndHp(checkIsDwarf(val, null));
+      });
+
+      btnOpenLegacyBrowser?.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const { GaiaItemBrowser } = await import("../../applications/item-browser.mjs");
+        GaiaItemBrowser.open(null, {
+          selectionMode: true,
+          maxSelectable: 1,
+          selectedItems: currentChosenLegacyUuid && currentChosenLegacyUuid !== "__custom__" ? [{ uuid: currentChosenLegacyUuid }] : [],
+          type: "legacy",
+          selectedSource: "all",
+          onSelect: async (selected) => {
+            const chosen = selected?.[0];
+            if (!chosen) return;
+            const fullDoc = chosen.uuid ? await fromUuid(chosen.uuid) : null;
+            const legData = {
+              uuid: chosen.uuid,
+              id: chosen.id,
+              name: chosen.name,
+              img: chosen.img || "icons/svg/aura.svg",
+              height: fullDoc?.system?.height || "",
+              lifeExpectancy: fullDoc?.system?.lifeExpectancy || "",
+              appearance: fullDoc?.system?.appearance || "",
+              origin: fullDoc?.system?.origin || "",
+              traditions: fullDoc?.system?.traditions || "",
+              inWorld: fullDoc?.system?.inWorld || "",
+              legacyAbilities: Array.isArray(fullDoc?.system?.legacyAbilities) ? fullDoc.system.legacyAbilities : []
+            };
+
+            currentChosenLegacy = legData;
+            currentChosenLegacyUuid = chosen.uuid;
+
+            if (legacySelect) {
+              let opt = legacySelect.querySelector(`option[value="${chosen.uuid}"]`);
+              if (!opt) {
+                opt = document.createElement("option");
+                opt.value = chosen.uuid;
+                opt.textContent = `${chosen.name} (${chosen.sourceLabel || "Compêndio"})`;
+                opt.dataset.name = chosen.name;
+                const customOpt = legacySelect.querySelector('option[value="__custom__"]');
+                if (customOpt) legacySelect.insertBefore(opt, customOpt);
+                else legacySelect.appendChild(opt);
+              }
+              legacySelect.value = chosen.uuid;
+            }
+
+            if (customLegacyBox) customLegacyBox.style.display = "none";
+            renderLegacyPreview(legData);
+            updateFortitudeAndHp(checkIsDwarf(legData.name, legData));
+          }
+        });
+      });
+
+      if (isDwarf) {
+        updateFortitudeAndHp(true);
+      }
+
       updateParamPoints();
       updateKnowPoints();
       updateCalculatedHP();
-      switchTab("parameters");
+      switchTab("legacy");
     },
     ok: {
       label: actor ? (game.i18n.localize("GAIA.CreateActor.ApplyParameters") || "Confirmar e Aplicar") : "Entendido",
@@ -481,6 +879,27 @@ export async function promptAwakeningGuideDialog(actor = null) {
           }
         }
 
+        // 0. Processa e Aplica Legado Escolhido
+        const legacySelect = html.querySelector(".gaia-awakening-legacy-select");
+        const selectedLegacyUuid = legacySelect?.value || "";
+        const customLegacyInput = html.querySelector(".gaia-awakening-custom-legacy-input");
+        const customLegacyVal = customLegacyInput?.value?.trim() || "";
+
+        let finalLegacyName = "";
+        let chosenLegacyDoc = null;
+
+        if (selectedLegacyUuid === "__custom__") {
+          finalLegacyName = customLegacyVal;
+        } else if (selectedLegacyUuid) {
+          chosenLegacyDoc = await fromUuid(selectedLegacyUuid);
+          if (chosenLegacyDoc) {
+            finalLegacyName = chosenLegacyDoc.name;
+          } else {
+            const selectedOpt = legacySelect?.querySelector(`option[value="${selectedLegacyUuid}"]`);
+            finalLegacyName = selectedOpt?.dataset?.name || "";
+          }
+        }
+
         // 3. Configura Recursos, Movimento e Idiomas de acordo com a Condição de Despertar
         const vigorVal = Number(paramList.find(p => p.name === "vigor")?.value) || 0;
 
@@ -509,10 +928,12 @@ export async function promptAwakeningGuideDialog(actor = null) {
         } else {
           // Regras do Desperto (Nível 1)
           finalLevel = 1;
+          const isFinalDwarf = checkIsDwarf(finalLegacyName, chosenLegacyDoc);
+          const finalHpBase = isFinalDwarf ? 4 : 3;
           const hpInputVal = Number(html.querySelector(".gaia-hp-selected-input")?.value);
-          const baseHp = !isNaN(hpInputVal) && hpInputVal > 0 ? (hpInputVal - vigorVal) : 33;
-          finalMaxHp = baseHp;
-          finalHp = baseHp + vigorVal;
+          const totalHp = !isNaN(hpInputVal) && hpInputVal > 0 ? hpInputVal : (30 + finalHpBase + vigorVal);
+          finalMaxHp = totalHp;
+          finalHp = totalHp;
           finalMaxPe = 5;
           finalPe = 5;
         }
@@ -530,7 +951,35 @@ export async function promptAwakeningGuideDialog(actor = null) {
           "system.languages": actorLanguages
         };
 
+        if (finalLegacyName) {
+          updateData["system.legacy"] = finalLegacyName;
+        }
+
+        if (chosenLegacyDoc) {
+          if (chosenLegacyDoc.system?.appearance) updateData["system.appearance"] = chosenLegacyDoc.system.appearance;
+          if (chosenLegacyDoc.system?.height) updateData["system.height"] = chosenLegacyDoc.system.height;
+          if (chosenLegacyDoc.system?.lifeExpectancy) updateData["system.lifeExpectancy"] = chosenLegacyDoc.system.lifeExpectancy;
+          if (chosenLegacyDoc.system?.origin) updateData["system.origin"] = chosenLegacyDoc.system.origin;
+          if (chosenLegacyDoc.system?.traditions) updateData["system.traditions"] = chosenLegacyDoc.system.traditions;
+          if (chosenLegacyDoc.system?.inWorld) updateData["system.inWorld"] = chosenLegacyDoc.system.inWorld;
+          if (Array.isArray(chosenLegacyDoc.system?.legacyAbilities)) updateData["system.legacyAbilities"] = chosenLegacyDoc.system.legacyAbilities;
+        }
+
         await actor.update(updateData);
+
+        // Se um item de Legado documental foi selecionado, sincroniza no Ator
+        if (chosenLegacyDoc && chosenLegacyDoc.actor?.id !== actor.id) {
+          const existingLegacies = actor.items.filter(i => i.type === "legacy");
+          const alreadyHasSame = existingLegacies.some(i => i.name.toLowerCase() === chosenLegacyDoc.name.toLowerCase());
+          if (!alreadyHasSame) {
+            if (existingLegacies.length > 0) {
+              await actor.deleteEmbeddedDocuments("Item", existingLegacies.map(i => i.id));
+            }
+            const itemData = chosenLegacyDoc.toObject();
+            delete itemData._id;
+            await actor.createEmbeddedDocuments("Item", [itemData]);
+          }
+        }
 
         // 4. Atualiza Bônus Derivados
         const bonusList = [...(actor.system.parametersBonus ?? [])];

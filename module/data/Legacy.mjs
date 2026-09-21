@@ -8,8 +8,23 @@
 
 import { ActorBaseDataModel } from "./ActorBaseModel.mjs";
 import { ActionDataModel } from "./ActionModel.mjs";
+import { GenericAbilityDataModel, EffectConfigDataModel } from "./AbilityClassesModel.mjs";
 
 const { NumberField, ArrayField, SchemaField, StringField, BooleanField, EmbeddedDataField } = foundry.data.fields;
+
+/**
+ * Modelo embutido para as Habilidades de Legado.
+ * @extends {GenericAbilityDataModel}
+ */
+export class LegacyAbilityDataModel extends GenericAbilityDataModel {
+  static defineSchema() {
+    return {
+      ...super.defineSchema(),
+      // name, description, actions are inherited from BaseDataModel (via GenericAbilityDataModel)
+      activeEffect: new EmbeddedDataField(EffectConfigDataModel)
+    };
+  }
+}
 
 /**
  * @extends {ActorBaseDataModel}
@@ -55,38 +70,29 @@ export class LegacyDataModel extends ActorBaseDataModel {
       appearance: new StringField({ required: false, initial: "" }),
       height: new StringField({ required: false, initial: "" }),
       lifeExpectancy: new StringField({ required: false, initial: "" }),
+      origin: new StringField({ required: false, initial: "" }),
+      traditions: new StringField({ required: false, initial: "" }),
+      inWorld: new StringField({ required: false, initial: "" }),
+      origem: new StringField({ required: false, initial: "" }),
+      tradicoes: new StringField({ required: false, initial: "" }),
+      no_mundo: new StringField({ required: false, initial: "" }),
       legacyAbilities: new ArrayField(
-        new SchemaField({
-          name: new StringField({ required: true, initial: "" }),
-          description: new StringField({ required: false, initial: "" }),
-          actions: new ArrayField(new EmbeddedDataField(ActionDataModel), { required: true, initial: [] }),
-          activeEffect: new SchemaField({
-            text: new StringField({ required: false, initial: "" }),
-            used: new BooleanField({ required: true, initial: false }),
-            recharge: new StringField({ required: true, initial: "full_rest" }),
-            trigger: new SchemaField({
-              event: new StringField({ required: true, initial: "hp_threshold" }),
-              inCombatOnly: new BooleanField({ required: true, initial: true }),
-              hpThresholdPercentage: new NumberField({ required: true, initial: 50, min: 1, max: 100 })
-            }),
-            changes: new ArrayField(
-              new SchemaField({
-                key: new StringField({ required: true, initial: "all_parameters" }),
-                mode: new StringField({ required: true, initial: "ADD" }),
-                value: new NumberField({ required: true, initial: 1 }),
-                allowExceedMax: new BooleanField({ required: true, initial: true })
-              }),
-              { required: true, initial: [] }
-            ),
-            duration: new SchemaField({
-              type: new StringField({ required: false, initial: "end_of_combat" }),
-              units: new StringField({ required: false, initial: "end_of_combat" })
-            })
-          })
-        }),
+        new EmbeddedDataField(LegacyAbilityDataModel),
         { required: true, initial: [] }
       )
     };
+  }
+
+  /** @override */
+  static migrateData(source) {
+    super.migrateData(source);
+    if (!source.origin && source.origem) source.origin = source.origem;
+    if (!source.traditions && source.tradicoes) source.traditions = source.tradicoes;
+    if (!source.inWorld && source.no_mundo) source.inWorld = source.no_mundo;
+    if (!source.origem && source.origin) source.origem = source.origin;
+    if (!source.tradicoes && source.traditions) source.tradicoes = source.traditions;
+    if (!source.no_mundo && source.inWorld) source.no_mundo = source.inWorld;
+    return source;
   }
 }
 export class LegacyNpcDataModel extends LegacyDataModel {

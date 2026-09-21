@@ -40,6 +40,19 @@
         {{/each}}
       </select>
     </div>
+
+    {{!-- Filtro por Caminho (quando aplicável) --}}
+    {{#if showPathFilter}}
+      <div class="filter-select-box">
+        <label><i class="fa-solid fa-route"></i> {{localize "GAIA.ItemBrowser.FilterPath"}}:</label>
+        <select class="browser-path-select">
+          <option value="all" {{#if (eq selectedPath "all")}}selected{{/if}}>{{localize "GAIA.ItemBrowser.AllPaths"}}</option>
+          {{#each availablePaths}}
+            <option value="{{this.id}}" {{#if (eq ../selectedPath this.id)}}selected{{/if}}>{{this.name}}</option>
+          {{/each}}
+        </select>
+      </div>
+    {{/if}}
   </div>
 
   {{!-- Indicador de Contagem de Resultados --}}
@@ -66,59 +79,81 @@
     </div>
   </div>
 
-  {{!-- 2. GRID / LISTA DE CARTÕES DE ITENS --}}
+  {{!-- 2. GRID / LISTA DE CARTÕES DE ITENS COM AGRUPAMENTO POR CAMINHO --}}
   <div class="browser-items-container">
-    <div class="browser-items-grid">
-      {{#each filteredItems}}
-        <div class="browser-item-card {{#if this.isSelected}}selected{{/if}}" data-uuid="{{this.uuid}}">
-          <div class="card-header">
-            <img class="item-img" src="{{this.img}}" alt="{{this.name}}" />
-            <div class="item-title-meta">
-              <h4 class="item-name">{{this.name}}</h4>
-              <div class="item-badges">
-                <span class="badge type-badge">{{this.typeLabel}}</span>
-                <span class="badge source-badge">{{this.sourceLabel}}</span>
+    {{#if groupedItems.length}}
+      {{#each groupedItems as |group|}}
+        <div class="browser-group-section {{#if group.title}}has-title{{/if}}" data-group-key="{{group.key}}">
+          {{#if group.title}}
+            <div class="browser-path-header">
+              <div class="browser-path-title-group">
+                <i class="{{group.icon}} browser-path-icon"></i>
+                <h3 class="browser-path-title">{{group.title}}</h3>
+                <span class="browser-path-count-badge">{{group.count}}</span>
               </div>
+              <div class="browser-path-divider"></div>
             </div>
-          </div>
+          {{/if}}
 
-          <div class="card-body">
-            {{#if this.description}}
-              <div class="item-desc">{{{this.description}}}</div>
-            {{else}}
-              <div class="item-desc empty">{{localize "GAIA.ItemBrowser.NoDescription"}}</div>
-            {{/if}}
-          </div>
+          <div class="browser-items-grid">
+            {{#each group.items}}
+              <div class="browser-item-card {{#if this.isSelected}}selected{{/if}}" data-uuid="{{this.uuid}}" {{#if @root.selectionMode}}data-action="toggleSelectItem" style="cursor: pointer;"{{/if}}>
+                <div class="card-header">
+                  <img class="item-img" src="{{this.img}}" alt="{{this.name}}" />
+                  <div class="item-title-meta">
+                    <h4 class="item-name">{{this.name}}</h4>
+                    <div class="item-badges">
+                      <span class="badge type-badge">{{this.typeLabel}}</span>
+                      {{#if this.pathShortName}}
+                        <span class="badge path-badge" title="{{this.pathName}}">
+                          {{#if this.pathIcon}}<i class="{{this.pathIcon}}"></i> {{/if}}{{this.pathShortName}}
+                        </span>
+                      {{/if}}
+                      <span class="badge source-badge">{{this.sourceLabel}}</span>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="card-actions">
-            <button type="button" class="btn-action preview-btn" data-action="previewItem" data-uuid="{{this.uuid}}" title="{{localize 'GAIA.ItemBrowser.PreviewTitle'}}">
-              <i class="fa-solid fa-eye"></i> {{localize "GAIA.ItemBrowser.Preview"}}
-            </button>
-            {{#if ../selectionMode}}
-              {{#if this.isSelected}}
-                <button type="button" class="btn-action select-btn selected" data-action="toggleSelectItem" data-uuid="{{this.uuid}}" title="Desmarcar item">
-                  <i class="fa-solid fa-check"></i> Selecionado
-                </button>
-              {{else}}
-                <button type="button" class="btn-action select-btn {{#if ../isSelectionMax}}disabled{{/if}}" data-action="toggleSelectItem" data-uuid="{{this.uuid}}" {{#if ../isSelectionMax}}disabled{{/if}} title="Selecionar item">
-                  <i class="fa-solid fa-plus"></i> Selecionar
-                </button>
-              {{/if}}
-            {{else}}
-              {{#if ../targetActor}}
-                <button type="button" class="btn-action import-btn" data-action="importItem" data-uuid="{{this.uuid}}" title="{{localize 'GAIA.ItemBrowser.ImportTitle'}}">
-                  <i class="fa-solid fa-plus"></i> {{localize "GAIA.ItemBrowser.Import"}}
-                </button>
-              {{/if}}
-            {{/if}}
+                <div class="card-body">
+                  {{#if this.description}}
+                    <div class="item-desc">{{{this.description}}}</div>
+                  {{else}}
+                    <div class="item-desc empty">{{localize "GAIA.ItemBrowser.NoDescription"}}</div>
+                  {{/if}}
+                </div>
+
+                <div class="card-actions">
+                  <button type="button" class="btn-action preview-btn" data-action="previewItem" data-uuid="{{this.uuid}}" title="{{localize 'GAIA.ItemBrowser.PreviewTitle'}}">
+                    <i class="fa-solid fa-eye"></i> {{localize "GAIA.ItemBrowser.Preview"}}
+                  </button>
+                  {{#if @root.selectionMode}}
+                    {{#if this.isSelected}}
+                      <button type="button" class="btn-action select-btn selected" data-action="toggleSelectItem" data-uuid="{{this.uuid}}" title="Desmarcar item">
+                        <i class="fa-solid fa-check"></i> Selecionado
+                      </button>
+                    {{else}}
+                      <button type="button" class="btn-action select-btn {{#if @root.isSelectionMax}}disabled{{/if}}" data-action="toggleSelectItem" data-uuid="{{this.uuid}}" {{#if @root.isSelectionMax}}disabled{{/if}} title="Selecionar item">
+                        <i class="fa-solid fa-plus"></i> Selecionar
+                      </button>
+                    {{/if}}
+                  {{else}}
+                    {{#if @root.targetActor}}
+                      <button type="button" class="btn-action import-btn" data-action="importItem" data-uuid="{{this.uuid}}" title="{{localize 'GAIA.ItemBrowser.ImportTitle'}}">
+                        <i class="fa-solid fa-plus"></i> {{localize "GAIA.ItemBrowser.Import"}}
+                      </button>
+                    {{/if}}
+                  {{/if}}
+                </div>
+              </div>
+            {{/each}}
           </div>
-        </div>
-      {{else}}
-        <div class="browser-empty-state">
-          <i class="fa-solid fa-box-open fa-3x"></i>
-          <p>{{localize "GAIA.ItemBrowser.EmptyState"}}</p>
         </div>
       {{/each}}
-    </div>
+    {{else}}
+      <div class="browser-empty-state">
+        <i class="fa-solid fa-box-open fa-3x"></i>
+        <p>{{localize "GAIA.ItemBrowser.EmptyState"}}</p>
+      </div>
+    {{/if}}
   </div>
 </div>

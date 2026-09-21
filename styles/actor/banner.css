@@ -157,6 +157,29 @@
   color: var(--gaia-health-label);
 }
 
+/* Badge de Dado de PV / Fortitude Ampliada */
+.badge-hp-die,
+.badge.badge-hp-die {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--gaia-font-base);
+  background: transparent;
+  color: #000000;
+  padding: 1px 4px;
+  font-weight: bold;
+  margin-left: 4px;
+  line-height: 1;
+  vertical-align: middle;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.badge-hp-die i,
+.badge.badge-hp-die i {
+  font-size: 0.8em;
+}
+
 .energy-card .resource-title {
   color: var(--gaia-energy-label);
 }

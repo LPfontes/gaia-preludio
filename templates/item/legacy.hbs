@@ -16,6 +16,7 @@
           <tr>
             <th>{{localize "GAIA.Legado.Height"}}</th>
             <th>{{localize "GAIA.Legado.LifeExpectancy"}}</th>
+            <th class="col-edit" style="width: 36px; text-align: center;"><i class="fa-solid fa-gear"></i></th>
           </tr>
         </thead>
         <tbody>
@@ -28,6 +29,9 @@
               <input type="text" name="system.lifeExpectancy" value="{{system.lifeExpectancy}}"
                 placeholder="{{localize 'GAIA.Legado.LifeExpectancyPlaceholder'}}" />
             </td>
+            <td class="col-edit" style="text-align: center; vertical-align: middle;">
+              <button type="button" class="btn-toggle-table-edit" data-action="toggleTableEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen"></i></button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -39,11 +43,32 @@
         placeholder="{{localize 'GAIA.Legado.AppearancePlaceholder'}}">{{system.appearance}}</textarea>
     </div>
 
-    <div class="legacy-description-panel">
-      <label class="description-title">{{localize "GAIA.Legado.Description"}}</label>
-      <textarea name="system.description" class="legacy-description-textarea"
-        placeholder="{{localize 'GAIA.Legado.DescriptionPlaceholder'}}">{{system.description}}</textarea>
-    </div>
+        <div class="legacy-description-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <label class="description-title">{{localize "GAIA.Legado.Origin"}}</label>
+          <button type="button" class="btn-toggle-description-edit" data-action="toggleDescriptionEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment); padding: 0 4px;"><i class="fa-solid fa-pen"></i></button>
+        </div>
+        <textarea name="system.origin" class="legacy-description-textarea"
+          placeholder="{{localize 'GAIA.Legado.OriginPlaceholder'}}">{{system.origin}}</textarea>
+      </div>
+
+      <div class="legacy-description-panel" style="margin-top: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <label class="description-title">{{localize "GAIA.Legado.Traditions"}}</label>
+          <button type="button" class="btn-toggle-description-edit" data-action="toggleDescriptionEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment); padding: 0 4px;"><i class="fa-solid fa-pen"></i></button>
+        </div>
+        <textarea name="system.traditions" class="legacy-description-textarea"
+          placeholder="{{localize 'GAIA.Legado.TraditionsPlaceholder'}}">{{system.traditions}}</textarea>
+      </div>
+
+      <div class="legacy-description-panel" style="margin-top: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <label class="description-title">{{localize "GAIA.Legado.InWorld"}}</label>
+          <button type="button" class="btn-toggle-description-edit" data-action="toggleDescriptionEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment); padding: 0 4px;"><i class="fa-solid fa-pen"></i></button>
+        </div>
+        <textarea name="system.inWorld" class="legacy-description-textarea"
+          placeholder="{{localize 'GAIA.Legado.InWorldPlaceholder'}}">{{system.inWorld}}</textarea>
+      </div>
 
     <div class="legacy-abilities-section">
       <div class="section-header">
@@ -87,17 +112,13 @@
         {{/if}}
 
         {{#if ability.formattedActions.length}}
-        <div class="legacy-ability-actions-list"
-          style="margin-top: 6px; display: flex; flex-direction: column; gap: 4px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 4px;">
+        <div class="legacy-ability-actions-list">
           {{#each ability.formattedActions as |action aIdx|}}
-          <div class="legacy-ability-action-row"
-            style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 3px 6px; border-radius: var(--gaia-radius); font-size: 11px;">
-            <span><strong>{{action.name}}</strong> {{#if action.summary}}<small
-                style="color: var(--gaia-gold-light, #e0cb8d);">({{action.summary}})</small>{{/if}}</span>
+          <div class="legacy-ability-action-row">
+            <span><strong class="action-name">{{action.name}}</strong> {{#if action.summary}}<small class="action-summary">({{action.summary}})</small>{{/if}}</span>
             <button type="button" class="btn-roll-legacy-action" data-action="rollLegacyAction"
               data-ability-index="{{ability.index}}" data-action-index="{{aIdx}}"
-              title="{{localize 'GAIA.Action.RollActionTitle'}}"
-              style="background: transparent; border: none; color: var(--gaia-text-parchment); cursor: pointer;">
+              title="{{localize 'GAIA.Action.RollActionTitle'}}">
               <i class="fa-solid fa-comment-alt"></i>
             </button>
           </div>

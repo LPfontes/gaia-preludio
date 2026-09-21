@@ -1,21 +1,17 @@
-import { BaseDataModel } from "./baseModel.mjs";
+import { GenericAbilityDataModel, SubAbilityDataModel, ImprovementDataModel, getGenericAbilitySchema } from "./AbilityClassesModel.mjs";
 
-const { NumberField, ArrayField, SchemaField, StringField, BooleanField } = foundry.data.fields;
+const { NumberField, ArrayField, StringField, EmbeddedDataField } = foundry.data.fields;
 
 /**
  * Data Model para Habilidades do sistema Gaia: Prelúdio.
- * @extends {BaseDataModel}
+ * @extends {foundry.abstract.TypeDataModel}
  */
-export class AbilityBaseModel extends BaseDataModel {
+export class AbilityBaseModel extends foundry.abstract.TypeDataModel {
   /** @override */
   static defineSchema() {
     return {
-      ...super.defineSchema(),
-      category: new StringField({ required: false, initial: "" }),
-      cost: new StringField({ required: false, initial: "" }),
+      ...getGenericAbilitySchema(),
       requirement: new StringField({ required: false, initial: "" }),
-      typeAction: new StringField({ required: false, initial: "" }),
-      type: new StringField({ required: false, initial: "" }),
       types: new ArrayField(new StringField({ required: false }), { required: false, initial: [] }),
       quote: new StringField({ required: false, initial: "" }),
       numberTarget: new StringField({ required: false, initial: "" }),
@@ -25,25 +21,13 @@ export class AbilityBaseModel extends BaseDataModel {
       pathId: new StringField({ required: false, initial: "" }),
 
       subEffects: new ArrayField(
-        new SchemaField({
-          name: new StringField({ required: true, initial: "" }),
-          cost: new StringField({ required: false, initial: "" }),
-          typeAction: new StringField({ required: false, initial: "" }),
-          type: new StringField({ required: false, initial: "" }),
-          description: new StringField({ required: false, initial: "" }),
-          note: new StringField({ required: false, initial: "" })
-        }),
+        new EmbeddedDataField(SubAbilityDataModel),
         { required: true, initial: [] }
       ),
       improvements: new ArrayField(
-        new SchemaField({
-          title: new StringField({ required: true, initial: "" }),
-          description: new StringField({ required: false, initial: "" }),
-          active: new BooleanField({ required: false, initial: false })
-        }),
+        new EmbeddedDataField(ImprovementDataModel),
         { required: true, initial: [] }
-      ),
-      Improvements: new ArrayField(new StringField({ required: true }), { required: true, initial: [] })
+      )
     };
   }
 }
@@ -53,4 +37,4 @@ export class AbilityBaseModel extends BaseDataModel {
  * Herda todos os campos e estruturas de Habilidade.
  * @extends {AbilityBaseModel}
  */
-export class FeatureDataModel extends AbilityBaseModel {}
+export class FeatureDataModel extends AbilityBaseModel {}

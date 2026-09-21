@@ -339,6 +339,11 @@
   text-align: left;
 }
 
+.inventory-grid-table th.col-item-category,
+.inventory-grid-table td.col-item-category {
+  text-transform: capitalize;
+}
+
 .inventory-grid-table tbody tr.empty-row td {
 
   background: var(--gaia-bg-window);
@@ -571,9 +576,7 @@
 .legacy-appearance-textarea,
 .legacy-description-textarea {
   width: 100%;
-  min-height: 100px;
-  border: 1px solid var(--gaia-border-frame);
-  border-radius: var(--gaia-radius);
+  min-height: 300px;
   color: var(--gaia-text-parchment);
   padding: 4px 6px;
   font-family: inherit;

@@ -209,6 +209,18 @@ GAIA.damageTypesFlat = {
 };
 
 /**
+ * PT: Tipos de Recursos Restaurados por Cura.
+ * EN: Healing Resource Types.
+ * @enum {string}
+ */
+GAIA.healingTypes = {
+  pv: "GAIA.HealingType.Pv",
+  pe: "GAIA.HealingType.Pe",
+  temp: "GAIA.HealingType.Temp"
+};
+
+
+/**
  * PT: Categorias de Equipamento.
  * EN: Equipment Categories.
  * @enum {string}
@@ -552,5 +564,30 @@ GAIA.conditions = {
   }
 };
 
-
-
+/**
+ * PT: Legados oficiais de Auroria.
+ * EN: Official Legacies of Auroria.
+ */
+GAIA.legacies = {
+  alraune: "Alraune",
+  anao: "Anão",
+  daeva: "Daeva",
+  delahk: "Delahk",
+  draenum: "Draenum",
+  elemental: "Elemental",
+  elfo: "Elfo",
+  forjado: "Forjado",
+  humano: "Humano",
+  inari: "Inari",
+  kahatsza: "Kahatsza",
+  kitari: "Kitari",
+  minotauro: "Minotauro",
+  netune: "Netune",
+  orkrash: "Orkrash",
+  seiko: "Seiko",
+  ursar: "Ursar",
+  valdrak: "Valdrak",
+  venneli: "Venneli",
+  yuansu: "Yuansu",
+  zaokan: "Zaokan"
+};

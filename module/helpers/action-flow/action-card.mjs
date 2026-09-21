@@ -34,6 +34,39 @@ export function processActionDamageSection(action, config) {
 }
 
 /**
+ * Gera o bloco HTML da seção de Cura da ação.
+ * @param {object} action - Objeto de dados da Ação
+ * @param {object} config - Configurações CONFIG.GAIA
+ * @returns {string} HTML da seção de cura
+ */
+export function processActionHealingSection(action, config) {
+  if (!action.healing?.hasHealing || !action.healing.formula) return "";
+
+  const healTypeKey = action.healing.type || "pv";
+  const typeMap = {
+    pv: "GAIA.ActionDialog.HealingPv",
+    pe: "GAIA.ActionDialog.HealingPe",
+    temp: "GAIA.ActionDialog.HealingTemp"
+  };
+  const healTypeLabel = typeMap[healTypeKey] ? game.i18n.localize(typeMap[healTypeKey]) : healTypeKey.toUpperCase();
+  const critBonus = action.healing.criticalBonus ? ` + ${action.healing.criticalBonus}` : "";
+
+  return `
+    <div class="action-section-block action-healing-section">
+      <div class="action-section-header">
+        <strong class="action-section-title healing-title">
+          Cura: ${action.healing.formula} (${healTypeLabel})
+        </strong>
+        <button type="button" class="btn-action-chat btn-roll-action-healing" data-action="rollActionHealing" data-formula="${action.healing.formula}" data-crit-formula="${action.healing.formula}${critBonus}" data-healing-type="${healTypeKey}">
+          Rolar Cura
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+
+/**
  * Gera o bloco HTML da seção de Teste de Dificuldade / Resistência da ação.
  * @param {object} action - Objeto de dados da Ação
  * @param {object} config - Configurações CONFIG.GAIA
@@ -175,7 +208,7 @@ export function buildActionBadges(action, config, costSpentNotice = "") {
  * @param {object} params
  * @returns {string} HTML completo do chat card
  */
-export function buildActionChatCardHtml({ action, item, badgesHtml, attackHtml, damageHtml, checkHtml, conditionHtml, aoeHtml }) {
+export function buildActionChatCardHtml({ action, item, badgesHtml, attackHtml, damageHtml, healingHtml = "", checkHtml, conditionHtml, aoeHtml }) {
   return `
     <div class="gaia-action-chat-card gaia-ability-chat-card">
       <div class="action-card-title-header">
@@ -186,9 +219,11 @@ export function buildActionChatCardHtml({ action, item, badgesHtml, attackHtml, 
       ${action.description ? `<p class="action-description-p">${action.description}</p>` : ""}
       ${attackHtml}
       ${damageHtml}
+      ${healingHtml}
       ${checkHtml}
       ${conditionHtml}
       ${aoeHtml}
     </div>
   `;
 }
+

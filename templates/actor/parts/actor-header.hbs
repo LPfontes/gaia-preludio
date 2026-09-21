@@ -40,7 +40,7 @@
 
   {{!-- 3. Vida (Atual / Max) --}}
   <div class="resource-card health-card">
-    <span class="resource-title">{{localize "GAIA.Banner.Health"}}</span>
+    <span class="resource-title">{{localize "GAIA.Banner.Health"}}{{#if system.hasFortitudeAmpliada}} <span class="badge badge-hp-die" title="Fortitude Ampliada: 1d8 ou 4 fixo"><i class="fa-solid fa-shield-heart"></i> 1d8</span>{{/if}}</span>
     <div class="resource-inputs-row">
       <div class="stat-input-box">
         <span class="input-sublabel">{{localize "GAIA.Banner.Current"}}</span>
@@ -233,9 +233,16 @@
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
-        {{else}}
-        <span class="empty-placeholder">{{localize "GAIA.Banner.None"}}</span>
         {{/each}}
+        {{#each system.conditionImmunities as |cImm|}}
+        <div class="defense-tag condition-immunity-tag" style="background: rgba(46, 139, 87, 0.2); border: 1px solid var(--gaia-gold); border-radius: var(--gaia-radius); padding: 2px 6px; display: inline-flex; align-items: center; gap: 4px;" title="Imunidade à Condição">
+          <i class="fa-solid fa-shield-virus" style="color: var(--gaia-gold); font-size: 10px;"></i>
+          <span style="text-transform: capitalize; font-size: 11px; font-weight: 600;">{{cImm}}</span>
+        </div>
+        {{/each}}
+        {{#if (and (not system.damageImmunity.length) (not system.conditionImmunities.length))}}
+        <span class="empty-placeholder">{{localize "GAIA.Banner.None"}}</span>
+        {{/if}}
       </div>
     </div>
 
