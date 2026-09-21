@@ -267,6 +267,8 @@
 
 /* ALVOS E ALCANCE */
 .ability-targets-range-row,
+.ability-targets-range-colunm,
+.ability-targets-range-column,
 .ability-requirement-row {
   display: flex;
   gap: 8px;
@@ -275,6 +277,16 @@
   background: #f8f6fd;
   border: 1px solid #e0d7f3;
   border-radius: var(--gaia-radius);
+}
+
+.ability-targets-range-colunm,
+.ability-targets-range-column {
+  flex-direction: column;
+}
+
+.ability-targets-range-colunm label,
+.ability-targets-range-column label {
+  min-width: 90px;
 }
 
 .target-field,
