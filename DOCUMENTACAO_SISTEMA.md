@@ -106,6 +106,7 @@ O sistema utiliza a API nativa de `DataModel` do Foundry VTT (`foundry.abstract.
 *Extende `ActorBaseDataModel`. Modelo para monstros, feras e criaturas.*
 * Campos herdados de `ActorBaseDataModel`.
 * **`difficulty`** (`StringField`): Classificação de dificuldade (comum, elite, chefe, etc.).
+* **`powerPoints`** (`NumberField`, Inteiro, Padrão: 0): Pontos de poder da criatura.
 * **`offensiveParameters`** (`NumberField`, Inteiro, Padrão: 0): Poder de ataque/parâmetro ofensivo.
 * **`defensiveParameters`** (`NumberField`, Inteiro, Padrão: 0): Poder de defesa/parâmetro defensivo.
 * **`brutal`** (`NumberField`, Inteiro, Padrão: 0): Modificador de força bruta/ataques físicos.
@@ -209,7 +210,7 @@ flowchart TD
 3. **Mapeamento de Data Models**: Vincula `LegacyDataModel`, `LegacyNpcDataModel` e `CreatureDataModel` aos tipos de ator, e os modelos de equipamentos ao `CONFIG.Item.dataModels`.
 4. **Registro de Fichas (ApplicationV2)**: Desregistra as fichas nativas e registra `CharacterLegacySheet`, `CreatureSheet`, `LegacyNpcSheet`, `EquipmentSheet`, `ArmorSheet`, `WeaponSheet`, `AbilitySheet`, `FeatureSheet`, `LegacySheet`, `PathSheet` e `RelicSheet`.
 5. **Tipos de Itens Especiais**:
-   * **Habilidade (`ability`)**: Poderes e técnicas com custo, tipo de ação, tipos, alvos, alcance, aprimoramentos, sub-efeitos e campo opcional de **Requerimento** (`system.requirement`).
+   * **Habilidade (`ability`)**: Poderes e técnicas com custo, tipo de ação, tipos, alvos, alcance, aprimoramentos, sub-efeitos, campo opcional de **Requerimento** (`system.requirement`) e indicador de **Bônus em Atributo** (`system.hasAttributeBonus`) que habilita dinamicamente a caixa de modificador na ficha de criatura.
    * **Característica (`feature`)**: Herda integralmente de Habilidade, adicionando categorias exclusivas como **Presença**, **Cólera**, **Redução**, **Passiva** e **Geral**.
 
 ### 2.2. Fluxo de Criação de Atores e Guia de Despertar

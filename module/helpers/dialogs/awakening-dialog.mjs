@@ -232,7 +232,7 @@ export async function promptAwakeningGuideDialog(actor = null) {
     classes: ["gaia-preludio", "gaia-dialog", "gaia-awakening-dialog"],
     window: { title },
     content,
-    position: { width: 900, height: "auto" },
+    position: { width: 900, height: "auto", top: 80},
     render: (event, dialog) => {
       const html = dialog.element;
       const tabButtons = html.querySelectorAll(".gaia-dialog-tab-btn");

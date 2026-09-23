@@ -30,4 +30,5 @@
 @import "./dialogs/creature-wizard.css";
 @import "./dialogs/legacy-npc-wizard.css";
 @import "./dialogs/level-up.css";
+@import "./dialogs/enhancement-dialog.css";
 @import "./apps/item-browser.css";

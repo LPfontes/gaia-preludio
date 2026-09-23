@@ -7,6 +7,8 @@
  *
  * @extends {Item}
  */
+import { calculateWeaponDamage } from "../helpers/actor-context.mjs";
+
 export class GaiaItem extends Item {
 
   /**
@@ -51,9 +53,22 @@ export class GaiaItem extends Item {
     if (this.type === "ability" || this.type === "feature") {
       const config = /** @type {any} */ (CONFIG).GAIA;
       const cost = system.cost || "";
-      const actionLabel = config?.actionType?.[system.typeAction] ? game.i18n.localize(config.actionType[system.typeAction]) : (system.typeAction || "");
-      const categoryDict = this.type === "feature" ? (config?.featureCategories || {}) : (config?.abilityCategories || {});
-      const categoryLabel = categoryDict[system.category] ? game.i18n.localize(categoryDict[system.category]) : (system.category || "");
+      const isFeature = this.type === "feature";
+      const rawCategory = String(system.category || "").trim();
+      const rawCatNorm = rawCategory.toLowerCase();
+      const isGenericType = rawCatNorm === "caracteristica" || rawCatNorm === "característica" || rawCatNorm === "feature" || rawCatNorm === "ability" || rawCatNorm === "habilidade";
+
+      const categoryDict = isFeature ? (config?.featureCategories || {}) : (config?.abilityCategories || {});
+      let categoryLabel = "";
+      if (rawCategory && !isGenericType) {
+        categoryLabel = categoryDict[rawCatNorm] ? game.i18n.localize(categoryDict[rawCatNorm]) : rawCategory;
+      }
+
+      const rawAction = system.typeAction || "";
+      const actionLabel = rawAction && config?.actionType?.[rawAction]
+        ? game.i18n.localize(config.actionType[rawAction])
+        : (rawAction || "");
+
       const rawTypes = Array.isArray(system.types) && system.types.length > 0
         ? system.types
         : (system.type ? [system.type] : [""]);
@@ -61,8 +76,21 @@ export class GaiaItem extends Item {
       const firstType = localizedTypes[0] || "";
       const additionalTypes = localizedTypes.slice(1).join(" / ");
       const additionalTypesHTML = localizedTypes.length > 1 ? `${additionalTypes}` : "";
-      const metaParts = [cost, actionLabel, categoryLabel, firstType].filter(Boolean);
-      const metaRow1 = metaParts.join(" | ");
+
+      // Evita duplicar categoria caso seja idêntica ao primeiro tipo (ex: "Passiva")
+      if (categoryLabel && firstType && categoryLabel.toLowerCase() === firstType.toLowerCase()) {
+        categoryLabel = "";
+      }
+
+      // Monta spans estilizados para a meta-row-1
+      const metaSpanParts = [];
+      if (cost) metaSpanParts.push(`<span class="meta-cost">${cost}</span>`);
+      if (actionLabel) metaSpanParts.push(`<span class="meta-action">${actionLabel}</span>`);
+      if (categoryLabel) metaSpanParts.push(`<span class="meta-category">${categoryLabel}</span>`);
+      if (firstType) metaSpanParts.push(`<span class="meta-type">${firstType}</span>`);
+
+      const dividerHtml = `<span class="meta-divider">|</span>`;
+      const metaRow1 = metaSpanParts.join(` ${dividerHtml} `);
       const quote = system.quote ? `<div class="ability-quote"><em>${system.quote}</em></div>` : "";
       const requirement = system.requirement ? `<div><strong>Requerimento:</strong> ${system.requirement}</div>` : "";
       const target = system.numberTarget ? `<div><strong>Alvo:</strong> ${system.numberTarget}</div>` : "";
@@ -93,14 +121,48 @@ export class GaiaItem extends Item {
 
       let subEffectsHTML = "";
       if (Array.isArray(system.subEffects) && system.subEffects.length > 0) {
-        subEffectsHTML = system.subEffects.map(sub => `
-          <div class="subeffect-chat-block">
-            <div style="font-weight:bold; color:var(-gaia-purple); text-transform:uppercase;">${sub.name || ""} ${sub.cost ? `<span style="float:right;">${sub.cost}</span>` : ""}</div>
-            <div style="border-top:1px solid #1a1a3a; margin:4px 0;"></div>
-            <div>${sub.description || ""}</div>
-            ${sub.note ? `<div style="font-size:12px; color:#4a2c82; font-weight:600; margin-top:2px;">${sub.note}</div>` : ""}
-          </div>
-        `).join("");
+        subEffectsHTML = system.subEffects.map((sub, subIdx) => {
+          let innerActions = "";
+          if (Array.isArray(sub.actions) && sub.actions.length > 0) {
+            innerActions = `
+              <div class="ability-actions-section" style="margin-top: 6px;">
+                ${sub.actions.map((act, actIdx) => `
+                  <div class="ability-action-item">
+                    <div class="ability-action-header-row">
+                      <div class="ability-action-info">
+                        <span class="ability-action-name">${act.name || "Ação"}</span>
+                        ${act.cost ? `<span class="badge cost-badge">${act.cost}</span>` : ""}
+                      </div>
+                      <div class="ability-action-controls" style="display: flex; align-items: center; gap: 4px;">
+                        <button type="button" class="btn-item-control btn-roll-ability" data-action="rollActionText"
+                          data-item-id="${this.id}" data-subeffect-index="${subIdx}" data-action-id="${act.id || ''}" data-action-index="${actIdx}"
+                          title="${game.i18n.localize("GAIA.title.SendToChat")}">
+                          <i class="fas fa-comment-alt"></i>
+                        </button>
+                        <button type="button" class="btn-roll-ability-action" data-action="rollItemAction"
+                          data-item-uuid="${this.uuid}" data-item-id="${this.id}" data-subeffect-index="${subIdx}" data-action-id="${act.id || ''}" data-action-index="${actIdx}"
+                          title="Rolar ${act.name || 'Ação'}">
+                          <i class="fa-solid fa-dice-d20"></i>
+                        </button>
+                      </div>
+                    </div>
+                    ${act.description ? `<div class="ability-action-desc">${act.description}</div>` : ""}
+                  </div>
+                `).join("")}
+              </div>
+            `;
+          }
+
+          return `
+            <div class="subeffect-chat-block">
+              <div style="font-weight:bold; color:var(--gaia-purple); text-transform:uppercase;">${sub.name || ""} ${sub.cost ? `<span style="float:right;">${sub.cost}</span>` : ""}</div>
+              <div style="border-top:1px solid #1a1a3a; margin:4px 0;"></div>
+              <div>${sub.description || ""}</div>
+              ${sub.note ? `<div style="font-size:12px; color:#4a2c82; font-weight:600; margin-top:2px;">${sub.note}</div>` : ""}
+              ${innerActions}
+            </div>
+          `;
+        }).join("");
       }
 
       let improvementsHTML = "";
@@ -144,19 +206,8 @@ export class GaiaItem extends Item {
     } else if (this.type === "weapon" || system.category === "weapon") {
       const config = /** @type {any} */ (CONFIG).GAIA;
 
-      // Formatação do Dano
-      let damageText = "-";
-      if (system.damageType) {
-        if (typeof system.damageType === "object") {
-          const dVal = system.damageType.value ?? "";
-          const rawType = system.damageType.type ?? "";
-          const locKey = config?.damageTypesFlat?.[rawType] ?? config?.damageTypes?.[rawType] ?? rawType;
-          const dType = rawType ? (game.i18n.localize(locKey) || rawType) : "";
-          damageText = dVal !== "" && dType ? `${dVal} ${dType}` : (dVal || dType || "-");
-        } else {
-          damageText = String(system.damageType);
-        }
-      }
+      // Formatação do Dano aplicando a regra oficial de Gaia: Prelúdio (Dano Base + Parâmetro * Dano Base ou Fórmula do Homuncularium)
+      const { damageText, isFormula, formula, damageType, damageTypeLabel } = calculateWeaponDamage(this, this.actor);
 
       // Formatação do Alcance
       let rangeText = "-";
@@ -215,6 +266,13 @@ export class GaiaItem extends Item {
               <div class="dice-total">${damageText}</div>
             </div>
           </div>
+          ${isFormula && formula ? `
+            <div class="weapon-damage-formula-actions" style="margin-top: 6px; display: flex; justify-content: center;">
+              <button type="button" class="btn-action-chat btn-roll-action-damage" data-action="rollActionDamage" data-formula="${formula}" data-crit-formula="${formula}" data-damage-type="${damageTypeLabel || damageType}">
+                <i class="fa-solid fa-dice-d20"></i> Rolar Dano (${formula})
+              </button>
+            </div>
+          ` : ""}
           ${actionsHTML}
         </div>
       `;
@@ -286,6 +344,40 @@ export class GaiaItem extends Item {
     if (typeLabel) metaParts.push(typeLabel);
     const metaBar = metaParts.length > 0 ? `<div class="ability-meta-bar"><div class="meta-row-1">${metaParts.join(" | ")}</div></div>` : "";
 
+    // Renderiza ações do sub-efeito se houverem
+    let subActionsHTML = "";
+    if (Array.isArray(sub.actions) && sub.actions.length > 0) {
+      const subIdx = Array.isArray(this.system?.subEffects) ? this.system.subEffects.indexOf(sub) : -1;
+      subActionsHTML = `
+        <div class="ability-actions-section" style="margin-top: 8px;">
+          <div class="ability-actions-title">• AÇÕES •</div>
+          ${sub.actions.map((act, actIdx) => `
+            <div class="ability-action-item">
+              <div class="ability-action-header-row">
+                <div class="ability-action-info">
+                  <span class="ability-action-name">${act.name || "Ação"}</span>
+                  ${act.cost ? `<span class="badge cost-badge">${act.cost}</span>` : ""}
+                </div>
+                <div class="ability-action-controls" style="display: flex; align-items: center; gap: 4px;">
+                  <button type="button" class="btn-item-control btn-roll-ability" data-action="rollActionText"
+                    data-item-id="${this.id}" ${subIdx >= 0 ? `data-subeffect-index="${subIdx}"` : ""} data-action-id="${act.id || ''}" data-action-index="${actIdx}"
+                    title="${game.i18n.localize("GAIA.title.SendToChat")}">
+                    <i class="fas fa-comment-alt"></i>
+                  </button>
+                  <button type="button" class="btn-roll-ability-action" data-action="rollItemAction"
+                    data-item-uuid="${this.uuid}" data-item-id="${this.id}" ${subIdx >= 0 ? `data-subeffect-index="${subIdx}"` : ""} data-action-id="${act.id || ''}" data-action-index="${actIdx}"
+                    title="Rolar ${act.name || 'Ação'}">
+                    <i class="fa-solid fa-dice-d20"></i>
+                  </button>
+                </div>
+              </div>
+              ${act.description ? `<div class="ability-action-desc">${act.description}</div>` : ""}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
     const content = `
       <div class="gaia-ability-chat-card gaia-subeffect-chat-card">
         <div class="ability-name" style="font-size: 1.1em; color: var(--gaia-purple-dark, #5d1c8f); border-bottom: 1px solid var(--gaia-purple-dark, #5d1c8f); padding-bottom: 2px; margin-bottom: 4px;">
@@ -298,6 +390,7 @@ export class GaiaItem extends Item {
         <div class="ability-body" style="margin-top: 6px;">
           ${description ? `<p>${description}</p>` : ""}
           ${note ? `<div class="subeffect-chat-note" style="font-size:12px; color:var(--gaia-purple-dark, #5d1c8f); font-weight:600; margin-top:4px;"><i class="fas fa-info-circle"></i> ${note}</div>` : ""}
+          ${subActionsHTML}
         </div>
       </div>
     `;
@@ -305,6 +398,85 @@ export class GaiaItem extends Item {
     return ChatMessage.create(/** @type {any} */({
       speaker,
       content,
+      ...options
+    }));
+  }
+
+  /**
+   * Envia apenas o texto/card descritivo de uma Ação para o chat (sem rolar testes ou ataques).
+   * @param {object|number|string} action - Objeto da ação ou índice na array de ações
+   * @param {object} [options] - Opções adicionais para a mensagem do chat
+   * @returns {Promise<ChatMessage|null>}
+   */
+  async rollActionText(action, options = {}) {
+    let act = typeof action === "number" ? this.system?.actions?.[action] : action;
+    if (!act && (typeof action === "string" || typeof action === "number")) {
+      const idx = Number(action);
+      if (!isNaN(idx)) act = this.system?.actions?.[idx];
+    }
+    if (!act && typeof action === "string" && Array.isArray(this.system?.subEffects)) {
+      for (const sub of this.system.subEffects) {
+        act = (sub.actions || []).find(a => a.id === action);
+        if (act) break;
+      }
+    }
+    if (!act) return null;
+
+    // Procura se a ação pertence a um sub-efeito para exibir o subtítulo
+    let parentLabel = this.name;
+    if (Array.isArray(this.system?.subEffects)) {
+      for (const sub of this.system.subEffects) {
+        if ((sub.actions || []).some(a => a === act || a.id === act.id)) {
+          parentLabel = `${this.name} (${sub.name || "Sub-Habilidade"})`;
+          break;
+        }
+      }
+    }
+
+    const config = /** @type {any} */ (CONFIG).GAIA;
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor, item: this });
+
+    const badges = [];
+    const actionTypeLabel = act.type?.actionType && config?.actionType?.[act.type.actionType]
+      ? game.i18n.localize(config.actionType[act.type.actionType])
+      : (act.type?.actionType || "");
+    const categoryLabel = act.type?.category && config?.abilitiesTypes?.[act.type.category]
+      ? game.i18n.localize(config.abilitiesTypes[act.type.category])
+      : (act.type?.category || "");
+
+    if (act.cost) {
+      badges.push(`<span class="action-cost-notice"><i class="fas fa-bolt"></i> ${act.cost}</span>`);
+    }
+    if (actionTypeLabel) {
+      badges.push(`<span class="badge type-badge">${actionTypeLabel}</span>`);
+    }
+    if (categoryLabel) {
+      badges.push(`<span class="badge category-badge">${categoryLabel}</span>`);
+    }
+
+    const badgesHtml = badges.length > 0 ? `<div class="action-badges">${badges.join(" ")}</div>` : "";
+
+    const content = `
+      <div class="gaia-action-chat-card gaia-ability-chat-card">
+        <div class="action-card-title-header">
+          <span>${act.name || "Ação"}</span>
+          <div class="action-item-parent"><i class="fa-solid fa-bookmark"></i> ${parentLabel}</div>
+        </div>
+        ${badgesHtml}
+        ${act.description ? `<p class="action-description-p">${act.description}</p>` : ""}
+      </div>
+    `;
+
+    return ChatMessage.create(/** @type {any} */({
+      speaker,
+      content,
+      flags: {
+        "gaia-preludio": {
+          actionData: act,
+          itemId: this.id,
+          actorId: this.actor?.id ?? null
+        }
+      },
       ...options
     }));
   }

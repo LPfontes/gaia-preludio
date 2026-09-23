@@ -70,7 +70,7 @@
                 <span class="weapon-name-text">{{weapon.name}}</span>
               </div>
             </td>
-            <td class="col-weapon-damage">{{weapon.damage}}</td>
+            <td class="col-weapon-damage" title="{{weapon.damageTitle}}">{{weapon.damage}}</td>
             <td class="col-weapon-range">{{weapon.range}}</td>
             <td class="col-weapon-props" title="{{weapon.propertiesTitle}}">
               {{#if (and weapon.properties (ne weapon.properties "-"))}}

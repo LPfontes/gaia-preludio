@@ -148,7 +148,7 @@
               {{#if (or this.metaRow1 this.hasAdditionalTypes)}}
               <div class="ability-meta-bar">
                 {{#if this.metaRow1}}
-                <div class="meta-row-1">{{this.metaRow1}}</div>
+                <div class="meta-row-1">{{{this.metaRow1}}}</div>
                 {{/if}}
                 {{#if this.hasAdditionalTypes}}
                 <div class="meta-row-2">{{this.additionalTypes}}</div>
@@ -165,10 +165,7 @@
               </div>
               {{/if}}
 
-              <div class="ability-body-text">
-                {{#if this.system.description}}
-                <p>{{this.system.description}}</p>
-                {{/if}}
+              <div class="ability-meta-text">
                 {{#if this.system.numberTarget}}
                 <span class="tag-target"><strong>{{localize "GAIA.Ability.Target"}}:</strong>
                   {{this.system.numberTarget}}</span>
@@ -181,6 +178,12 @@
                 {{/if}}
               </div>
 
+              <div class="ability-body-text">
+                {{#if this.system.description}}
+                <p>{{this.system.description}}</p>
+                {{/if}}
+              </div>
+
               {{#if this.system.actions.length}}
               <div class="ability-actions-section">
                 {{#each this.system.actions}}
@@ -190,11 +193,18 @@
                       <span class="ability-action-name">{{this.name}}</span>
                       {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
                     </div>
-                    <button type="button" class="btn-roll-ability-action" data-action="rollAction"
-                      data-item-id="{{../id}}" data-action-id="{{this.id}}" data-action-index="{{@index}}"
-                      title="Rolar {{this.name}}">
-                      <i class="fa-solid fa-dice-d20"></i>
-                    </button>
+                    <div class="ability-action-controls" style="display: flex; align-items: center; gap: 4px;">
+                      <button type="button" class="btn-item-control btn-roll-ability" data-action="rollActionText"
+                        data-item-id="{{../id}}" data-action-id="{{this.id}}" data-action-index="{{@index}}"
+                        title="{{localize 'GAIA.title.SendToChat'}}">
+                        <i class="fas fa-comment-alt"></i>
+                      </button>
+                      <button type="button" class="btn-roll-ability-action" data-action="rollAction"
+                        data-item-id="{{../id}}" data-action-id="{{this.id}}" data-action-index="{{@index}}"
+                        title="Rolar {{this.name}}">
+                        <i class="fa-solid fa-dice-d20"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
                 {{/each}}
@@ -221,6 +231,9 @@
                         data-item-id="{{../id}}" data-index="{{@index}}" title="Enviar Sub-Habilidade para o Chat">
                         <i class="fas fa-comment-alt"></i>
                       </button>
+                      <button type="button" class="btn-item-control btn-toggle-ability-collapse" data-action="toggleAbilityCollapse" title="Recolher / Expandir Habilidade">
+                        <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                      </button>
                     </div>
                   </div>
 
@@ -238,11 +251,18 @@
                           <span class="ability-action-name">{{this.name}}</span>
                           {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
                         </div>
-                        <button type="button" class="btn-roll-ability-action" data-action="rollAction"
-                          data-item-id="{{../../id}}" data-subeffect-index="{{@../index}}" data-action-id="{{this.id}}" data-action-index="{{@index}}"
-                          title="Rolar {{this.name}}">
-                          <i class="fa-solid fa-dice-d20"></i>
-                        </button>
+                        <div class="ability-action-controls" style="display: flex; align-items: center; gap: 4px;">
+                          <button type="button" class="btn-item-control btn-roll-ability" data-action="rollActionText"
+                            data-item-id="{{../../id}}" data-subeffect-index="{{@../index}}" data-action-id="{{this.id}}" data-action-index="{{@index}}"
+                            title="{{localize 'GAIA.title.SendToChat'}}">
+                            <i class="fas fa-comment-alt"></i>
+                          </button>
+                          <button type="button" class="btn-roll-ability-action" data-action="rollAction"
+                            data-item-id="{{../../id}}" data-subeffect-index="{{@../index}}" data-action-id="{{this.id}}" data-action-index="{{@index}}"
+                            title="Rolar {{this.name}}">
+                            <i class="fa-solid fa-dice-d20"></i>
+                          </button>
+                        </div>
                       </div>
                     </div>
                     {{/each}}

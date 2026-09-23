@@ -39,6 +39,163 @@ export const ARMAS_FOLDERS_DATA = [
 
 export const ARMAS_DATA = [
   {
+    "_id": "eqarm_golpe_brutal",
+    "name": "Golpe Brutal",
+    "type": "weapon",
+    "img": "systems/gaia-preludio/assets/golpe-brutal.jpg",
+    "itemKey": "golpe_brutal",
+    "system": {
+      "name": "Golpe Brutal",
+      "description": "A criatura realiza um Ataque Físico com alguma parte do seu corpo contra um Alvo a até 1 metro. Caso tenha sucesso, causará no Alvo 1d8 de Dano Físico para cada ponto de Poder que possua (1d10 para Dificuldade Difícil ou Extrema).<br><br>Ao realizar esse Ataque Físico, a criatura poderá utilizar a sua Ação Simples, Ação Rápida ou 1 Ponto de Energia para aumentar o alcance desse Ataque Físico em 3 metros.<br><br><em>Esse tipo de ataque não é considerado um Ataque Desarmado.</em>",
+      "price": 0,
+      "category": "Armamento Natural",
+      "unity": 0,
+      "equipped": true,
+      "quantity": 1,
+      "weaponType": "light",
+      "damageType": {
+        "value": 1,
+        "type": "physical"
+      },
+      "attackParameter": {
+        "value": 0,
+        "attribute": "precision"
+      },
+      "range": {
+        "value": 1,
+        "type": "melee"
+      },
+      "properties": [
+        {
+          "name": "Ataque Físico",
+          "description": "Ataque corporal direto (não considerado Ataque Desarmado)."
+        },
+        {
+          "name": "Alcance Estendido",
+          "description": "Pode gastar Ação Simples, Ação Rápida ou 1 PE para +3 metros de alcance."
+        }
+      ],
+      "actions": [
+        {
+          "id": "golpe-brutal-base",
+          "name": "Golpe Brutal",
+          "description": "A criatura realiza um Ataque Físico contra um Alvo a até 1 metro. Causa 1d8 de Dano Físico por ponto de Poder (1d10 em Difícil/Extrema).",
+          "cost": "",
+          "type": {
+            "actionType": "acaoAtiva",
+            "category": "ataque_corpo_a_corpo",
+            "tags": ["ataque_fisico"]
+          },
+          "attack": {
+            "hasAttack": true,
+            "attribute": "precision",
+            "knowledge": "",
+            "bonus": "",
+            "rollType": "standard"
+          },
+          "damage": {
+            "hasDamage": true,
+            "formula": "1d8",
+            "type": "physical",
+            "criticalBonus": "",
+            "scaling": "1 dado por ponto de Poder"
+          }
+        },
+        {
+          "id": "golpe-brutal-alcance",
+          "name": "Golpe Brutal (Alcance Estendido)",
+          "description": "Ataque Físico com alcance aumentado para 4 metros ao custo de 1 PE, Ação Simples ou Ação Rápida. Causa 1d8 de Dano Físico por ponto de Poder (1d10 em Difícil/Extrema).",
+          "cost": "1 PE / Ação Simples / Rápida",
+          "type": {
+            "actionType": "acaoAtiva",
+            "category": "ataque_corpo_a_corpo",
+            "tags": ["ataque_fisico", "alcance_estendido"]
+          },
+          "attack": {
+            "hasAttack": true,
+            "attribute": "precision",
+            "knowledge": "",
+            "bonus": "",
+            "rollType": "standard"
+          },
+          "damage": {
+            "hasDamage": true,
+            "formula": "1d8",
+            "type": "physical",
+            "criticalBonus": "",
+            "scaling": "1 dado por ponto de Poder"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "_id": "eqarm_evocacao_mistica",
+    "name": "Evocação Mística",
+    "type": "weapon",
+    "img": "systems/gaia-preludio/assets/evocacao-mistica.jpg",
+    "itemKey": "evocacao_mistica",
+    "system": {
+      "name": "Evocação Mística",
+      "description": "A criatura canaliza o Véu ao seu redor e realiza Ataque Mágico contra um Alvo a até 8 metros. Caso tenha sucesso, causará no Alvo 1d8 de Dano Mágico Neutro para cada ponto de Poder que possua (1d10 para Dificuldade Difícil ou Extrema).",
+      "price": 0,
+      "category": "Armamento Mágico",
+      "unity": 0,
+      "equipped": true,
+      "quantity": 1,
+      "weaponType": "ranged",
+      "damageType": {
+        "value": 1,
+        "type": "neutro"
+      },
+      "attackParameter": {
+        "value": 0,
+        "attribute": "channeling"
+      },
+      "range": {
+        "value": 8,
+        "type": "ranged"
+      },
+      "properties": [
+        {
+          "name": "Ataque Mágico",
+          "description": "Canalização mística do Véu."
+        },
+        {
+          "name": "Conjuração",
+          "description": "Custa 1 Ponto de Energia."
+        }
+      ],
+      "actions": [
+        {
+          "id": "evocacao-mistica-base",
+          "name": "Evocação Mística",
+          "description": "A criatura canaliza o Véu ao seu redor e realiza Ataque Mágico contra um Alvo a até 8 metros. Causa 1d8 de Dano Mágico Neutro por ponto de Poder (1d10 em Difícil/Extrema).",
+          "cost": "1 PE",
+          "type": {
+            "actionType": "acaoAtiva",
+            "category": "ataque_magico",
+            "tags": ["ataque_magico", "conjuracao"]
+          },
+          "attack": {
+            "hasAttack": true,
+            "attribute": "channeling",
+            "knowledge": "",
+            "bonus": "",
+            "rollType": "standard"
+          },
+          "damage": {
+            "hasDamage": true,
+            "formula": "1d8",
+            "type": "neutro",
+            "criticalBonus": "",
+            "scaling": "1 dado por ponto de Poder"
+          }
+        }
+      ]
+    }
+  },
+  {
     "_id": "eqarm00010000000",
     "name": "Adaga",
     "type": "weapon",

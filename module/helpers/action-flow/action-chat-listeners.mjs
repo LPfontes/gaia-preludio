@@ -8,6 +8,7 @@
 
 import { flowParameter, flowDifficultyCheck, flowRoll } from "../flow.mjs";
 import { getTargetedTokens } from "../token-helper.mjs";
+import { promptRollDialog } from "../stat-rolls.mjs";
 import { applyActionDamage } from "./action-damage.mjs";
 import { applyActionHealing } from "./action-healing.mjs";
 import { applyActionCondition } from "./action-condition.mjs";
@@ -251,7 +252,41 @@ export function registerActionChatListeners(html, message) {
 
         const isParam = statCategory === "parameter" || Boolean(CONFIG.GAIA?.parameters?.[statKey]);
         const checkExhaustion = isParam ? (Number(actor.system?.exhaustion) || 0) : 0;
-        const roll = await flowParameter(paramObj, "standard", 0, checkExhaustion);
+
+        let defaultFitness = "standard";
+        let defaultModifier = 0;
+        const system = actor.system ?? {};
+
+        const rawKey = String(statKey).toLowerCase();
+        if (rawKey === "perception" || rawKey === "percepção" || rawKey === "percepcao") {
+          if (system.hasDarkness) defaultFitness = "disadvantage";
+          else if (system.hasPenumbra) defaultModifier -= 1;
+        }
+        if (system.hasDarkness && (rawKey === "precision" || rawKey === "channeling" || rawKey === "precisão" || rawKey === "precisao" || rawKey === "canalização" || rawKey === "canalizacao")) {
+          defaultModifier -= 1;
+        }
+        if (system.hasStunned && isParam) {
+          defaultFitness = "disadvantage";
+        }
+        if (system.hasProne && (rawKey === "precision" || rawKey === "channeling" || rawKey === "precisão" || rawKey === "precisao" || rawKey === "canalização" || rawKey === "canalizacao")) {
+          defaultFitness = "disadvantage";
+        }
+
+        if (ev.shiftKey) defaultFitness = "advantage";
+        if (ev.altKey || ev.ctrlKey) defaultFitness = "disadvantage";
+
+        const dialogResult = await promptRollDialog({
+          label: `${actor.name}: ${label} [Dif. ${dc}]`,
+          dataKey: statKey,
+          value: paramObj.value,
+          modifier: defaultModifier,
+          exhaustionPenalty: checkExhaustion,
+          defaultFitness
+        });
+
+        if (!dialogResult) continue;
+
+        const roll = await flowParameter(paramObj, dialogResult.fitness, dialogResult.modifier, checkExhaustion);
         const check = flowDifficultyCheck(roll, dc);
 
         const outcomeClass = check.success ? "outcome-success" : "outcome-failure";
@@ -269,7 +304,7 @@ export function registerActionChatListeners(html, message) {
         await roll.toMessage({
           speaker: ChatMessage.getSpeaker({ actor }),
           flavor
-        });
+        }, { messageMode: dialogResult.rollMode });
       }
     });
   });
@@ -360,13 +395,26 @@ export function registerActionChatListeners(html, message) {
       if (!act && !isNaN(actionIndex)) {
         act = item.system.actions?.[actionIndex];
       }
+      if (!act && actionId && Array.isArray(item.system.subEffects)) {
+        for (const sub of item.system.subEffects) {
+          act = (sub.actions || []).find(a => a.id === actionId);
+          if (act) break;
+        }
+      }
+      const subIndex = btn.dataset.subeffectIndex !== undefined ? Number(btn.dataset.subeffectIndex) : NaN;
+      if (!act && !isNaN(subIndex) && Array.isArray(item.system.subEffects)) {
+        const sub = item.system.subEffects[subIndex];
+        if (sub && Array.isArray(sub.actions)) {
+          act = sub.actions.find(a => a.id === actionId) || sub.actions[actionIndex];
+        }
+      }
       if (!act) {
         ui.notifications?.warn("Ação não encontrada no item.");
         return;
       }
 
       const finalActor = item.actor || actor || (game.user.character ?? null);
-      await executeAction(act, { actor: finalActor, item });
+      await executeAction(act, { actor: finalActor, item, event: ev, target: btn });
     });
   });
 

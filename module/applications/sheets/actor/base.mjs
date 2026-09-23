@@ -46,6 +46,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       removeVulnerability: GaiaBaseActorSheet._onRemoveVulnerability,
       addReduction: GaiaBaseActorSheet._onAddReduction,
       removeReduction: GaiaBaseActorSheet._onRemoveReduction,
+      editDefense: GaiaBaseActorSheet._onEditDefense,
       setExhaustion: GaiaBaseActorSheet._onSetExhaustion,
       openDeathSave: GaiaBaseActorSheet._onOpenDeathSaveDialog,
       openDeathSaveDialog: GaiaBaseActorSheet._onOpenDeathSaveDialog,
@@ -82,6 +83,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       promptRollRequest: GaiaBaseActorSheet._onPromptRollRequest,
       promptRollRequestDialog: GaiaBaseActorSheet._onPromptRollRequest,
       rollAction: GaiaBaseActorSheet._onRollItemAction,
+      rollActionText: GaiaBaseActorSheet._onRollActionText,
       rollItemAction: GaiaBaseActorSheet._onRollItemAction,
       rollSubEffect: GaiaBaseActorSheet._onRollSubEffect,
       rollLegacyAbility: GaiaBaseActorSheet._onRollLegacyAbility,
@@ -100,7 +102,192 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
   };
 
   /** @type {AbortController|null} */
-  _contextMenuController = null;
+  /**
+   * Configura as opções de renderização para a aplicação.
+   * Determina de forma reativa e seletiva quais partes (PARTS) precisam ser renderizadas,
+   * evitando reflow e processamento desnecessários nas demais partes da ficha.
+   * @override
+   * @param {object} options - Opções de renderização
+   */
+  _configureRenderOptions(options) {
+    super._configureRenderOptions(options);
+
+    // Na primeira renderização ou se a ficha ainda não foi inserida no DOM, renderiza todas as partes
+    if (options.isFirstRender || !this.rendered) return;
+
+    // Se as partes já foram explicitamente definidas na chamada this.render({ parts: [...] }), respeita a escolha
+    if (Array.isArray(options.parts) && options.parts.length) return;
+
+    // Se a renderização foi disparada por um evento do Foundry (updateActor, createItem, etc.)
+    if (options.renderContext) {
+      const parts = this._getPartsForRenderContext(options.renderContext, options.renderData, options);
+      if (Array.isArray(parts) && parts.length) {
+        options.parts = parts;
+      }
+    }
+  }
+
+  /**
+   * Identifica quais partes do template devem ser re-renderizadas com base no contexto do update.
+   * @protected
+   * @param {string} renderContext - Tipo de operação (ex: "updateActor", "createItem", "deleteItem", "updateActiveEffect")
+   * @param {object} renderData - Dados associados à atualização (diff de alterações, IDs, documentos)
+   * @param {object} options - Opções gerais de renderização
+   * @returns {string[] | null} Lista de partes a renderizar ou null para renderizar tudo.
+   */
+  _getPartsForRenderContext(renderContext, renderData, options) {
+    const available = new Set(Object.keys(this.constructor.PARTS ?? {}));
+    if (available.size <= 1) return null;
+
+    const parts = new Set();
+    const headerPart = available.has("sidebar") ? "sidebar" : (available.has("header") ? "header" : null);
+    const bioPart = available.has("tabBiografia") ? "tabBiografia" : (available.has("tabBio") ? "tabBio" : null);
+
+    if (renderContext === "updateActor") {
+      const changed = renderData ?? {};
+
+      // 1. Mudanças que afetam exclusivamente o cabeçalho / banner
+      const hasHeaderOnlyChange =
+        foundry.utils.hasProperty(changed, "system.health") ||
+        foundry.utils.hasProperty(changed, "system.energy") ||
+        foundry.utils.hasProperty(changed, "system.nivel") ||
+        foundry.utils.hasProperty(changed, "system.powerPoints") ||
+        foundry.utils.hasProperty(changed, "system.exhaustion") ||
+        foundry.utils.hasProperty(changed, "system.death") ||
+        foundry.utils.hasProperty(changed, "name") ||
+        foundry.utils.hasProperty(changed, "img") ||
+        foundry.utils.hasProperty(changed, "prototypeToken");
+
+      // 2. Mudanças em atributos/parâmetros que afetam cabeçalho E aba de personagem
+      const hasPersonagemChange =
+        foundry.utils.hasProperty(changed, "system.stats") ||
+        foundry.utils.hasProperty(changed, "system.parameters") ||
+        foundry.utils.hasProperty(changed, "system.parametersBonus") ||
+        foundry.utils.hasProperty(changed, "system.knowledge") ||
+        foundry.utils.hasProperty(changed, "system.masteries") ||
+        foundry.utils.hasProperty(changed, "system.defenses") ||
+        foundry.utils.hasProperty(changed, "system.movement") ||
+        foundry.utils.hasProperty(changed, "system.shield") ||
+        foundry.utils.hasProperty(changed, "system.resistances") ||
+        foundry.utils.hasProperty(changed, "system.reductions") ||
+        foundry.utils.hasProperty(changed, "system.immunities") ||
+        foundry.utils.hasProperty(changed, "system.vulnerabilities") ||
+        foundry.utils.hasProperty(changed, "system.creatureTypes") ||
+        foundry.utils.hasProperty(changed, "system.legacy") ||
+        foundry.utils.hasProperty(changed, "system.homunculusType") ||
+        foundry.utils.hasProperty(changed, "system.difficulty");
+
+      // 3. Mudanças na biografia ou notas
+      const hasBioChange =
+        foundry.utils.hasProperty(changed, "system.biography") ||
+        foundry.utils.hasProperty(changed, "system.description") ||
+        foundry.utils.hasProperty(changed, "system.notes") ||
+        foundry.utils.hasProperty(changed, "system.lore");
+
+      // 4. Mudanças em moedas
+      const hasCurrencyChange = foundry.utils.hasProperty(changed, "system.currency");
+
+      // Validação de segurança: se houver alguma chave desconhecida de primeiro nível, renderiza tudo
+      const flatChanges = foundry.utils.flattenObject(changed);
+      const allKnownKeys = Object.keys(flatChanges).every(k => {
+        return (
+          k.startsWith("system.health") ||
+          k.startsWith("system.energy") ||
+          k.startsWith("system.nivel") ||
+          k.startsWith("system.powerPoints") ||
+          k.startsWith("system.exhaustion") ||
+          k.startsWith("system.death") ||
+          k.startsWith("name") ||
+          k.startsWith("img") ||
+          k.startsWith("prototypeToken") ||
+          k.startsWith("system.stats") ||
+          k.startsWith("system.parameters") ||
+          k.startsWith("system.parametersBonus") ||
+          k.startsWith("system.knowledge") ||
+          k.startsWith("system.masteries") ||
+          k.startsWith("system.defenses") ||
+          k.startsWith("system.movement") ||
+          k.startsWith("system.shield") ||
+          k.startsWith("system.resistances") ||
+          k.startsWith("system.reductions") ||
+          k.startsWith("system.immunities") ||
+          k.startsWith("system.vulnerabilities") ||
+          k.startsWith("system.creatureTypes") ||
+          k.startsWith("system.legacy") ||
+          k.startsWith("system.homunculusType") ||
+          k.startsWith("system.difficulty") ||
+          k.startsWith("system.biography") ||
+          k.startsWith("system.description") ||
+          k.startsWith("system.notes") ||
+          k.startsWith("system.lore") ||
+          k.startsWith("system.currency")
+        );
+      });
+
+      if (!allKnownKeys) {
+        return null;
+      }
+
+      if (hasHeaderOnlyChange && headerPart) parts.add(headerPart);
+      if (hasPersonagemChange) {
+        if (headerPart) parts.add(headerPart);
+        if (available.has("tabPersonagem")) parts.add("tabPersonagem");
+      }
+      if (hasBioChange && bioPart) parts.add(bioPart);
+      if (hasCurrencyChange) {
+        if (available.has("tabInventory")) parts.add("tabInventory");
+        if (available.has("tabPersonagem")) parts.add("tabPersonagem");
+      }
+
+      return parts.size > 0 ? Array.from(parts) : null;
+    }
+
+    if (renderContext === "createItem" || renderContext === "updateItem" || renderContext === "deleteItem") {
+      const items = Array.isArray(renderData) ? renderData : [renderData];
+      let hasInventoryItem = false;
+      let hasAbilityItem = false;
+
+      for (const itemData of items) {
+        const itemType = itemData?.type || this.actor.items.get(itemData?._id || itemData?.id || itemData)?.type;
+        if (!itemType) {
+          hasInventoryItem = true;
+          hasAbilityItem = true;
+          break;
+        }
+
+        if (["weapon", "armor", "equipment", "relic"].includes(itemType)) {
+          hasInventoryItem = true;
+        } else if (["ability", "feature", "path", "legacy"].includes(itemType)) {
+          hasAbilityItem = true;
+        } else {
+          hasInventoryItem = true;
+          hasAbilityItem = true;
+        }
+      }
+
+      if (hasInventoryItem) {
+        if (available.has("tabInventory")) parts.add("tabInventory");
+        if (available.has("tabPersonagem")) parts.add("tabPersonagem");
+        if (headerPart) parts.add(headerPart);
+      }
+      if (hasAbilityItem) {
+        if (available.has("tabAbilities")) parts.add("tabAbilities");
+        if (headerPart) parts.add(headerPart);
+        if (available.has("tabPersonagem")) parts.add("tabPersonagem");
+      }
+
+      return parts.size > 0 ? Array.from(parts) : null;
+    }
+
+    if (renderContext === "createActiveEffect" || renderContext === "updateActiveEffect" || renderContext === "deleteActiveEffect") {
+      if (available.has("tabEffects")) parts.add("tabEffects");
+      if (headerPart) parts.add(headerPart);
+      if (available.has("tabPersonagem")) parts.add("tabPersonagem");
+      return parts.size > 0 ? Array.from(parts) : null;
+    }
+
+    return null;
+  }
 
   /**
    * Executado quando a ficha é renderizada. Sincroniza abas e adiciona ouvintes de evento de menu de contexto.
@@ -659,7 +846,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
           </div>
           <div style="text-align: center;">
             <div style="font-size: 11px; color: var(--gaia-purple-dark); font-weight: bold;">Perda de PE (1d6)</div>
-            <div style="font-size: 16px; font-weight: bold; color: var(--gaia-purple-dark);"><i class="fa-solid fa-bolt"></i> -${peRoll.total} PE</div>
+            <div style="font-size: 16px; font-weight: bold; color: var(--gaia-purple-dark);">-${peRoll.total} PE</div>
             <div style="font-size: 10px; color: var(--gaia-text-dim);">Atual: ${newPe}</div>
           </div>
         </div>
@@ -836,6 +1023,56 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       action = item.system.action;
     }
     if (action) {
+      return await item.rollAction(action, { event, target });
+    }
+    return null;
+  }
+
+  /**
+   * Envia apenas o texto descritivo de uma Ação estruturada de um Item diretamente ao chat.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onRollActionText(event, target) {
+    event.preventDefault();
+    const itemId = target.dataset.itemId || target.closest("[data-item-id]")?.dataset.itemId;
+    const actionId = target.dataset.actionId;
+    const actionIndex = target.dataset.actionIndex ?? target.dataset.index;
+    const subIndex = target.dataset.subeffectIndex ?? target.closest("[data-subeffect-index]")?.dataset.subeffectIndex;
+    const item = this.actor.items.get(itemId);
+    if (!item) return null;
+
+    let action = null;
+    let sub = null;
+    if (subIndex !== undefined) {
+      sub = item.system?.subEffects?.[Number(subIndex)];
+    }
+
+    if (sub) {
+      if (actionId) action = sub.actions?.find(a => a.id === actionId);
+      if (!action && actionIndex !== undefined) action = sub.actions?.[Number(actionIndex)];
+    }
+
+    if (!action && actionId) {
+      action = item.system?.actions?.find(a => a.id === actionId);
+      if (!action && Array.isArray(item.system?.subEffects)) {
+        for (const s of item.system.subEffects) {
+          action = s.actions?.find(a => a.id === actionId);
+          if (action) break;
+        }
+      }
+    }
+    if (!action && actionIndex !== undefined && !sub) {
+      action = item.system?.actions?.[Number(actionIndex)];
+    }
+    if (!action && item.system?.action) {
+      action = item.system.action;
+    }
+    if (action) {
+      if (typeof item.rollActionText === "function") {
+        return await item.rollActionText(action);
+      }
       return await item.rollAction(action, { event, target });
     }
     return null;
@@ -1091,23 +1328,23 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     const activeEffectText = typeof ab.activeEffect === "string" ? ab.activeEffect : (ab.activeEffect?.text || "");
 
     const content = `
-      <div class="gaia-preludio chat-card item-card legacy-ability-card">
-        <header class="card-header flexrow" style="display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--gaia-purple-dark, #4a2e6b); padding-bottom: 4px; margin-bottom: 6px;">
-          <img src="icons/svg/book.svg" title="${ab.name}" width="32" height="32" style="border: none;"/>
-          <h3 class="item-name" style="margin: 0; font-family: var(--gaia-font-medieval, Georgia, serif); color: var(--gaia-purple-dark, #4a2e6b); font-size: 16px;">${ab.name}</h3>
+      <div class="gaia-ability-chat-card">
+        <header class="gaia-card-header">
+          <img src="icons/svg/book.svg" title="${ab.name}" width="32" height="32" />
+          <h3 class="gaia-card-title">${ab.name}</h3>
         </header>
-        <div class="card-content">
-          ${ab.description ? `<p style="margin-bottom: 6px;">${ab.description}</p>` : ""}
-          ${activeEffectText ? `<p style="color: var(--gaia-purple-dark, #4a2e6b); font-style: italic; margin-top: 4px;"><strong>Efeito:</strong> ${activeEffectText}</p>` : ""}
+        <div class="gaia-card-content">
+          ${ab.description ? `<p class="gaia-ability-description">${ab.description}</p>` : ""}
+          ${activeEffectText ? `<p class="gaia-ability-effect"><strong>Efeito:</strong> ${activeEffectText}</p>` : ""}
           ${activeEffectText ? `
-            <div style="margin-top: 6px;">
-              <button type="button" class="btn-chat-apply-effect" data-action="createEffect" data-actor-id="${this.actor.id}" data-ability-index="${index}" style="width: 100%; cursor: pointer; padding: 4px 8px; font-family: var(--gaia-font-medieval); font-weight: bold; background: var(--gaia-bg-banner); border: 1px solid var(--gaia-border-frame); border-radius: var(--gaia-radius); color: var(--gaia-text-parchment);">
+            <div class="gaia-ability-effect-btn-wrapper">
+              <button type="button" class="btn-chat-apply-effect" data-action="createEffect" data-actor-id="${this.actor.id}" data-ability-index="${index}">
                 <i class="fa-solid fa-sparkles"></i> Ativar Efeito (${ab.name})
               </button>
             </div>
           ` : ""}
         </div>
-        <footer class="card-footer" style="margin-top: 8px; font-size: 11px; font-style: italic; color: #666;">
+        <footer class="gaia-card-footer">
           <span>Habilidade de Legado (${this.actor.system?.legacy || "Legado"})</span>
         </footer>
       </div>
@@ -1397,6 +1634,49 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
   }
 
   /**
+   * Abre o diálogo para editar uma Defesa Inferior (Resistência, Imunidade, Vulnerabilidade, Redução).
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onEditDefense(event, target) {
+    const index = Number(target.dataset.index);
+    if (isNaN(index)) return;
+    
+    const type = target.dataset.defenseType; // "resistance", "immunity", "vulnerability", "reduction"
+    let listName = "";
+    let title = "";
+    let isReduction = false;
+
+    if (type === "resistance") {
+      listName = "damageResistance";
+      title = "Editar Resistência a Dano";
+    } else if (type === "immunity") {
+      listName = "damageImmunity";
+      title = "Editar Imunidade a Dano";
+    } else if (type === "vulnerability") {
+      listName = "damageVulnerability";
+      title = "Editar Vulnerabilidade a Dano";
+    } else if (type === "reduction") {
+      listName = "damageReduction";
+      title = "Editar Redução de Dano Fixa";
+      isReduction = true;
+    } else {
+      return;
+    }
+
+    const list = [...(this.actor.system[listName] ?? [])];
+    const currentData = list[index];
+    if (!currentData) return;
+
+    const data = await promptDefenseTraitDialog(title, isReduction, currentData);
+    if (!data) return;
+
+    list[index] = data;
+    await this.actor.update({ [`system.${listName}`]: list });
+  }
+
+  /**
    * Executa a rolagem de Defesa (Bloqueio ou Esquiva) do Ator.
    * @protected
    * @param {Event} event - Evento de clique
@@ -1593,7 +1873,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     }
 
     entry.value = entry.value === value ? value - 1 : value;
-    await this.actor.update({ "system.parameters": list });
+    const updates = { "system.parameters": list };
 
     if (paramKey === "agility") {
       const bonusList = [...(this.actor.system.parametersBonus ?? [])];
@@ -1610,7 +1890,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
         const index = bonusList.findIndex(b => b.attr === targetAttr);
         if (index !== -1) bonusList.splice(index, 1);
       }
-      await this.actor.update({ "system.parametersBonus": bonusList });
+      updates["system.parametersBonus"] = bonusList;
     }
 
     if (paramKey === "vigor") {
@@ -1628,8 +1908,10 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
         const index = bonusList.findIndex(b => b.attr === targetAttr);
         if (index !== -1) bonusList.splice(index, 1);
       }
-      await this.actor.update({ "system.parametersBonus": bonusList });
+      updates["system.parametersBonus"] = bonusList;
     }
+
+    await this.actor.update(updates);
   }
 
   /**
@@ -1666,7 +1948,8 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     }
 
     entry.value = entry.value === value ? value - 1 : value;
-    await this.actor.update({ "system.knowledge": list });
+    const updates = { "system.knowledge": list };
+
     if (knowKey === "perception") {
       const bonusList = [...(this.actor.system.parametersBonus ?? [])];
       const targetAttr = "passivePerception";
@@ -1682,8 +1965,10 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
         const index = bonusList.findIndex(b => b.attr === targetAttr);
         if (index !== -1) bonusList.splice(index, 1);
       }
-      await this.actor.update({ "system.parametersBonus": bonusList });
+      updates["system.parametersBonus"] = bonusList;
     }
+
+    await this.actor.update(updates);
   }
 
   /**
@@ -1774,7 +2059,16 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
   static _onToggleAbilityCollapse(event, target) {
     event.preventDefault();
     event.stopPropagation();
-    const card = target.closest(".ability-card-item");
+
+    // 1. Suporte para recolher / expandir sub-efeitos (.subeffect-display-block)
+    const subBlock = target.closest(".subeffect-display-block");
+    if (subBlock && (target.classList.contains("btn-toggle-ability-collapse") || target.closest(".btn-toggle-ability-collapse") || target.classList.contains("subeffect-display-header") || target.closest(".subeffect-display-header"))) {
+      subBlock.classList.toggle("is-collapsed");
+      return;
+    }
+
+    // 2. Suporte padrão para cards de habilidade/característica (.ability-card-item) e itens de criatura (.creature-item-card)
+    const card = target.closest(".ability-card-item, .creature-item-card");
     if (!card) return;
 
     card.classList.toggle("is-collapsed");
@@ -1783,7 +2077,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       this._collapsedAbilities = new Set();
     }
 
-    const key = card.dataset.itemId || card.dataset.index || card.querySelector(".ability-name-display")?.textContent?.trim();
+    const key = card.dataset.itemId || card.dataset.index || card.querySelector(".ability-name-display")?.textContent?.trim() || card.querySelector(".item-name")?.textContent?.trim();
     if (key) {
       if (card.classList.contains("is-collapsed")) {
         this._collapsedAbilities.add(key);
@@ -1808,7 +2102,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       || target.closest(".creature-items-list")
       || this.element;
 
-    const cards = container.querySelectorAll(".ability-card-item");
+    const cards = container.querySelectorAll(".ability-card-item, .creature-item-card");
     if (!cards.length) return;
 
     if (!this._collapsedAbilities) {

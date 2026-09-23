@@ -169,3 +169,61 @@
 .gaia-preludio.sheet.item.legado .legacy-description-textarea {
   min-height: 200px;
 }
+
+/* ==============================================================================
+ * CHAT CARD: HABILIDADE DE LEGADO
+ * ============================================================================== */
+
+.gaia-ability-chat-card .gaia-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid var(--gaia-purple-dark, #4a2e6b);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+.gaia-ability-chat-card .gaia-card-header img {
+  border: none;
+}
+
+.gaia-ability-chat-card .gaia-card-header .gaia-card-title {
+  margin: 0;
+  font-family: var(--gaia-font-medieval, Georgia, serif);
+  color: var(--gaia-purple-dark, #4a2e6b);
+  font-size: var(--gaia-font-base, 16px);
+}
+
+.gaia-ability-chat-card .gaia-card-content .gaia-ability-description {
+  margin-bottom: 6px;
+  font-size: var(--gaia-font-base);
+}
+
+.gaia-ability-chat-card .gaia-card-footer {
+  margin-top: 8px;
+  font-size: var(--gaia-font-base);
+  font-style: italic;
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-ability-chat-card .gaia-card-content .gaia-ability-effect {
+  color: var(--gaia-purple-dark, #4a2e6b);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.gaia-ability-chat-card .gaia-card-content .gaia-ability-effect-btn-wrapper {
+  margin-top: 6px;
+}
+
+.gaia-ability-chat-card .gaia-card-content .btn-chat-apply-effect {
+  width: 100%;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-family: var(--gaia-font-medieval);
+  font-weight: bold;
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
+}

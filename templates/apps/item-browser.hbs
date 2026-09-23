@@ -83,11 +83,15 @@
   <div class="browser-items-container">
     {{#if groupedItems.length}}
       {{#each groupedItems as |group|}}
-        <div class="browser-group-section {{#if group.title}}has-title{{/if}}" data-group-key="{{group.key}}">
+        <div class="browser-group-section {{#if group.title}}has-title{{/if}} {{#if group.iconImg}}book-group{{/if}}" data-group-key="{{group.key}}">
           {{#if group.title}}
             <div class="browser-path-header">
               <div class="browser-path-title-group">
-                <i class="{{group.icon}} browser-path-icon"></i>
+                {{#if group.iconImg}}
+                  <img class="browser-book-icon" src="{{group.iconImg}}" alt="{{group.shortName}}" />
+                {{else}}
+                  <i class="{{group.icon}} browser-path-icon"></i>
+                {{/if}}
                 <h3 class="browser-path-title">{{group.title}}</h3>
                 <span class="browser-path-count-badge">{{group.count}}</span>
               </div>

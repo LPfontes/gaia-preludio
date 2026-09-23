@@ -9,6 +9,7 @@ const { renderTemplate } = foundry.applications.handlebars;
 import { calculateHomunculusStats, getCreatureStatsByDifficulty, calculateLegacyNpcStats } from "../flow.mjs";
 import { promptKnowledgeSelectionDialog } from "./knowledge-dialog.mjs";
 import { GaiaItemBrowser } from "../../applications/item-browser.mjs";
+import { calculateHomunculariumBookBonuses, resolveBookBonusItemDocs, ensureHomunculariumAttacks } from "../homuncularium-rules.mjs";
 
 /**
  * Exibe o Assistente de Criação de Criatura (Wizard em 3 Etapas).
@@ -45,7 +46,7 @@ export async function promptCreatureWizardDialog(actor = null) {
     classes: ["gaia-preludio", "gaia-dialog", "gaia-dialog-creature-wizard"],
     window: { title },
     content,
-    position: { width: 800, height: "auto" },
+    position: { width: 800, height: "auto", top: 80 },
     render: (event, dialog) => {
       const html = dialog.element;
       const tabButtons = html.querySelectorAll(".gaia-dialog-tab-btn");
@@ -236,6 +237,36 @@ export async function promptCreatureWizardDialog(actor = null) {
             });
           }
         }
+
+        // --- Regra de Características Adicionais de Livro (Homuncularium) ---
+        const bookBonuses = calculateHomunculariumBookBonuses(chosenFeatures);
+        const bonusContainer = html.querySelector(".wizard-book-bonuses-container");
+        const bonusList = html.querySelector(".wizard-book-bonuses-list");
+        const bonusCount = html.querySelector(".wizard-book-bonuses-count");
+
+        if (bonusContainer) {
+          bonusContainer.style.display = bookBonuses.length ? "" : "none";
+        }
+        if (bonusCount) {
+          bonusCount.textContent = bookBonuses.length;
+        }
+        if (bonusList) {
+          if (!bookBonuses.length) {
+            bonusList.innerHTML = "";
+          } else {
+            bonusList.innerHTML = bookBonuses.map(bonus => `
+              <div class="book-bonus-pill">
+                <div class="chosen-feature-info">
+                  <img class="chosen-feature-img" src="${bonus.img || 'icons/svg/aura.svg'}" width="20" height="20" />
+                  <span class="chosen-feature-name">${bonus.bonusFeatureName}</span>
+                </div>
+                <span class="badge-book-bonus">
+                  <i class="fa-solid fa-sparkles"></i> ${bonus.bookName}
+                </span>
+              </div>
+            `).join("");
+          }
+        }
       };
 
       const btnOpenBrowser = html.querySelector(".btn-open-features-browser");
@@ -361,6 +392,23 @@ export async function promptCreatureWizardDialog(actor = null) {
           if (itemDocs.length) {
             await targetActor.createEmbeddedDocuments("Item", itemDocs);
             ui.notifications.info(`${itemDocs.length} característica(s) adicionada(s) à ficha!`);
+          }
+
+          // Aplica bônus automáticos de Livro do Homuncularium
+          const bookBonuses = calculateHomunculariumBookBonuses(chosenFeatures);
+          if (bookBonuses.length > 0) {
+            const bonusItemDocs = await resolveBookBonusItemDocs(bookBonuses);
+            if (bonusItemDocs.length) {
+              await targetActor.createEmbeddedDocuments("Item", bonusItemDocs);
+              const bonusNames = bookBonuses.map(b => b.bonusFeatureName).join(", ");
+              ui.notifications.info(`Características adicionais de Livro aplicadas: ${bonusNames}`);
+            }
+          }
+
+          // Aplica ataques automáticos do Homuncularium (Golpe Brutal e Evocação Mística)
+          const createdAttacks = await ensureHomunculariumAttacks(targetActor);
+          if (createdAttacks.length > 0) {
+            ui.notifications.info("Ataques do Homuncularium adicionados: Golpe Brutal e Evocação Mística.");
           }
         }
 
@@ -627,7 +675,7 @@ export async function promptLegacyNpcWizardDialog(actor = null) {
                 <input type="radio" name="selected_imp" value="${i}" ${currentIdx === i ? 'checked' : ''} style="margin-top: 3px;" />
                 <div style="flex: 1;">
                   <strong style="color: var(--gaia-gold-accent);">${imp.letter} ${imp.title}</strong>
-                  ${imp.description ? `<div style="font-size: var(--gaia-font-xs); color: var(--gaia-text-parchment); margin-top: 2px; line-height: 1.3;">${imp.description}</div>` : ''}
+                  ${imp.description ? `<div style="font-size: var(--gaia-font-base); color: var(--gaia-text-parchment); margin-top: 2px; line-height: 1.5;">${imp.description}</div>` : ''}
                 </div>
               </label>
             `).join("")}
@@ -669,10 +717,10 @@ export async function promptLegacyNpcWizardDialog(actor = null) {
         if (summaryAbil) {
           summaryAbil.textContent = chosenAbilities.length
             ? chosenAbilities.map(f => {
-                const imp = f.selectedImprovementIndex >= 0 && f.improvements?.[f.selectedImprovementIndex];
-                const impName = imp ? ` (+${imp.title})` : "";
-                return `${f.name}${impName}`;
-              }).join(", ")
+              const imp = f.selectedImprovementIndex >= 0 && f.improvements?.[f.selectedImprovementIndex];
+              const impName = imp ? ` (+${imp.title})` : "";
+              return `${f.name}${impName}`;
+            }).join(", ")
             : "Nenhuma selecionada";
         }
 

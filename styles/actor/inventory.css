@@ -168,6 +168,107 @@
   gap: 6px;
 }
 
+/* Rodapé de Peso Total do Inventário e Moedas */
+.inventory-weight-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 10px;
+  background: var(--gaia-bg-window);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+}
+
+.inventory-weight-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inventory-weight-display i {
+  color: var(--gaia-border-gold);
+  font-size: var(--gaia-font-base);
+  flex-shrink: 0;
+}
+
+.inventory-weight-label {
+  color: var(--gaia-text-muted);
+}
+
+.inventory-weight-value {
+  font-weight: 700;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  letter-spacing: 0.5px;
+}
+
+.inventory-currency {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.currency-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.currency-group .currency-label {
+  font-weight: 700;
+  padding: 5px;
+  border-radius: 60px;
+  background: #a7a7a7;
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.currency-mp .currency-label {
+  background: #c0c0c0; /* Prata */
+  color: #1a1a1a;
+  border: 1px solid #999;
+}
+
+.currency-mo .currency-label {
+  background: #ffd701; /* Ouro */
+  color: var(--gaia-text-parchment);
+  border: 1px solid #5a4a35;
+}
+
+.currency-mi .currency-label {
+  background: #912800; /* Imperial */
+  color: var(--gaia-text-parchment);
+  border: 1px solid #000000
+}
+
+.currency-group input {
+  width: 40px;
+  height: 22px;
+  text-align: center;
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  font-weight: 700;
+  font-size: var(--gaia-font-sm);
+  padding: 0;
+}
+
+.currency-group input:focus {
+  border-color: var(--gaia-purple);
+  outline: none;
+}
+
+
 .inventory-equipped-items-left-column,
 .inventory-equipped-items-middle-column,
 .inventory-equipped-items-right-column {

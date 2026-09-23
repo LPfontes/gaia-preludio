@@ -14,7 +14,7 @@
     <div class="form-fields">
       <select id="damage-type-select" name="damageType">
         {{#each damageTypes as |dt|}}
-          <option value="{{dt.key}}">{{dt.label}}</option>
+          <option value="{{dt.key}}" {{#if (eq dt.key ../editData.type)}}selected{{/if}}>{{dt.label}}</option>
         {{/each}}
       </select>
     </div>
@@ -27,7 +27,7 @@
         <strong>{{localize "GAIA.Dialog.ReductionValue"}}</strong>
       </label>
       <div class="form-fields">
-        <input type="number" id="reduction-value-input" name="value" value="1" min="1" />
+        <input type="number" id="reduction-value-input" name="value" value="{{#if editData.value}}{{editData.value}}{{else}}1{{/if}}" min="0" />
       </div>
     </div>
   {{/if}}

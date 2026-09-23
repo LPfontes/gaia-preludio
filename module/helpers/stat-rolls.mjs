@@ -13,6 +13,7 @@ const { FormDataExtended } = foundry.applications.ux || foundry.utils;
 import { GAIA } from "./config.mjs";
 import { flowParameter } from "./flow.mjs";
 import { getSelectedOrTargetToken, getTargetedTokens, getSelectedTokens } from "./token-helper.mjs";
+import { calculateWeaponDamage } from "./actor-context.mjs";
 
 /**
  * Função auxiliar para resgatar o valor e o rótulo traduzido de um parâmetro ou conhecimento.
@@ -504,25 +505,11 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
   const { value: paramValue, label: paramLabel } = getStatEntry(actor.system, "parameters", attrKey);
   const totalValue = paramValue + bonus;
 
-  // Formatação do Dano da Arma
-  let damageText = "";
-  let damageValue = 0;
-  let damageType = "";
-  const iSys = item.system ?? {};
-  if (iSys.damageType) {
-    if (typeof iSys.damageType === "object") {
-      damageValue = Number(iSys.damageType.value) || 0;
-      const rawType = iSys.damageType.type ?? "";
-      damageType = rawType;
-      const locKey = CONFIG.GAIA?.damageTypesFlat?.[rawType] ?? CONFIG.GAIA?.damageTypes?.[rawType] ?? rawType;
-      const dType = rawType ? (game.i18n.localize(locKey) || rawType) : "";
-      damageText = damageValue !== 0 && dType ? `${damageValue} ${dType}` : (damageValue || dType || "");
-    } else {
-      damageText = String(iSys.damageType);
-      const match = damageText.match(/(\d+)/);
-      if (match) damageValue = parseInt(match[1], 10);
-    }
-  }
+  // Formatação do Dano da Arma aplicando cálculo oficial e regras do Homuncularium
+  const calc = calculateWeaponDamage(item, actor);
+  const { totalDamage, baseDamage, damageType, damageText: calcDamageText, isFormula, formula, damageTypeLabel } = calc;
+  const damageValue = totalDamage || baseDamage;
+  const damageText = calcDamageText !== "-" ? calcDamageText : "";
 
   // Tenta localizar todos os tokens alvos mirados (Target com 'T') ou selecionados
   let targets = typeof getTargetedTokens === "function" ? getTargetedTokens(game.user) : Array.from(game.user?.targets ?? []);
@@ -533,6 +520,7 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
 
   // Constrói o HTML dos botões de rolar defesa dos alvos
   const defenseButtonsHtml = (attackTotal) => {
+    const appliedDamageAmount = isFormula ? 0 : damageValue;
     if (targets.length > 0) {
       return `
         <div class="weapon-defense-block">
@@ -551,7 +539,7 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
                               data-action="rollTargetDefense" 
                               data-defense-type="defensiveParameters"
                               data-attack-total="${attackTotal ?? ''}"
-                              data-damage-amount="${damageValue}"
+                              data-damage-amount="${appliedDamageAmount}"
                               data-damage-text="${damageText}"
                               data-damage-type="${damageType}"
                               data-target-token-id="${t.id}"
@@ -570,7 +558,7 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
                             data-action="rollTargetDefense" 
                             data-defense-type="agility"
                             data-attack-total="${attackTotal ?? ''}"
-                            data-damage-amount="${damageValue}"
+                            data-damage-amount="${appliedDamageAmount}"
                             data-damage-text="${damageText}"
                             data-damage-type="${damageType}"
                             data-target-token-id="${t.id}"
@@ -581,7 +569,7 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
                             data-action="rollTargetDefense" 
                             data-defense-type="block"
                             data-attack-total="${attackTotal ?? ''}"
-                            data-damage-amount="${damageValue}"
+                            data-damage-amount="${appliedDamageAmount}"
                             data-damage-text="${damageText}"
                             data-damage-type="${damageType}"
                             data-target-token-id="${t.id}"
@@ -600,14 +588,14 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
     return `
       <div class="weapon-defense-block">
         <span class="defense-label">
-          <i class="fa-solid fa-shield-halved"></i> Defesa do Alvo
+          <i class="fa-solid fa-shield-halved"></i> Reação de Defesa
         </span>
-        <div style="display: flex; gap: 6px; justify-content: center; width: 100%;">
+        <div style="display: flex; gap: 6px; justify-content: center; margin-top: 4px;">
           <button type="button" class="gaia-btn-roll-defense" 
                   data-action="rollTargetDefense" 
                   data-defense-type="agility"
                   data-attack-total="${attackTotal ?? ''}"
-                  data-damage-amount="${damageValue}"
+                  data-damage-amount="${appliedDamageAmount}"
                   data-damage-text="${damageText}"
                   data-damage-type="${damageType}">
             Esquiva
@@ -616,7 +604,7 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
                   data-action="rollTargetDefense" 
                   data-defense-type="block"
                   data-attack-total="${attackTotal ?? ''}"
-                  data-damage-amount="${damageValue}"
+                  data-damage-amount="${appliedDamageAmount}"
                   data-damage-text="${damageText}"
                   data-damage-type="${damageType}">
             Bloqueio
@@ -630,7 +618,15 @@ export async function rollWeaponAttack(actor, item, { event, target } = {}) {
   let weaponDamageHtml = null;
   if (damageText) {
     let targetsListHtml = "";
-    if (targets.length > 0) {
+    if (isFormula && formula) {
+      targetsListHtml = `
+        <div class="weapon-damage-formula-actions" style="margin-top: 6px; display: flex; justify-content: center;">
+          <button type="button" class="btn-action-chat btn-roll-action-damage" data-action="rollActionDamage" data-formula="${formula}" data-crit-formula="${formula}" data-damage-type="${damageTypeLabel || damageType}">
+            <i class="fa-solid fa-dice-d20"></i> Rolar Dano (${formula})
+          </button>
+        </div>
+      `;
+    } else if (targets.length > 0) {
       targetsListHtml = `
         <div class="weapon-damage-targets-list">
           <div style="font-size: 0.8em; font-weight: bold; text-transform: uppercase; color: var(--gaia-text-muted, #888); margin-bottom: 2px; text-align: left;">

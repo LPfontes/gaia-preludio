@@ -1,6 +1,6 @@
 import { GenericAbilityDataModel, SubAbilityDataModel, ImprovementDataModel, getGenericAbilitySchema } from "./AbilityClassesModel.mjs";
 
-const { NumberField, ArrayField, StringField, EmbeddedDataField } = foundry.data.fields;
+const { NumberField, ArrayField, StringField, BooleanField, EmbeddedDataField } = foundry.data.fields;
 
 /**
  * Data Model para Habilidades do sistema Gaia: Prelúdio.
@@ -12,6 +12,7 @@ export class AbilityBaseModel extends foundry.abstract.TypeDataModel {
     return {
       ...getGenericAbilitySchema(),
       requirement: new StringField({ required: false, initial: "" }),
+      hasAttributeBonus: new BooleanField({ required: false, initial: false }),
       types: new ArrayField(new StringField({ required: false }), { required: false, initial: [] }),
       quote: new StringField({ required: false, initial: "" }),
       numberTarget: new StringField({ required: false, initial: "" }),

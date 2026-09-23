@@ -8,34 +8,33 @@
 
 /* Grid Layout Principal da Ficha de Criatura */
 .creature-sheet .window-content {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "banner tabs"
+    "banner content";
+  gap: 8px;
   padding: 0;
   height: 100%;
   max-height: 100%;
   min-height: 0;
   overflow: visible !important;
   box-sizing: border-box;
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-text-parchment);
 }
 
 .gaia-creature-sheet {
-  display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
-  gap: 8px;
-  height: 100%;
-  max-height: 100%;
-  min-height: 0;
-  width: 100%;
-  box-sizing: border-box;
-  font-family: var(--gaia-font-medieval);
-  color: var(--gaia-text-parchment);
-  overflow: visible !important;
+  display: contents;
 }
 
 /* Banner de Criatura (Flâmula que vaza para fora da janela) */
 .gaia-creature-banner {
-  grid-area: auto !important;
+  grid-area: banner;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   background: var(--gaia-bg-banner);
   border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
@@ -44,12 +43,11 @@
   box-sizing: border-box;
   position: relative;
   width: 100% !important;
-  max-width: 340px;
+  max-width: 360px;
   min-height: calc(100% + 40px);
   height: auto;
   overflow: visible !important;
   z-index: 5;
-  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 97%, 0% 100%);
 }
 
 /* Linha de Dificuldade/Categoria no Banner */
@@ -199,6 +197,10 @@
   gap: 6px;
 }
 
+.creature-tabs {
+  grid-area: tabs;
+}
+
 .creature-tabs .tab-link:hover {
   color: var(--gaia-text-parchment);
   background: rgba(255, 255, 255, 0.08);
@@ -218,13 +220,22 @@
   overflow-y: auto;
 }
 
+.creature-sheet .tab,
+.creature-sheet .tab-content,
 .sheet-tab-body .tab,
 .sheet-tab-body .tab-content {
+  background: var(--gaia-bg-banner);
+  grid-area: content;
   display: none !important;
   flex-direction: column;
   gap: 8px;
+  min-height: 0;
+  overflow-y: auto;
+  height: 100%;
 }
 
+.creature-sheet .tab.active,
+.creature-sheet .tab-content.active,
 .sheet-tab-body .tab.active,
 .sheet-tab-body .tab-content.active {
   display: flex !important;
@@ -250,7 +261,7 @@
   border-bottom: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
   padding: 4px;
-  margin: 4px 0 ;
+  margin: 4px 0;
 }
 
 .creature-section .section-title {
@@ -261,6 +272,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.creature-section .section-actions {
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .knowledge-section {
@@ -375,9 +392,20 @@
 
 .creature-item-card .item-card-body {
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-muted);
-  padding-left: 32px;
+  color: var(--gaia-text-parchment);
   white-space: pre-wrap;
+}
+
+.creature-item-card.is-collapsed .item-card-body {
+  display: none;
+}
+
+.creature-item-card .btn-toggle-ability-collapse i {
+  transition: transform 0.2s ease;
+}
+
+.creature-item-card.is-collapsed .btn-toggle-ability-collapse i {
+  transform: rotate(-90deg);
 }
 
 .empty-section-placeholder {
@@ -419,7 +447,39 @@
   cursor: pointer;
   transition: transform 0.2s ease;
 }
-
+.bio-label{
+  font-size: var(--gaia-font-lg);
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bio-group{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 8px;
+}
+.bio-notes-textarea {
+  width: 100%;
+  flex: 1;
+  min-height: 380px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
+  font-family: inherit;
+  font-size: var(--gaia-font-md);
+  line-height: 1.5;
+  padding: 10px;
+  resize: vertical;
+  outline: none;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
 .creature-portrait:hover {
   transform: scale(1.03);
 }
@@ -463,4 +523,181 @@
 .creature-sheet-body .bio-group textarea:focus {
   border-color: var(--gaia-purple);
   box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5), 0 0 6px rgba(155, 89, 182, 0.4);
+}
+
+/* ==============================================================================
+ * SEÇÃO DE CARACTERÍSTICAS (features-section)
+ * ============================================================================== */
+
+.features-section .section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  background: linear-gradient(90deg, rgba(93, 28, 143, 0.15), transparent);
+  border-left: 3px solid var(--gaia-purple-dark, #5d1c8f);
+  border-radius: 0 var(--gaia-radius) var(--gaia-radius) 0;
+  margin-bottom: 6px;
+}
+
+.section-count-badge {
+  background: var(--gaia-purple-dark, #5d1c8f);
+  color: #ffffff;
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  padding: 2px 8px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Divisor entre Características e Habilidades */
+.features-abilities-divider {
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent,
+      var(--gaia-border-gold, #8c7355) 20%,
+      var(--gaia-border-gold, #8c7355) 80%,
+      transparent);
+  margin: 12px 8px;
+  opacity: 0.5;
+}
+
+/* Card de Característica — destaque visual sutil diferente de Habilidade */
+.feature-ability-card {
+  border-left-color: var(--gaia-purple-dark, #5d1c8f) !important;
+}
+
+.feature-ability-card .ability-card-header {
+  background: linear-gradient(135deg,
+      rgba(93, 28, 143, 0.08) 0%,
+      transparent 60%);
+}
+
+.feature-ability-card .meta-row-1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.feature-ability-card .meta-row-1 .meta-action {
+  color: var(--gaia-text-parchment);
+  font-weight: 600;
+}
+
+.feature-ability-card .meta-row-1 .meta-type {
+  color: var(--gaia-purple-dark);
+  font-weight: 600;
+}
+
+.feature-ability-card .meta-row-1 .meta-divider {
+  margin: 0 2px;
+}
+
+.weapon-damage-chip {
+  display: inline-block;
+  font-size: var(--gaia-font-base);
+  font-weight: 700;
+  margin-left: 8px;
+  padding: 2px 6px;
+  letter-spacing: 0.5px;
+}
+
+/* ==============================================================================
+ * BLOCO DE MODIFICADOR / BÔNUS DE ATRIBUTO DA CARACTERÍSTICA
+ * ============================================================================== */
+
+.feature-modifier-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-modifier-header {
+  display: flex;
+  align-items: center;
+  font-size: var(--gaia-font-md);
+  flex-wrap: wrap;
+}
+
+.feature-modifier-header .modifier-title {
+  font-weight: 700;
+  color: var(--gaia-text-parchment);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.feature-modifier-controls select.feature-modifier-target,
+.feature-modifier-header select.feature-modifier-target {
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  padding: 2px 6px;
+  font-size: var(--gaia-font-base);
+  cursor: pointer;
+}
+
+.feature-modifier-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.feature-modifier-controls .btn-modifier-step {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(54, 54, 54, 0.10);
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+}
+
+.feature-modifier-controls .btn-modifier-step:hover {
+  color: #fff;
+}
+
+.feature-modifier-controls input.feature-modifier-value {
+  width: 44px;
+  height: 22px;
+  text-align: center;
+  background: transparent;
+  color: var(--gaia-text-parchment);
+  border: none;
+  font-weight: 700;
+  font-size: var(--gaia-font-md);
+  padding: 0;
+}
+
+.feature-modifier-controls .btn-modifier-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  height: 22px;
+  font-size: var(--gaia-font-md);
+  cursor: pointer;
+  color: var(--gaia-text-parchment);
+  border: none;
+  background: transparent;
+}
+
+.feature-modifier-controls .btn-modifier-reset:hover {
+  color: var(--gaia-health);
+}
+
+.feature-modifier-tag {
+  font-size: var(--gaia-font-md);
+  font-weight: 700;
+  color: var(--gaia-purple-dark);
 }

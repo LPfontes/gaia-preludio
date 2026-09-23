@@ -70,6 +70,10 @@ Hooks.once("init", async () => {
     "systems/gaia-preludio/templates/item/relic.hbs",
     "systems/gaia-preludio/templates/dialog/roll-request-dialog.hbs",
     "systems/gaia-preludio/templates/actor/parts/creature-header.hbs",
+    "systems/gaia-preludio/templates/actor/parts/creature-tabs-nav.hbs",
+    "systems/gaia-preludio/templates/actor/parts/creature-personagem.hbs",
+    "systems/gaia-preludio/templates/actor/parts/creature-abilities.hbs",
+    "systems/gaia-preludio/templates/actor/parts/creature-bio.hbs",
     "systems/gaia-preludio/templates/apps/item-browser.hbs",
     "systems/gaia-preludio/templates/actor/parts/legacy-npc-header.hbs",
     "systems/gaia-preludio/templates/dialog/creature-wizard-dialog.hbs",
@@ -188,6 +192,12 @@ Hooks.once("init", async () => {
   // EN: Register system custom Document classes
   CONFIG.Actor.documentClass = /** @type {any} */ (GaiaActor);
   CONFIG.Item.documentClass = /** @type {any} */ (GaiaItem);
+
+  // PT: Configuração da iniciativa nativa do Foundry VTT
+  CONFIG.Combat.initiative = {
+    formula: "1d12 + @initiative",
+    decimals: 2
+  };
 
   // PT: Registra os DataModels para cada tipo de Actor
   // EN: Register DataModels for each Actor type

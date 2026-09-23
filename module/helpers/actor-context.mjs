@@ -7,6 +7,8 @@
  */
 
 import { GAIA } from "./config.mjs";
+import { getStatEntry } from "./stat-rolls.mjs";
+import { getHomunculariumDamageFormula } from "./homuncularium-rules.mjs";
 
 /**
  * Lista canônica dos 21 Legados Oficiais de Auroria.
@@ -140,9 +142,107 @@ export function resolveMasteries(system) {
 }
 
 /**
+ * Calcula o dano de um armamento com base na regra oficial de Gaia: Prelúdio:
+ * "O dano causado por um Armamento é igual ao seu Dano Base,
+ * mais o seu Dano Base adicionalmente para cada ponto no seu respectivo Parâmetro."
+ * Dano Total = DanoBase + (Parâmetro * DanoBase) = DanoBase * (1 + Parâmetro)
+ *
+ * @param {Item|object} item - Documento do Item ou dados da arma
+ * @param {Actor|null} [actor=null] - Documento do Ator proprietário (opcional, fallback item.actor)
+ * @returns {{
+ *   baseDamage: number,
+ *   paramValue: number,
+ *   paramLabel: string,
+ *   paramKey: string,
+ *   totalDamage: number,
+ *   damageType: string,
+ *   damageText: string,
+ *   damageTitle: string
+ * }}
+ */
+export function calculateWeaponDamage(item, actor = null) {
+  const iSys = item?.system ?? {};
+  const effectiveActor = actor || item?.actor || null;
+
+  // Ataques do Homuncularium (Golpe Brutal e Evocação Mística): 1d8 (ou 1d10 em Difícil/Extrema) por ponto de Poder
+  const isHomunculariumAttack = item?.flags?.["gaia-preludio"]?.isHomunculariumAttack ||
+    item?.name === "Golpe Brutal" ||
+    item?.name === "Evocação Mística";
+
+  if (isHomunculariumAttack) {
+    const dmg = getHomunculariumDamageFormula(effectiveActor, item);
+    return {
+      baseDamage: 1,
+      paramValue: dmg.power,
+      paramLabel: "Poder",
+      paramKey: "powerPoints",
+      totalDamage: 0,
+      isFormula: true,
+      formula: dmg.formula,
+      damageType: dmg.damageType,
+      damageTypeLabel: dmg.damageTypeLabel,
+      damageText: dmg.damageText,
+      damageTitle: `Dano do Homuncularium (${dmg.power} × ${dmg.die}): ${dmg.damageText}`
+    };
+  }
+
+  let baseDamage = 0;
+  let damageType = "";
+  if (iSys.damageType) {
+    if (typeof iSys.damageType === "object") {
+      baseDamage = Number(iSys.damageType.value) || 0;
+      damageType = iSys.damageType.type ?? "";
+    } else {
+      const match = String(iSys.damageType).match(/(\d+)/);
+      if (match) baseDamage = parseInt(match[1], 10);
+      damageType = String(iSys.damageType).replace(/^\d+\s*/, "").trim();
+    }
+  } else if (iSys.damage) {
+    const match = String(iSys.damage).match(/(\d+)/);
+    if (match) baseDamage = parseInt(match[1], 10);
+  }
+
+  const paramKey = String(iSys.attackParameter?.attribute || "precision").toLowerCase();
+
+  let paramValue = 0;
+  let paramLabel = paramKey;
+  if (effectiveActor?.system) {
+    const statEntry = getStatEntry(effectiveActor.system, "parameters", paramKey);
+    paramValue = Math.max(0, Number(statEntry.value) || 0);
+    paramLabel = statEntry.label || paramKey;
+  }
+
+  const totalDamage = baseDamage > 0 ? baseDamage + (paramValue * baseDamage) : 0;
+  const locKey = CONFIG.GAIA?.damageTypesFlat?.[damageType] ?? CONFIG.GAIA?.damageTypes?.[damageType] ?? damageType;
+  const dTypeLocalized = damageType ? (game.i18n.localize(locKey) || damageType) : "";
+
+  let damageText = "-";
+  if (totalDamage > 0) {
+    damageText = dTypeLocalized ? `${totalDamage} ${dTypeLocalized}` : String(totalDamage);
+  } else if (baseDamage > 0) {
+    damageText = dTypeLocalized ? `${baseDamage} ${dTypeLocalized}` : String(baseDamage);
+  }
+
+  const damageTitle = baseDamage > 0
+    ? `Dano Base: ${baseDamage} + (${paramValue} × ${baseDamage} [${paramLabel}]) = ${totalDamage || baseDamage}${dTypeLocalized ? ` (${dTypeLocalized})` : ""}`
+    : "";
+
+  return {
+    baseDamage,
+    paramValue,
+    paramLabel,
+    paramKey,
+    totalDamage,
+    damageType,
+    damageText,
+    damageTitle
+  };
+}
+
+/**
  * Formata os armamentos equipados do ator para exibição na tabela da ficha.
  * @param {Actor} actor - Documento do Ator
- * @returns {Array<{id: string, name: string, img: string, damage: string, range: string, properties: string}>}
+ * @returns {Array<{id: string, name: string, img: string, damage: string, damageTitle: string, range: string, properties: string, propertiesTitle: string}>}
  */
 export function resolveEquippedWeapons(actor) {
   return (actor.items ?? [])
@@ -150,19 +250,8 @@ export function resolveEquippedWeapons(actor) {
     .map(item => {
       const iSys = item.system ?? {};
 
-      // Formatação do Dano
-      let damageText = "-";
-      if (iSys.damageType) {
-        if (typeof iSys.damageType === "object") {
-          const dVal = iSys.damageType.value ?? "";
-          const rawType = iSys.damageType.type ?? "";
-          const locKey = CONFIG.GAIA?.damageTypesFlat?.[rawType] ?? CONFIG.GAIA?.damageTypes?.[rawType] ?? rawType;
-          const dType = rawType ? (game.i18n.localize(locKey) || rawType) : "";
-          damageText = dVal !== "" && dType ? `${dVal} ${dType}` : (dVal || dType || "-");
-        } else {
-          damageText = String(iSys.damageType);
-        }
-      }
+      // Formatação do Dano com cálculo de Parâmetro
+      const { damageText, damageTitle } = calculateWeaponDamage(item, actor);
 
       // Formatação do Alcance
       let rangeText = "-";
@@ -206,6 +295,7 @@ export function resolveEquippedWeapons(actor) {
         name: item.name,
         img: item.img,
         damage: damageText,
+        damageTitle,
         range: rangeText,
         properties: propsText,
         propertiesTitle: propsTitle
@@ -464,10 +554,11 @@ export function preparePersonagemContext(actor, context) {
  */
 export function prepareInventoryContext(actor, context) {
   const items = actor.items ?? [];
-  const formatItem = (item) => formatInventoryItem(item);
+  const formatItem = (item) => formatInventoryItem(item, actor);
   context.inventoryWeapons = items.filter(i => (i.type === "weapon" || i.system?.category === "weapon")).map(formatItem);
   context.inventoryArmor = items.filter(i => (i.type === "armor" || ["armor", "vestuary", "shield", "clothing"].includes(i.system?.category))).map(formatItem);
   context.inventoryRelics = items.filter(i => (i.type === "relic" || i.system?.category === "relic")).map(formatItem);
+  context.inventoryConsumables = items.filter(i => ["potion", "consumable", "toxic"].includes(i.system?.category)).map(formatItem);
   const nonInventoryTypes = ["ability", "legacy", "path", "feature", "weapon", "armor", "relic"];
   context.inventoryCommon = items.filter(i => !nonInventoryTypes.includes(i.type) && !["weapon", "armor", "vestuary", "shield", "clothing", "potion", "consumable", "toxic", "relic"].includes(i.system?.category)).map(formatItem);
 
@@ -484,6 +575,22 @@ export function prepareInventoryContext(actor, context) {
   context.isRelicOverloaded = isRelicOverloaded;
   context.relicOverloadAmount = relicOverloadAmount;
   context.relicPotencyPips = buildPips(Math.min(totalBoundPotency, maxBoundPotency), maxBoundPotency);
+
+  // PT: Peso total do inventário (soma de Unidades × Quantidade de todos os itens)
+  // EN: Total inventory weight (sum of Unity × Quantity for all inventory items)
+  const allInventoryItems = [
+    ...context.inventoryWeapons,
+    ...context.inventoryArmor,
+    ...context.inventoryRelics,
+    ...context.inventoryConsumables,
+    ...context.inventoryCommon
+  ];
+  const totalInventoryUnity = allInventoryItems.reduce((sum, item) => {
+    const u = Number(item.unity);
+    const q = Number(item.quantity ?? 1);
+    return sum + (isNaN(u) ? 0 : u * q);
+  }, 0);
+  context.totalInventoryUnity = totalInventoryUnity;
 
   return context;
 }
@@ -566,11 +673,15 @@ export function prepareAbilitiesContext(actor, context, collapsedSet = null) {
 
   const formatAbilityOrFeature = (item) => {
     const isFeature = item.type === "feature";
-    const rawCategory = item.system?.category || "";
+    const rawCategory = String(item.system?.category || "").trim();
+    const rawCatNorm = rawCategory.toLowerCase();
+    const isGenericType = rawCatNorm === "caracteristica" || rawCatNorm === "característica" || rawCatNorm === "feature" || rawCatNorm === "ability" || rawCatNorm === "habilidade";
+
     const categoryDict = isFeature ? config?.featureCategories : config?.abilityCategories;
-    const categoryLabel = rawCategory && categoryDict?.[rawCategory]
-      ? game.i18n.localize(categoryDict[rawCategory])
-      : (rawCategory || "");
+    let categoryLabel = "";
+    if (rawCategory && !isGenericType) {
+      categoryLabel = categoryDict?.[rawCatNorm] ? game.i18n.localize(categoryDict[rawCatNorm]) : rawCategory;
+    }
 
     const rawTypes = Array.isArray(item.system?.types) && item.system.types.length > 0
       ? item.system.types
@@ -579,14 +690,27 @@ export function prepareAbilitiesContext(actor, context, collapsedSet = null) {
     const firstType = localizedTypes[0] || "";
     const additionalTypes = localizedTypes.slice(1).join(" / ");
 
+    // Evita duplicar categoria caso seja idêntica ao primeiro tipo (ex: "Passiva")
+    if (categoryLabel && firstType && categoryLabel.toLowerCase() === firstType.toLowerCase()) {
+      categoryLabel = "";
+    }
+
     const rawAction = item.system?.typeAction || "";
     const actionLabel = rawAction && config?.actionType?.[rawAction]
       ? game.i18n.localize(config.actionType[rawAction])
       : (rawAction || "");
 
     const cost = item.system?.cost || "";
-    const metaParts = [cost, actionLabel, categoryLabel, firstType].filter(Boolean);
-    const metaRow1 = metaParts.join(" | ");
+
+    // Monta spans estilizados para a meta-row-1
+    const metaSpanParts = [];
+    if (cost) metaSpanParts.push(`<span class="meta-cost">${cost}</span>`);
+    if (actionLabel) metaSpanParts.push(`<span class="meta-action">${actionLabel}</span>`);
+    if (categoryLabel) metaSpanParts.push(`<span class="meta-category">${categoryLabel}</span>`);
+    if (firstType) metaSpanParts.push(`<span class="meta-type">${firstType}</span>`);
+
+    const dividerHtml = `<span class="meta-divider">|</span>`;
+    const metaRow1 = metaSpanParts.join(` ${dividerHtml} `);
 
     const rawImprovements = Array.isArray(item.system?.improvements) ? item.system.improvements : [];
     const activeImprovements = rawImprovements.filter(imp => typeof imp === "object" && Boolean(imp.active));
@@ -806,11 +930,17 @@ export function prepareActiveEffectCategories(doc) {
   };
 }
 
-export function formatInventoryItem(item) {
+export function formatInventoryItem(item, actor = null) {
   const iSys = item.system ?? {};
+  const effectiveActor = actor || item.actor || null;
 
   let damageText = "-";
-  if (iSys.damageType) {
+  let damageTitle = "";
+  if (item.type === "weapon" || iSys.category === "weapon" || Boolean(iSys.attackParameter)) {
+    const calc = calculateWeaponDamage(item, effectiveActor);
+    damageText = calc.damageText;
+    damageTitle = calc.damageTitle;
+  } else if (iSys.damageType) {
     if (typeof iSys.damageType === "object") {
       const dVal = iSys.damageType.value ?? "";
       const rawType = iSys.damageType.type ?? "";
@@ -894,6 +1024,7 @@ export function formatInventoryItem(item) {
     price: iSys.price || "-",
     block: iSys.block ?? "-",
     damage: damageText,
+    damageTitle,
     range: rangeText,
     properties: propsText,
     propertiesTitle: propsTitle,

@@ -24,7 +24,6 @@
 /* CABEÇALHO */
 .ability-card-header {
   text-align: center;
-  margin-bottom: 8px;
 }
 
 
@@ -97,8 +96,6 @@
   font-weight: bold;
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
-  margin: 4px 0;
-  padding-bottom: 6px;
 }
 
 .ability-meta-bar .meta-row-1 {
@@ -106,7 +103,33 @@
   align-items: center;
   justify-content: center;
   padding: 2px;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ability-meta-bar .meta-row-1 .meta-cost {
+  color: var(--gaia-energy);
+  font-weight: 700;
+}
+
+.ability-meta-bar .meta-row-1 .meta-action {
+  color: var(--gaia-text-parchment);
+  font-weight: 600;
+}
+
+.ability-meta-bar .meta-row-1 .meta-category {
+  color: var(--gaia-border-parchment);
+  font-weight: 600;
+}
+
+.ability-meta-bar .meta-row-1 .meta-type {
+  color: var(--gaia-purple-dark);
+  font-weight: 600;
+}
+
+.ability-meta-bar .meta-row-1 .meta-divider {
+  color: var(--gaia-border-parchment);
+  margin: 0 2px;
 }
 
 .ability-meta-bar .meta-row-2 {
@@ -299,6 +322,30 @@
   gap: 6px;
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-primary);
+}
+
+.has-attribute-bonus-field {
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+}
+
+.has-attribute-bonus-field label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--gaia-font-sm, 12px);
+  font-weight: bold;
+  color: var(--gaia-purple-dark, #5d1c8f);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.has-attribute-bonus-field input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--gaia-purple, #7c3aed);
+  margin: 0;
 }
 
 .target-field label,
@@ -1026,15 +1073,14 @@
 .btn-item-control {
   width: 30px;
   height: 30px;
-  border-radius: var(--gaia-radius);
-  border: 1px solid var(--gaia-border-frame);
-  background: var(--gaia-bg-input);
-  color: #ffffff;
+  border: none;
+  background: transparent;
+  color: var(--gaia-text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 11px;
+  font-size: var(--gaia-font-md);
   transition: all 0.15s ease;
 }
 
@@ -1151,30 +1197,26 @@
 }
 
 .ability-body-text {
+  display: flex;
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
-  line-height: 1.4;
-  margin-bottom: 8px;
+  line-height: 1.5;
   white-space: pre-wrap;
 }
 
 .tag-target,
 .tag-range {
   display: inline-block;
-  background: rgba(140, 115, 85, 0.12);
-  border: 1px solid var(--gaia-border-gold);
+  background: rgba(54, 54, 54, 0.12);
   color: var(--gaia-text-parchment);
   border-radius: var(--gaia-radius);
   padding: 2px 6px;
   font-size: var(--gaia-font-base);
   margin-right: 4px;
-  margin-top: 4px;
 }
 
 .subeffects-display-section {
-  margin-top: 10px;
   border-top: 1px solid var(--gaia-border-subtle);
-  padding-top: 6px;
 }
 
 .subeffect-display-block {
@@ -1183,6 +1225,18 @@
   border-radius: var(--gaia-radius);
   padding: 6px;
   margin-bottom: 6px;
+  transition: all 0.2s ease;
+}
+
+.subeffect-display-block.is-collapsed .subeffect-divider,
+.subeffect-display-block.is-collapsed .subeffect-desc-text,
+.subeffect-display-block.is-collapsed .subeffect-note-text,
+.subeffect-display-block.is-collapsed .subeffect-actions-list {
+  display: none;
+}
+
+.subeffect-display-block.is-collapsed .btn-toggle-ability-collapse .toggle-icon {
+  transform: rotate(-90deg);
 }
 
 .subeffect-display-header {
@@ -1193,6 +1247,8 @@
   font-size: var(--gaia-font-base);
   color: var(--gaia-purple-dark);
   gap: 6px;
+  cursor: pointer;
+  user-select: none;
 }
 
 .subeffect-display-header .subeffect-identity {
@@ -1215,14 +1271,13 @@
 .subeffect-cost-text {
   background: var(--gaia-purple-dark);
   color: #ffffff;
-  padding: 1px 6px;
+  padding: 2px 6px;
   font-size: var(--gaia-font-xs);
   font-family: var(--gaia-font-medieval);
   font-weight: 700;
   border-radius: var(--gaia-radius);
   display: inline-flex;
   align-items: center;
-  line-height: 1.2;
 }
 
 .subeffect-divider {
@@ -1234,30 +1289,20 @@
 .subeffect-desc-text {
   font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
-  line-height: 1.4;
 }
 
 .subeffect-note-text {
   font-size: var(--gaia-font-base);
   font-style: italic;
   color: var(--gaia-text-parchment);
-  margin-top: 2px;
 }
 
 .subeffect-display-block .subeffect-actions-list {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-top: 6px;
-  padding-top: 4px;
-  border-top: 1px dashed var(--gaia-border-subtle);
 }
 
-.improvements-display-section {
-  margin-top: 6px;
-  border-top: 1px dashed var(--gaia-purple-dark);
-  padding-top: 6px;
-}
 
 .improvements-divider-title {
   text-align: center;
@@ -1290,8 +1335,6 @@
  * AÇÕES DA HABILIDADE NA FICHA DO ATOR (.ability-actions-section)
  * ============================================================================== */
 .gaia-ability-card .ability-actions-section {
-  margin-top: 6px;
-  padding-top: 5px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1300,10 +1343,7 @@
 .gaia-ability-card .ability-action-item {
   display: flex;
   flex-direction: column;
-  background: rgba(0, 0, 0, 0.04);
-  border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
   border-radius: var(--gaia-radius);
-  padding: 4px 6px;
   gap: 3px;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
@@ -1332,6 +1372,34 @@
   font-size: var(--gaia-font-base);
   font-weight: 700;
   color: var(--gaia-purple-dark);
+}
+
+.gaia-ability-card .ability-action-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gaia-ability-card .ability-action-controls .btn-roll-ability {
+  width: 26px;
+  height: 24px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
+  font-size: 11px;
+  transition: all 0.15s ease;
+}
+
+.gaia-ability-card .ability-action-controls .btn-roll-ability:hover {
+  background: var(--gaia-purple);
+  color: #fff;
+  border-color: var(--gaia-purple-dark);
 }
 
 .gaia-ability-card .btn-roll-ability-action {

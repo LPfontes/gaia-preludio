@@ -36,13 +36,17 @@ export function getDamageTypeOptions() {
  * @param {boolean} [isReduction=false] - Se true, inclui campo de valor numérico
  * @returns {Promise<{type: string, value?: number} | null>}
  */
-export async function promptDefenseTraitDialog(title, isReduction = false) {
+export async function promptDefenseTraitDialog(title, isReduction = false, editData = null) {
   const damageTypes = getDamageTypeOptions();
   const dialogHtml = await renderTemplate("systems/gaia-preludio/templates/dialog/defense-trait-dialog.hbs", {
     title,
     damageTypes,
-    isReduction
+    isReduction,
+    editData
   });
+
+  const btnLabel = editData ? "Salvar" : "Adicionar";
+  const btnIcon = editData ? "fa-solid fa-save" : "fa-solid fa-plus";
 
   const result = await DialogV2.wait({
     classes: ["gaia-preludio", "gaia-dialog", "defense-dialog"],
@@ -52,8 +56,8 @@ export async function promptDefenseTraitDialog(title, isReduction = false) {
     buttons: [
       {
         action: "confirm",
-        label: "Adicionar",
-        icon: "fa-solid fa-plus",
+        label: btnLabel,
+        icon: btnIcon,
         default: true,
         callback: (event, button, dialog) => {
           const form = dialog.element.querySelector("form");

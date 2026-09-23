@@ -27,30 +27,30 @@ export class CharacterLegacySheet extends GaiaBaseActorSheet {
   static PARTS = {
     sidebar: {
       template: "systems/gaia-preludio/templates/actor/parts/actor-header.hbs",
-      scrollable: [".gaia-actor-banner", ".sheet-sidebar-header"]
+      scrollable: ["", ".gaia-actor-banner", ".sheet-sidebar-header"]
     },
     tabs: {
       template: "systems/gaia-preludio/templates/actor/parts/tabs-nav.hbs"
     },
     tabPersonagem: {
       template: "systems/gaia-preludio/templates/actor/parts/actor-personagem.hbs",
-      scrollable: [".tab"]
+      scrollable: ["", ".personagem-tab-content"]
     },
     tabInventory: {
       template: "systems/gaia-preludio/templates/actor/parts/inventory.hbs",
-      scrollable: [".tab-inventory-content", ".inventory-column-container"]
+      scrollable: ["", ".tab-inventory-content", ".inventory-column-container"]
     },
     tabAbilities: {
       template: "systems/gaia-preludio/templates/actor/parts/abilities.hbs",
-      scrollable: [".tab-abilities-content", ".abilities-panel"]
+      scrollable: ["", ".tab-abilities-content", ".abilities-panel"]
     },
     tabBiografia: {
       template: "systems/gaia-preludio/templates/actor/parts/bio.hbs",
-      scrollable: [".tab-bio-content", ".bio-content"]
+      scrollable: ["", ".tab-bio-content", ".bio-content"]
     },
     tabEffects: {
       template: "systems/gaia-preludio/templates/actor/parts/effects.hbs",
-      scrollable: [".tab-effects-content", ".actor-effects-panel"]
+      scrollable: ["", ".tab-effects-content", ".actor-effects-panel"]
     }
   };
 

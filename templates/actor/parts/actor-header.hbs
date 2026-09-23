@@ -199,9 +199,9 @@
       <div class="defense-tags">
         {{#each system.damageResistance as |res index|}}
         <div class="defense-tag">
-          <select name="system.damageResistance.{{index}}.type">
-            {{selectOptions ../config.damageTypesFlat selected=res.type localize=true}}
-          </select>
+          <span class="defense-tag-label" data-action="editDefense" data-defense-type="resistance" data-index="{{index}}" title="Editar Resistência">
+            {{localize (lookup ../config.damageTypesFlat res.type)}}
+          </span>
           <button type="button" class="btn-tag-remove" data-action="removeResistance" data-index="{{index}}"
             data-tooltip="{{localize 'GAIA.Banner.Remove'}}">
             <i class="fa-solid fa-xmark"></i>
@@ -225,9 +225,9 @@
       <div class="defense-tags">
         {{#each system.damageImmunity as |imm index|}}
         <div class="defense-tag">
-          <select name="system.damageImmunity.{{index}}.type">
-            {{selectOptions ../config.damageTypesFlat selected=imm.type localize=true}}
-          </select>
+          <span class="defense-tag-label" data-action="editDefense" data-defense-type="immunity" data-index="{{index}}" title="Editar Imunidade">
+            {{localize (lookup ../config.damageTypesFlat imm.type)}}
+          </span>
           <button type="button" class="btn-tag-remove" data-action="removeImmunity" data-index="{{index}}"
             data-tooltip="{{localize 'GAIA.Banner.Remove'}}">
             <i class="fa-solid fa-xmark"></i>
@@ -258,11 +258,10 @@
       <div class="defense-tags">
         {{#each system.damageReduction as |red index|}}
         <div class="defense-tag reduction-tag">
-          <select class="reduction-type" name="system.damageReduction.{{index}}.type">
-            {{selectOptions ../config.damageTypesFlat selected=red.type localize=true}}
-          </select>
-          <input type="number" class="reduction-val" name="system.damageReduction.{{index}}.value" value="{{red.value}}"
-            placeholder="0" />
+          <span class="defense-tag-label reduction-type" data-action="editDefense" data-defense-type="reduction" data-index="{{index}}" title="Editar Redução">
+            {{localize (lookup ../config.damageTypesFlat red.type)}}
+          </span>
+          <span class="reduction-val-label" data-action="editDefense" data-defense-type="reduction" data-index="{{index}}">{{red.value}}</span>
           <button type="button" class="btn-tag-remove" data-action="removeReduction" data-index="{{index}}"
             data-tooltip="{{localize 'GAIA.Banner.Remove'}}">
             <i class="fa-solid fa-xmark"></i>

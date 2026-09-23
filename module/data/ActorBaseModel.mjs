@@ -77,6 +77,14 @@ class ActorBaseDataModel extends BaseDataModel {
       // EN: Inventory item references or IDs
       inventario: new ArrayField(new StringField({ required: true }), { required: true, initial: [] }),
 
+      // PT: Sistema monetário
+      // EN: Currency system
+      currency: new SchemaField({
+        mp: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
+        mo: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
+        mi: new NumberField({ required: true, integer: true, min: 0, initial: 0 })
+      }),
+
       // PT: Lista de resistências a dano (tipo + valor)
       // EN: List of damage resistances (type + amount)
       damageResistance: new ArrayField(

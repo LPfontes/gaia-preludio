@@ -7,7 +7,7 @@
     {{!-- Navegação das Abas --}}
     <nav class="sheet-tabs tabs creature-tabs" data-group="primary">
       <a class="item tab-link active" data-tab="personagem" data-group="primary" data-action="tab">
-         {{localize "GAIA.title.Character"}}
+        {{localize "GAIA.title.Character"}}
       </a>
       <a class="item tab-link" data-tab="habilidades" data-group="primary" data-action="tab">
         {{localize "GAIA.title.Abilities"}}
@@ -32,10 +32,11 @@
           </h4>
           <div class="creature-types-grid">
             {{#each creatureTypesList}}
-              <label class="creature-type-checkbox-label">
-                <input type="checkbox" name="system.creatureTypes" value="{{this.key}}" {{#if this.checked}}checked{{/if}} />
-                <span class="type-label-text">{{this.label}}</span>
-              </label>
+            <label class="creature-type-checkbox-label">
+              <input type="checkbox" name="system.creatureTypes" value="{{this.key}}" {{#if
+                this.checked}}checked{{/if}} />
+              <span class="type-label-text">{{this.label}}</span>
+            </label>
             {{/each}}
           </div>
         </div>
@@ -47,72 +48,109 @@
               {{localize "GAIA.Creature.AttacksTitle"}}
             </h4>
             <div class="section-actions">
-              <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="weapon" data-category="weapon" title="{{localize 'GAIA.Inventory.AddWeapon'}}">
+              <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="weapon"
+                data-category="weapon" title="{{localize 'GAIA.Inventory.AddWeapon'}}">
                 <i class="fa-solid fa-plus"></i>
               </button>
             </div>
           </div>
+
           <div class="creature-items-list">
             {{#each weapons as |weapon|}}
-              <div class="creature-item-card weapon-card" data-item-id="{{weapon.id}}">
-                <div class="item-card-header">
-                  <img class="item-icon" src="{{weapon.img}}" data-action="promptItemAction" data-item-id="{{weapon.id}}" role="button" alt="{{weapon.name}}" />
-                  <span class="item-name" data-action="promptItemAction" data-item-id="{{weapon.id}}" role="button">{{weapon.name}}</span>
-                  <div class="item-actions">
-                    <button type="button" class="btn-item-icon" data-action="promptItemAction" data-item-id="{{weapon.id}}" title="{{localize 'GAIA.title.SendToChat'}}">
-                      <i class="fa-solid fa-dice-d20"></i>
-                    </button>
-                    <button type="button" class="btn-item-icon" data-action="openItem" data-item-id="{{weapon.id}}" title="{{localize 'GAIA.title.EditItem'}}">
-                      <i class="fa-solid fa-pen-to-square"></i>
-                    </button>
-                    <button type="button" class="btn-item-icon danger" data-action="deleteItem" data-item-id="{{weapon.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
+            <div class="creature-item-card weapon-card {{#if weapon.isCollapsed}}is-collapsed{{/if}}"
+              data-item-id="{{weapon.id}}">
+              <div class="item-card-header">
+                <img class="item-icon" src="{{weapon.img}}" data-action="promptItemAction" data-item-id="{{weapon.id}}"
+                  role="button" alt="{{weapon.name}}" />
+                <span class="item-name" data-action="promptItemAction" data-item-id="{{weapon.id}}" role="button">
+                  {{weapon.name}}
+                  {{#if weapon.damageText}}
+                  <span class="weapon-damage-chip">{{weapon.damageText}}</span>
+                  {{/if}}
+                </span>
+                <div class="item-actions">
+                  <button type="button" class="btn-item-icon" data-action="promptItemAction"
+                    data-item-id="{{weapon.id}}" title="{{localize 'GAIA.title.SendToChat'}}">
+                    <i class="fa-solid fa-dice-d20"></i>
+                  </button>
+                  <button type="button" class="btn-item-icon" data-action="openItem" data-item-id="{{weapon.id}}"
+                    title="{{localize 'GAIA.title.EditItem'}}">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" class="btn-item-icon danger" data-action="deleteItem"
+                    data-item-id="{{weapon.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                  <button type="button" class="btn-item-control btn-toggle-ability-collapse"
+                    data-action="toggleAbilityCollapse" data-item-id="{{weapon.id}}" title="Expandir/Recolher">
+                    <i class="fa-solid fa-chevron-down"></i>
+                  </button>
                 </div>
-                {{#if weapon.system.description}}
-                  <div class="item-card-body">{{{weapon.system.description}}}</div>
-                {{/if}}
               </div>
+              {{#if weapon.system.description}}
+              <div class="item-card-body">{{{weapon.system.description}}}</div>
+              {{/if}}
+            </div>
             {{else}}
-              <div class="empty-section-placeholder">{{localize "GAIA.Creature.EmptyAttacks"}}</div>
+            <div class="empty-section-placeholder">{{localize "GAIA.Creature.EmptyAttacks"}}</div>
             {{/each}}
           </div>
         </div>
 
+
         {{!-- C) Sessão de Inventário e Tesouros --}}
         <div class="creature-section inventory-section">
-          <div class="section-header">
+          <div class="section-header" style="gap: 8px; flex-wrap: wrap;">
             <h4 class="section-title">
               {{localize "GAIA.Creature.TreasuresTitle"}}
             </h4>
+
+            <div class="inventory-currency" style="margin-left: auto;">
+              <div class="currency-group currency-mp" title="Moeda de Prata">
+                <span class="currency-label">MP</span>
+                <input type="text" name="system.currency.mp" value="{{system.currency.mp}}" data-dtype="Number" />
+              </div>
+              <div class="currency-group currency-mo" title="Moeda de Ouro">
+                <span class="currency-label">MO</span>
+                <input type="text" name="system.currency.mo" value="{{system.currency.mo}}" data-dtype="Number" />
+              </div>
+              <div class="currency-group currency-mi" title="Moeda Imperial">
+                <span class="currency-label">MI</span>
+                <input type="text" name="system.currency.mi" value="{{system.currency.mi}}" data-dtype="Number" />
+              </div>
+            </div>
+
             <div class="section-actions">
-              <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="equipment" title="{{localize 'GAIA.Creature.AddItem'}}">
+              <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="equipment"
+                title="{{localize 'GAIA.Creature.AddItem'}}">
                 <i class="fa-solid fa-plus"></i>
               </button>
             </div>
           </div>
           <div class="creature-items-list">
             {{#each inventory as |item|}}
-              <div class="creature-item-card equipment-card" data-item-id="{{item.id}}">
-                <div class="item-card-header">
-                  <img class="item-icon" src="{{item.img}}" data-action="openItem" data-item-id="{{item.id}}" alt="{{item.name}}" />
-                  <span class="item-name" data-action="openItem" data-item-id="{{item.id}}">{{item.name}}</span>
-                  <div class="item-actions">
-                    <button type="button" class="btn-item-icon" data-action="openItem" data-item-id="{{item.id}}" title="{{localize 'GAIA.title.EditItem'}}">
-                      <i class="fa-solid fa-pen-to-square"></i>
-                    </button>
-                    <button type="button" class="btn-item-icon danger" data-action="deleteItem" data-item-id="{{item.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
+            <div class="creature-item-card equipment-card" data-item-id="{{item.id}}">
+              <div class="item-card-header">
+                <img class="item-icon" src="{{item.img}}" data-action="openItem" data-item-id="{{item.id}}"
+                  alt="{{item.name}}" />
+                <span class="item-name" data-action="openItem" data-item-id="{{item.id}}">{{item.name}}</span>
+                <div class="item-actions">
+                  <button type="button" class="btn-item-icon" data-action="openItem" data-item-id="{{item.id}}"
+                    title="{{localize 'GAIA.title.EditItem'}}">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" class="btn-item-icon danger" data-action="deleteItem" data-item-id="{{item.id}}"
+                    title="{{localize 'GAIA.title.DeleteItem'}}">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
                 </div>
-                {{#if item.system.description}}
-                  <div class="item-card-body">{{{item.system.description}}}</div>
-                {{/if}}
               </div>
+              {{#if item.system.description}}
+              <div class="item-card-body">{{{item.system.description}}}</div>
+              {{/if}}
+            </div>
             {{else}}
-              <div class="empty-section-placeholder">{{localize "GAIA.Creature.EmptyTreasures"}}</div>
+            <div class="empty-section-placeholder">{{localize "GAIA.Creature.EmptyTreasures"}}</div>
             {{/each}}
           </div>
         </div>
@@ -120,186 +158,354 @@
 
       {{!-- ABA 2: HABILIDADES --}}
       <div class="tab tab-content" data-tab="habilidades" data-group="primary">
+
+        {{!-- SEÇÃO: CARACTERÍSTICAS --}}
+        {{#if features.length}}
+        <div class="creature-section abilities-section features-section">
+          <div class="section-header">
+            <h4 class="section-title">
+              {{localize "GAIA.Creature.FeaturesTitle"}}
+            </h4>
+            <span class="section-count-badge">{{features.length}}</span>
+            <button type="button" class="btn-toggle-all-abilities" data-action="toggleAllAbilitiesCollapse"
+              title="Recolher / Expandir Todas as Habilidades" style="margin-left: 8px;">
+              <i class="fa-solid fa-angles-up-down"></i>
+            </button>
+          </div>
+          <div class="creature-items-list abilities-list-grid" style="padding: 0;">
+            {{#each features as |ability|}}
+            <div class="ability-card-item feature-card-item {{#if ability.isCollapsed}}is-collapsed{{/if}}"
+              data-item-id="{{ability.id}}">
+              <!-- CONTROLES -->
+              <div class="ability-card-controls">
+                <button type="button" class="btn-item-control btn-roll-ability" data-action="rollItem"
+                  data-item-id="{{ability.id}}" title="{{localize 'GAIA.title.SendToChat'}}">
+                  <i class="fas fa-comment-alt"></i>
+                </button>
+                <button type="button" class="btn-item-control btn-edit-ability" data-action="openItem"
+                  data-item-id="{{ability.id}}" title="{{localize 'GAIA.title.EditItem'}}">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn-item-control btn-delete-ability" data-action="deleteItem"
+                  data-item-id="{{ability.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <button type="button" class="btn-item-control btn-toggle-ability-collapse"
+                  data-action="toggleAbilityCollapse" title="Recolher / Expandir">
+                  <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                </button>
+              </div>
+
+              <!-- CARTA DE CARACTERÍSTICA -->
+              <div class="gaia-ability-card actor-sheet-card feature-ability-card">
+                <div class="ability-card-header" data-action="toggleAbilityCollapse"
+                  title="Clique para recolher ou expandir">
+                  <div class="ability-title-row">
+                    <img class="ability-icon" src="{{ability.img}}" data-action="openItem" data-item-id="{{ability.id}}"
+                      title="{{ability.name}}" />
+                    <h2 class="ability-name-display">{{ability.name}}</h2>
+                  </div>
+                  {{#if (or ability.metaRow1 ability.hasAdditionalTypes)}}
+                  <div class="ability-meta-bar">
+                    {{#if ability.metaRow1}}
+                    <div class="meta-row-1">{{{ability.metaRow1}}}</div>
+                    {{/if}}
+                    {{#if ability.hasAdditionalTypes}}
+                    <div class="meta-row-2">{{ability.additionalTypes}}</div>
+                    {{/if}}
+                  </div>
+                  {{/if}}
+                </div>
+
+                <div class="ability-card-body">
+                  {{#if ability.system.range}}
+                  <span class="tag-range"><strong>{{localize "GAIA.Ability.Range"}}:</strong>
+                    {{ability.system.range}}</span>
+                  {{/if}}
+                  {{#if ability.system.duration}}
+                  <span class="tag-duration"><strong>{{localize "GAIA.Ability.Duration"}}:</strong>
+                    {{ability.system.duration}}</span>
+                  {{/if}}
+                  <div class="ability-body-text">
+                    {{#if ability.system.description}}
+                    <p>{{{ability.system.description}}}</p>
+                    {{/if}}
+                  </div>
+
+                  {{!-- BLOCO DE MODIFICADOR / BÔNUS DE ATRIBUTO DA CARACTERÍSTICA --}}
+                  {{#if ability.hasAttributeBonus}}
+                  <div class="feature-modifier-box">
+                    <div class="feature-modifier-header">
+                      <span class="modifier-title">
+                        Bônus em Atributo:
+                      </span>
+
+                      <div class="feature-modifier-controls">
+                        <select class="feature-modifier-target" data-action="setFeatureModifierTarget"
+                          data-item-id="{{ability.id}}">
+                          <option value="">- Nenhum -</option>
+                          <option value="offensiveParameters" {{#if (eq ability.modifierTarget "offensiveParameters"
+                            )}}selected{{/if}}>Parâmetros Ofensivos</option>
+                          <option value="defensiveParameters" {{#if (eq ability.modifierTarget "defensiveParameters"
+                            )}}selected{{/if}}>Parâmetros Defensivos</option>
+                          <option value="movement" {{#if (eq ability.modifierTarget "movement" )}}selected{{/if}}>
+                            Deslocamento</option>
+                          <option value="block" {{#if (eq ability.modifierTarget "block" )}}selected{{/if}}>Bloqueio
+                          </option>
+                        </select>
+                        {{#if ability.modifierTarget}}
+                        <button type="button" class="btn-modifier-step" data-action="stepFeatureModifier"
+                          data-item-id="{{ability.id}}" data-step="-1" title="Diminuir Bônus">-</button>
+                        <input type="number" class="feature-modifier-value" data-action="changeFeatureModifierValue"
+                          data-item-id="{{ability.id}}" value="{{ability.modifierValue}}" min="0"
+                          max="{{ability.modifierMax}}" />
+                        <button type="button" class="btn-modifier-step" data-action="stepFeatureModifier"
+                          data-item-id="{{ability.id}}" data-step="1" title="Aumentar Bônus">+</button>
+                        <button type="button" class="btn-modifier-reset" data-action="resetFeatureModifier"
+                          data-item-id="{{ability.id}}" title="Zerar Bônus">
+                          <i class="fa-solid fa-rotate-left"></i> Zerar
+                        </button>
+                        {{/if}}
+                      </div>
+                      {{#if ability.modifierTarget}}
+                      <span class="feature-modifier-tag">+{{ability.modifierValue}} em {{ability.modifierTargetLabel}}
+                        (Máx: {{ability.modifierMax}})</span>
+                      {{/if}}
+                    </div>
+                  </div>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+
+        <div class="features-abilities-divider"></div>
+        {{/if}}
+
+        {{!-- SEÇÃO: HABILIDADES --}}
         <div class="creature-section abilities-section">
           <div class="section-header">
             <h4 class="section-title">
               {{localize "GAIA.Creature.AbilitiesTitle"}}
             </h4>
             <div class="section-actions">
-              <button type="button" class="btn-toggle-all-abilities" data-action="toggleAllAbilitiesCollapse" title="Recolher / Expandir Todas as Habilidades">
+              <button type="button" class="btn-toggle-all-abilities" data-action="toggleAllAbilitiesCollapse"
+                title="Recolher / Expandir Todas as Habilidades">
                 <i class="fa-solid fa-angles-up-down"></i>
               </button>
-              <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="ability" data-category="common" title="{{localize 'GAIA.Creature.AddAbility'}}">
+              <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="ability"
+                data-category="common" title="{{localize 'GAIA.Creature.AddAbility'}}">
                 <i class="fa-solid fa-plus"></i>
               </button>
             </div>
           </div>
           <div class="creature-items-list abilities-list-grid" style="padding: 0;">
             {{#each abilities as |ability|}}
-              <div class="ability-card-item {{#if ability.isCollapsed}}is-collapsed{{/if}}" data-item-id="{{ability.id}}">
-                <!-- CONTROLES -->
-                <div class="ability-card-controls">
-                  <button type="button" class="btn-item-control btn-roll-ability" data-action="rollItem" data-item-id="{{ability.id}}" title="{{localize 'GAIA.title.SendToChat'}}">
-                    <i class="fas fa-comment-alt"></i>
-                  </button>
-                  <button type="button" class="btn-item-control btn-edit-ability" data-action="openItem" data-item-id="{{ability.id}}" title="{{localize 'GAIA.title.EditItem'}}">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button type="button" class="btn-item-control btn-delete-ability" data-action="deleteItem" data-item-id="{{ability.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                  <button type="button" class="btn-item-control btn-toggle-ability-collapse" data-action="toggleAbilityCollapse" title="Recolher / Expandir Habilidade">
-                    <i class="fa-solid fa-chevron-down toggle-icon"></i>
-                  </button>
+            <div class="ability-card-item {{#if ability.isCollapsed}}is-collapsed{{/if}}" data-item-id="{{ability.id}}">
+              <!-- CONTROLES -->
+              <div class="ability-card-controls">
+                <button type="button" class="btn-item-control btn-roll-ability" data-action="rollItem"
+                  data-item-id="{{ability.id}}" title="{{localize 'GAIA.title.SendToChat'}}">
+                  <i class="fas fa-comment-alt"></i>
+                </button>
+                <button type="button" class="btn-item-control btn-edit-ability" data-action="openItem"
+                  data-item-id="{{ability.id}}" title="{{localize 'GAIA.title.EditItem'}}">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn-item-control btn-delete-ability" data-action="deleteItem"
+                  data-item-id="{{ability.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <button type="button" class="btn-item-control btn-toggle-ability-collapse"
+                  data-action="toggleAbilityCollapse" title="Recolher / Expandir Habilidade">
+                  <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                </button>
+              </div>
+
+              <!-- CARTA DE HABILIDADE DA FICHA DE CRIATURA -->
+              <div class="gaia-ability-card actor-sheet-card">
+                <div class="ability-card-header" data-action="toggleAbilityCollapse"
+                  title="Clique para recolher ou expandir">
+                  <div class="ability-title-row">
+                    <img class="ability-icon" src="{{ability.img}}" data-action="openItem" data-item-id="{{ability.id}}"
+                      title="{{ability.name}}" />
+                    <h2 class="ability-name-display">
+                      {{ability.name}}
+                    </h2>
+                  </div>
+                  {{#if (or ability.metaRow1 ability.hasAdditionalTypes)}}
+                  <div class="ability-meta-bar">
+                    {{#if ability.metaRow1}}
+                    <div class="meta-row-1">{{{ability.metaRow1}}}</div>
+                    {{/if}}
+                    {{#if ability.hasAdditionalTypes}}
+                    <div class="meta-row-2">{{ability.additionalTypes}}</div>
+                    {{/if}}
+                  </div>
+                  {{/if}}
                 </div>
 
-                <!-- CARTA DE HABILIDADE DA FICHA DE CRIATURA -->
-                <div class="gaia-ability-card actor-sheet-card">
-                  <div class="ability-card-header" data-action="toggleAbilityCollapse" title="Clique para recolher ou expandir">
-                    <div class="ability-title-row">
-                      <img class="ability-icon" src="{{ability.img}}" data-action="openItem" data-item-id="{{ability.id}}" title="{{ability.name}}" />
-                      <h2 class="ability-name-display">
-                        {{ability.name}}
-                      </h2>
-                    </div>
-                    {{#if (or ability.metaRow1 ability.hasAdditionalTypes)}}
-                    <div class="ability-meta-bar">
-                      {{#if ability.metaRow1}}
-                        <div class="meta-row-1">{{ability.metaRow1}}</div>
-                      {{/if}}
-                      {{#if ability.hasAdditionalTypes}}
-                        <div class="meta-row-2">{{ability.additionalTypes}}</div>
-                      {{/if}}
-                    </div>
+                <div class="ability-card-body">
+                  {{#if ability.system.quote}}
+                  <div class="ability-quote-display">
+                    <em>{{ability.system.quote}}</em>
+                  </div>
+                  {{/if}}
+
+                  <div class="ability-meta-text">
+                    {{#if ability.system.numberTarget}}
+                    <span class="tag-target"><strong>{{localize "GAIA.Ability.Target"}}:</strong>
+                      {{ability.system.numberTarget}}</span>
+                    {{/if}}
+                    {{#if ability.system.range}}
+                    <span class="tag-range"><strong>{{localize "GAIA.Ability.Range"}}:</strong>
+                      {{ability.system.range}}</span>
+                    {{/if}}
+                    {{#if ability.system.duration}}
+                    <span class="tag-duration"><strong>{{localize "GAIA.Ability.Duration"}}:</strong>
+                      {{ability.system.duration}}</span>
                     {{/if}}
                   </div>
 
-                  <div class="ability-card-body">
-                    {{#if ability.system.quote}}
-                    <div class="ability-quote-display">
-                      <em>{{ability.system.quote}}</em>
-                    </div>
+                  <div class="ability-body-text">
+                    {{#if ability.system.description}}
+                    <p>{{{ability.system.description}}}</p>
                     {{/if}}
+                  </div>
 
-                    <div class="ability-body-text">
-                      {{#if ability.system.numberTarget}}
-                      <span class="tag-target"><strong>{{localize "GAIA.Ability.Target"}}:</strong> {{ability.system.numberTarget}}</span>
-                      {{/if}}
-                      {{#if ability.system.range}}
-                      <span class="tag-range"><strong>{{localize "GAIA.Ability.Range"}}:</strong> {{ability.system.range}}</span>
-                      {{/if}}
-                      {{#if ability.system.duration}}
-                      <span class="tag-duration"><strong>{{localize "GAIA.Ability.Duration"}}:</strong> {{ability.system.duration}}</span>
-                      {{/if}}
-                      {{#if ability.system.description}}
-                      <p>{{{ability.system.description}}}</p>
-                      {{/if}}
-                    </div>
-
-                    {{#if ability.system.actions.length}}
-                    <div class="ability-actions-section">
-                      {{#each ability.system.actions}}
-                      <div class="ability-action-item">
-                        <div class="ability-action-header-row">
-                          <div class="ability-action-info">
-                            <span class="ability-action-name">{{this.name}}</span>
-                            {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
-                          </div>
-                          <button type="button" class="btn-roll-ability-action" data-action="rollAction" data-item-id="{{../ability.id}}" data-action-id="{{this.id}}" data-action-index="{{@index}}" title="Rolar {{this.name}}">
+                  {{#if ability.system.actions.length}}
+                  <div class="ability-actions-section">
+                    {{#each ability.system.actions}}
+                    <div class="ability-action-item">
+                      <div class="ability-action-header-row">
+                        <div class="ability-action-info">
+                          <span class="ability-action-name">{{this.name}}</span>
+                          {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
+                        </div>
+                        <div class="ability-action-controls" style="display: flex; align-items: center; gap: 4px;">
+                          <button type="button" class="btn-item-control btn-roll-ability" data-action="rollActionText"
+                            data-item-id="{{../ability.id}}" data-action-id="{{this.id}}" data-action-index="{{@index}}"
+                            title="{{localize 'GAIA.title.SendToChat'}}">
+                            <i class="fas fa-comment-alt"></i>
+                          </button>
+                          <button type="button" class="btn-roll-ability-action" data-action="rollItemAction"
+                            data-item-uuid="{{../ability.id}}" data-item-id="{{../ability.id}}"
+                            data-action-id="{{this.id}}" data-action-index="{{@index}}" title="Rolar {{this.name}}">
                             <i class="fa-solid fa-dice-d20"></i>
                           </button>
                         </div>
                       </div>
-                      {{/each}}
                     </div>
-                    {{/if}}
+                    {{/each}}
+                  </div>
+                  {{/if}}
 
-                    {{#if ability.system.subEffects.length}}
-                    <div class="subeffects-display-section">
-                      {{#each ability.system.subEffects}}
-                      <div class="subeffect-display-block" data-subeffect-index="{{@index}}">
-                        <div class="subeffect-display-header">
-                          <div class="subeffect-identity">
-                            <span class="subeffect-title-text">{{this.name}}</span>
-                            {{#if this.cost}}<span class="subeffect-cost-text">{{this.cost}}</span>{{/if}}
-                          </div>
-                          <div class="subeffect-controls">
-                            <button type="button" class="btn-roll-subeffect" data-action="rollSubEffect"
-                              data-item-id="{{../ability.id}}" data-index="{{@index}}" title="Enviar Sub-Habilidade para o Chat">
-                              <i class="fas fa-comment-alt"></i>
-                            </button>
-                          </div>
+                  {{#if ability.system.subEffects.length}}
+                  <div class="subeffects-display-section">
+                    {{#each ability.system.subEffects}}
+                    <div class="subeffect-display-block" data-subeffect-index="{{@index}}">
+                      <div class="subeffect-display-header">
+                        <div class="subeffect-identity">
+                          <span class="subeffect-title-text">{{this.name}}</span>
+                          {{#if this.cost}}<span class="subeffect-cost-text">{{this.cost}}</span>{{/if}}
                         </div>
-                        <div class="subeffect-divider"></div>
-                        {{#if this.description}}
-                        <div class="subeffect-desc-text">{{this.description}}</div>
-                        {{/if}}
-                        {{#if this.note}}<div class="subeffect-note-text">{{this.note}}</div>{{/if}}
+                        <div class="subeffect-controls">
+                          <button type="button" class="btn-roll-subeffect" data-action="rollSubEffect"
+                            data-item-id="{{../ability.id}}" data-index="{{@index}}"
+                            title="Enviar Sub-Habilidade para o Chat">
+                            <i class="fas fa-comment-alt"></i>
+                          </button>
+                          <button type="button" class="btn-item-control btn-toggle-ability-collapse"
+                            data-action="toggleAbilityCollapse" title="Recolher / Expandir Habilidade">
+                            <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="subeffect-divider"></div>
+                      {{#if this.description}}
+                      <div class="subeffect-desc-text">{{this.description}}</div>
+                      {{/if}}
+                      {{#if this.note}}<div class="subeffect-note-text">{{this.note}}</div>{{/if}}
 
-                        {{#if this.actions.length}}
-                        <div class="subeffect-actions-list ability-actions-section">
-                          {{#each this.actions}}
-                          <div class="ability-action-item">
-                            <div class="ability-action-header-row">
-                              <div class="ability-action-info">
-                                <span class="ability-action-name">{{this.name}}</span>
-                                {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
-                              </div>
-                              <button type="button" class="btn-roll-ability-action" data-action="rollAction"
-                                data-item-id="{{../../ability.id}}" data-subeffect-index="{{@../index}}" data-action-id="{{this.id}}" data-action-index="{{@index}}"
-                                title="Rolar {{this.name}}">
+                      {{#if this.actions.length}}
+                      <div class="subeffect-actions-list ability-actions-section">
+                        {{#each this.actions}}
+                        <div class="ability-action-item">
+                          <div class="ability-action-header-row">
+                            <div class="ability-action-info">
+                              <span class="ability-action-name">{{this.name}}</span>
+                              {{#if this.cost}}<span class="badge cost-badge">{{this.cost}}</span>{{/if}}
+                            </div>
+                            <div class="ability-action-controls" style="display: flex; align-items: center; gap: 4px;">
+                              <button type="button" class="btn-item-control btn-roll-ability"
+                                data-action="rollActionText" data-item-id="{{../../ability.id}}"
+                                data-subeffect-index="{{@../index}}" data-action-id="{{this.id}}"
+                                data-action-index="{{@index}}" title="{{localize 'GAIA.title.SendToChat'}}">
+                                <i class="fas fa-comment-alt"></i>
+                              </button>
+                              <button type="button" class="btn-roll-ability-action" data-action="rollItemAction"
+                                data-item-uuid="{{../../ability.id}}" data-item-id="{{../../ability.id}}"
+                                data-subeffect-index="{{@../index}}" data-action-id="{{this.id}}"
+                                data-action-index="{{@index}}" title="Rolar {{this.name}}">
                                 <i class="fa-solid fa-dice-d20"></i>
                               </button>
                             </div>
                           </div>
-                          {{/each}}
-                        </div>
-                        {{/if}}
-                      </div>
-                      {{/each}}
-                    </div>
-                    {{/if}}
-
-                    {{#if ability.hasActiveImprovements}}
-                    <div class="improvements-display-section">
-                      <div class="improvements-divider-title">
-                        <span class="dot">•</span>
-                        <span class="improvements-title-text">{{localize "GAIA.Ability.Improvements"}}</span>
-                        <span class="dot">•</span>
-                      </div>
-                      <div class="improvements-display-list">
-                        {{#each ability.activeImprovements}}
-                        <div class="improvement-display-item">
-                          <strong>{{this.title}}:</strong> {{this.description}}
                         </div>
                         {{/each}}
                       </div>
+                      {{/if}}
                     </div>
-                    {{/if}}
-
+                    {{/each}}
                   </div>
+                  {{/if}}
+
+                  {{#if ability.hasActiveImprovements}}
+                  <div class="improvements-display-section">
+                    <div class="improvements-divider-title">
+                      <span class="dot">•</span>
+                      <span class="improvements-title-text">{{localize "GAIA.Ability.Improvements"}}</span>
+                      <span class="dot">•</span>
+                    </div>
+                    <div class="improvements-display-list">
+                      {{#each ability.activeImprovements}}
+                      <div class="improvement-display-item">
+                        <strong>{{this.title}}:</strong> {{this.description}}
+                      </div>
+                      {{/each}}
+                    </div>
+                  </div>
+                  {{/if}}
+
                 </div>
               </div>
+            </div>
             {{else}}
-              <div class="empty-section-placeholder">{{localize "GAIA.Creature.EmptyAbilities"}}</div>
+            <div class="empty-section-placeholder">{{localize "GAIA.Creature.EmptyAbilities"}}</div>
             {{/each}}
           </div>
         </div>
       </div>
 
-      {{!-- ABA 2: BIO --}}
+      {{!-- ABA 3: BIO --}}
+
       <div class="tab tab-content" data-tab="bio" data-group="primary">
         <div class="creature-bio-container">
           <div class="portrait-box creature-portrait-box">
             <img class="character-portrait creature-portrait" src="{{actor.img}}" alt="{{actor.name}}" />
             <div class="portrait-actions-overlay">
-              <button type="button" class="portrait-action-btn" data-action="editImage" data-field="img" title="{{localize 'GAIA.title.ChangeImage'}}">
+              <button type="button" class="portrait-action-btn" data-action="editImage" data-field="img"
+                title="{{localize 'GAIA.title.ChangeImage'}}">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button type="button" class="portrait-action-btn" data-action="sendPortraitToChat" title="{{localize 'GAIA.title.SendToChat'}}">
+              <button type="button" class="portrait-action-btn" data-action="sendPortraitToChat"
+                title="{{localize 'GAIA.title.SendToChat'}}">
                 <i class="fa-solid fa-message"></i>
               </button>
-              <button type="button" class="portrait-action-btn" data-action="showPortraitToPlayers" title="{{localize 'GAIA.title.ShowToPlayers'}}">
+              <button type="button" class="portrait-action-btn" data-action="showPortraitToPlayers"
+                title="{{localize 'GAIA.title.ShowToPlayers'}}">
                 <i class="fa-solid fa-eye"></i>
               </button>
             </div>
@@ -309,7 +515,8 @@
             <label class="bio-label">
               {{localize "GAIA.Creature.BioLabel"}}
             </label>
-            <textarea name="system.description" rows="10" placeholder="{{localize 'GAIA.Creature.BioPlaceholder'}}">{{system.description}}</textarea>
+            <textarea name="system.description" rows="10" class="bio-notes-textarea"
+              placeholder="{{localize 'GAIA.Creature.BioPlaceholder'}}">{{system.description}}</textarea>
           </div>
         </div>
       </div>

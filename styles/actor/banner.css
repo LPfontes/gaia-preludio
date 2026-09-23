@@ -18,8 +18,6 @@
   width: 100%;
   box-sizing: border-box;
   z-index: 5;
-  /* Recorte discreto de flâmula na parte inferior */
-  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 95%, 0% 100%);
 }
 
 /* Estilo geral de inputs */
@@ -712,14 +710,14 @@
 
 .defense-group {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   gap: 2px;
 }
 
 .defense-group-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .defense-group-title {
@@ -749,17 +747,18 @@
   display: flex;
   flex-wrap: wrap;
   gap: 3px;
+  justify-content: flex-end;
 }
 
 .defense-tag {
   background: var(--gaia-bg-box);
-  border: 1px solid var(--gaia-border-subtle);
   display: flex;
   align-items: center;
-  padding: 2px 4px;
-  gap: 3px;
+  gap: 1px;
 }
 
+.defense-tag-label,
+.reduction-val-label,
 .defense-tag input,
 .defense-tag select {
   font-size: var(--gaia-font-sm, 12px);
@@ -770,6 +769,11 @@
   font-family: inherit;
   cursor: pointer;
   max-width: 90px;
+}
+
+.defense-tag-label:hover,
+.reduction-val-label:hover {
+  color: var(--gaia-purple);
 }
 
 .defense-tag select option {
@@ -784,8 +788,8 @@
 }
 
 .defense-tag.reduction-tag .reduction-val,
+.defense-tag.reduction-tag .reduction-val-label,
 .defense-tag.reduction-tag .tag-val {
-  width: 25px;
   text-align: center;
   font-weight: bold;
 }

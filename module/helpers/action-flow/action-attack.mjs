@@ -7,7 +7,7 @@
  */
 
 import { flowParameter } from "../flow.mjs";
-import { getStatEntry } from "../stat-rolls.mjs";
+import { getStatEntry, promptRollDialog } from "../stat-rolls.mjs";
 
 /**
  * Processa a rolagem de ataque/embate da ação e gera os botões de defesa para os alvos.
@@ -15,9 +15,10 @@ import { getStatEntry } from "../stat-rolls.mjs";
  * @param {Actor|null} actor - Ator atacante
  * @param {Array<Token>} targets - Tokens alvejados
  * @param {string} fitness - Aptidão da rolagem (standard, advantage, disadvantage)
- * @returns {Promise<{ attackRoll: Roll|null, attackHtml: string }>}
+ * @param {object} [context={}] - Contexto opcional com eventos ou opções adicionais
+ * @returns {Promise<{ attackRoll: Roll|null, attackHtml: string, rollMode?: string, cancelled?: boolean }>}
  */
-export async function processActionAttack(action, actor, targets = [], fitness = "standard") {
+export async function processActionAttack(action, actor, targets = [], fitness = "standard", context = {}) {
   if (!action.attack?.hasAttack) {
     return { attackRoll: null, attackHtml: "" };
   }
@@ -42,8 +43,50 @@ export async function processActionAttack(action, actor, targets = [], fitness =
   }
 
   const totalParam = paramVal + knowledgeBonus;
-  const exhaustion = Number(actor?.system?.exhaustion) || 0;
-  const attackRoll = await flowParameter({ value: totalParam }, fitness, bonus, exhaustion);
+  const system = actor?.system ?? {};
+  const exhaustion = Number(system.exhaustion) || 0;
+
+  // Avalia modificadores e aptidão com base em condições situacionais
+  let defaultFitness = fitness || action.attack.rollType || "standard";
+  let defaultModifier = bonus;
+
+  const rawKey = String(attrKey || "").toLowerCase();
+  const hasDarkness = Boolean(system.hasDarkness);
+  const hasPenumbra = Boolean(system.hasPenumbra);
+
+  if (hasDarkness && (rawKey === "precision" || rawKey === "channeling" || rawKey === "precisão" || rawKey === "precisao" || rawKey === "canalização" || rawKey === "canalizacao")) {
+    defaultModifier -= 1; // Escuridão: -1 em todo teste de Precisão e Canalização
+  }
+
+  const hasStunned = Boolean(system.hasStunned);
+  if (hasStunned) {
+    defaultFitness = "disadvantage"; // Atordoado: Inaptidão em todo teste de Parâmetro
+  }
+
+  const hasProne = Boolean(system.hasProne);
+  if (hasProne && (rawKey === "precision" || rawKey === "channeling" || rawKey === "precisão" || rawKey === "precisao" || rawKey === "canalização" || rawKey === "canalizacao")) {
+    defaultFitness = "disadvantage";
+  }
+
+  if (context.event?.shiftKey) defaultFitness = "advantage";
+  if (context.event?.altKey || context.event?.ctrlKey) defaultFitness = "disadvantage";
+
+  // Exibe o diálogo de rolagem padronizado
+  const rollLabel = action.name ? `${action.name} (Ataque: ${attrLabel})` : `Ataque: ${attrLabel}`;
+  const dialogResult = await promptRollDialog({
+    label: rollLabel,
+    dataKey: attrKey,
+    value: totalParam,
+    modifier: defaultModifier,
+    exhaustionPenalty: exhaustion,
+    defaultFitness
+  });
+
+  if (!dialogResult) {
+    return { attackRoll: null, attackHtml: "", cancelled: true };
+  }
+
+  const attackRoll = await flowParameter({ value: totalParam }, dialogResult.fitness, dialogResult.modifier, exhaustion);
   const rollHtml = await attackRoll.render();
 
   let targetDefenseCards = "";
@@ -78,17 +121,40 @@ export async function processActionAttack(action, actor, targets = [], fitness =
     }).join("");
   }
 
+  const attackTotalVal = attackRoll?.total ?? 1;
+  const dmgFormula = action.damage?.formula || "";
+  const dmgTypeKey = action.damage?.type || "physical";
+  const dmgTypeLabel = config?.damageTypesFlat?.[dmgTypeKey] ? game.i18n.localize(config.damageTypesFlat[dmgTypeKey]) : (dmgTypeKey || "physical");
+  const damageTextVal = dmgFormula ? `${dmgFormula} ${dmgTypeLabel}` : "";
+
+  const defenseBlockHtml = `
+    <div class="weapon-defense-block">
+      <span class="defense-label">
+        <i class="fa-solid fa-shield-halved"></i> Reação de Defesa
+      </span>
+      <div style="display:flex;gap:6px;justify-content:center;margin-top:4px">
+        <button type="button" class="gaia-btn-roll-defense" data-action="rollTargetDefense" data-defense-type="agility" data-attack-total="${attackTotalVal}" data-damage-amount="0" data-damage-text="${damageTextVal}" data-damage-type="${dmgTypeKey}">
+          Esquiva
+        </button>
+        <button type="button" class="gaia-btn-roll-defense" data-action="rollTargetDefense" data-defense-type="block" data-attack-total="${attackTotalVal}" data-damage-amount="0" data-damage-text="${damageTextVal}" data-damage-type="${dmgTypeKey}">
+          Bloqueio
+        </button>
+      </div>
+    </div>
+  `;
+
   const attackHtml = `
     <div class="action-section-block action-attack-section">
       <div class="action-section-header">
         <div class="action-section-title attack-title">
           <i class="fa-solid fa-crosshairs"></i> Ataque: ${attrLabel}
         </div>
+        ${defenseBlockHtml}
       </div>
       ${rollHtml}
       ${targetDefenseCards}
     </div>
   `;
 
-  return { attackRoll, attackHtml };
+  return { attackRoll, attackHtml, rollMode: dialogResult.rollMode };
 }

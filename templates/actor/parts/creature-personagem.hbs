@@ -1,0 +1,127 @@
+<div class="tab tab-content {{#if (eq tab.active 'personagem')}}active{{/if}}" data-tab="personagem" data-group="primary">
+  {{!-- A) Grid de Checkboxes dos Tipos de Criatura (creaturesType) --}}
+  <div class="creature-section creature-types-section">
+    <h4 class="section-title">
+      {{localize "GAIA.Creature.TypesTitle"}}
+    </h4>
+    <div class="creature-types-grid">
+      {{#each creatureTypesList}}
+      <label class="creature-type-checkbox-label">
+        <input type="checkbox" name="system.creatureTypes" value="{{this.key}}" {{#if this.checked}}checked{{/if}} />
+        <span class="type-label-text">{{this.label}}</span>
+      </label>
+      {{/each}}
+    </div>
+  </div>
+
+  {{!-- B) Sessão de Ataques --}}
+  <div class="creature-section attacks-section">
+    <div class="section-header">
+      <h4 class="section-title">
+        {{localize "GAIA.Creature.AttacksTitle"}}
+      </h4>
+      <div class="section-actions">
+        <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="weapon"
+          data-category="weapon" title="{{localize 'GAIA.Inventory.AddWeapon'}}">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="creature-items-list">
+      {{#each weapons as |weapon|}}
+      <div class="creature-item-card weapon-card {{#if weapon.isCollapsed}}is-collapsed{{/if}}" data-item-id="{{weapon.id}}">
+        <div class="item-card-header">
+          <img class="item-icon" src="{{weapon.img}}" data-action="promptItemAction" data-item-id="{{weapon.id}}"
+            role="button" alt="{{weapon.name}}" />
+          <span class="item-name" data-action="promptItemAction" data-item-id="{{weapon.id}}" role="button">
+            {{weapon.name}}
+            {{#if weapon.damageText}}
+            <span class="weapon-damage-chip">{{weapon.damageText}}</span>
+            {{/if}}
+          </span>
+          <div class="item-actions">
+            <button type="button" class="btn-item-icon" data-action="promptItemAction"
+              data-item-id="{{weapon.id}}" title="{{localize 'GAIA.title.SendToChat'}}">
+              <i class="fa-solid fa-dice-d20"></i>
+            </button>
+            <button type="button" class="btn-item-icon" data-action="openItem" data-item-id="{{weapon.id}}"
+              title="{{localize 'GAIA.title.EditItem'}}">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button type="button" class="btn-item-icon danger" data-action="deleteItem"
+              data-item-id="{{weapon.id}}" title="{{localize 'GAIA.title.DeleteItem'}}">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+            <button type="button" class="btn-item-control btn-toggle-ability-collapse" data-action="toggleAbilityCollapse" data-item-id="{{weapon.id}}" title="Expandir/Recolher">
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+          </div>
+        </div>
+        {{#if weapon.system.description}}
+        <div class="item-card-body">{{{weapon.system.description}}}</div>
+        {{/if}}
+      </div>
+      {{else}}
+      <div class="empty-section-placeholder">{{localize "GAIA.Creature.EmptyAttacks"}}</div>
+      {{/each}}
+    </div>
+  </div>
+
+  {{!-- C) Sessão de Inventário e Tesouros --}}
+  <div class="creature-section inventory-section">
+    <div class="section-header" style="gap: 8px; flex-wrap: wrap;">
+      <h4 class="section-title">
+        {{localize "GAIA.Creature.TreasuresTitle"}}
+      </h4>
+      
+      <div class="inventory-currency" style="margin-left: auto;">
+        <div class="currency-group currency-mp" title="Moeda de Prata">
+          <span class="currency-label">MP</span>
+          <input type="text" name="system.currency.mp" value="{{system.currency.mp}}" data-dtype="Number" />
+        </div>
+        <div class="currency-group currency-mo" title="Moeda de Ouro">
+          <span class="currency-label">MO</span>
+          <input type="text" name="system.currency.mo" value="{{system.currency.mo}}" data-dtype="Number" />
+        </div>
+        <div class="currency-group currency-mi" title="Moeda Imperial">
+          <span class="currency-label">MI</span>
+          <input type="text" name="system.currency.mi" value="{{system.currency.mi}}" data-dtype="Number" />
+        </div>
+      </div>
+
+      <div class="section-actions">
+        <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="equipment"
+          title="{{localize 'GAIA.Creature.AddItem'}}">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+    </div>
+    <div class="creature-items-list">
+      {{#each inventory as |item|}}
+      <div class="creature-item-card equipment-card" data-item-id="{{item.id}}">
+        <div class="item-card-header">
+          <img class="item-icon" src="{{item.img}}" data-action="openItem" data-item-id="{{item.id}}"
+            alt="{{item.name}}" />
+          <span class="item-name" data-action="openItem" data-item-id="{{item.id}}">{{item.name}}</span>
+          <div class="item-actions">
+            <button type="button" class="btn-item-icon" data-action="openItem" data-item-id="{{item.id}}"
+              title="{{localize 'GAIA.title.EditItem'}}">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button type="button" class="btn-item-icon danger" data-action="deleteItem" data-item-id="{{item.id}}"
+              title="{{localize 'GAIA.title.DeleteItem'}}">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        {{#if item.system.description}}
+        <div class="item-card-body">{{{item.system.description}}}</div>
+        {{/if}}
+      </div>
+      {{else}}
+      <div class="empty-section-placeholder">{{localize "GAIA.Creature.EmptyTreasures"}}</div>
+      {{/each}}
+    </div>
+  </div>
+</div>

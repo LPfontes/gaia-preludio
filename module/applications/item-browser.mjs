@@ -1,4 +1,6 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+import { HOMUNCULARIUM_BOOKS } from "../helpers/homuncularium-rules.mjs";
+import { CARACTERISTICAS_FOLDERS_DATA } from "../helpers/datasets/caracteristicas-dataset.mjs";
 
 /**
  * Mapeamento canônico dos Caminhos de Gaia: Prelúdio.
@@ -40,6 +42,48 @@ const KNOWN_PATHS = {
     order: 5
   }
 };
+
+/**
+ * Mapeamento de folderId -> informações do Livro do Homuncularium.
+ * Usado para agrupar características por livro no browser.
+ */
+const BOOK_FOLDER_MAP = (() => {
+  const map = new Map();
+  // Usa HOMUNCULARIUM_BOOKS como fonte canônica (inclui ícone)
+  let order = 1;
+  for (const book of Object.values(HOMUNCULARIUM_BOOKS)) {
+    map.set(book.folderId, {
+      id: book.folderId,
+      name: book.bookName,
+      shortName: book.bookName,
+      icon: book.icon,
+      order: order++
+    });
+  }
+  // Adiciona pastas do dataset que não estão nos HOMUNCULARIUM_BOOKS (ex: Seres Comuns)
+  for (const folder of CARACTERISTICAS_FOLDERS_DATA) {
+    if (!map.has(folder._id)) {
+      map.set(folder._id, {
+        id: folder._id,
+        name: folder.name,
+        shortName: folder.name,
+        icon: null,
+        order: order++
+      });
+    }
+  }
+  return map;
+})();
+
+/**
+ * Resolve o Livro ao qual uma característica pertence, baseado no folderId.
+ * @param {string} folderId
+ * @returns {object|null}
+ */
+function resolveItemBook(folderId) {
+  if (!folderId) return null;
+  return BOOK_FOLDER_MAP.get(folderId) || null;
+}
 
 /**
  * Resolve o Caminho ao qual um item/habilidade pertence.
@@ -324,12 +368,60 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     const availablePaths = Array.from(availablePathsMap.values())
       .sort((a, b) => (a.order || 99) - (b.order || 99));
 
+    // Determina se devemos agrupar visualmente por Livro (características)
+    const isFeatureType = this.selectedType === "feature" || (this.selectedType === "all" && filtered.every(i => i.type === "feature" || i.category === "caracteristica"));
+    const shouldGroupByBook = isFeatureType && filtered.some(i => i.bookKey);
+
     // Determina se devemos agrupar visualmente por Caminho
-    const shouldGroupByPath = (this.selectedType === "ability" || this.selectedSource.includes("habilidades-caminho") || (this.selectedType === "all" && filtered.some(i => i.pathKey)));
+    const shouldGroupByPath = !shouldGroupByBook && (this.selectedType === "ability" || this.selectedSource.includes("habilidades-caminho") || (this.selectedType === "all" && filtered.some(i => i.pathKey)));
 
     let groupedItems = [];
 
-    if (shouldGroupByPath) {
+    if (shouldGroupByBook) {
+      // Agrupa por Livro do Homuncularium
+      const booksInResults = new Map();
+      for (const item of filtered) {
+        if (item.bookKey && !booksInResults.has(item.bookKey)) {
+          booksInResults.set(item.bookKey, {
+            id: item.bookKey,
+            name: item.bookName,
+            icon: item.bookIcon,
+            order: item.bookOrder ?? 99
+          });
+        }
+      }
+      const sortedBooks = Array.from(booksInResults.values()).sort((a, b) => a.order - b.order);
+
+      // 1. Grupos por livro, ordenados canonicamente
+      for (const book of sortedBooks) {
+        const bookItems = filtered.filter(i => i.bookKey === book.id).sort((a, b) => a.name.localeCompare(b.name, "pt"));
+        if (bookItems.length > 0) {
+          groupedItems.push({
+            key: book.id,
+            title: book.name,
+            shortName: book.name,
+            icon: book.icon ? null : "fa-solid fa-book",
+            iconImg: book.icon || null,
+            count: bookItems.length,
+            items: bookItems
+          });
+        }
+      }
+
+      // 2. Características sem livro definido
+      const noBookItems = filtered.filter(i => !i.bookKey).sort((a, b) => a.name.localeCompare(b.name, "pt"));
+      if (noBookItems.length > 0) {
+        groupedItems.push({
+          key: "other",
+          title: "Outras Características",
+          shortName: "Outras",
+          icon: "fa-solid fa-layer-group",
+          iconImg: null,
+          count: noBookItems.length,
+          items: noBookItems
+        });
+      }
+    } else if (shouldGroupByPath) {
       // 1. Grupos ordenados por caminho
       for (const p of availablePaths) {
         const pathItems = filtered.filter(i => i.pathKey === p.id);
@@ -339,6 +431,7 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
             title: p.name,
             shortName: p.shortName,
             icon: p.icon,
+            iconImg: null,
             count: pathItems.length,
             items: pathItems
           });
@@ -353,6 +446,7 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
           title: this.selectedType === "ability" ? (game.i18n.localize("GAIA.ItemBrowser.OtherAbilities") || "Outras Habilidades") : (game.i18n.localize("GAIA.ItemBrowser.OtherItems") || "Outros Itens"),
           shortName: "Geral",
           icon: "fa-solid fa-sparkles",
+          iconImg: null,
           count: noPathItems.length,
           items: noPathItems
         });
@@ -517,18 +611,27 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
           folderMap
         );
 
+        const entryBook = (entry.type === "feature" || entry.system?.category === "caracteristica")
+          ? resolveItemBook(entry.folder)
+          : null;
+
         items.push({
           id: entry._id,
           uuid: pack.getUuid(entry._id),
           name: entry.name,
           type: entry.type,
           category: entry.system?.category ?? "",
+          folderId: entry.folder || "",
           pathId: rawPathId,
           pathKey: resolved?.id || "",
           pathName: resolved?.name || "",
           pathShortName: resolved?.shortName || "",
           pathIcon: resolved?.icon || "",
           pathOrder: resolved?.order ?? 99,
+          bookKey: entryBook?.id || "",
+          bookName: entryBook?.name || "",
+          bookIcon: entryBook?.icon || "",
+          bookOrder: entryBook?.order ?? 99,
           typeLabel: typeLoc,
           img: entry.img || "icons/svg/item-bag.svg",
           sourceId: pack.collection,

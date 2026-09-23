@@ -94,6 +94,7 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
   });
 
   let rolledHpValue = null;
+  const chosenAbilityNames = [];
 
   return await DialogV2.prompt({
     classes: ["gaia-preludio", "gaia-dialog", "level-up-dialog"],
@@ -245,9 +246,6 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
           .join("");
       };
 
-      /** Lista acumulada de nomes de habilidades escolhidas nesta sessão. */
-      const chosenAbilityNames = [];
-
       btnOpenBrowser?.addEventListener("click", async (e) => {
         e.preventDefault();
         const { GaiaItemBrowser } = await import("../../applications/item-browser.mjs");
@@ -280,6 +278,171 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
             renderAbilityTags(chosenAbilityNames);
           }
         });
+      });
+
+      // Botão para abrir o Diálogo de Aprimorar Habilidade da Ficha
+      const btnOpenEnhance = html.querySelector(".btn-open-enhance-dialog");
+
+      const promptEnhanceAbilityModal = async () => {
+        const letters = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+        const prepareAbilitiesData = () => {
+          const abilities = actor.items.filter(i => i.type === "ability");
+          return abilities.map(item => {
+            const rawImps = Array.isArray(item.system?.improvements) ? item.system.improvements : [];
+            const improvements = rawImps.map((imp, idx) => {
+              const rawTitle = typeof imp === "string" ? imp : (imp.title || `Aprimoramento ${letters[idx] || (idx + 1)}`);
+              const hasPrefix = /^[A-Za-z0-9][\)\].:\-]/i.test(rawTitle.trim());
+              const letter = typeof imp === "object" && imp.letter ? imp.letter : `${letters[idx] || (idx + 1)})`;
+              const title = hasPrefix ? rawTitle : `${letter} ${rawTitle}`;
+              const description = typeof imp === "string" ? "" : (imp.description || "");
+              const active = typeof imp === "object" ? Boolean(imp.active) : false;
+              return { index: idx, letter, title, description, active };
+            });
+            const activeImps = improvements.filter(imp => imp.active);
+            return {
+              id: item.id,
+              name: item.name,
+              img: item.img || "icons/svg/aura.svg",
+              improvements,
+              hasImprovements: improvements.length > 0,
+              activeImps,
+              hasActiveImprovements: activeImps.length > 0
+            };
+          });
+        };
+
+        const renderModalContent = async () => {
+          const abilitiesData = prepareAbilitiesData();
+          return await renderTemplate("systems/gaia-preludio/templates/dialog/enhancement-dialog.hbs", {
+            abilities: abilitiesData
+          });
+        };
+
+        // Diálogo para escolher os aprimoramentos da habilidade individual (múltiplos permitidos)
+        const promptChooseImprovementDialog = async (itemDoc) => {
+          const rawImps = Array.isArray(itemDoc.system?.improvements) ? itemDoc.system.improvements : [];
+          const imps = rawImps.map((imp, idx) => {
+            const rawTitle = typeof imp === "string" ? imp : (imp.title || `Aprimoramento ${letters[idx] || (idx + 1)}`);
+            const hasPrefix = /^[A-Za-z0-9][\)\].:\-]/i.test(rawTitle.trim());
+            const letter = typeof imp === "object" && imp.letter ? imp.letter : `${letters[idx] || (idx + 1)})`;
+            const title = hasPrefix ? rawTitle : `${letter} ${rawTitle}`;
+            return {
+              index: idx,
+              letter,
+              title,
+              description: typeof imp === "string" ? "" : (imp.description || ""),
+              active: typeof imp === "object" ? Boolean(imp.active) : false
+            };
+          });
+
+          const chooseContent = `
+            <div class="gaia-dialog-choose-enhancement">
+              <p class="enhancement-dialog-intro">
+                Marque os aprimoramentos desejados para <strong>${itemDoc.name}</strong>:
+              </p>
+              ${imps.map((imp, i) => `
+                <label class="enhancement-option-card">
+                  <input type="checkbox" name="selected_imp" value="${i}" ${imp.active ? 'checked' : ''} />
+                  <div style="flex: 1;">
+                    <strong style="color: var(--gaia-gold-accent);">${imp.title}</strong>
+                    ${imp.description ? `<div style="font-size: var(--gaia-font-base); color: var(--gaia-text-parchment); margin-top: 2px; line-height: 1.5;">${imp.description}</div>` : ''}
+                  </div>
+                </label>
+              `).join("")}
+            </div>
+          `;
+
+          return await DialogV2.prompt({
+            window: { title: `Aprimorar: ${itemDoc.name}` },
+            content: chooseContent,
+            classes: ["gaia-preludio", "gaia-dialog", "gaia-dialog-enhancement"],
+            position: { width: 450, height: "auto" },
+            ok: {
+              label: game.i18n.localize("GAIA.LevelUp.Confirm"),
+              icon: "fa-solid fa-check",
+              callback: async (event, button, dialog) => {
+                const checkedBoxes = Array.from(dialog.element.querySelectorAll("input[name='selected_imp']:checked"));
+                const selectedIndices = new Set(checkedBoxes.map(cb => Number(cb.value)));
+
+                const updatedImps = rawImps.map((imp, i) => {
+                  const isActive = selectedIndices.has(i);
+                  if (typeof imp === "object") {
+                    return { ...imp, active: isActive };
+                  }
+                  return { title: imp, description: "", active: isActive };
+                });
+
+                await itemDoc.update({ "system.improvements": updatedImps });
+
+                const activatedList = imps.filter(imp => selectedIndices.has(imp.index));
+                if (activatedList.length > 0) {
+                  const namesStr = activatedList.map(imp => imp.title).join(", ");
+                  ui.notifications?.info(`${itemDoc.name}: Aprimoramento(s) ativado(s) [${namesStr}]!`);
+                  return `${itemDoc.name} (${namesStr})`;
+                } else {
+                  ui.notifications?.info(`${itemDoc.name}: Aprimoramentos desativados.`);
+                  return null;
+                }
+              }
+            }
+          });
+        };
+
+        const initialContent = await renderModalContent();
+
+        return await DialogV2.prompt({
+          window: { title: game.i18n.localize("GAIA.LevelUp.EnhanceAbilityTitle") },
+          content: initialContent,
+          classes: ["gaia-preludio", "gaia-dialog", "gaia-dialog-enhancement"],
+          position: { width: 500, height: "auto" },
+          render: (event, dialog) => {
+            const modalHtml = dialog.element;
+
+            const bindEnhanceButtons = () => {
+              modalHtml.querySelectorAll(".btn-enhance-ability").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                  e.preventDefault();
+                  const itemId = btn.dataset.itemId;
+                  const itemDoc = actor.items.get(itemId);
+                  if (!itemDoc) return;
+
+                  const enhancedResult = await promptChooseImprovementDialog(itemDoc);
+                  if (enhancedResult) {
+                    if (!chosenAbilityNames.includes(enhancedResult)) {
+                      chosenAbilityNames.push(enhancedResult);
+                    }
+                    renderAbilityTags(chosenAbilityNames);
+                  }
+
+                  // Atualiza dinamicamente o conteúdo do modal para refletir a alteração
+                  const newContent = await renderModalContent();
+                  const contentWrapper = modalHtml.querySelector(".gaia-dialog-enhancement-content");
+                  if (contentWrapper) {
+                    const temp = document.createElement("div");
+                    temp.innerHTML = newContent;
+                    const newInner = temp.firstElementChild;
+                    if (newInner) {
+                      contentWrapper.replaceWith(newInner);
+                      bindEnhanceButtons();
+                    }
+                  }
+                });
+              });
+            };
+
+            bindEnhanceButtons();
+          },
+          ok: {
+            label: game.i18n.localize("GAIA.LevelUp.Close"),
+            icon: "fa-solid fa-check"
+          }
+        });
+      };
+
+      btnOpenEnhance?.addEventListener("click", async (e) => {
+        e.preventDefault();
+        await promptEnhanceAbilityModal();
       });
     },
     ok: {
@@ -367,9 +530,10 @@ export async function promptLevelUpDialog(actor, targetLevel = null) {
         await actor.update(updateData);
 
         // 7. Envia Mensagem de Chat comemorando a Evolução
-        const abilityHtml = chosenAbility ? `
+        const chosenSummary = chosenAbility || chosenAbilityNames.join(", ");
+        const abilityHtml = chosenSummary ? `
           <div style="margin-top: 6px; padding-top: 4px; border-top: 1px dashed rgba(201, 163, 75, 0.4); font-size: 12px;">
-            <i class="fa-solid fa-scroll" style="color: var(--gaia-gold-accent, #c9a34b);"></i> <strong>Habilidade/Aprimoramento:</strong> ${chosenAbility}
+            <i class="fa-solid fa-scroll" style="color: var(--gaia-gold-accent, #c9a34b);"></i> <strong>Habilidade/Aprimoramento:</strong> ${chosenSummary}
           </div>
         ` : "";
 

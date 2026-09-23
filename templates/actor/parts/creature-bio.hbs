@@ -1,0 +1,29 @@
+<div class="tab tab-content {{#if (eq tab.active 'bio')}}active{{/if}}" data-tab="bio" data-group="primary">
+  <div class="creature-bio-container">
+    <div class="portrait-box creature-portrait-box">
+      <img class="character-portrait creature-portrait" src="{{actor.img}}" alt="{{actor.name}}" />
+      <div class="portrait-actions-overlay">
+        <button type="button" class="portrait-action-btn" data-action="editImage" data-field="img"
+          title="{{localize 'GAIA.title.ChangeImage'}}">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </button>
+        <button type="button" class="portrait-action-btn" data-action="sendPortraitToChat"
+          title="{{localize 'GAIA.title.SendToChat'}}">
+          <i class="fa-solid fa-message"></i>
+        </button>
+        <button type="button" class="portrait-action-btn" data-action="showPortraitToPlayers"
+          title="{{localize 'GAIA.title.ShowToPlayers'}}">
+          <i class="fa-solid fa-eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group bio-group">
+      <label class="bio-label">
+        {{localize "GAIA.Creature.BioLabel"}}
+      </label>
+      <textarea name="system.description" rows="10" class="bio-notes-textarea"
+        placeholder="{{localize 'GAIA.Creature.BioPlaceholder'}}">{{system.description}}</textarea>
+    </div>
+  </div>
+</div>

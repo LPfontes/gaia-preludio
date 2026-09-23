@@ -9,6 +9,8 @@
  */
 import { prepareParameterBonuses, calculateEquipmentBlockBonus } from "../helpers/actor-context.mjs";
 import { promptAwakeningGuideDialog, promptCreatureWizardDialog, promptLegacyNpcWizardDialog } from "../helpers/dialogs/index.mjs";
+import { calculateHomunculusStats, calculateLegacyNpcStats } from "../helpers/flow.mjs";
+import { getBookFolderForFeature, ensureHomunculariumAttacks, syncHomunculariumAttackFormulas } from "../helpers/homuncularium-rules.mjs";
 
 export class GaiaActor extends Actor {
 
@@ -95,6 +97,142 @@ export class GaiaActor extends Actor {
   _preUpdate(changed, options, user) {
     super._preUpdate(changed, options, user);
 
+    // PT: Recalcula automaticamente os stats de Criatura do Homuncularium ao alterar Nível ou Dificuldade,
+    // preservando e aceitando alterações manuais feitas na ficha.
+    // EN: Automatically recalculates Homuncularium creature stats when Level or Difficulty changes,
+    // while preserving and accepting manual edits made on the sheet.
+    if (
+      !options.skipHomunculumRecalc &&
+      (this.type === "creature" || this.type === "legacyNpc")
+    ) {
+      const hasNivelProp = foundry.utils.hasProperty(changed, "system.nivel");
+      const hasDiffProp = foundry.utils.hasProperty(changed, "system.difficulty");
+
+      const oldLevel = Number(this.system?.nivel ?? 0);
+      const newLevel = hasNivelProp ? Number(foundry.utils.getProperty(changed, "system.nivel")) : oldLevel;
+
+      const oldDifficulty = String(this.system?.difficulty ?? "").trim();
+      const rawNewDifficulty = hasDiffProp ? String(foundry.utils.getProperty(changed, "system.difficulty")).trim() : oldDifficulty;
+
+      const effOldDifficulty = oldDifficulty || "Normal";
+      const effNewDifficulty = rawNewDifficulty || oldDifficulty || "Normal";
+
+      const levelChanged = hasNivelProp && !isNaN(newLevel) && newLevel !== oldLevel;
+      const difficultyChanged = hasDiffProp && rawNewDifficulty !== oldDifficulty;
+
+      // Identifica se os campos foram deliberadamente alterados pelo usuário nesta mesma operação
+      // (evita falso-positivo de campos enviados pelo formulário com o mesmo valor atual)
+      const currentHpMax = Number(this.system?.health?.max ?? 0);
+      const hasHpMaxProp = foundry.utils.hasProperty(changed, "system.health.max");
+      const submittedHpMax = hasHpMaxProp ? Number(foundry.utils.getProperty(changed, "system.health.max")) : null;
+      const isHpMaxManualEdit = hasHpMaxProp && !isNaN(submittedHpMax) && submittedHpMax !== currentHpMax;
+
+      const currentHpVal = Number(this.system?.health?.value ?? 0);
+      const hasHpValProp = foundry.utils.hasProperty(changed, "system.health.value");
+      const submittedHpVal = hasHpValProp ? Number(foundry.utils.getProperty(changed, "system.health.value")) : null;
+      const isHpValManualEdit = hasHpValProp && !isNaN(submittedHpVal) && submittedHpVal !== currentHpVal;
+
+      const currentEnergyMax = Number(this.system?.energy?.max ?? 0);
+      const hasEnergyMaxProp = foundry.utils.hasProperty(changed, "system.energy.max");
+      const submittedEnergyMax = hasEnergyMaxProp ? Number(foundry.utils.getProperty(changed, "system.energy.max")) : null;
+      const isEnergyMaxManualEdit = hasEnergyMaxProp && !isNaN(submittedEnergyMax) && submittedEnergyMax !== currentEnergyMax;
+
+      const currentEnergyVal = Number(this.system?.energy?.value ?? 0);
+      const hasEnergyValProp = foundry.utils.hasProperty(changed, "system.energy.value");
+      const submittedEnergyVal = hasEnergyValProp ? Number(foundry.utils.getProperty(changed, "system.energy.value")) : null;
+      const isEnergyValManualEdit = hasEnergyValProp && !isNaN(submittedEnergyVal) && submittedEnergyVal !== currentEnergyVal;
+
+      const currentPower = Number(this.system?.powerPoints ?? 0);
+      const hasPowerProp = foundry.utils.hasProperty(changed, "system.powerPoints");
+      const submittedPower = hasPowerProp ? Number(foundry.utils.getProperty(changed, "system.powerPoints")) : null;
+      const isPowerManualEdit = hasPowerProp && !isNaN(submittedPower) && submittedPower !== currentPower;
+
+      // Executa o recálculo se o Nível ou a Dificuldade realmente mudaram
+      if (levelChanged || difficultyChanged) {
+        const isLegacyNpc = this.type === "legacyNpc";
+        const calcFunc = isLegacyNpc ? calculateLegacyNpcStats : calculateHomunculusStats;
+
+        const statsOld = calcFunc(effOldDifficulty, oldLevel);
+        const statsNew = calcFunc(effNewDifficulty, newLevel);
+
+        if (statsNew) {
+          // 1. Pontos de Vida Máximos (health.max)
+          if (!isHpMaxManualEdit) {
+            let newHpMax;
+            if (statsOld && currentHpMax > 0) {
+              const deltaHp = statsNew.health - statsOld.health;
+              newHpMax = Math.max(1, currentHpMax + deltaHp);
+            } else {
+              newHpMax = statsNew.health;
+            }
+            foundry.utils.setProperty(changed, "system.health.max", newHpMax);
+
+            // Ajusta o PV atual caso não tenha sido editado manualmente
+            if (!isHpValManualEdit) {
+              if (currentHpVal >= currentHpMax || currentHpVal === 0) {
+                foundry.utils.setProperty(changed, "system.health.value", newHpMax);
+              } else {
+                const deltaHp = statsNew.health - (statsOld?.health ?? statsNew.health);
+                if (deltaHp > 0) {
+                  foundry.utils.setProperty(changed, "system.health.value", currentHpVal + deltaHp);
+                } else if (deltaHp < 0) {
+                  foundry.utils.setProperty(changed, "system.health.value", Math.min(newHpMax, currentHpVal));
+                }
+              }
+            }
+          }
+
+          // 2. Pontos de Energia Máximos (energy.max)
+          if (!isEnergyMaxManualEdit) {
+            let newEnergyMax;
+            if (statsOld && currentEnergyMax > 0) {
+              const deltaEnergy = statsNew.energy - statsOld.energy;
+              newEnergyMax = Math.max(0, currentEnergyMax + deltaEnergy);
+            } else {
+              newEnergyMax = statsNew.energy;
+            }
+            foundry.utils.setProperty(changed, "system.energy.max", newEnergyMax);
+
+            // Ajusta a Energia atual caso não tenha sido editada manualmente
+            if (!isEnergyValManualEdit) {
+              if (currentEnergyVal >= currentEnergyMax || currentEnergyVal === 0) {
+                foundry.utils.setProperty(changed, "system.energy.value", newEnergyMax);
+              } else {
+                const deltaEnergy = statsNew.energy - (statsOld?.energy ?? statsNew.energy);
+                if (deltaEnergy > 0) {
+                  foundry.utils.setProperty(changed, "system.energy.value", currentEnergyVal + deltaEnergy);
+                } else if (deltaEnergy < 0) {
+                  foundry.utils.setProperty(changed, "system.energy.value", Math.min(newEnergyMax, currentEnergyVal));
+                }
+              }
+            }
+          }
+
+          // 3. Pontos de Poder (powerPoints)
+          if (!isPowerManualEdit) {
+            let newPower;
+            if (statsOld && currentPower > 0) {
+              const deltaPower = statsNew.powerPoints - statsOld.powerPoints;
+              newPower = Math.max(0, currentPower + deltaPower);
+            } else {
+              newPower = statsNew.powerPoints;
+            }
+            foundry.utils.setProperty(changed, "system.powerPoints", newPower);
+          }
+
+          // 4. Notificação de novos pontos de Parâmetros
+          if (statsOld && levelChanged) {
+            const deltaParams = statsNew.parameters - statsOld.parameters;
+            if (deltaParams > 0) {
+              ui?.notifications?.info(
+                `Criatura subiu para o Nível ${newLevel} e ganhou +${deltaParams} ponto(s) de Parâmetros. Distribua manualmente entre Ofensivos e Defensivos na ficha.`
+              );
+            }
+          }
+        }
+      }
+    }
+
     const bonuses = this.system?.bonusesCalculated;
     if (bonuses && (changed.system || Object.keys(changed).some(k => k.startsWith("system.")))) {
       for (const [attrPath, bonusInfo] of Object.entries(bonuses)) {
@@ -151,13 +289,27 @@ export class GaiaActor extends Actor {
 
   /**
    * PT: Chamado após uma atualização ser processada pelo servidor.
-   * Exibe números flutuantes (scrolling text) para dano ou cura.
+   * Exibe números flutuantes (scrolling text) para dano ou cura e processa gatilhos de sistema.
    * @override
    */
   _onUpdate(changed, options, userId) {
     super._onUpdate(changed, options, userId);
+
     if (options.gaiaHealthDelta) {
       this._showScrollingHealthText(options.gaiaHealthDelta);
+    }
+
+    if (game.user.id === userId && (this.type === "creature" || this.type === "legacyNpc")) {
+      const hasHomunculumStatChange =
+        foundry.utils.hasProperty(changed, "system.nivel") ||
+        foundry.utils.hasProperty(changed, "system.difficulty") ||
+        foundry.utils.hasProperty(changed, "system.powerPoints");
+
+      if (hasHomunculumStatChange) {
+        ensureHomunculariumAttacks(this).then(() => {
+          syncHomunculariumAttackFormulas(this);
+        }).catch(console.error);
+      }
     }
   }
 
@@ -215,6 +367,24 @@ export class GaiaActor extends Actor {
   }
 
   /**
+   * PT: Chamado após documentos embutidos serem criados neste ator.
+   * EN: Called after embedded documents are created in this actor.
+   * @override
+   */
+  _onCreateDescendantDocuments(parent, collection, documents, data, options, userId) {
+    super._onCreateDescendantDocuments(parent, collection, documents, data, options, userId);
+
+    if (game.user.id === userId && collection === "items" && (this.type === "creature" || this.type === "legacyNpc")) {
+      const hasHomunculumItemAdded = documents.some(
+        doc => (doc.type === "feature" || doc.type === "ability") && getBookFolderForFeature(doc) !== null
+      );
+      if (hasHomunculumItemAdded) {
+        ensureHomunculariumAttacks(this);
+      }
+    }
+  }
+
+  /**
    * PT: Prepara dados derivados do Actor após a preparação de documentos embutidos e ActiveEffects.
    * EN: Prepares derived Actor data after embedded documents and ActiveEffects have been prepared.
    * @override
@@ -260,15 +430,57 @@ export class GaiaActor extends Actor {
     system.equipmentBlockBonus = equipmentBlockBonus;
     system.totalBlock = (Number(system.block) || 0) + equipmentBlockBonus;
 
+    // PT: Aplica bônus acumulados de características configuráveis (ex: Adrenalina Feral)
+    if (this.type === "creature" || this.type === "legacyNpc") {
+      const featureBonuses = {
+        offensiveParameters: 0,
+        defensiveParameters: 0,
+        movement: 0,
+        block: 0
+      };
+
+      for (const item of this.items) {
+        if (item.type !== "feature" && item.type !== "ability") continue;
+        const mod = item.flags?.["gaia-preludio"]?.featureModifier;
+        if (!mod || !mod.target) continue;
+        const val = Number(mod.value) || 0;
+        if (val > 0 && featureBonuses[mod.target] !== undefined) {
+          featureBonuses[mod.target] += val;
+        }
+      }
+
+      system.featureBonuses = featureBonuses;
+      if (featureBonuses.offensiveParameters) {
+        system.offensiveParameters = (Number(system.offensiveParameters) || 0) + featureBonuses.offensiveParameters;
+      }
+      if (featureBonuses.defensiveParameters) {
+        system.defensiveParameters = (Number(system.defensiveParameters) || 0) + featureBonuses.defensiveParameters;
+      }
+      if (featureBonuses.movement) {
+        system.movement = (Number(system.movement) || 0) + featureBonuses.movement;
+      }
+      if (featureBonuses.block) {
+        system.block = (Number(system.block) || 0) + featureBonuses.block;
+        system.totalBlock = (Number(system.totalBlock) || 0) + featureBonuses.block;
+      }
+    }
+
     // PT: Condições Especiais: Atordoado, Enfraquecido, Lentidão, Caído, Envenenado, Fratura, Imóvel, Sangramento
     // EN: Special Conditions: Stunned, Weakened, Slowed, Prone, Poisoned, Fracture, Immobilized, Bleeding
     // PT: Integração de Resistências e Imunidades a Condições vindas de Efeitos Ativos
-    const rawResistances = Array.isArray(system.damageResistance) ? [...system.damageResistance] : [];
+    // PT: Lê as resistências armazenadas e sanitiza entradas inválidas que o Foundry pode injetar
+    // EN: Read stored resistances and sanitize invalid entries that Foundry may inject via ActiveEffects on ArrayFields
+    // (e.g. { type: "1" }, { type: "" }, { type: "5" } injetados pelo engine quando ch.value é numérico/padrão)
+    const rawResistances = (Array.isArray(system.damageResistance) ? [...system.damageResistance] : [])
+      .filter(r => {
+        const t = String(r?.type ?? r ?? "").toLowerCase().trim();
+        return t && t !== "1" && isNaN(Number(t));
+      });
     const activeResistances = [];
     const conditionImmunities = new Set(
       (Array.isArray(system.conditionImmunity) ? system.conditionImmunity : [])
-        .map(c => String(c?.type || c).toLowerCase().trim())
-        .filter(Boolean)
+        .map(c => String(c?.type ?? c ?? "").toLowerCase().trim())
+        .filter(t => t && t !== "1" && isNaN(Number(t)))
     );
 
     for (const effect of (this.effects ?? [])) {
@@ -621,6 +833,12 @@ export class GaiaActor extends Actor {
           data[normKey] = val;
         }
       }
+    }
+
+    if (this.type === "creature" || this.type === "legacyNpc") {
+      data.initiative = Number(system?.defensiveParameters ?? 0);
+    } else {
+      data.initiative = Number(data.agility ?? 0);
     }
 
     return data;

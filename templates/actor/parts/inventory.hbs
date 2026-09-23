@@ -1,8 +1,33 @@
 <div class="tab inventory" data-group="primary" data-tab="inventory">
 <div class="tab-inventory-content">
 <div class="inventory-column-container">
+  {{!-- RODAPÉ: PESO TOTAL DO INVENTÁRIO E MOEDAS --}}
+  <div class="inventory-weight-footer">
+    <div class="inventory-currency">
+      <div class="currency-group currency-mp" title="Moeda de Prata">
+        <span class="currency-label">MP</span>
+        <input type="text" name="system.currency.mp" value="{{system.currency.mp}}" data-dtype="Number" />
+      </div>
+      <div class="currency-group currency-mo" title="Moeda de Ouro">
+        <span class="currency-label">MO</span>
+        <input type="text" name="system.currency.mo" value="{{system.currency.mo}}" data-dtype="Number" />
+      </div>
+      <div class="currency-group currency-mi" title="Moeda Imperial">
+        <span class="currency-label">MI</span>
+        <input type="text" name="system.currency.mi" value="{{system.currency.mi}}" data-dtype="Number" />
+      </div>
+    </div>
+
+    <div class="inventory-weight-display">
+      <i class="fa-solid fa-weight-hanging"></i>
+      <span class="inventory-weight-label">Peso Total do Inventário:</span>
+      <span class="inventory-weight-value">{{totalInventoryUnity}} U</span>
+    </div>
+  </div>
+  
   {{!-- 1. TABELA DE ARMAS --}}
   <div class="inventory-table-panel tab-weapons-content">
+
     <div class="inventory-table-header">
 
       
@@ -39,7 +64,7 @@
                 <span class="item-name-text">{{weapon.name}}</span>
               </div>
             </td>
-            <td class="col-item-stat">{{weapon.damage}}</td>
+            <td class="col-item-stat" title="{{weapon.damageTitle}}">{{weapon.damage}}</td>
             <td class="col-item-range">{{weapon.range}}</td>
             <td class="col-item-props" title="{{weapon.propertiesTitle}}">
               {{#if (and weapon.properties (ne weapon.properties "-"))}}

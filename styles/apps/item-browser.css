@@ -166,6 +166,26 @@
   color: var(--gaia-purple-dark, #5d1c8f);
 }
 
+.browser-book-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid var(--gaia-border-subtle);
+  flex-shrink: 0;
+}
+
+.book-group .browser-path-header {
+  border-left: 2px solid var(--gaia-purple-dark, #5d1c8f);
+  padding-left: 6px;
+}
+
+.book-group .browser-path-count-badge {
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-purple-dark, #5d1c8f);
+  color: var(--gaia-text-parchment);
+}
+
 .browser-path-title {
   margin: 0;
   font-family: var(--gaia-font-medieval);

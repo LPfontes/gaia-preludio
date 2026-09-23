@@ -1,0 +1,51 @@
+<div class="gaia-dialog-enhancement-content">
+  <p class="enhancement-dialog-intro">
+    {{localize "GAIA.LevelUp.EnhanceAbilityDesc"}}
+  </p>
+
+  {{#if abilities.length}}
+  <div class="enhancement-abilities-list">
+    {{#each abilities}}
+    <div class="enhancement-ability-row" data-item-id="{{this.id}}">
+      <div class="enhancement-ability-info">
+        <img src="{{this.img}}" class="enhancement-ability-icon" alt="{{this.name}}" />
+        <div class="enhancement-ability-details">
+          <span class="enhancement-ability-name">{{this.name}}</span>
+          <div class="enhancement-ability-meta">
+            {{#if this.hasActiveImprovements}}
+              {{#each this.activeImps}}
+                <span class="enhancement-badge active">
+                  <i class="fa-solid fa-sparkles"></i> {{this.title}}
+                </span>
+              {{/each}}
+            {{else if this.hasImprovements}}
+              <span class="enhancement-badge available">
+                {{this.improvements.length}} {{localize "GAIA.LevelUp.ImprovementsAvailable"}}
+              </span>
+            {{else}}
+              <span class="enhancement-badge none">
+                {{localize "GAIA.LevelUp.NoImprovementsAvailable"}}
+              </span>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+      <div class="enhancement-ability-action">
+        <button type="button" class="btn-enhance-ability {{#if this.hasActiveImprovements}}active{{/if}}" data-item-id="{{this.id}}" {{#unless this.hasImprovements}}disabled{{/unless}}>
+          <i class="fa-solid fa-sparkles"></i>
+          {{#if this.hasActiveImprovements}}
+            {{localize "GAIA.LevelUp.Change"}}
+          {{else}}
+            {{localize "GAIA.LevelUp.Enhance"}}
+          {{/if}}
+        </button>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <div class="enhancement-empty-hint">
+    {{localize "GAIA.LevelUp.EnhanceAbilityNoAbilities"}}
+  </div>
+  {{/if}}
+</div>

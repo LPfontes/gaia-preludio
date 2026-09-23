@@ -1,0 +1,184 @@
+/**
+ * ==============================================================================
+ * GAIA: PRELÚDIO - ENHANCEMENT DIALOG / DIÁLOGO DE APRIMORAMENTO DE HABILIDADE
+ * ==============================================================================
+ */
+
+.gaia-dialog-enhancement {
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-dialog-enhancement .gaia-dialog-enhancement-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.gaia-dialog-enhancement .enhancement-dialog-intro {
+  font-size: var(--gaia-font-sm);
+  color: var(--gaia-text-muted);
+  margin: 0 0 6px 0;
+  line-height: 1.4;
+}
+
+.gaia-dialog-enhancement .enhancement-abilities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gaia-dialog-enhancement .enhancement-ability-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 8px 10px;
+  gap: 10px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.gaia-dialog-enhancement .enhancement-ability-row:hover {
+  background: rgba(0, 0, 0, 0.35);
+  border-color: var(--gaia-border-gold);
+}
+
+.gaia-dialog-enhancement .enhancement-ability-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.gaia-dialog-enhancement .enhancement-ability-icon {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.gaia-dialog-enhancement .enhancement-ability-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.gaia-dialog-enhancement .enhancement-ability-name {
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  color: var(--gaia-text-parchment);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gaia-dialog-enhancement .enhancement-ability-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  font-size: var(--gaia-font-xs);
+}
+
+.gaia-dialog-enhancement .enhancement-badge {
+  padding: 2px 6px;
+  border-radius: var(--gaia-radius);
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-parchment);
+  font-weight: bold;
+}
+
+.gaia-dialog-enhancement .enhancement-badge.available {
+  color: var(--gaia-text-parchment);
+  font-style: italic;
+}
+
+.gaia-dialog-enhancement .enhancement-badge.none {
+  color: var(--gaia-text-parchment);
+  font-style: italic;
+}
+
+.gaia-dialog-enhancement .enhancement-ability-action {
+  flex-shrink: 0;
+}
+
+/* Botão Aprimorar Habilidade */
+.gaia-dialog-enhancement .btn-enhance-ability {
+  background: var(--gaia-purple-dark);
+  color: #fff;
+  padding: 4px 8px;
+  font-size: var(--gaia-font-base);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.gaia-dialog-enhancement .btn-enhance-ability:hover:not(:disabled) {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+  border-color: var(--gaia-border-frame);
+}
+
+
+.gaia-dialog-enhancement .btn-enhance-ability:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: var(--gaia-border-subtle);
+  color: var(--gaia-text-muted);
+}
+
+.gaia-dialog-enhancement .enhancement-empty-hint {
+  font-style: italic;
+  color: var(--gaia-text-muted);
+  font-size: var(--gaia-font-base);
+  padding: 12px;
+  border: 1px dashed var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  text-align: center;
+}
+
+/* Diálogo de Seleção de Aprimoramento */
+.gaia-dialog-enhancement .gaia-dialog-choose-enhancement {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-dialog-enhancement .enhancement-option-card {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  cursor: pointer;
+  padding: 6px 10px;
+  border: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  background: rgba(0, 0, 0, 0.25);
+  transition: all 0.15s ease;
+}
+
+.gaia-dialog-enhancement .enhancement-option-card:hover {
+  border-color: var(--gaia-border-frame) !important;
+  background: #3333335e !important;
+}
+
+.gaia-dialog-enhancement .enhancement-option-card input[type="radio"],
+.gaia-dialog-enhancement .enhancement-option-card input[type="checkbox"] {
+  margin-top: 3px;
+  cursor: pointer;
+  accent-color: var(--gaia-purple-dark);
+}

@@ -344,7 +344,21 @@ export function registerRollRequestListeners() {
         const damageText = applyBtn.dataset.damageText || "";
         let damageType = applyBtn.dataset.damageType || "";
 
-        if (isNaN(amount) || amount <= 0) {
+        // Verifica se há uma fórmula de dados em damageText ou dataset (ex: "5d8 Físico", "2d6+2", "5d8")
+        const formulaMatch = damageText.match(/\b\d*d\d+(?:\s*[+-]\s*\d+)?\b/i);
+        const formula = formulaMatch ? formulaMatch[0] : null;
+
+        if (formula && (isNaN(amount) || amount <= 0)) {
+          const { flowRoll } = await import("../flow.mjs");
+          const roll = await flowRoll(formula);
+          amount = roll.total;
+
+          const rollFlavor = `<strong>Rolagem de Dano:</strong> ${formula} ${damageType || ""}`.trim();
+          await roll.toMessage({
+            speaker: ChatMessage.getSpeaker(),
+            flavor: rollFlavor
+          });
+        } else if (isNaN(amount) || amount <= 0) {
           const match = damageText.match(/(\d+)/);
           if (match) amount = parseInt(match[1], 10);
         }
@@ -358,7 +372,7 @@ export function registerRollRequestListeners() {
         if (amount <= 0) return;
 
         if (!damageType && damageText) {
-          const typeMatch = damageText.replace(/^\d+\s*/, "").trim();
+          const typeMatch = damageText.replace(/^\d*d\d+(?:\s*[+-]\s*\d+)?|\d+/i, "").trim();
           if (typeMatch) damageType = typeMatch;
         }
 

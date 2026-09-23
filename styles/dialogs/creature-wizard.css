@@ -354,7 +354,7 @@
   font-family: var(--gaia-font-medieval);
   font-weight: bold;
   color: var(--gaia-text-parchment);
-  font-size: var(--gaia-font-sm);
+  font-size: var(--gaia-font-xl);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -387,6 +387,48 @@
   border-radius: var(--gaia-radius);
   text-align: center;
 }
+
+/* Container de Características Adicionais de Livro */
+.gaia-dialog-creature-wizard .wizard-book-bonuses-container,
+.wizard-book-bonuses-container {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--gaia-border-subtle);
+}
+
+.gaia-dialog-creature-wizard .wizard-book-bonuses-list,
+.wizard-book-bonuses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gaia-dialog-creature-wizard .book-bonus-pill,
+.book-bonus-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(148, 44, 228, 0.12);
+  border: 1px solid var(--gaia-purple);
+  border-radius: var(--gaia-radius);
+  padding: 4px 8px;
+  transition: all 0.15s ease;
+}
+
+.gaia-dialog-creature-wizard .badge-book-bonus,
+.badge-book-bonus {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+  border-radius: var(--gaia-radius);
+  padding: 2px 6px;
+  font-size: var(--gaia-font-xs);
+  font-family: inherit;
+  font-weight: bold;
+}
+
 
 /* Card de Resumo Final */
 .gaia-dialog-creature-wizard .wizard-summary-preview-card {

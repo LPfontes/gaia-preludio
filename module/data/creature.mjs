@@ -36,6 +36,9 @@ class CreatureDataModel extends ActorBaseDataModel {
       // EN: Includes all fields inherited from the parent actor base model
       ...super.defineSchema(),
       difficulty: new StringField({ required: true }),
+      // PT: Pontos de Poder da criatura / monstro
+      // EN: Power points of the creature / monster
+      powerPoints: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
       // PT: Tipos de criatura (comum, ferais, veu, naovivo, elemental, primas, etc)
       // EN: Creature types (comum, ferais, veu, naovivo, elemental, primas, etc)
       creatureTypes: new ArrayField(new StringField({ required: true }), { required: true, initial: ["comum"] }),

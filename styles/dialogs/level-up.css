@@ -285,7 +285,6 @@
   font-weight: bold;
   background: var(--gaia-purple-dark);
   color: #fff;
-  border: 1px solid var(--gaia-border-gold, #8c7355);
   border-radius: var(--gaia-radius);
   cursor: pointer;
   display: inline-flex;
@@ -298,6 +297,29 @@
 
 .gaia-dialog-level-up .btn-open-abilities-browser:hover {
   background: var(--gaia-purple, #581c87);
+  box-shadow: 0 2px 5px rgba(74, 46, 107, 0.3);
+}
+
+.gaia-dialog-level-up .btn-open-enhance-dialog {
+  padding: 6px 12px;
+  font-size: var(--gaia-font-base);
+  font-weight: bold;
+  background: var(--gaia-purple-dark);
+  color: #fff;
+  border-radius: var(--gaia-radius);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  font-family: var(--gaia-font-medieval, Georgia, serif);
+}
+
+.gaia-dialog-level-up .btn-open-enhance-dialog:hover {
+  background: var(--gaia-purple-dark);
+  color: #ffffff;
+  border-color: var(--gaia-border-frame);
   box-shadow: 0 2px 5px rgba(74, 46, 107, 0.3);
 }
 

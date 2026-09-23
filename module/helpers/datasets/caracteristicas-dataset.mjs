@@ -9947,5 +9947,281 @@ export const CARACTERISTICAS_DATA = [
       "improvements": [],
       "actions": []
     }
+  },
+  {
+    "_id": "feat020300000000",
+    "name": "Ascensão Abissal",
+    "type": "feature",
+    "img": "icons/magic/unholy/silhouette-robe-evil-glow.svg",
+    "folder": "fldfeat080000000",
+    "_key": "!items!feat020300000000",
+    "effects": [
+      {
+        "_id": "eff020300000000",
+        "name": "Ascensão Abissal",
+        "img": "icons/magic/unholy/silhouette-robe-evil-glow.svg",
+        "origin": "!items!feat020300000000",
+        "transfer": true,
+        "disabled": false,
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "description": "Resistência Mágica [Trevas], Fraqueza Mágica [Luz] e Imunidade a Enfraquecido.",
+        "tint": "#ffffff",
+        "statuses": [],
+        "sort": 0,
+        "flags": {},
+        "_stats": {
+          "compendiumSource": null,
+          "duplicateSource": null,
+          "coreVersion": "12.331",
+          "systemId": "gaia-preludio",
+          "systemVersion": "1.0.1",
+          "createdTime": null,
+          "modifiedTime": null,
+          "lastModifiedBy": null
+        },
+        "changes": [
+          {
+            "key": "system.damageResistance",
+            "mode": 2,
+            "value": "dark",
+            "priority": null
+          },
+          {
+            "key": "system.damageVulnerability",
+            "mode": 2,
+            "value": "light",
+            "priority": null
+          },
+          {
+            "key": "system.conditionImmunity",
+            "mode": 2,
+            "value": "enfraquecido",
+            "priority": null
+          }
+        ]
+      }
+    ],
+    "system": {
+      "name": "Ascensão Abissal",
+      "description": "Criaturas do Homuncularium com, pelo menos, uma Característica deste Livro possuem Resistência Mágica [Trevas] e Fraqueza Mágica [Luz], além de serem imunes a Enfraquecido.\nAlém disso, caso essa criatura possua uma Característica deste Livro de nível de Dificuldade inferior ao seu nível de Dificuldade, ela aprimorará esta Característica, recebendo o seu efeito de Ascensão Abissal.",
+      "category": "caracteristica",
+      "cost": "",
+      "typeAction": "",
+      "typeAbility": "caracteristica",
+      "types": [
+        "passiva"
+      ],
+      "quote": "",
+      "numberTarget": "1",
+      "range": "Pessoal",
+      "duration": "Permanente",
+      "level": 1,
+      "book": "Seres Abissais",
+      "tier": "Adicional",
+      "requirement": "",
+      "subEffects": [],
+      "improvements": [],
+      "actions": [
+        {
+          "id": "act_feat02030000",
+          "name": "Ascensão Abissal",
+          "description": "Criaturas do Homuncularium com, pelo menos, uma Característica deste Livro possuem Resistência Mágica [Trevas] e Fraqueza Mágica [Luz], além de serem imunes a Enfraquecido. Além disso, aprimora Características do Livro dos Seres Abissais de Dificuldade inferior ao seu nível.",
+          "cost": "",
+          "type": {
+            "actionType": "passiva",
+            "category": "suporte",
+            "tags": []
+          },
+          "attack": {
+            "hasAttack": false,
+            "attribute": "canalizacao",
+            "knowledge": "",
+            "bonus": "",
+            "rollType": "standard"
+          },
+          "damage": {
+            "hasDamage": false,
+            "formula": "",
+            "type": "immaterial",
+            "criticalBonus": "",
+            "scaling": ""
+          },
+          "healing": {
+            "hasHealing": false,
+            "formula": "",
+            "type": "pv",
+            "criticalBonus": "",
+            "scaling": ""
+          },
+          "condition": {
+            "hasCondition": true,
+            "status": "Ascensão Abissal",
+            "duration": "Permanente",
+            "description": "Resistência Mágica [Trevas], Fraqueza Mágica [Luz], Imunidade a Enfraquecido."
+          },
+          "check": {
+            "hasCheck": false,
+            "category": "parameter",
+            "attribute": "vigor",
+            "difficulty": 10,
+            "onSuccess": "Sucesso",
+            "onFailure": "Falha"
+          },
+          "areaOfEffect": {
+            "hasArea": false,
+            "shape": "circle",
+            "size": 0,
+            "unit": "m",
+            "targetLimit": ""
+          }
+        }
+      ]
+    }
+  },
+  {
+    "_id": "feat020600000000",
+    "name": "Ascensão Celestial",
+    "type": "feature",
+    "img": "icons/magic/holy/prayer-hands-glowing-yellow.svg",
+    "folder": "fldfeat090000000",
+    "_key": "!items!feat020600000000",
+    "effects": [
+      {
+        "_id": "eff020600000000",
+        "name": "Ascensão Celestial",
+        "img": "icons/magic/holy/prayer-hands-glowing-yellow.svg",
+        "origin": "!items!feat020600000000",
+        "transfer": true,
+        "disabled": false,
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "description": "Resistência Mágica [Luz], Fraqueza Mágica [Trevas] e Imunidade a Atordoado.",
+        "tint": "#ffffff",
+        "statuses": [],
+        "sort": 0,
+        "flags": {},
+        "_stats": {
+          "compendiumSource": null,
+          "duplicateSource": null,
+          "coreVersion": "12.331",
+          "systemId": "gaia-preludio",
+          "systemVersion": "1.0.1",
+          "createdTime": null,
+          "modifiedTime": null,
+          "lastModifiedBy": null
+        },
+        "changes": [
+          {
+            "key": "system.damageResistance",
+            "mode": 2,
+            "value": "light",
+            "priority": null
+          },
+          {
+            "key": "system.damageVulnerability",
+            "mode": 2,
+            "value": "dark",
+            "priority": null
+          },
+          {
+            "key": "system.conditionImmunity",
+            "mode": 2,
+            "value": "atordoado",
+            "priority": null
+          }
+        ]
+      }
+    ],
+    "system": {
+      "name": "Ascensão Celestial",
+      "description": "Criaturas do Homuncularium com, pelo menos, uma Característica deste Livro possuem Resistência Mágica [Luz] e Fraqueza Mágica [Trevas], além de serem imunes a Atordoado.\nAlém disso, caso essa criatura possua uma Característica deste Livro de nível de Dificuldade inferior ao seu nível de Dificuldade, ela aprimorará esta Característica, recebendo o seu efeito de Ascensão Celestial.",
+      "category": "caracteristica",
+      "cost": "",
+      "typeAction": "",
+      "typeAbility": "caracteristica",
+      "types": [
+        "passiva"
+      ],
+      "quote": "",
+      "numberTarget": "1",
+      "range": "Pessoal",
+      "duration": "Permanente",
+      "level": 1,
+      "book": "Seres Celestiais",
+      "tier": "Adicional",
+      "requirement": "",
+      "subEffects": [],
+      "improvements": [],
+      "actions": [
+        {
+          "id": "act_feat02060000",
+          "name": "Ascensão Celestial",
+          "description": "Criaturas do Homuncularium com, pelo menos, uma Característica deste Livro possuem Resistência Mágica [Luz] e Fraqueza Mágica [Trevas], além de serem imunes a Atordoado. Além disso, aprimora Características do Livro dos Seres Celestiais de Dificuldade inferior ao seu nível.",
+          "cost": "",
+          "type": {
+            "actionType": "passiva",
+            "category": "suporte",
+            "tags": []
+          },
+          "attack": {
+            "hasAttack": false,
+            "attribute": "canalizacao",
+            "knowledge": "",
+            "bonus": "",
+            "rollType": "standard"
+          },
+          "damage": {
+            "hasDamage": false,
+            "formula": "",
+            "type": "immaterial",
+            "criticalBonus": "",
+            "scaling": ""
+          },
+          "healing": {
+            "hasHealing": false,
+            "formula": "",
+            "type": "pv",
+            "criticalBonus": "",
+            "scaling": ""
+          },
+          "condition": {
+            "hasCondition": true,
+            "status": "Ascensão Celestial",
+            "duration": "Permanente",
+            "description": "Resistência Mágica [Luz], Fraqueza Mágica [Trevas], Imunidade a Atordoado."
+          },
+          "check": {
+            "hasCheck": false,
+            "category": "parameter",
+            "attribute": "vigor",
+            "difficulty": 10,
+            "onSuccess": "Sucesso",
+            "onFailure": "Falha"
+          },
+          "areaOfEffect": {
+            "hasArea": false,
+            "shape": "circle",
+            "size": 0,
+            "unit": "m",
+            "targetLimit": ""
+          }
+        }
+      ]
+    }
   }
 ];

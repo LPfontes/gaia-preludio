@@ -321,6 +321,7 @@
 }
 
 /* Botões Interativos no Card de Chat */
+button.btn-action-chat,
 .gaia-action-chat-card button.btn-action-chat,
 .action-damage-targets-block button.btn-apply-damage-target {
   cursor: pointer;
@@ -336,6 +337,7 @@
   transition: all 0.15s ease;
 }
 
+button.btn-action-chat:hover,
 .gaia-action-chat-card button.btn-action-chat:hover,
 .action-damage-targets-block button.btn-apply-damage-target:hover,
 .action-healing-targets-block button.btn-apply-healing-target:hover {
@@ -344,8 +346,10 @@
   transform: translateY(-1px);
 }
 
+.btn-roll-action-damage:hover,
 .gaia-action-chat-card .btn-roll-action-damage:hover {
   background: var(--gaia-health);
+  color: #fff;
 }
 
 .gaia-action-chat-card .btn-roll-action-healing:hover {

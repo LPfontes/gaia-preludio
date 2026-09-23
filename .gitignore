@@ -9,3 +9,5 @@ dist/
 *.zip
 scratch/
 *.code-workspace
+Trace-*.json
+*.cpuprofile
