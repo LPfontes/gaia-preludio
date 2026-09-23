@@ -24,7 +24,7 @@ export const CANONICAL_LEGACIES = [
   "Forjado",
   "Humano",
   "Inari",
-  "Kahatsza",
+  "Kahats'za",
   "Kitari",
   "Minotauro",
   "Netune",
@@ -32,10 +32,33 @@ export const CANONICAL_LEGACIES = [
   "Seiko",
   "Ursar",
   "Valdrak",
-  "Venneli",
+  "Vennéli",
   "Yuansu",
   "Zaokan"
 ];
+
+/**
+ * Mapeamento de grafias legadas / variantes para o nome canônico oficial dos legados.
+ */
+export const LEGACY_NAME_ALIASES = {
+  "kahatsza": "Kahats'za",
+  "kahats'za": "Kahats'za",
+  "kahats’za": "Kahats'za",
+  "venneli": "Vennéli",
+  "vennéli": "Vennéli"
+};
+
+/**
+ * Normaliza o nome de um legado para a grafia canônica oficial.
+ * @param {string} name - Nome original ou variante
+ * @returns {string} Nome canônico normalizado
+ */
+export function normalizeLegacyName(name) {
+  if (!name) return "";
+  const trimmed = String(name).trim();
+  const key = trimmed.toLowerCase();
+  return LEGACY_NAME_ALIASES[key] || trimmed;
+}
 
 /**
  * Constrói um array de pips/diamantes com seus estados ativos/inativos.
@@ -477,14 +500,14 @@ export function prepareSidebarContext(actor, context) {
 
   // Coleta as opções de Legado (Config canônica dos 21 legados, Itens do Mundo, do Ator e Compêndios)
   const items = actor.items ?? [];
-  const configLegacies = Object.values(CONFIG.GAIA?.legacies ?? {});
-  const worldLegacies = (game.items?.filter(i => i.type === "legacy") ?? []).map(i => i.name);
-  const actorLegacies = (items.filter(i => i.type === "legacy") ?? []).map(i => i.name);
+  const configLegacies = Object.values(CONFIG.GAIA?.legacies ?? {}).map(normalizeLegacyName);
+  const worldLegacies = (game.items?.filter(i => i.type === "legacy") ?? []).map(i => normalizeLegacyName(i.name));
+  const actorLegacies = (items.filter(i => i.type === "legacy") ?? []).map(i => normalizeLegacyName(i.name));
   const compendiumLegacies = [];
   for (const pack of (game.packs?.filter(p => p.documentName === "Item") ?? [])) {
     if (pack.index) {
       for (const entry of pack.index) {
-        if (entry.type === "legacy" && entry.name) compendiumLegacies.push(entry.name);
+        if (entry.type === "legacy" && entry.name) compendiumLegacies.push(normalizeLegacyName(entry.name));
       }
     }
   }
@@ -497,8 +520,9 @@ export function prepareSidebarContext(actor, context) {
     ...compendiumLegacies
   ])).filter(Boolean);
 
-  if (system.legacy && !allLegacies.includes(system.legacy)) {
-    allLegacies.push(system.legacy);
+  const currentLegacyNormalized = normalizeLegacyName(system.legacy);
+  if (currentLegacyNormalized && !allLegacies.includes(currentLegacyNormalized)) {
+    allLegacies.push(currentLegacyNormalized);
   }
   allLegacies.sort((a, b) => a.localeCompare(b, "pt-BR"));
 
@@ -508,19 +532,28 @@ export function prepareSidebarContext(actor, context) {
   }
   context.legacySelectOptions = legacySelectOptions;
 
-  const selectedLegacyName = system.legacy || "";
+  const selectedLegacyName = currentLegacyNormalized || "";
   context.selectedLegacyName = selectedLegacyName;
 
   let legacyItem = null;
   if (selectedLegacyName) {
-    legacyItem = items.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
+    legacyItem = items.find(i => i.type === "legacy" && (
+      i.name.toLowerCase() === selectedLegacyName.toLowerCase() ||
+      normalizeLegacyName(i.name).toLowerCase() === selectedLegacyName.toLowerCase()
+    ));
     if (!legacyItem) {
-      legacyItem = game.items?.find(i => i.type === "legacy" && i.name.toLowerCase() === selectedLegacyName.toLowerCase());
+      legacyItem = game.items?.find(i => i.type === "legacy" && (
+        i.name.toLowerCase() === selectedLegacyName.toLowerCase() ||
+        normalizeLegacyName(i.name).toLowerCase() === selectedLegacyName.toLowerCase()
+      ));
     }
     if (!legacyItem) {
       for (const pack of (game.packs?.filter(p => p.documentName === "Item") ?? [])) {
         if (pack.index) {
-          const entry = pack.index.find(e => e.type === "legacy" && e.name?.toLowerCase() === selectedLegacyName.toLowerCase());
+          const entry = pack.index.find(e => e.type === "legacy" && (
+            e.name?.toLowerCase() === selectedLegacyName.toLowerCase() ||
+            normalizeLegacyName(e.name)?.toLowerCase() === selectedLegacyName.toLowerCase()
+          ));
           if (entry) {
             legacyItem = pack.get(entry._id) || entry;
             break;

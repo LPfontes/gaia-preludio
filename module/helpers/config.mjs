@@ -579,7 +579,7 @@ GAIA.legacies = {
   forjado: "Forjado",
   humano: "Humano",
   inari: "Inari",
-  kahatsza: "Kahatsza",
+  kahatsza: "Kahats'za",
   kitari: "Kitari",
   minotauro: "Minotauro",
   netune: "Netune",
@@ -587,7 +587,7 @@ GAIA.legacies = {
   seiko: "Seiko",
   ursar: "Ursar",
   valdrak: "Valdrak",
-  venneli: "Venneli",
+  venneli: "Vennéli",
   yuansu: "Yuansu",
   zaokan: "Zaokan"
 };

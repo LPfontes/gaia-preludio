@@ -12,6 +12,7 @@ import {
 } from "../../../helpers/dialogs/index.mjs";
 import { defense, flowDeathDie, flowRegenerateStabilized } from "../../../helpers/flow.mjs";
 import { rollWeaponAttack, rollStat, rollMastery } from "../../../helpers/stat-rolls.mjs";
+import { normalizeLegacyName } from "../../../helpers/actor-context.mjs";
 import { GaiaItemBrowser } from "../../item-browser.mjs";
 import { GaiaDeathSaveDialog } from "../../death-save-dialog.mjs";
 
@@ -359,22 +360,23 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
    * @returns {Promise<void>}
    */
   async _onChangeLegacySelect(event) {
-    const newLegacyName = String(event.target?.value || "").trim();
-    if (!newLegacyName) return;
+    const rawLegacyName = String(event.target?.value || "").trim();
+    if (!rawLegacyName) return;
+    const newLegacyName = normalizeLegacyName(rawLegacyName);
 
-    // Evita troca desnecessária se o legado já for o mesmo (case-insensitive)
-    const currentLegacy = String(this.actor.system?.legacy || "").trim();
+    // Evita troca desnecessária se o legado já for o mesmo (normalizado e case-insensitive)
+    const currentLegacy = normalizeLegacyName(this.actor.system?.legacy || "");
     if (currentLegacy.toLowerCase() === newLegacyName.toLowerCase()) return;
 
     // 1. Busca em itens já embutidos no ator
     let legacyDoc = this.actor.items.find(
-      i => i.type === "legacy" && i.name.toLowerCase() === newLegacyName.toLowerCase()
+      i => i.type === "legacy" && (i.name.toLowerCase() === newLegacyName.toLowerCase() || normalizeLegacyName(i.name).toLowerCase() === newLegacyName.toLowerCase())
     );
 
     // 2. Busca nos itens globais do mundo
     if (!legacyDoc) {
       legacyDoc = game.items?.find(
-        i => i.type === "legacy" && i.name.toLowerCase() === newLegacyName.toLowerCase()
+        i => i.type === "legacy" && (i.name.toLowerCase() === newLegacyName.toLowerCase() || normalizeLegacyName(i.name).toLowerCase() === newLegacyName.toLowerCase())
       ) ?? null;
     }
 
@@ -382,7 +384,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     if (!legacyDoc) {
       for (const pack of (game.packs?.filter(p => p.documentName === "Item") ?? [])) {
         const entry = pack.index?.find(
-          e => e.type === "legacy" && e.name?.toLowerCase() === newLegacyName.toLowerCase()
+          e => e.type === "legacy" && (e.name?.toLowerCase() === newLegacyName.toLowerCase() || normalizeLegacyName(e.name)?.toLowerCase() === newLegacyName.toLowerCase())
         );
         if (entry) {
           try {

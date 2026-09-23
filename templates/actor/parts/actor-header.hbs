@@ -24,7 +24,7 @@
       <span class="field-label">{{localize "GAIA.Banner.Legacy"}}</span>
       <div class="legacy-select-container" style="display: flex; align-items: center; gap: 4px; width: 100%;">
         <select name="system.legacy" style="flex: 1;">
-          {{selectOptions legacySelectOptions selected=system.legacy blank=""}}
+          {{selectOptions legacySelectOptions selected=selectedLegacyName blank=""}}
         </select>
         {{#if legacyItem}}
         <button type="button" class="btn-open-legacy-sheet" data-action="openLegacyItem"
