@@ -565,33 +565,32 @@
   outline: none;
 }
 
-/* Larguras específicas de cada coluna da tabela de arma */
-.tab-weapons-content .col-weapon-type {
+/* Larguras específicas de cada coluna da tabela de arma (disposta em 2 linhas) */
+.tab-weapons-content .col-weapon-category,
+.tab-weapons-content .col-weapon-damage {
   width: 25%;
 }
 
-.tab-weapons-content .col-weapon-damage {
-  width: 10%;
-}
-
+.tab-weapons-content .col-weapon-type,
 .tab-weapons-content .col-weapon-damage-type {
-  width: 15%;
-}
-
-.tab-weapons-content .col-weapon-attr {
   width: 20%;
 }
 
-.tab-weapons-content .col-weapon-range {
-  width: 10%;
+.tab-weapons-content .col-weapon-range,
+.tab-weapons-content .col-weapon-attack-param {
+  width: 20%;
 }
 
 .tab-weapons-content .col-weapon-price {
-  width: 10%;
+  width: 17%;
 }
 
 .tab-weapons-content .col-weapon-unity {
-  width: 10%;
+  width: 18%;
+}
+
+.tab-weapons-content .col-weapon-attr {
+  width: 35%;
 }
 
 /* Larguras específicas das tabelas de Armadura e Equipamento */

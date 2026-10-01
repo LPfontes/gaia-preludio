@@ -135,18 +135,23 @@ O sistema utiliza a API nativa de `DataModel` do Foundry VTT (`foundry.abstract.
 
 #### `WeaponDataModel` (`module/data/EquipmentModel.mjs`)
 *Extende `EquipmentBaseDataModel`. Modelo para armas e instrumentos de combate.*
-* Campos herdados de `EquipmentBaseDataModel`.
-* **`weaponType`** (`StringField`, Padrão: `"light"`): Tipo de arma (`light`, `medium`, `heavy`, `ranged`, `magical`).
+* Campos herdados de `EquipmentBaseDataModel` (`name`, `description`, `price`, `unity`, `equipped`, `quantity`, `actions`).
+* **`category`** (`StringField`, Padrão: `"light"`): Categoria da arma (`light`, `heavy`, `ranged`, `magical`, `natural`, `special`, `improvized`).
+  * **Regra de Ataque:** Armas da categoria `Armamento Mágico` utilizam **Canalização** (`channeling`) para testes de ataque; as demais utilizam **Precisão** (`precision`) por padrão.
+* **`weaponType`** (`StringField`, Padrão: `"light"`): Classificação da arma (`light`, `medium`, `heavy`, `ranged`, `magical`).
 * **`damageType`** (`SchemaField`): Informações do dano provido pela arma.
   * `value` (`NumberField`, Inteiro, Mín: 0, Padrão: 1): Quantidade/dado de dano base.
-  * `type` (`StringField`, Padrão: `"slashing"`): Tipo de dano (`physical`, `fire`, `wind`, `water`, `earth`, `thunder`, `ice`, `neutro`, `nature`, `profane`, `light`, `dark`, `immaterial`).
-* **`attackParameter`** (`SchemaField`): Parametro utilizado para a rolagem de ataque.
+  * `type` (`StringField`, Padrão: `"physical"`): Tipo de dano (`physical`, `fire`, `wind`, `water`, `earth`, `thunder`, `ice`, `neutro`, `nature`, `profane`, `light`, `dark`, `immaterial`).
+* **`attackParameter`** (`SchemaField`): Informações da rolagem de ataque.
+  * `value` (`NumberField`, Inteiro, Padrão: 0): Bônus adicional ao teste de ataque.
+  * `attribute` (`StringField`, Padrão: `"precision"`): Parâmetro base derivado do ataque (`"precision"` ou `"channeling"` para Armamento Mágico).
+* **`damageParameter`** (`SchemaField`): Parâmetro que define a escala do dano da arma.
   * `value` (`NumberField`, Inteiro, Padrão: 0): Bônus adicional.
-  * `attribute` (`StringField`, Padrão: `"precision"`): Parametro base de ataque.
+  * `attribute` (`StringField`, Padrão: `"brutality"`): Parâmetro que potencializa o dano (ex: `brutality`, `dexterity`, `agility`, `arcane`, `spirit`, `vigor`).
 * **`range`** (`SchemaField`): Alcance da arma.
-  * `value` (`NumberField`, Inteiro, Mín: 0, Padrão: 1): Distância máxima.
+  * `value` (`NumberField`, Inteiro, Mín: 0, Padrão: 1): Distância máxima em metros.
   * `type` (`StringField`, Padrão: `"melee"`): Categoria de alcance (`melee` ou `ranged`).
-* **`properties`** (`ArrayField<StringField>`): Propriedades especiais (ex: versátil, pesada, arremesso).
+* **`properties`** (`ArrayField<SchemaField>`): Propriedades especiais (ex: versátil, pesada, arremesso).
 
 #### `RelicDataModel` (`module/data/RelicModel.mjs`)
 *Extende `EquipmentBaseDataModel`. Modelo para Relíquias: itens e equipamentos únicos com habilidades e força de Véu.*

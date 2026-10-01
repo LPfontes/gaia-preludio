@@ -40,6 +40,21 @@ export class WeaponSheet extends GaiaItemSheet {
       };
     });
 
+    // Mapeamento e normalização da categoria da arma para casar com as opções de config.weaponCategories
+    const rawCat = String(this.item.system?.category || "").trim().toLowerCase();
+    const catMap = {
+      "armamento leve": "light",
+      "armamento pesado": "heavy",
+      "armamento à distância": "ranged",
+      "armamento a distancia": "ranged",
+      "armamento mágico": "magical",
+      "armamento magico": "magical",
+      "armamento natural": "natural",
+      "especial": "special",
+      "improvisado": "improvized"
+    };
+    context.weaponCategory = catMap[rawCat] || this.item.system?.category || "light";
+
     return context;
   }
 

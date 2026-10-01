@@ -220,10 +220,16 @@ export class GaiaItem extends Item {
         }
       }
 
-      // Parâmetro de Ataque
-      const attrKey = String(system.attackParameter?.attribute || "precision").toLowerCase();
-      const rawParam = config?.parameters?.[attrKey] ?? attrKey;
-      const paramLabel = typeof rawParam === "string" ? game.i18n.localize(rawParam) : attrKey;
+      // Parâmetros de Ataque e Escala de Dano
+      const cat = String(system.category || "").trim().toLowerCase();
+      const isMagical = cat === "armamento mágico" || cat === "armamento magico" || cat === "magical";
+      const attackAttrKey = String(system.attackParameter?.attribute || (isMagical ? "channeling" : "precision")).toLowerCase();
+      const rawAttackParam = config?.parameters?.[attackAttrKey] ?? attackAttrKey;
+      const attackParamLabel = typeof rawAttackParam === "string" ? game.i18n.localize(rawAttackParam) : attackAttrKey;
+
+      const damageAttrKey = String(system.damageParameter?.attribute || system.attackParameter?.attribute || "brutality").toLowerCase();
+      const rawDamageParam = config?.parameters?.[damageAttrKey] ?? damageAttrKey;
+      const damageParamLabel = typeof rawDamageParam === "string" ? game.i18n.localize(rawDamageParam) : damageAttrKey;
 
       const description = system.description ? `<p style="margin-top: 6px; text-align: left; font-size: 0.95em;">${system.description}</p>` : "";
 
@@ -257,7 +263,8 @@ export class GaiaItem extends Item {
             <span>${this.name}</span>
           </h3>
           <div class="weapon-meta-bar" style="font-size: 0.9em; font-weight: bold; text-align: center; margin-bottom: 6px;">
-            <span><strong>Parâmetro:</strong> ${paramLabel}</span> | 
+            <span><strong>Ataque:</strong> ${attackParamLabel}</span> | 
+            <span><strong>Escala:</strong> ${damageParamLabel}</span> | 
             <span><strong>Alcance:</strong> ${rangeText}</span>
           </div>
           ${description}

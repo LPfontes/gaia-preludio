@@ -311,9 +311,26 @@ export class GaiaItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     }
   }
 
-    static async _onToggleTableEdit(event, target) {
+  static async _onToggleTableEdit(event, target) {
     event.preventDefault();
-    const scope = target.closest("tr.item-row") || target.closest(".inventory-table-panel") || target.closest(".inventory-grid-table") || this.element;
+    
+    const weaponsContainer = target.closest(".weapons-tables-container");
+    if (weaponsContainer) {
+      const tables = weaponsContainer.querySelectorAll(".inventory-grid-table");
+      if (tables.length > 0) {
+        // Determina o novo estado baseado na primeira tabela para garantir sincronia
+        const hasFormControls = tables[0].querySelector("select, textarea, input:not([type='checkbox']):not(.btn-toggle-table-edit)") !== null;
+        const shouldEdit = !hasFormControls;
+        tables.forEach(t => toggleInventoryGridTableMode(t, shouldEdit));
+      }
+      return;
+    }
+
+    const isMainWeaponTable = target.closest(".weapons-table-frame") && !target.closest(".weapon-properties-table");
+    const scope = isMainWeaponTable 
+        ? (target.closest(".inventory-grid-table") || target.closest("tr.item-row"))
+        : (target.closest("tr.item-row") || target.closest(".inventory-table-panel") || target.closest(".inventory-grid-table") || this.element);
+    
     toggleInventoryGridTableMode(scope);
   }
 
