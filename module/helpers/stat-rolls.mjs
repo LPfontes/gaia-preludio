@@ -488,7 +488,8 @@ export async function rollInitiative(actor, options = {}) {
 }
 
 /**
- * Executa a rolagem de ataque de um armamento utilizando o Parâmetro configurado em item.system.attackParameter.attribute.
+ * Executa a rolagem de ataque de um armamento utilizando o Parâmetro de ataque:
+ * "precision" (Precisão) por padrão, ou "channeling" (Canalização) para armas da categoria "Armamento Mágico".
  * @param {Actor} actor - Documento do Ator
  * @param {Item} item - Documento do Item de Arma
  * @param {object} [options={}] - Opções do evento (event, target)
@@ -497,8 +498,11 @@ export async function rollInitiative(actor, options = {}) {
 export async function rollWeaponAttack(actor, item, { event, target } = {}) {
   if (!actor || !item) return null;
 
-  // Resgata o atributo de ataque configurado na arma (ex: "precision", "brutality", etc.)
-  const attrKey = String(item.system?.attackParameter?.attribute || "precision").toLowerCase();
+  // O ataque da arma é feito por padrão por "precision", contudo armas da categoria "Armamento Mágico" usam "channeling"
+  const cat = String(item.system?.category || "").trim().toLowerCase();
+  const isMagical = cat === "armamento mágico" || cat === "armamento magico" || cat === "magical";
+  const defaultAttackAttr = isMagical ? "channeling" : "precision";
+  const attrKey = String(item.system?.attackParameter?.attribute || defaultAttackAttr).toLowerCase();
   const bonus = Number(item.system?.attackParameter?.value) || 0;
 
   // Busca o valor base e rótulo do parâmetro no Ator

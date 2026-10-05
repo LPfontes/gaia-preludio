@@ -94,6 +94,10 @@ export class WeaponDataModel extends EquipmentBaseDataModel {
       // EN: Inherits base equipment fields (name, description, price, category, unity)
       ...super.defineSchema(),
 
+      // PT: Categoria da arma (light, heavy, ranged, magical, natural, etc.)
+      // EN: Weapon category (light, heavy, ranged, magical, natural, etc.)
+      category: new StringField({ required: true, initial: "light" }),
+
       // PT: Classificação da arma (light, heavy, ranged)
       // EN: Weapon type classification (light, heavy, ranged)
       weaponType: new StringField({ required: true, initial: "light" }),
@@ -105,11 +109,18 @@ export class WeaponDataModel extends EquipmentBaseDataModel {
         type: new StringField({ required: true, initial: "physical" })
       }),
 
-      // PT: Parâmetro utilizado para calcular o teste de ataque
-      // EN: Parameter used to calculate the attack roll
+      // PT: Parâmetro utilizado para calcular o teste de ataque (bônus adicional e atributo base derivado)
+      // EN: Parameter used to calculate the attack roll (additional bonus and derived base attribute)
       attackParameter: new SchemaField({
         value: new NumberField({ required: true, integer: true, initial: 0 }),
         attribute: new StringField({ required: true, initial: "precision" })
+      }),
+
+      // PT: Parâmetro que define a escala do dano da arma (Brutalidade, Destreza, Agilidade, etc.)
+      // EN: Parameter that defines the weapon's damage scaling (Brutality, Dexterity, Agility, etc.)
+      damageParameter: new SchemaField({
+        value: new NumberField({ required: true, integer: true, initial: 0 }),
+        attribute: new StringField({ required: true, initial: "brutality" })
       }),
 
       // PT: Alcance da arma (distância máxima e tipo corpo a corpo/distância)
@@ -129,6 +140,39 @@ export class WeaponDataModel extends EquipmentBaseDataModel {
         { required: true, initial: [] }
       )
     };
+  }
+
+  /** @override */
+  static migrateData(source) {
+    super.migrateData(source);
+    // Preserva o atributo configurado em armas legadas como o atributo de escala de dano
+    if (source.attackParameter?.attribute && !source.damageParameter?.attribute) {
+      source.damageParameter = source.damageParameter || {};
+      source.damageParameter.attribute = source.attackParameter.attribute;
+    }
+    return source;
+  }
+
+  /** @override */
+  prepareDerivedData() {
+    super.prepareDerivedData();
+
+    // Se o atributo de ataque não estiver definido, aplica a regra padrão de Gaia:
+    // Armas da categoria "Armamento Mágico" (ou "magical") usam "channeling" (Canalização),
+    // enquanto todas as outras usam "precision" (Precisão) por padrão.
+    if (!this.attackParameter?.attribute) {
+      const cat = String(this.category || "").trim().toLowerCase();
+      const isMagical = cat === "armamento mágico" || cat === "armamento magico" || cat === "magical";
+      if (this.attackParameter) {
+        this.attackParameter.attribute = isMagical ? "channeling" : "precision";
+      }
+    }
+
+    // Se damageParameter.attribute não estiver definido, usa fallback para attackParameter.attribute ou "brutality"
+    if (!this.damageParameter?.attribute && this.attackParameter?.attribute) {
+      this.damageParameter = this.damageParameter || {};
+      this.damageParameter.attribute = this.attackParameter.attribute;
+    }
   }
 }
 

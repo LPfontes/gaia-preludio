@@ -19,55 +19,86 @@
     <section class="sheet-tabs-content item-tabs-content">
       {{!-- ABA 1: TABELA --}}
       <div class="tab tabela active" data-group="primary" data-tab="tabela">
-        <div class="weapons-table-frame">
-          <table class="inventory-grid-table">
-            <thead>
-              <tr>
-                <th class="col-weapon-type">{{localize "GAIA.Weapon.Type"}}</th>
-                <th class="col-weapon-damage">{{localize "GAIA.Weapon.BaseDamage"}}</th>
-                <th class="col-weapon-damage-type">{{localize "GAIA.Weapon.DamageType"}}</th>
-                <th class="col-weapon-attr">{{localize "GAIA.Weapon.Attribute"}}</th>
-                <th class="col-weapon-range">{{localize "GAIA.Weapon.Range"}}</th>
-                <th class="col-weapon-price">{{localize "GAIA.Weapon.Price"}}</th>
-                <th class="col-weapon-unity">{{localize "GAIA.Weapon.Weight"}}</th>
-            <th class="col-edit" style="width: 36px; text-align: center;"><i class="fa-solid fa-gear"></i></th>
-          </tr>
-        </thead>
-            <tbody>
-              <tr class="item-row">
-                <td class="col-weapon-type">
-                  <select name="system.weaponType">
-                    {{selectOptions config.weaponTypes selected=system.weaponType localize=true}}
-                  </select>
-                </td>
-                <td class="col-weapon-damage">
-                  <input type="number" name="system.damageType.value" value="{{system.damageType.value}}" min="0" />
-                </td>
-                <td class="col-weapon-damage-type">
-                  <select name="system.damageType.type">
-                    {{selectOptions config.damageTypesFlat selected=system.damageType.type localize=true}}
-                  </select>
-                </td>
-                <td class="col-weapon-attr">
-                  <select name="system.attackParameter.attribute">
-                    {{selectOptions config.parameters selected=system.attackParameter.attribute localize=true}}
-                  </select>
-                </td>
-                <td class="col-weapon-range">
-                  <input type="number" name="system.range.value" value="{{system.range.value}}" min="0" />
-                </td>
-                <td class="col-weapon-price">
-                  <input type="number" name="system.price" value="{{system.price}}" min="0" />
-                </td>
-                <td class="col-weapon-unity">
-                  <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
-                </td>
-            <td class="col-edit" style="text-align: center; vertical-align: middle;">
-              <button type="button" class="btn-toggle-table-edit" data-action="toggleTableEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen"></i></button>
-            </td>
-          </tr>
-            </tbody>
-          </table>
+        <div class="weapons-tables-container">
+          <div class="weapons-table-frame" style="margin-bottom: 8px;">
+            <table class="inventory-grid-table">
+              <thead>
+                <tr>
+                  <th class="col-weapon-category">{{localize "GAIA.Weapon.Category"}}</th>
+                  <th class="col-weapon-type">{{localize "GAIA.Weapon.Type"}}</th>
+                  <th class="col-weapon-range">{{localize "GAIA.Weapon.Range"}}</th>
+                  <th class="col-weapon-price">{{localize "GAIA.Weapon.Price"}}</th>
+                  <th class="col-weapon-unity">{{localize "GAIA.Weapon.Weight"}}</th>
+                  <th class="col-edit" style="width: 36px; text-align: center; vertical-align: middle;"><i class="fa-solid fa-gear"></i></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="item-row">
+                  <td class="col-weapon-category">
+                    <select name="system.category">
+                      {{selectOptions config.weaponCategories selected=weaponCategory localize=true}}
+                    </select>
+                  </td>
+                  <td class="col-weapon-type">
+                    <select name="system.weaponType">
+                      {{selectOptions config.weaponTypes selected=system.weaponType localize=true}}
+                    </select>
+                  </td>
+                  <td class="col-weapon-range">
+                    <input type="number" name="system.range.value" value="{{system.range.value}}" min="0" />
+                  </td>
+                  <td class="col-weapon-price">
+                    <input type="number" name="system.price" value="{{system.price}}" min="0" />
+                  </td>
+                  <td class="col-weapon-unity">
+                    <input type="number" name="system.unity" value="{{system.unity}}" min="0" step="any" />
+                  </td>
+                  <td class="col-edit" style="text-align: center; vertical-align: middle;">
+                    <button type="button" class="btn-toggle-table-edit" data-action="toggleTableEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="weapons-table-frame">
+            <table class="inventory-grid-table">
+              <thead>
+                <tr>
+                  <th class="col-weapon-damage">{{localize "GAIA.Weapon.BaseDamage"}}</th>
+                  <th class="col-weapon-damage-type">{{localize "GAIA.Weapon.DamageType"}}</th>
+                  <th class="col-weapon-attack-param">{{localize "GAIA.Weapon.AttackParameter"}}</th>
+                  <th class="col-weapon-attr">{{localize "GAIA.Weapon.DamageParameter"}}</th>
+                  <th class="col-edit" style="width: 36px; text-align: center; vertical-align: middle;"><i class="fa-solid fa-gear"></i></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="item-row">
+                  <td class="col-weapon-damage">
+                    <input type="number" name="system.damageType.value" value="{{system.damageType.value}}" min="0" />
+                  </td>
+                  <td class="col-weapon-damage-type">
+                    <select name="system.damageType.type">
+                      {{selectOptions config.damageTypesFlat selected=system.damageType.type localize=true}}
+                    </select>
+                  </td>
+                  <td class="col-weapon-attack-param">
+                    <select name="system.attackParameter.attribute">
+                      {{selectOptions config.parameters selected=system.attackParameter.attribute localize=true}}
+                    </select>
+                  </td>
+                  <td class="col-weapon-attr">
+                    <select name="system.damageParameter.attribute">
+                      {{selectOptions config.parameters selected=system.damageParameter.attribute localize=true}}
+                    </select>
+                  </td>
+                  <td class="col-edit" style="text-align: center; vertical-align: middle;">
+                    <button type="button" class="btn-toggle-table-edit" data-action="toggleTableEdit" title="Editar" style="cursor: pointer; background: transparent; border: none; color: var(--gaia-text-parchment);"><i class="fa-solid fa-pen"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="weapon-properties-panel" style="margin-top: 15px;">

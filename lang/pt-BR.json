@@ -411,10 +411,13 @@
     },
     "Weapon": {
       "NamePlaceholder": "Nome da Arma",
+      "Category": "Categoria",
       "Type": "Tipo",
       "BaseDamage": "Dano Base",
       "DamageType": "Tipo Dano",
       "Attribute": "Parâmetro",
+      "DamageParameter": "Parâmetro de Dano",
+      "AttackParameter": "Parâmetro de Ataque",
       "Range": "Alcance",
       "Price": "Preço",
       "Weight": "Peso",
@@ -557,6 +560,16 @@
       "Heavy": "Pesada",
       "Ranged": "À Distância",
       "Magical": "Mágica",
+      "special": "Especial",
+      "improvized": "Improvisado"
+    },
+    "WeaponCategory": {
+      "name": "Categoria de Arma",
+      "light": "Armamento Leve",
+      "heavy": "Armamento Pesado",
+      "ranged": "Armamento à Distância",
+      "magical": "Armamento Mágico",
+      "natural": "Armamento Natural",
       "special": "Especial",
       "improvized": "Improvisado"
     },

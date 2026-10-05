@@ -234,13 +234,14 @@ GAIA.equipmentCategories = {
   vestuary: "GAIA.EquipmentCategory.Vestuary",
   rides: "GAIA.EquipmentCategory.Rides"
 };
-GAIA.weaponCategories ={
+GAIA.weaponCategories = {
   light: "GAIA.WeaponCategory.light",
   heavy: "GAIA.WeaponCategory.heavy",
   ranged: "GAIA.WeaponCategory.ranged",
   magical: "GAIA.WeaponCategory.magical",
+  natural: "GAIA.WeaponCategory.natural",
   special: "GAIA.WeaponCategory.special",
-  improvized: "GAIA.WeaponCategory.improvized",
+  improvized: "GAIA.WeaponCategory.improvized"
 };
 
 /**

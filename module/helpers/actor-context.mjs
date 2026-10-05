@@ -225,7 +225,8 @@ export function calculateWeaponDamage(item, actor = null) {
     if (match) baseDamage = parseInt(match[1], 10);
   }
 
-  const paramKey = String(iSys.attackParameter?.attribute || "precision").toLowerCase();
+  // O parâmetro que define a escala do dano é o damageParameter.attribute (com fallback para attackParameter.attribute ou "brutality")
+  const paramKey = String(iSys.damageParameter?.attribute || iSys.attackParameter?.attribute || "brutality").toLowerCase();
 
   let paramValue = 0;
   let paramLabel = paramKey;
