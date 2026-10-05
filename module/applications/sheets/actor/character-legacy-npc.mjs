@@ -55,7 +55,7 @@ export class CharacterLegacyNpcSheet extends GaiaBaseActorSheet {
       prepareSidebarContext(actor, context);
       preparePersonagemContext(actor, context);
       prepareInventoryContext(actor, context);
-      prepareAbilitiesContext(actor, context);
+      prepareAbilitiesContext(actor, context, this._collapsedAbilities, this._abilityFilters);
       prepareBioContext(actor, context);
       prepareEffectsContext(actor, context);
     }

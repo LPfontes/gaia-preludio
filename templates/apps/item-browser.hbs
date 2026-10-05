@@ -53,6 +53,19 @@
         </select>
       </div>
     {{/if}}
+
+    {{!-- Filtro por Categoria de Característica (quando aplicável) --}}
+    {{#if showFeatureCategoryFilter}}
+      <div class="filter-select-box">
+        <label><i class="fa-solid fa-shield-halved"></i> {{localize "GAIA.ItemBrowser.FilterFeatureCategory"}}:</label>
+        <select class="browser-feature-category-select">
+          <option value="all" {{#if (eq selectedFeatureCategory "all")}}selected{{/if}}>{{localize "GAIA.ItemBrowser.AllCategories"}}</option>
+          {{#each availableFeatureCategories}}
+            <option value="{{this.id}}" {{#if (eq ../selectedFeatureCategory this.id)}}selected{{/if}}>{{this.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+    {{/if}}
   </div>
 
   {{!-- Indicador de Contagem de Resultados --}}
@@ -107,7 +120,6 @@
                   <div class="item-title-meta">
                     <h4 class="item-name">{{this.name}}</h4>
                     <div class="item-badges">
-                      <span class="badge type-badge">{{this.typeLabel}}</span>
                       {{#if this.pathShortName}}
                         <span class="badge path-badge" title="{{this.pathName}}">
                           {{#if this.pathIcon}}<i class="{{this.pathIcon}}"></i> {{/if}}{{this.pathShortName}}

@@ -500,6 +500,8 @@ export async function syncHomunculariumAttackFormulas(actor) {
     if (!isGolpe && !isEvocacao) continue;
 
     const dmg = getHomunculariumDamageFormula(actor, isGolpe ? "golpeBrutal" : "evocacaoMistica");
+    // PT: Corrige itens antigos que ainda apontam para ícones genéricos do Foundry.
+    const canonicalImg = getHomunculariumAttackData(isGolpe ? "golpeBrutal" : "evocacaoMistica", actor).img;
     const currentActions = item.system?.actions ?? [];
     let changed = false;
     const newActions = currentActions.map(act => {
@@ -518,11 +520,13 @@ export async function syncHomunculariumAttackFormulas(actor) {
       return act;
     });
 
-    if (changed) {
-      updates.push({
-        _id: item.id,
-        "system.actions": newActions
-      });
+    const needsImgFix = Boolean(canonicalImg) && item.img !== canonicalImg;
+
+    if (changed || needsImgFix) {
+      const update = { _id: item.id };
+      if (changed) update["system.actions"] = newActions;
+      if (needsImgFix) update.img = canonicalImg;
+      updates.push(update);
     }
   }
 

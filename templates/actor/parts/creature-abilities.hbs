@@ -1,18 +1,59 @@
 <div class="tab tab-content {{#if (eq tab.active 'habilidades')}}active{{/if}}" data-tab="habilidades" data-group="primary">
   {{!-- SEÇÃO: CARACTERÍSTICAS --}}
-  {{#if features.length}}
   <div class="creature-section abilities-section features-section">
-    <div class="section-header">
+    <div class="header-buttons">
       <h4 class="section-title">
         {{localize "GAIA.Creature.FeaturesTitle"}}
       </h4>
-      <span class="section-count-badge">{{features.length}}</span>
-      <button type="button" class="btn-toggle-all-abilities" data-action="toggleAllAbilitiesCollapse" title="Recolher / Expandir Todas as Habilidades" style="margin-left: 8px;">
-        <i class="fa-solid fa-angles-up-down"></i>
-      </button> 
+      <span class="section-count-badge">{{featureFilterCounts.visible}}/{{featureFilterCounts.all}}</span>
+
+      <div class="section-actions">
+        <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="feature"
+          title="{{localize 'GAIA.Creature.AddFeature'}}">
+          <i class="fa-solid fa-plus"></i> {{localize "GAIA.Creature.AddFeature"}}
+        </button>
+        <button type="button" class="btn-toggle-all-abilities" data-action="toggleAllAbilitiesCollapse"
+          title="Recolher / Expandir Características">
+          <i class="fa-solid fa-angles-up-down"></i> Recolher / Expandir
+        </button>
+      </div>
     </div>
+
+    {{!-- Filtros: Dificuldade (tier) e Livro das Características --}}
+    <div class="ability-filters">
+      {{#if featureFilters.showTypeFilter}}
+      <div class="filter-select-box">
+        <label for="feature-type-filter"><i class="fa-solid fa-layer-group"></i>
+          {{localize "GAIA.Creature.FeatureTierLabel"}}:</label>
+        <select id="feature-type-filter" class="feature-type-select" data-feature-filter="type">
+          <option value="all" {{#if featureFilters.isTypeAll}}selected{{/if}}>{{featureAllTiersLabel}}</option>
+          {{#each featureTypeOptions as |tierOption|}}
+          <option value="{{tierOption.id}}" {{#if (eq tierOption.id ../featureFilters.type)}}selected{{/if}}>
+            {{tierOption.label}}
+          </option>
+          {{/each}}
+        </select>
+      </div>
+      {{/if}}
+
+      {{#if featureFilters.showBookFilter}}
+      <div class="filter-select-box">
+        <label for="feature-book-filter"><i class="fa-solid fa-book"></i>
+          {{localize "GAIA.Creature.FeatureBookLabel"}}:</label>
+        <select id="feature-book-filter" class="feature-book-select" data-feature-filter="book">
+          <option value="all" {{#if featureFilters.isBookAll}}selected{{/if}}>{{featureAllBooksLabel}}</option>
+          {{#each featureBookOptions as |bookOption|}}
+          <option value="{{bookOption.id}}" {{#if (eq bookOption.id ../featureFilters.book)}}selected{{/if}}>
+            {{bookOption.label}}
+          </option>
+          {{/each}}
+        </select>
+      </div>
+      {{/if}}
+    </div>
+
     <div class="creature-items-list abilities-list-grid" style="padding: 0;">
-      {{#each features as |ability|}}
+      {{#each filteredFeatures as |ability|}}
       <div class="ability-card-item feature-card-item {{#if ability.isCollapsed}}is-collapsed{{/if}}"
         data-item-id="{{ability.id}}">
         <!-- CONTROLES -->
@@ -113,11 +154,21 @@
         </div>
       </div>
       {{/each}}
+      {{#if featureFilterCounts.all}}
+      {{#unless featureFilterCounts.visible}}
+      <div class="abilities-empty-state">
+        {{#if featureFilterCounts.filtered}}
+        {{featureNoMatchLabel}}
+        {{else}}
+        {{localize "GAIA.Creature.EmptyFeatures"}}
+        {{/if}}
+      </div>
+      {{/unless}}
+      {{/if}}
     </div>
   </div>
 
   <div class="features-abilities-divider"></div>
-  {{/if}}
 
   {{!-- SEÇÃO: HABILIDADES --}}
   <div class="creature-section abilities-section">
@@ -125,16 +176,6 @@
       <h4 class="section-title">
         {{localize "GAIA.Creature.AbilitiesTitle"}}
       </h4>
-      <div class="section-actions">
-        <button type="button" class="btn-toggle-all-abilities" data-action="toggleAllAbilitiesCollapse"
-          title="Recolher / Expandir Todas as Habilidades">
-          <i class="fa-solid fa-angles-up-down"></i>
-        </button>
-        <button type="button" class="btn-section-add" data-action="openItemBrowser" data-type="ability"
-          data-category="common" title="{{localize 'GAIA.Creature.AddAbility'}}">
-          <i class="fa-solid fa-plus"></i>
-        </button>
-      </div>
     </div>
     <div class="creature-items-list abilities-list-grid" style="padding: 0;">
       {{#each abilities as |ability|}}

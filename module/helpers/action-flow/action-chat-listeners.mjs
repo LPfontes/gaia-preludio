@@ -16,6 +16,34 @@ import { placeActionAoETemplate } from "./action-aoe.mjs";
 import { executeAction } from "./action-executor.mjs";
 
 /**
+ * Resolve o Ator que originou a mensagem de chat (locutor), usado como fonte das rolagens.
+ * @param {ChatMessage} message - Mensagem do chat
+ * @returns {Actor|null}
+ */
+function resolveSpeakerActor(message) {
+  const actorId = message?.flags?.["gaia-preludio"]?.actorId;
+  let speakerActor = actorId ? game.actors?.get(actorId) : null;
+  if (!speakerActor && message?.speaker) {
+    if (message.speaker.token && canvas?.tokens) {
+      speakerActor = canvas.tokens.get(message.speaker.token)?.actor;
+    }
+    if (!speakerActor && message.speaker.actor) {
+      speakerActor = game.actors?.get(message.speaker.actor);
+    }
+  }
+  if (!speakerActor) {
+    const fallbackSpeaker = ChatMessage.getSpeaker();
+    if (fallbackSpeaker.token && canvas?.tokens) {
+      speakerActor = canvas.tokens.get(fallbackSpeaker.token)?.actor;
+    }
+    if (!speakerActor && fallbackSpeaker.actor) {
+      speakerActor = game.actors?.get(fallbackSpeaker.actor);
+    }
+  }
+  return speakerActor ?? null;
+}
+
+/**
  * Registra todos os ouvintes interativos nos cards de chat de Ação.
  * @param {HTMLElement|JQuery} html - Elemento do chat
  * @param {ChatMessage} message - Mensagem do chat
@@ -168,19 +196,61 @@ export function registerActionChatListeners(html, message) {
     });
   });
 
-  // 4. Aplicar Cura Direta a Alvo Específico
+  // 4. Aplicar Cura Direta (direto da carta ou pela rolagem de Cura)
   rootEl.querySelectorAll("[data-action='applyActionHealingDirect']").forEach(btn => {
     btn.addEventListener("click", async (ev) => {
       ev.preventDefault();
-      const tokenId = btn.dataset.targetTokenId;
-      const amount = Number(btn.dataset.amount ?? 0);
-      const healType = btn.dataset.healType || "pv";
-      const token = canvas.tokens?.get(tokenId);
-      if (!token || !token.actor) return;
+      if (btn.disabled) return;
 
-      await applyActionHealing(token.actor, amount, { healType });
+      const healType = btn.dataset.healType || "pv";
+      const typeLabel = btn.dataset.healLabel || (healType === "pe" ? "PE" : (healType === "temp" ? "PV Temporário" : "PV"));
+
+      // 1. Calcula o valor: usa o total já rolado ou rola a fórmula de cura da Ação.
+      let amount = Number(btn.dataset.amount ?? 0);
+      const speakerActor = resolveSpeakerActor(message);
+      if (!(amount > 0)) {
+        const formula = btn.dataset.formula || "1d8";
+        const roll = await flowRoll(formula, speakerActor ? speakerActor.getRollData() : {});
+
+        amount = roll.total;
+        let weakenedNotice = "";
+        if (speakerActor?.system?.hasWeakened) {
+          amount = Math.floor(amount / 2);
+          weakenedNotice = ` <span style="font-size: 11px; color: var(--gaia-gold-accent, #c9a34b); font-style: italic;">(Enfraquecido: ${roll.total} &rarr; ${amount})</span>`;
+        }
+
+        await roll.toMessage({
+          speaker: speakerActor ? ChatMessage.getSpeaker({ actor: speakerActor }) : ChatMessage.getSpeaker(),
+          flavor: `<strong>Cura (${typeLabel})</strong>${weakenedNotice}`
+        });
+      }
+
+      if (!(amount > 0)) {
+        ui.notifications?.warn("A cura rolada resultou em 0. Nenhum valor foi aplicado.");
+        return;
+      }
+
+      // 2. Resolve o alvo: token embutido no botão > token mirado/selecionado > o próprio locutor (auto-cura).
+      let targetToken = btn.dataset.targetTokenId ? canvas.tokens?.get(btn.dataset.targetTokenId) : null;
+      let targetActor = targetToken?.actor ?? null;
+      if (!targetActor) {
+        const { getSelectedOrTargetToken } = await import("../token-helper.mjs");
+        const token = getSelectedOrTargetToken(null, {
+          notify: false,
+          warnMessage: "Selecione ou mire em um token alvo para aplicar a cura."
+        });
+        targetActor = token?.actor ?? null;
+      }
+      if (!targetActor) targetActor = speakerActor;
+      if (!targetActor) {
+        ui.notifications?.warn("Nenhum alvo selecionado ou mirado para aplicar cura.");
+        return;
+      }
+
+      // 3. Aplica a cura no alvo e bloqueia o botão para evitar reaplicação acidental.
+      await applyActionHealing(targetActor, amount, { healType });
       btn.disabled = true;
-      btn.innerText = "Cura Aplicada";
+      btn.innerHTML = `<i class="fa-solid fa-hand-holding-medical"></i> Cura Aplicada (${amount} ${typeLabel})`;
     });
   });
 

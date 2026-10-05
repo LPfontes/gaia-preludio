@@ -323,7 +323,9 @@
 /* Botões Interativos no Card de Chat */
 button.btn-action-chat,
 .gaia-action-chat-card button.btn-action-chat,
-.action-damage-targets-block button.btn-apply-damage-target {
+.action-damage-targets-block button.btn-apply-damage-target,
+.action-healing-targets-block button.btn-apply-healing-target,
+.gaia-action-chat-card button.btn-apply-healing-direct {
   cursor: pointer;
   background: rgba(0, 0, 0, 0.1);
   border: 1px solid var(--gaia-border-frame);
@@ -340,10 +342,20 @@ button.btn-action-chat,
 button.btn-action-chat:hover,
 .gaia-action-chat-card button.btn-action-chat:hover,
 .action-damage-targets-block button.btn-apply-damage-target:hover,
-.action-healing-targets-block button.btn-apply-healing-target:hover {
+.action-healing-targets-block button.btn-apply-healing-target:hover,
+.gaia-action-chat-card button.btn-apply-healing-direct:hover {
   background: rgba(0, 0, 0, 0.1);
   border-color: var(--gaia-border-gold);
   transform: translateY(-1px);
+}
+
+/* Botões já aplicados (dano/cura) ficam inativos */
+.gaia-action-chat-card button.btn-apply-healing-direct:disabled,
+.action-healing-targets-block button.btn-apply-healing-target:disabled,
+.action-damage-targets-block button.btn-apply-damage-target:disabled {
+  cursor: default;
+  opacity: 0.75;
+  transform: none;
 }
 
 .btn-roll-action-damage:hover,
@@ -477,7 +489,8 @@ button.btn-action-chat:hover,
   gap: 4px;
 }
 
-.action-healing-targets-block button.btn-apply-healing-target:hover {
+.action-healing-targets-block button.btn-apply-healing-target:hover,
+.gaia-action-chat-card button.btn-apply-healing-direct:hover {
   background: var(--gaia-green);
   color: #fff;
   border-color: var(--gaia-green-dark);

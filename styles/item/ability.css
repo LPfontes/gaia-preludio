@@ -994,13 +994,12 @@
 
 .btn-open-legacy-sheet {
   background: transparent;
-  border: 1px solid var(--gaia-purple-dark);
   border-radius: var(--gaia-radius);
   color: var(--gaia-purple-dark);
   cursor: pointer;
-  padding: 2px 8px;
+  padding: 4px 10px;
   font-family: var(--gaia-font-medieval);
-  font-size: var(--gaia-font-md);
+  font-size: var(--gaia-font-base);
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -1011,6 +1010,99 @@
 .btn-open-legacy-sheet:hover {
   background: var(--gaia-purple-dark);
   color: #ffffff;
+}
+
+/* ==============================================================================
+ * FILTROS DA ABA DE HABILIDADES (ORIGEM E CAMINHO)
+ * ============================================================================== */
+.ability-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 4px 6px 8px 6px;
+}
+
+.ability-filters .filter-select-box {
+  flex: 0 1 220px;
+  min-width: 160px;
+}
+
+.ability-filters .filter-select-box label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--gaia-font-2xs);
+  font-weight: 700;
+  color: var(--gaia-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ability-filters .filter-select-box select {
+  width: 100%;
+  padding: 4px 6px;
+  background: var(--gaia-bg-window);
+  border: 1px solid var(--gaia-border-frame);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-sm);
+}
+
+.ability-filters .filter-select-box select:focus {
+  border-color: var(--gaia-border-gold);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+/* ==============================================================================
+ * IDENTIDADE DA HABILIDADE (NOME + ORIGEM/CAMINHO)
+ * ============================================================================== */
+.ability-card-item .ability-title-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ability-title-texts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ability-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border: none;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
+  color: var(--gaia-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.ability-card-path .ability-source-badge {
+  color: var(--gaia-green-dark);
+}
+
+.ability-card-legacy .ability-source-badge {
+  color: var(--gaia-purple-dark);
+}
+
+/* ==============================================================================
+ * ESTADO VAZIO DA LISTA DE HABILIDADES
+ * ============================================================================== */
+.abilities-empty-state {
+  padding: 14px 8px;
+  text-align: center;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-sm);
+  color: var(--gaia-text-muted);
+  border: 1px dashed var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
 }
 
 .ability-effect-display {
@@ -1124,9 +1216,8 @@
 
 .actor-sheet-card .ability-title-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-right: 140px;
+  align-items: flex-start;
+  gap: 6px;
   position: relative;
 }
 
@@ -1152,17 +1243,16 @@
 
 .btn-toggle-all-abilities {
   background: var(--gaia-bg-banner);
-  border: 1px solid var(--gaia-border-frame);
   border-radius: var(--gaia-radius);
   color: var(--gaia-text-parchment);
   font-family: var(--gaia-font-medieval);
-  font-size: var(--gaia-font-xs);
+  font-size: var(--gaia-font-base);
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 4px 10px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   transition: all 0.15s ease;
 }
 

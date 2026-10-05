@@ -83,7 +83,7 @@ export class CharacterLegacySheet extends GaiaBaseActorSheet {
         prepareInventoryContext(actor, context);
         break;
       case "tabAbilities":
-        prepareAbilitiesContext(actor, context, this._collapsedAbilities);
+        prepareAbilitiesContext(actor, context, this._collapsedAbilities, this._abilityFilters);
         break;
       case "tabBiografia":
         prepareBioContext(actor, context);

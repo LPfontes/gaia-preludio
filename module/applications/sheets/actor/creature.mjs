@@ -1,7 +1,8 @@
 import { GaiaBaseActorSheet } from "./base.mjs";
 import { GAIA } from "../../../helpers/config.mjs";
-import { getBookFolderForFeature, ensureHomunculariumAttacks } from "../../../helpers/homuncularium-rules.mjs";
+import { getBookFolderForFeature, ensureHomunculariumAttacks, HOMUNCULARIUM_BOOKS, syncHomunculariumAttackFormulas } from "../../../helpers/homuncularium-rules.mjs";
 import { calculateWeaponDamage } from "../../../helpers/actor-context.mjs";
+import { CARACTERISTICAS_FOLDERS_DATA } from "../../../helpers/datasets/caracteristicas-dataset.mjs";
 
 /**
  * ==============================================================================
@@ -70,6 +71,12 @@ export class CreatureSheet extends GaiaBaseActorSheet {
         ensureHomunculariumAttacks(this.actor).finally(() => {
           this._ensuringHomunculariumAttacks = false;
         });
+      } else {
+        // PT: Itens já existentes podem carregar imagens/fórmulas desatualizadas de versões anteriores.
+        this._ensuringHomunculariumAttacks = true;
+        syncHomunculariumAttackFormulas(this.actor).finally(() => {
+          this._ensuringHomunculariumAttacks = false;
+        });
       }
     }
 
@@ -117,6 +124,7 @@ export class CreatureSheet extends GaiaBaseActorSheet {
         context.tab = { active: this.tabGroups.primary || "personagem" };
         context.features = actor.items.filter((i) => i.type === "feature").map((i) => this._mapAbilityItem(i, config));
         context.abilities = actor.items.filter((i) => i.type === "ability").map((i) => this._mapAbilityItem(i, config));
+        this._prepareFeatureContext(context);
         break;
       }
 
@@ -228,6 +236,112 @@ export class CreatureSheet extends GaiaBaseActorSheet {
       modifierTargetLabel,
       isCollapsed: Boolean(this._collapsedAbilities?.has(item.id) || this._collapsedAbilities?.has(item.name?.trim()))
     };
+  }
+
+  /**
+   * Prepara as opções dos filtros da seção de Características (Dificuldade e Livro do Homuncularium)
+   * e injeta no contexto a lista filtrada (`filteredFeatures`).
+   * @protected
+   * @param {object} context - Contexto da aba de habilidades
+   */
+  _prepareFeatureContext(context) {
+    const allFeatures = Array.isArray(context.features) ? context.features : [];
+    const featureItems = this.actor.items.filter(i => i.type === "feature");
+
+    // PT: Rótulo canônico do Livro e ordem (Seres Comuns -> Seres Celestiais).
+    const BOOK_LABELS = new Map();
+    const BOOK_ORDER = new Map();
+    let order = 1;
+    for (const folder of CARACTERISTICAS_FOLDERS_DATA) {
+      BOOK_LABELS.set(folder._id, folder.name);
+      BOOK_ORDER.set(folder.name.toLowerCase(), order++);
+    }
+    for (const book of Object.values(HOMUNCULARIUM_BOOKS)) {
+      if (!BOOK_LABELS.has(book.folderId)) {
+        BOOK_LABELS.set(book.folderId, book.bookName);
+        BOOK_ORDER.set(book.bookName.toLowerCase(), order++);
+      }
+    }
+
+    const typeMap = new Map();
+    const bookMap = new Map();
+    // PT: Nome do Livro resolvido por item (modelo real), reutilizado como lista de opções e para o filtro.
+    const bookNameByItemId = new Map();
+
+    for (const item of featureItems) {
+      const bookName = this._resolveFeatureBookName(item, BOOK_LABELS);
+      if (!bookName) continue;
+
+      bookNameByItemId.set(item.id, bookName);
+      const bookKey = bookName.toLowerCase();
+      if (!bookMap.has(bookKey)) bookMap.set(bookKey, bookName);
+    }
+
+    for (const feature of allFeatures) {
+      const tierKey = String(feature.system?.tier || "").trim();
+      if (tierKey && !typeMap.has(tierKey)) typeMap.set(tierKey, tierKey);
+    }
+
+    const featureTypeOptions = Array.from(typeMap.values()).map(label => ({ id: label, label }));
+    const featureBookOptions = Array.from(bookMap.values())
+      .map(name => ({ id: name.toLowerCase(), label: name }))
+      .sort((a, b) => (BOOK_ORDER.get(a.id) || 99) - (BOOK_ORDER.get(b.id) || 99));
+
+    const filters = this._featureFilters ?? { type: "all", book: "all" };
+    // PT: Descarta valores de filtro que não existem mais nas Características atuais.
+    if (filters.type !== "all" && !typeMap.has(filters.type)) filters.type = "all";
+    if (filters.book !== "all" && !bookMap.has(filters.book)) filters.book = "all";
+
+    const filteredFeatures = allFeatures.filter(feature => {
+      const tierKey = String(feature.system?.tier || "").trim();
+      if (filters.type !== "all" && tierKey !== filters.type) return false;
+      if (filters.book !== "all") {
+        const bookName = String(bookNameByItemId.get(feature.id) || "").toLowerCase();
+        if (bookName !== filters.book) return false;
+      }
+      return true;
+    });
+
+    context.filteredFeatures = filteredFeatures;
+    context.featureTypeOptions = featureTypeOptions;
+    context.featureBookOptions = featureBookOptions;
+    context.featureAllTiersLabel = game.i18n.localize("GAIA.Creature.AllFeatureTiers") || "Todas as Dificuldades";
+    context.featureAllBooksLabel = game.i18n.localize("GAIA.Creature.AllFeatureBooks") || "Todos os Livros";
+    context.featureNoMatchLabel = game.i18n.localize("GAIA.Creature.NoFeaturesMatchingFilters") || "Nenhuma característica corresponde aos filtros selecionados.";
+    context.featureFilters = {
+      type: filters.type,
+      book: filters.book,
+      isTypeAll: filters.type === "all",
+      isBookAll: filters.book === "all",
+      showTypeFilter: featureTypeOptions.length > 1,
+      showBookFilter: featureBookOptions.length > 0
+    };
+    context.featureFilterCounts = {
+      all: allFeatures.length,
+      visible: filteredFeatures.length,
+      filtered: allFeatures.length !== filteredFeatures.length
+    };
+  }
+
+  /**
+   * Resolve o nome do Livro do Homuncularium de uma Característica, priorizando a pasta
+   * do item (mesma lógica usada pelas regras do Homuncularium) e caindo para `system.book`.
+   * @protected
+   * @param {Item|object} feature - Documento ou card de Característica
+   * @param {Map<string, string>} bookLabels - Mapa folderId -> nome do Livro
+   * @returns {string} Nome do Livro ou string vazia
+   */
+  _resolveFeatureBookName(feature, bookLabels) {
+    const folderId = getBookFolderForFeature(feature);
+    if (folderId && bookLabels.has(folderId)) return bookLabels.get(folderId);
+
+    const rawBook = String(feature.system?.book || "").trim();
+    if (rawBook) {
+      const match = Array.from(bookLabels.values()).find(name => name.toLowerCase() === rawBook.toLowerCase());
+      return match || rawBook;
+    }
+
+    return "";
   }
 
   /** @override */

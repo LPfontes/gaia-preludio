@@ -209,7 +209,7 @@ export async function executeAction(action, context = {}) {
 
   // 5. Processa demais seções modulares
   const damageHtml = processActionDamageSection(effectiveAction, config);
-  const healingHtml = processActionHealingSection(effectiveAction, config);
+  const healingHtml = processActionHealingSection(effectiveAction, config, targets);
   const conditionHtml = processActionConditionSection(effectiveAction);
   const aoeHtml = processActionAoESection(effectiveAction);
 

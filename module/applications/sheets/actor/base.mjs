@@ -67,6 +67,7 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       editField: GaiaBaseActorSheet._onPromptEditField,
       createItem: GaiaBaseActorSheet._onCreateItem,
       createAbility: GaiaBaseActorSheet._onCreateAbility,
+      createAbilityEffect: GaiaBaseActorSheet._onCreateAbilityEffect,
       openItem: GaiaBaseActorSheet._onOpenItem,
       openLegacyItem: GaiaBaseActorSheet._onOpenLegacyItem,
       viewItemProperties: GaiaBaseActorSheet._onViewItemProperties,
@@ -324,6 +325,68 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
         this._onChangeLegacySelect(event);
       }, { signal });
     }
+
+    // Estado dos filtros da Aba de Habilidades (origem: Caminho/Legado e Caminho específico)
+    this._abilityFilters ??= { source: "all", path: "all" };
+
+    this.element.querySelectorAll("select[data-ability-filter]").forEach(select => {
+      select.addEventListener("change", (event) => {
+        this._onChangeAbilityFilter(event, select);
+      }, { signal });
+    });
+
+    // Estado dos filtros da seção de Características (Dificuldade e Livro)
+    this._featureFilters ??= { type: "all", book: "all" };
+
+    this.element.querySelectorAll("select[data-feature-filter]").forEach(select => {
+      select.addEventListener("change", (event) => {
+        this._onChangeFeatureFilter(event, select);
+      }, { signal });
+    });
+  }
+
+  /**
+   * Atualiza o estado dos filtros da seção de Características (Dificuldade e Livro) e re-renderiza a ficha.
+   * @protected
+   * @param {Event} event - Evento de mudança do select
+   * @param {HTMLSelectElement} target - Select que disparou a mudança
+   */
+  _onChangeFeatureFilter(event, target) {
+    const filterKey = target?.dataset?.featureFilter;
+    if (!filterKey) return;
+
+    this._featureFilters ??= { type: "all", book: "all" };
+    this._featureFilters[filterKey] = String(target.value || "all") || "all";
+
+    return this.render(false);
+  }
+
+  /**
+   * Atualiza o estado dos filtros da Aba de Habilidades (origem e Caminho) e re-renderiza a ficha.
+   * @protected
+   * @param {Event} event - Evento de mudança do select
+   * @param {HTMLSelectElement} target - Select que disparou a mudança
+   */
+  _onChangeAbilityFilter(event, target) {
+    const filterKey = target?.dataset?.abilityFilter;
+    if (!filterKey) return;
+
+    this._abilityFilters ??= { source: "all", path: "all" };
+
+    const value = String(target.value || "all") || "all";
+    if (filterKey === "source") {
+      this._abilityFilters.source = value;
+      // PT: Ao voltar para "Todas" ou "Legado", o filtro de Caminho deixa de fazer sentido.
+      if (value !== "path") this._abilityFilters.path = "all";
+    } else if (filterKey === "path") {
+      this._abilityFilters.path = value;
+      // PT: Escolher um Caminho específico implica exibir apenas Habilidades de Caminho.
+      if (value !== "all" && this._abilityFilters.source !== "path") {
+        this._abilityFilters.source = "path";
+      }
+    }
+
+    return this.render(false);
   }
 
   /**
@@ -2127,4 +2190,71 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     });
   }
 
+  /**
+   * Ativa ou desativa o Efeito Ativo de uma Habilidade de Caminho (Item do Ator).
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento com `data-item-id`
+   */
+  static async _onCreateAbilityEffect(event, target) {
+    event?.preventDefault?.();
+    const itemId = target.dataset.itemId || target.closest("[data-item-id]")?.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    if (!item) return null;
+
+    const effectName = item.name;
+    // PT: Efeitos de Habilidades de Caminho são identificados pelo próprio item, evitando
+    // colisão de nomes entre Habilidades de Caminhos diferentes.
+    const existing = this.actor.effects.find(e =>
+      e.flags?.gaia?.abilityItemId === item.id
+      || (!e.flags?.gaia?.abilityItemId && e.name === effectName)
+    );
+    if (existing) {
+      await existing.delete();
+      ui.notifications?.info(`Efeito "${effectName}" desativado de ${this.actor.name}.`);
+      return null;
+    }
+
+    const activeEffectData = item.system?.activeEffect || {};
+    const effectText = typeof activeEffectData === "string"
+      ? activeEffectData
+      : (activeEffectData.text || "");
+    const changes = [];
+    const changeList = Array.isArray(activeEffectData.changes) ? activeEffectData.changes : [];
+    for (const ch of changeList) {
+      if (!ch.key) continue;
+      if (ch.key === "all_parameters") {
+        const val = String(ch.value ?? 1);
+        const paramKeys = ["precision", "brutality", "dexterity", "agility", "channeling", "arcane", "spirit", "vigor"];
+        for (const p of paramKeys) {
+          changes.push({ key: `system.parameters.${p}`, mode: 2, value: val });
+        }
+        continue;
+      }
+      const valStr = String(ch.value ?? "").trim();
+      if ((ch.key === "system.damageResistance" || ch.key === "system.conditionImmunity") && (!valStr || valStr === "1" || !isNaN(Number(valStr)))) {
+        continue;
+      }
+      changes.push({ key: ch.key, mode: ch.mode ?? 2, value: String(ch.value ?? 1) });
+    }
+
+    const created = await this.actor.createEmbeddedDocuments("ActiveEffect", [{
+      name: effectName,
+      img: item.img || "icons/svg/aura.svg",
+      icon: item.img || "icons/svg/aura.svg",
+      origin: item.uuid || this.actor.uuid,
+      description: effectText,
+      changes,
+      flags: {
+        gaia: {
+          abilityName: effectName,
+          abilityItemId: item.id,
+          activeEffect: activeEffectData
+        }
+      }
+    }]);
+
+    ui.notifications?.info(`Efeito "${effectName}" ativado em ${this.actor.name}!`);
+    return created?.[0] ?? null;
+  }
 }

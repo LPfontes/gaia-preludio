@@ -1,73 +1,96 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 import { HOMUNCULARIUM_BOOKS } from "../helpers/homuncularium-rules.mjs";
 import { CARACTERISTICAS_FOLDERS_DATA } from "../helpers/datasets/caracteristicas-dataset.mjs";
+import {
+  CANONICAL_PATHS,
+  PATH_REGISTRY,
+  lookupPathDescriptor,
+  normalizePathKey,
+  registerPathDescriptor
+} from "../helpers/path-registry.mjs";
 
 /**
  * Mapeamento canônico dos Caminhos de Gaia: Prelúdio.
+ * PT: O `id` é o id do documento no dataset (ex: "path000300000000") para coincidir com o
+ * `system.pathId` gravado nas Habilidades e com o filtro da ficha do Ator.
+ * Os apelidos (slug/nome/sem prefixo "path") ficam no registro de Caminhos (path-registry.mjs).
  */
-const KNOWN_PATHS = {
-  andarilho: {
-    id: "andarilho",
-    name: "O Caminho do Andarilho",
-    shortName: "Andarilho",
-    icon: "fa-solid fa-compass",
-    order: 1
-  },
-  combatente: {
-    id: "combatente",
-    name: "O Caminho do Combatente",
-    shortName: "Combatente",
-    icon: "fa-solid fa-hand-fist",
-    order: 2
-  },
-  devoto: {
-    id: "devoto",
-    name: "O Caminho do Devoto",
-    shortName: "Devoto",
-    icon: "fa-solid fa-hands-praying",
-    order: 3
-  },
-  feiticeiro: {
-    id: "feiticeiro",
-    name: "O Caminho do Feiticeiro",
-    shortName: "Feiticeiro",
-    icon: "fa-solid fa-wand-magic-sparkles",
-    order: 4
-  },
-  ladino: {
-    id: "ladino",
-    name: "O Caminho do Ladino",
-    shortName: "Ladino",
-    icon: "fa-solid fa-mask",
-    order: 5
+const KNOWN_PATHS = (() => {
+  const map = new Map();
+  for (const path of CANONICAL_PATHS) {
+    map.set(path.id, {
+      id: path.id,
+      name: path.name,
+      shortName: path.name,
+      icon: path.icon || "fa-solid fa-route",
+      order: path.order
+    });
   }
+  return map;
+})();
+
+/**
+ * Categorias em "Outras Características": Características sem Livro do Homuncularium definido.
+ */
+const OTHER_FEATURE_CATEGORY = {
+  id: "other",
+  labelKey: "GAIA.ItemBrowser.OtherFeatureCategory",
+  labelFallback: "Outras Características",
+  order: 99
 };
+
+/**
+ * Monta as opções do filtro de categoria a partir dos Livros do Homuncularium
+ * realmente presentes nos itens indexados (Seres Comuns, Ferais, do Véu, etc.).
+ * @param {Array<object>} indexedItems - Itens já indexados pelo browser
+ * @returns {Array<{id: string, label: string, order: number}>} Opções ordenadas
+ */
+function buildBookCategoryOptions(indexedItems) {
+  const options = Array.from(BOOK_FOLDER_MAP.values())
+    .sort((a, b) => (a.order || 99) - (b.order || 99))
+    .map(book => ({ id: book.id, label: book.name, order: book.order }));
+
+  // PT: "Outras Características" (sem Livro) só aparece se existir alguma Característica sem pasta.
+  const hasUncategorized = indexedItems.some(item =>
+    !item.bookKey && (item.type === "feature" || item.category === "caracteristica")
+  );
+  if (hasUncategorized) {
+    options.push({
+      id: OTHER_FEATURE_CATEGORY.id,
+      label: game.i18n.localize(OTHER_FEATURE_CATEGORY.labelKey) || OTHER_FEATURE_CATEGORY.labelFallback,
+      order: OTHER_FEATURE_CATEGORY.order
+    });
+  }
+
+  return options;
+}
 
 /**
  * Mapeamento de folderId -> informações do Livro do Homuncularium.
  * Usado para agrupar características por livro no browser.
+ * A ordem canônica deriva de CARACTERISTICAS_FOLDERS_DATA (9 Livros, de Seres Comuns a Seres Celestiais).
  */
 const BOOK_FOLDER_MAP = (() => {
   const map = new Map();
-  // Usa HOMUNCULARIUM_BOOKS como fonte canônica (inclui ícone)
   let order = 1;
-  for (const book of Object.values(HOMUNCULARIUM_BOOKS)) {
-    map.set(book.folderId, {
-      id: book.folderId,
-      name: book.bookName,
-      shortName: book.bookName,
-      icon: book.icon,
+  for (const folder of CARACTERISTICAS_FOLDERS_DATA) {
+    const canonical = HOMUNCULARIUM_BOOKS[folder._id];
+    map.set(folder._id, {
+      id: folder._id,
+      name: folder.name,
+      shortName: folder.name,
+      icon: canonical?.icon || null,
       order: order++
     });
   }
-  // Adiciona pastas do dataset que não estão nos HOMUNCULARIUM_BOOKS (ex: Seres Comuns)
-  for (const folder of CARACTERISTICAS_FOLDERS_DATA) {
-    if (!map.has(folder._id)) {
-      map.set(folder._id, {
-        id: folder._id,
-        name: folder.name,
-        shortName: folder.name,
-        icon: null,
+  // PT: Livros do Homuncularium sem pasta no dataset (mantém o filtro completo).
+  for (const book of Object.values(HOMUNCULARIUM_BOOKS)) {
+    if (!map.has(book.folderId)) {
+      map.set(book.folderId, {
+        id: book.folderId,
+        name: book.bookName,
+        shortName: book.bookName,
+        icon: book.icon,
         order: order++
       });
     }
@@ -87,54 +110,38 @@ function resolveItemBook(folderId) {
 
 /**
  * Resolve o Caminho ao qual um item/habilidade pertence.
+ * @param {object} item - Item indexado ou entrada de índice ({ name, pathId, folderId })
+ * @param {{registry: Map, abilityToPathMap: Map, folderMap: Map, fallbackMap: Map}} context - Mapas de resolução
+ * @returns {object|null} Descritor do Caminho
  */
-function resolveItemPath(item, customPathMap, abilityToPathMap, folderMap) {
-  const cleanStr = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+function resolveItemPath(item, { registry, abilityToPathMap, folderMap, fallbackMap }) {
+  const rawPathId = String(item.pathId || item.system?.pathId || "").trim();
 
-  // 1. pathId direto no system
-  let rawPathId = cleanStr(item.pathId || item.system?.pathId || "");
-  if (rawPathId && KNOWN_PATHS[rawPathId]) {
-    return KNOWN_PATHS[rawPathId];
-  }
-  if (rawPathId && customPathMap.has(rawPathId)) {
-    return customPathMap.get(rawPathId);
+  // 1. Registro canônico compartilhado (id do documento, slug, nome curto ou completo)
+  if (rawPathId) {
+    const known = lookupPathDescriptor(registry, rawPathId);
+    if (known) return known;
   }
 
   // 2. Mapeamento por nome de habilidade dentro de um Caminho
-  const cleanName = cleanStr(item.name);
+  const cleanName = normalizePathKey(item.name);
   if (abilityToPathMap.has(cleanName)) {
     return abilityToPathMap.get(cleanName);
   }
 
   // 3. Mapeamento por nome de Pasta (Folder)
   if (item.folderId && folderMap.has(item.folderId)) {
-    const folderName = cleanStr(folderMap.get(item.folderId));
-    for (const [key, pathInfo] of Object.entries(KNOWN_PATHS)) {
-      if (folderName.includes(key)) {
-        return pathInfo;
-      }
-    }
-    for (const [key, pathInfo] of customPathMap.entries()) {
-      if (folderName.includes(key)) {
-        return pathInfo;
-      }
+    const folderName = normalizePathKey(folderMap.get(item.folderId));
+    for (const pathInfo of registry.values()) {
+      if (folderName.includes(normalizePathKey(pathInfo.name))) return pathInfo;
     }
   }
 
-  // 4. Correspondência parcial em rawPathId
+  // 4. Último recurso: id cru já indexado
   if (rawPathId) {
-    for (const [key, pathInfo] of Object.entries(KNOWN_PATHS)) {
-      if (rawPathId.includes(key)) {
-        return pathInfo;
-      }
-    }
-    return {
-      id: rawPathId,
-      name: rawPathId.charAt(0).toUpperCase() + rawPathId.slice(1),
-      shortName: rawPathId.charAt(0).toUpperCase() + rawPathId.slice(1),
-      icon: "fa-solid fa-route",
-      order: 90
-    };
+    return fallbackMap.get(rawPathId)
+      || fallbackMap.get(normalizePathKey(rawPathId))
+      || { id: rawPathId, name: rawPathId, shortName: rawPathId, icon: "fa-solid fa-route", order: 90 };
   }
 
   return null;
@@ -202,6 +209,9 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
   /** @type {string} */
   selectedPath = "all";
 
+  /** @type {string} */
+  selectedFeatureCategory = "all";
+
   /** @type {Array<object>} Cache de itens indexados */
   #indexedItems = [];
 
@@ -239,6 +249,12 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
       this.selectedPath = options.selectedPath;
     }
 
+    if (options.featureCategory) {
+      this.selectedFeatureCategory = options.featureCategory;
+    } else if (options.selectedFeatureCategory) {
+      this.selectedFeatureCategory = options.selectedFeatureCategory;
+    }
+
     if (options.searchTerm !== undefined) {
       this.searchTerm = String(options.searchTerm || "").toLowerCase();
     } else if (options.search !== undefined) {
@@ -267,6 +283,7 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     const typeSelect = this.element.querySelector(".browser-type-select");
     const sourceSelect = this.element.querySelector(".browser-source-select");
     const pathSelect = this.element.querySelector(".browser-path-select");
+    const featureCategorySelect = this.element.querySelector(".browser-feature-category-select");
 
     if (searchInput) {
       searchInput.addEventListener("input", (e) => {
@@ -278,6 +295,10 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     if (typeSelect) {
       typeSelect.addEventListener("change", (e) => {
         this.selectedType = e.target.value;
+        // PT: O filtro de Livros só se aplica a Características; ao trocar para outro tipo, ele é limpo.
+        if (this.selectedType !== "feature" && this.selectedType !== "all") {
+          this.selectedFeatureCategory = "all";
+        }
         this.render(false);
       });
     }
@@ -292,6 +313,13 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     if (pathSelect) {
       pathSelect.addEventListener("change", (e) => {
         this.selectedPath = e.target.value;
+        this.render(false);
+      });
+    }
+
+    if (featureCategorySelect) {
+      featureCategorySelect.addEventListener("change", (e) => {
+        this.selectedFeatureCategory = e.target.value;
         this.render(false);
       });
     }
@@ -334,7 +362,13 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
         if (item.pathKey !== this.selectedPath) return false;
       }
 
-      // 4. Filtro por Busca Textual (com suporte a busca por nome, descrição, tipo e caminho)
+      // 4. Filtro por Categoria (Livro do Homuncularium)
+      if (this.selectedFeatureCategory !== "all") {
+        const categoryKey = item.bookKey || "other";
+        if (categoryKey !== this.selectedFeatureCategory) return false;
+      }
+
+      // 5. Filtro por Busca Textual (com suporte a busca por nome, descrição, tipo e caminho)
       if (cleanSearch.length > 0) {
         const nameMatch = cleanStr(item.name).includes(cleanSearch);
         const descMatch = cleanStr(item.rawDescription).includes(cleanSearch);
@@ -464,14 +498,23 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const showPathFilter = (this.selectedType === "ability" || this.selectedType === "all" || this.selectedSource.includes("habilidades-caminho")) && availablePaths.length > 0;
 
+    // Categorias = Livros do Homuncularium presentes nos itens indexados
+    const availableFeatureCategories = buildBookCategoryOptions(this.#indexedItems);
+
+    // Determina se deve mostrar o filtro de categoria (livro)
+    const showFeatureCategoryFilter = (this.selectedType === "feature" || this.selectedType === "all") && availableFeatureCategories.length > 0;
+
     context.targetActor = this.targetActor;
     context.compendiums = compendiums;
     context.searchTerm = this.searchTerm;
     context.selectedType = this.selectedType;
     context.selectedSource = this.selectedSource;
     context.selectedPath = this.selectedPath;
+    context.selectedFeatureCategory = this.selectedFeatureCategory;
     context.showPathFilter = showPathFilter;
+    context.showFeatureCategoryFilter = showFeatureCategoryFilter;
     context.availablePaths = availablePaths;
+    context.availableFeatureCategories = availableFeatureCategories;
     context.totalItems = this.#indexedItems.length;
     context.filteredItems = filtered;
     context.groupedItems = groupedItems;
@@ -489,16 +532,11 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
   async #indexAllItems() {
     const items = [];
     const folderMap = new Map();
-    const customPathMap = new Map();
     const abilityToPathMap = new Map();
-    const cleanStr = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    const fallbackMap = new Map();
 
-    // Registra caminhos canônicos no customPathMap
-    for (const [key, pathInfo] of Object.entries(KNOWN_PATHS)) {
-      customPathMap.set(key, pathInfo);
-      customPathMap.set(cleanStr(pathInfo.name), pathInfo);
-      customPathMap.set(cleanStr(pathInfo.shortName), pathInfo);
-    }
+    // PT: Registro de Caminhos compartilhado com a ficha do Ator, semeado com os Caminhos canônicos.
+    const registry = new Map(PATH_REGISTRY);
 
     // 1. Mapeia pastas do mundo
     for (const folder of game.folders) {
@@ -509,22 +547,21 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
 
     // 2. Mapeia itens do tipo "path" no mundo
     for (const item of game.items) {
-      if (item.type === "path") {
-        const pKey = cleanStr(item.name).replace(/[^a-z0-9]/g, "");
-        const pathInfo = {
-          id: pKey,
-          name: item.name,
-          shortName: item.name.replace(/^O\s+Caminho\s+d[oe]\s+/i, ""),
-          icon: "fa-solid fa-route",
-          order: 90
-        };
-        customPathMap.set(pKey, pathInfo);
-        customPathMap.set(cleanStr(item.name), pathInfo);
-        for (const ab of (item.system?.abilities || [])) {
-          if (ab.name) {
-            abilityToPathMap.set(cleanStr(ab.name), pathInfo);
-          }
-        }
+      if (item.type !== "path") continue;
+
+      // PT: Preserva a ordem/ícone do registro canônico quando o Caminho já é conhecido.
+      const canonical = lookupPathDescriptor(registry, item.name);
+      const pathInfo = registerPathDescriptor(registry, {
+        id: item.id,
+        name: item.name,
+        icon: canonical?.icon,
+        order: canonical?.order
+      });
+      if (!pathInfo) continue;
+
+      fallbackMap.set(item.id, pathInfo);
+      for (const ab of (item.system?.abilities || [])) {
+        if (ab.name) abilityToPathMap.set(normalizePathKey(ab.name), pathInfo);
       }
     }
 
@@ -540,22 +577,18 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
         try {
           const pathDocs = await pack.getDocuments({ type: "path" });
           for (const pDoc of pathDocs) {
-            const pKey = cleanStr(pDoc.name).replace(/[^a-z0-9]/g, "");
-            let pathInfo = KNOWN_PATHS[pKey] || Object.values(KNOWN_PATHS).find(kp => cleanStr(pDoc.name).includes(kp.id));
-            if (!pathInfo) {
-              pathInfo = {
-                id: pKey,
-                name: pDoc.name,
-                shortName: pDoc.name.replace(/^O\s+Caminho\s+d[oe]\s+/i, ""),
-                icon: "fa-solid fa-route",
-                order: 90
-              };
-              customPathMap.set(pKey, pathInfo);
-            }
+            // PT: Preserva a ordem/ícone do registro canônico quando o Caminho já é conhecido.
+            const canonical = lookupPathDescriptor(registry, pDoc.id) || lookupPathDescriptor(registry, pDoc.name);
+            const pathInfo = registerPathDescriptor(registry, {
+              id: pDoc.id,
+              name: pDoc.name,
+              icon: canonical?.icon,
+              order: canonical?.order
+            });
+            if (!pathInfo) continue;
+            fallbackMap.set(pDoc.id, pathInfo);
             for (const ab of (pDoc.system?.abilities || [])) {
-              if (ab.name) {
-                abilityToPathMap.set(cleanStr(ab.name), pathInfo);
-              }
+              if (ab.name) abilityToPathMap.set(normalizePathKey(ab.name), pathInfo);
             }
           }
         } catch (e) {
@@ -564,15 +597,15 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
       }
     }
 
+    const pathContext = { registry, abilityToPathMap, folderMap, fallbackMap };
+
     // 4. Indexa itens criados no mundo (World Items)
     for (const item of game.items) {
       const typeLoc = game.i18n.localize(CONFIG.Item?.typeLabels?.[item.type] ?? item.type);
       const rawPathId = item.system?.pathId || "";
       const resolved = resolveItemPath(
         { name: item.name, pathId: rawPathId, folderId: item.folder },
-        customPathMap,
-        abilityToPathMap,
-        folderMap
+        pathContext
       );
 
       items.push({
@@ -584,7 +617,7 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
         pathId: rawPathId,
         pathKey: resolved?.id || "",
         pathName: resolved?.name || "",
-        pathShortName: resolved?.shortName || "",
+        pathShortName: resolved?.name || "",
         pathIcon: resolved?.icon || "",
         pathOrder: resolved?.order ?? 99,
         typeLabel: typeLoc,
@@ -606,9 +639,7 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
         const rawPathId = entry.system?.pathId || "";
         const resolved = resolveItemPath(
           { name: entry.name, pathId: rawPathId, folderId: entry.folder },
-          customPathMap,
-          abilityToPathMap,
-          folderMap
+          pathContext
         );
 
         const entryBook = (entry.type === "feature" || entry.system?.category === "caracteristica")
@@ -625,7 +656,7 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
           pathId: rawPathId,
           pathKey: resolved?.id || "",
           pathName: resolved?.name || "",
-          pathShortName: resolved?.shortName || "",
+          pathShortName: resolved?.name || "",
           pathIcon: resolved?.icon || "",
           pathOrder: resolved?.order ?? 99,
           bookKey: entryBook?.id || "",
@@ -682,6 +713,32 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     await this.close();
   }
 
+  /**
+   * Resolve o id de Caminho que deve ser gravado em `system.pathId` de um item importado.
+   * Sem isso, Habilidades adicionadas pelo Navegador ficariam sem Caminho e o filtro
+   * de Caminho da ficha do Ator não conseguiria agrupá-las.
+   * @param {Item} item - Documento de origem
+   * @param {object} itemData - Dados serializados que serão criados no Ator
+   * @returns {string} id do Caminho (string vazia quando não se aplica)
+   */
+  #resolvePersistablePathId(item, itemData) {
+    const isHabilidadeDeCaminho = itemData.type === "ability" || itemData.type === "feature";
+    if (!isHabilidadeDeCaminho) return "";
+
+    const currentPathId = String(itemData.system?.pathId || item.system?.pathId || "").trim();
+    const indexed = this.#indexedItems.find(entry => entry.uuid === item.uuid);
+
+    // PT: Sempre canonicaliza para o id do documento (ex: "feiticeiro" -> "path000400000000"),
+    // para que o valor gravado coincida com a opção do filtro de Caminho da ficha.
+    const known = lookupPathDescriptor(PATH_REGISTRY, currentPathId)
+      || lookupPathDescriptor(PATH_REGISTRY, indexed?.pathKey || "")
+      || lookupPathDescriptor(PATH_REGISTRY, indexed?.pathName || "");
+    if (known) return known.id;
+
+    // PT: Caminho fora do dataset — mantém o valor bruto já existente, se houver.
+    return currentPathId;
+  }
+
   static async #onImportItem(event, target) {
     const uuid = target.dataset.uuid || target.closest("[data-uuid]")?.dataset.uuid;
     if (!uuid || !this.targetActor) return;
@@ -690,6 +747,14 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!item) return;
 
     const itemData = item.toObject();
+
+    // PT: Grava o Caminho da Habilidade para que o filtro da ficha funcione.
+    const pathId = this.#resolvePersistablePathId(item, itemData);
+    if (pathId) {
+      itemData.system = itemData.system || {};
+      itemData.system.pathId = pathId;
+    }
+
     await this.targetActor.createEmbeddedDocuments("Item", [itemData]);
     ui.notifications.info(`Item "${item.name}" adicionado à ficha de ${this.targetActor.name}!`);
   }
@@ -710,6 +775,8 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
       vestuary: { type: "equipment", category: "vestuary" },
       rides: { type: "equipment", category: "rides" },
       ability: { type: "ability", category: "" },
+      feature: { type: "feature", category: "caracteristica" },
+      caracteristica: { type: "feature", category: "caracteristica" },
       legacy: { type: "legacy", category: "" }
     };
 
@@ -730,6 +797,8 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
       vestuary: "Novo Vestuário",
       rides: "Nova Montaria",
       ability: "Nova Habilidade",
+      feature: "Nova Característica",
+      caracteristica: "Nova Característica",
       legacy: "Novo Legado"
     };
 
@@ -746,6 +815,8 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
       vestuary: "Vestuário",
       rides: "Montarias",
       ability: "Habilidades",
+      feature: "Características",
+      caracteristica: "Características",
       legacy: "Legados"
     };
 

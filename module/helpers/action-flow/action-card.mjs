@@ -37,9 +37,10 @@ export function processActionDamageSection(action, config) {
  * Gera o bloco HTML da seção de Cura da ação.
  * @param {object} action - Objeto de dados da Ação
  * @param {object} config - Configurações CONFIG.GAIA
+ * @param {Array<object>} [targets=[]] - Tokens alvo da ação
  * @returns {string} HTML da seção de cura
  */
-export function processActionHealingSection(action, config) {
+export function processActionHealingSection(action, config, targets = []) {
   if (!action.healing?.hasHealing || !action.healing.formula) return "";
 
   const healTypeKey = action.healing.type || "pv";
@@ -51,15 +52,40 @@ export function processActionHealingSection(action, config) {
   const healTypeLabel = typeMap[healTypeKey] ? game.i18n.localize(typeMap[healTypeKey]) : healTypeKey.toUpperCase();
   const critBonus = action.healing.criticalBonus ? ` + ${action.healing.criticalBonus}` : "";
 
+  const applyBtnAttrs = (targetTokenId = "") => `data-action="applyActionHealingDirect" data-formula="${action.healing.formula}" data-heal-type="${healTypeKey}" data-heal-label="${healTypeLabel}"${targetTokenId ? ` data-target-token-id="${targetTokenId}"` : ""}`;
+
+  // PT: Botões de aplicar cura direta, espelhando o "Aplicar Dano" das rolagens de ataque/arma.
+  let applyButtonsHtml = "";
+  if (targets.length > 0) {
+    applyButtonsHtml = `
+        <div class="action-healing-targets-block">
+          ${targets.map(t => `
+            <div class="action-healing-target-row">
+              <span>${t.name}</span>
+              <button type="button" class="gaia-btn-apply-healing btn-apply-healing-target" ${applyBtnAttrs(t.id)} title="Rola ${action.healing.formula} e aplica a Cura em ${t.name}">
+                Aplicar Cura (${action.healing.formula})
+              </button>
+            </div>
+          `).join("")}
+        </div>`;
+  } else {
+    applyButtonsHtml = `
+        <button type="button" class="gaia-btn-apply-healing btn-apply-healing-direct" ${applyBtnAttrs()} title="Rola ${action.healing.formula} e aplica a Cura no alvo mirado ou selecionado">
+          <i class="fa-solid fa-hand-holding-medical"></i> Aplicar Cura (${action.healing.formula})
+        </button>`;
+  }
+
   return `
     <div class="action-section-block action-healing-section">
       <div class="action-section-header">
         <strong class="action-section-title healing-title">
           Cura: ${action.healing.formula} (${healTypeLabel})
         </strong>
-        <button type="button" class="btn-action-chat btn-roll-action-healing" data-action="rollActionHealing" data-formula="${action.healing.formula}" data-crit-formula="${action.healing.formula}${critBonus}" data-healing-type="${healTypeKey}">
-          Rolar Cura
-        </button>
+        <div class="action-healing-actions" style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+          <button type="button" class="btn-action-chat btn-roll-action-healing" data-action="rollActionHealing" data-formula="${action.healing.formula}" data-crit-formula="${action.healing.formula}${critBonus}" data-healing-type="${healTypeKey}">
+            Rolar Cura
+          </button>${applyButtonsHtml}
+        </div>
       </div>
     </div>
   `;

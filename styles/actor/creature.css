@@ -541,6 +541,37 @@
   margin-bottom: 6px;
 }
 
+/* Cabeçalho da seção de Características espelhando o painel de Habilidades */
+.features-section .header-buttons {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 8px;
+  background: linear-gradient(90deg, rgba(93, 28, 143, 0.15), transparent);
+  border-left: 3px solid var(--gaia-purple-dark, #5d1c8f);
+  border-radius: 0 var(--gaia-radius) var(--gaia-radius) 0;
+}
+
+.features-section .header-buttons .section-title {
+  margin: 0;
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-md);
+  color: var(--gaia-text-parchment);
+  text-transform: uppercase;
+}
+
+.features-section .header-buttons .section-count-badge {
+  margin-left: 2px;
+}
+
+.features-section .header-buttons .section-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
 .section-count-badge {
   background: var(--gaia-purple-dark, #5d1c8f);
   color: #ffffff;
