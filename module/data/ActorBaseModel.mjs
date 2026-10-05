@@ -28,12 +28,12 @@ class ActorBaseDataModel extends BaseDataModel {
 
       // PT: Nível do personagem ou criatura
       // EN: Level of the character or creature
-      nivel: new NumberField({ required: true, integer: true, min: 0, initial: 1 }),
+      nivel: new NumberField({ required: true, integer: true, min: 0, initial: 1, label: "GAIA.TokenAttribute.nivel" }),
 
       // PT: Pontos de vida (atual e máximo)
       // EN: Health points (current and maximum)
       health: new SchemaField({
-        value: new NumberField({ required: true, integer: true, initial: 30 }),
+        value: new NumberField({ required: true, integer: true, initial: 30, label: "GAIA.TokenAttribute.health" }),
         max: new NumberField({ required: true, integer: true, min: 0, initial: 30 }),
         temp: new NumberField({ required: false, integer: true, min: 0, initial: 0 })
       }),
@@ -41,8 +41,8 @@ class ActorBaseDataModel extends BaseDataModel {
       // PT: Sistema de Dado de Morte (Incapacitado: Sentenças do Corruptor e Dádivas do Artesão)
       // EN: Death Die system (Incapacitated: Corruption Sentences and Artisan Gifts)
       death: new SchemaField({
-        sentences: new NumberField({ required: true, integer: true, min: 0, max: 2, initial: 0 }),
-        gifts: new NumberField({ required: true, integer: true, min: 0, max: 2, initial: 0 }),
+        sentences: new NumberField({ required: true, integer: true, min: 0, max: 2, initial: 0, label: "GAIA.TokenAttribute.death.sentences" }),
+        gifts: new NumberField({ required: true, integer: true, min: 0, max: 2, initial: 0, label: "GAIA.TokenAttribute.death.gifts" }),
         stabilized: new BooleanField({ required: true, initial: false })
       }),
 
@@ -53,25 +53,25 @@ class ActorBaseDataModel extends BaseDataModel {
       // PT: Energia / mana / estamina (atual, máximo e temporário)
       // EN: Energy / mana / stamina (current, maximum, and temporary)
       energy: new SchemaField({
-        value: new NumberField({ required: true, integer: true, min: 0, initial: 5 }),
+        value: new NumberField({ required: true, integer: true, min: 0, initial: 5, label: "GAIA.TokenAttribute.energy" }),
         max: new NumberField({ required: true, integer: true, min: 0, initial: 5 }),
         temp: new NumberField({ required: false, integer: true, min: 0, initial: 0 })
-      }),
+      }, { label: "GAIA.TokenAttribute.energy" }),
       
       // PT: Quantidade de exaustões (0 a 6)
       // EN: Number of exhaustion entries (0 to 6)
-      exhaustion: new NumberField({ required: true, integer: true, min: 0, max: 6, initial: 0 }),
+      exhaustion: new NumberField({ required: true, integer: true, min: 0, max: 6, initial: 0, label: "GAIA.TokenAttribute.exhaustion" }),
       // PT: Deslocamento / velocidade de movimento em combate
       // EN: Movement speed / travel displacement in combat
-      movement: new NumberField({ required: true, integer: true, min: 0, initial: 6 }),
+      movement: new NumberField({ required: true, integer: true, min: 0, initial: 6, label: "GAIA.TokenAttribute.movement" }),
 
       // PT: Valor de bloqueio defensivo
       // EN: Defensive block value
-      block: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
+      block: new NumberField({ required: true, integer: true, min: 0, initial: 0, label: "GAIA.TokenAttribute.block" }),
 
       // PT: Percepção passiva do personagem
       // EN: Passive perception of the character
-      passivePerception: new NumberField({ required: true, integer: true, initial: 6 }),
+      passivePerception: new NumberField({ required: true, integer: true, initial: 6, label: "GAIA.TokenAttribute.passivePerception" }),
 
       // PT: Lista de itens ou IDs contidos no inventário
       // EN: Inventory item references or IDs
@@ -80,9 +80,9 @@ class ActorBaseDataModel extends BaseDataModel {
       // PT: Sistema monetário
       // EN: Currency system
       currency: new SchemaField({
-        mp: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
-        mo: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
-        mi: new NumberField({ required: true, integer: true, min: 0, initial: 0 })
+        mp: new NumberField({ required: true, integer: true, min: 0, initial: 0, label: "GAIA.TokenAttribute.currency.mp" }),
+        mo: new NumberField({ required: true, integer: true, min: 0, initial: 0, label: "GAIA.TokenAttribute.currency.mo" }),
+        mi: new NumberField({ required: true, integer: true, min: 0, initial: 0, label: "GAIA.TokenAttribute.currency.mi" })
       }),
 
       // PT: Lista de resistências a dano (tipo + valor)

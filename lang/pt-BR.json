@@ -1049,6 +1049,28 @@
       "Pv": "Pontos de Vida (PV)",
       "Pe": "Pontos de Energia (PE)",
       "Temp": "PV Temporário"
+    },
+    "Resource": {
+      "Health": "Vida",
+      "Energy": "Energia"
+    },
+    "TokenAttribute": {
+      "health": "Vida",
+      "energy": "Energia",
+      "block": "Bloqueio",
+      "currency": {
+        "mi": "Moedas de Ferro (MI)",
+        "mo": "Moedas de Ouro (MO)",
+        "mp": "Moedas de Prata (MP)"
+      },
+      "death": {
+        "gifts": "Dádivas do Artesão",
+        "sentences": "Sentenças do Corruptor"
+      },
+      "exhaustion": "Exaustão",
+      "movement": "Movimentação",
+      "nivel": "Nível",
+      "passivePerception": "Percepção Passiva"
     }
   }
 }
