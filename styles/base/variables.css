@@ -30,9 +30,13 @@
   --gaia-border-frame: #574c43;
   --gaia-border-gold: #8c7355;
   --gaia-border-subtle: rgba(140, 115, 85, 0.25);
+  /* PT: Dourados de realce — títulos, ícones de diálogo e realce de bordas em hover. */
+  --gaia-gold-accent: #c9a34b;
+  --gaia-gold-light: #e0cb8d;
 
   /* --- TIPOGRAFIA --- */
   --gaia-font-medieval: "Cinzel", "Signika", Georgia, serif;
+  --gaia-font-sans: sans-serif;
   --gaia-text-parchment: #000000;
   --gaia-text-muted: #505050;
   --gaia-text-dim: #f0f0f0;
@@ -40,13 +44,18 @@
   /* --- RECURSOS (VIDA, ENERGIA & ATRIBUTOS) --- */
   --gaia-health: #b91c1c;
   --gaia-health-label: #dc2626;
+  /* PT: Vermelho carmesim dos estados de morte e de exaustão máxima. */
+  --gaia-red-crimson: #b02e2e;
   --gaia-energy: #2563eb;
   --gaia-color-stability: #2a3a5e;
   --gaia-energy-label: #3b82f6;
   --gaia-purple: #942ce4;
   --gaia-purple-dark: #5d1c8f;
+  --gaia-purple-light: #7c2dbb;
   --gaia-green-dark: #1b4d3e;
   --gaia-green: #2e8b57;
+  /* PT: Verde translúcido para superfícies de "imunidade a condição" nas tags de defesa. */
+  --gaia-green-translucent: rgba(46, 139, 87, 0.2);
   --gaia-color-regeneration: #1b4d3e;
   --gaia-color-regeneration-border: #2e8b57;
 

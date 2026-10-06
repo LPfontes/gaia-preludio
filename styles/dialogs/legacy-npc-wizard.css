@@ -221,7 +221,7 @@
 }
 
 .wizard-rules-list .rule-item i {
-  color: var(--gaia-border-gold, #8c7355);
+  color: var(--gaia-border-gold);
 }
 
 .wizard-rules-list .rule-item.btn-select-knowledge {
@@ -238,7 +238,7 @@
 
 .wizard-rules-list .rule-item.btn-select-knowledge:hover {
   background: rgba(140, 115, 85, 0.25);
-  border-color: var(--gaia-border-gold, #8c7355);
+  border-color: var(--gaia-border-gold);
   box-shadow: 0 0 8px rgba(140, 115, 85, 0.4);
 }
 
@@ -274,7 +274,7 @@
 }
 
 .gaia-dialog-legacy-npc-wizard .btn-remove-chosen-ability:hover {
-  color: var(--gaia-health, #b91c1c);
+  color: var(--gaia-health);
 }
 
 .gaia-dialog-legacy-npc-wizard .badge-owned {
@@ -313,7 +313,7 @@
 
 .gaia-dialog-legacy-npc-wizard .btn-enhance-ability.active {
   background: rgba(140, 115, 85, 0.35);
-  color: var(--gaia-gold);
+  color: var(--gaia-border-gold);
   border-color: var(--gaia-border-gold);
   font-weight: bold;
 }

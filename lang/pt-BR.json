@@ -230,7 +230,10 @@
       "AddReduction": "Adicionar Redução",
       "TypePlaceholder": "Tipo",
       "Remove": "Remover",
-      "None": "Nenhuma"
+      "None": "Nenhuma",
+      "AddConditionImmunity": "Adicionar Imunidade a Condição",
+      "ConditionImmunity": "Imunidade a Condição",
+      "ConditionImmunityFromEffect": "Imunidade a Condição concedida por um Efeito Ativo"
     },
     "DeathDie": {
       "Title": "Dado de Morte",
@@ -739,7 +742,9 @@
       "BlockDefense": "Defesa com Bloqueio",
       "Initiative": "Iniciativa",
       "EditField": "Editar Campo",
-      "CreateField": "Criar Campo"
+      "CreateField": "Criar Campo",
+      "ConditionType": "Tipo de Condição",
+      "ConditionImmunityTitle": "Adicionar Imunidade a Condição"
     },
     "CreateActor": {
       "Title": "Criar Novo Personagem / Criatura",
@@ -1100,6 +1105,12 @@
       "movement": "Movimentação",
       "nivel": "Nível",
       "passivePerception": "Percepção Passiva"
+    },
+    "Generic": {
+      "Delete": "Remover"
+    },
+    "Notification": {
+      "ConditionImmunityExists": "O personagem já é imune a {condition}."
     }
   }
 }

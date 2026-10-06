@@ -187,6 +187,7 @@
         </button>
       </div>
       <div class="defense-tags">
+        {{!-- Resistências AUTORADAS na ficha (editáveis) --}}
         {{#each system.damageResistance as |res index|}}
           <div class="defense-tag">
             <span class="defense-tag-label" data-action="editDefense" data-defense-type="resistance" data-index="{{index}}" title="Editar Resistência">
@@ -196,9 +197,16 @@
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
-        {{else}}
-          <span class="empty-placeholder">Nenhuma</span>
         {{/each}}
+        {{!-- Resistências concedidas por Efeitos Ativos (remova o efeito para desfazer) --}}
+        {{#each system.damageResistanceFromEffects as |res|}}
+          <div class="defense-tag is-from-effect">
+            <span class="defense-tag-label">{{localize (lookup ../config.damageTypesFlat res.type)}}</span>
+          </div>
+        {{/each}}
+        {{#if (and (not system.damageResistance.length) (not system.damageResistanceFromEffects.length))}}
+          <span class="empty-placeholder">Nenhuma</span>
+        {{/if}}
       </div>
     </div>
 

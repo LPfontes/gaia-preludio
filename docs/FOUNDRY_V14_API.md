@@ -150,8 +150,19 @@ A arquitetura moderna de interfaces do Foundry v14 é baseada em `ApplicationV2`
 
 ### ChatMessage Modes (Atualização v14)
 No Foundry v14, as opções de exibição de rolagem para o chat foram migradas:
-- A opção `{ rollMode }` em `Roll#toMessage` foi descontinuada em favor de `{ messageMode }`.
-- Valores válidos residem em `CONFIG.ChatMessage.modes` (`publicroll`, `gmroll`, `blindroll`, `selfroll`).
+- A opção `{ rollMode }` em `Roll#toMessage` foi descontinuada em favor de `{ messageMode }`
+  (aviso de compatibilidade com `since: 14, until: 16`).
+- Valores válidos residem em `CONFIG.ChatMessage.modes`: **`public`**, **`gm`**, **`blind`**,
+  **`self`** e **`ic`** (verificado no core v14.367, `client/config.mjs`).
+- Os valores legados `publicroll` / `gmroll` / `blindroll` / `selfroll` **não** são chaves de
+  `CONFIG.ChatMessage.modes`. Eles sobrevivem apenas (a) na setting depreciada `core.rollMode`,
+  que devolve o valor legado correspondente, e (b) via `Roll._mapLegacyRollMode`, aplicado
+  somente quando se passa a opção antiga `rollMode`.
+- A setting de cliente correspondente é **`core.messageMode`**, não `core.rollMode`.
+- `CONST.DICE_ROLL_MODES` também está depreciado (v14 até v16) em favor de `CONFIG.ChatMessage.modes`.
+- `Roll#toMessage(data, { messageMode })` e `ChatMessage.create(data, { messageMode })` são
+  válidos: `messageMode` é aplicado a **qualquer** mensagem, enquanto o antigo `rollMode` só é
+  lido para mensagens com rolagem (`ChatMessage#isRoll`).
 
 Exemplo v14:
 ```javascript
@@ -164,7 +175,8 @@ await roll.toMessage(
     flavor: "Ataque com Espada"
   },
   {
-    messageMode: "publicroll" // No v14 usa-se messageMode
+    // Opções: public | gm | blind | self | ic
+    messageMode: "public"
   }
 );
 ```

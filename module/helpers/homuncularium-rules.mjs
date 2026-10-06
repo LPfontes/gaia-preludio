@@ -287,7 +287,8 @@ export function getHomunculariumAttackData(attackType, actor = null) {
       flags: {
         "gaia-preludio": {
           isHomunculariumAttack: true,
-          attackType: "golpeBrutal"
+          attackType: "golpeBrutal",
+          attackImgMigrated: true
         }
       },
       system: {
@@ -385,7 +386,8 @@ export function getHomunculariumAttackData(attackType, actor = null) {
     flags: {
       "gaia-preludio": {
         isHomunculariumAttack: true,
-        attackType: "evocacaoMistica"
+        attackType: "evocacaoMistica",
+        attackImgMigrated: true
       }
     },
     system: {
@@ -520,12 +522,24 @@ export async function syncHomunculariumAttackFormulas(actor) {
       return act;
     });
 
-    const needsImgFix = Boolean(canonicalImg) && item.img !== canonicalImg;
+    // PT: A troca de imagem é uma migração de UMA única vez e só pode atingir ícones
+    // genéricos do Foundry. Sem estas duas guardas, qualquer ajuste de atributo sobrescrevia
+    // a imagem escolhida pelo usuário a cada gravação.
+    const imgMigrated = Boolean(item.flags?.["gaia-preludio"]?.attackImgMigrated);
+    const isGenericCoreIcon = !item.img || /^icons\//i.test(item.img);
+    const needsImgFix = !imgMigrated && Boolean(canonicalImg) && isGenericCoreIcon && item.img !== canonicalImg;
+    const needsImgFlag = !imgMigrated;
 
-    if (changed || needsImgFix) {
+    if (changed || needsImgFix || needsImgFlag) {
       const update = { _id: item.id };
       if (changed) update["system.actions"] = newActions;
       if (needsImgFix) update.img = canonicalImg;
+      if (needsImgFlag) {
+        update.flags = {
+          ...item.flags,
+          "gaia-preludio": { ...(item.flags?.["gaia-preludio"] ?? {}), attackImgMigrated: true }
+        };
+      }
       updates.push(update);
     }
   }

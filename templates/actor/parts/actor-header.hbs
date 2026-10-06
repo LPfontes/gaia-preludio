@@ -30,7 +30,7 @@
         <button type="button" class="btn-open-legacy-sheet" data-action="openLegacyItem"
           data-item-id="{{legacyItem.id}}" data-item-uuid="{{legacyItem.uuid}}"
           title="Abrir Ficha do Legado ({{legacyItem.name}})"
-          style="background: transparent; border: none; color: var(--gaia-border-gold, #8c7355); cursor: pointer; padding: 2px 4px; font-size: 14px;">
+          style="background: transparent; border: none; color: var(--gaia-border-gold); cursor: pointer; padding: 2px 4px; font-size: 14px;">
           <i class="fa-solid fa-feather-pointed"></i>
         </button>
         {{/if}}
@@ -197,6 +197,7 @@
         </button>
       </div>
       <div class="defense-tags">
+        {{!-- Resistências AUTORADAS na ficha (editáveis) --}}
         {{#each system.damageResistance as |res index|}}
         <div class="defense-tag">
           <span class="defense-tag-label" data-action="editDefense" data-defense-type="resistance" data-index="{{index}}" title="Editar Resistência">
@@ -207,9 +208,16 @@
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
-        {{else}}
-        <span class="empty-placeholder">{{localize "GAIA.Banner.None"}}</span>
         {{/each}}
+        {{!-- Resistências concedidas por Efeitos Ativos (remova o efeito para desfazer) --}}
+        {{#each system.damageResistanceFromEffects as |res|}}
+        <div class="defense-tag is-from-effect">
+          <span class="defense-tag-label">{{localize (lookup ../config.damageTypesFlat res.type)}}</span>
+        </div>
+        {{/each}}
+        {{#if (and (not system.damageResistance.length) (not system.damageResistanceFromEffects.length))}}
+        <span class="empty-placeholder">{{localize "GAIA.Banner.None"}}</span>
+        {{/if}}
       </div>
     </div>
 
@@ -217,10 +225,16 @@
     <div class="defense-group">
       <div class="defense-group-header">
         <span class="defense-group-title">{{localize "GAIA.Banner.Immunity"}}</span>
-        <button type="button" class="btn-tag-add" data-action="addImmunity"
-          data-tooltip="{{localize 'GAIA.Banner.AddImmunity'}}">
-          <i class="fa-solid fa-plus"></i>
-        </button>
+        <div class="defense-group-actions">
+          <button type="button" class="btn-tag-add" data-action="addImmunity"
+            data-tooltip="{{localize 'GAIA.Banner.AddImmunity'}}">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+          <button type="button" class="btn-tag-add" data-action="addConditionImmunity"
+            data-tooltip="{{localize 'GAIA.Banner.AddConditionImmunity'}}">
+            <i class="fa-solid fa-shield-virus"></i>
+          </button>
+        </div>
       </div>
       <div class="defense-tags">
         {{#each system.damageImmunity as |imm index|}}
@@ -234,13 +248,26 @@
           </button>
         </div>
         {{/each}}
-        {{#each system.conditionImmunities as |cImm|}}
-        <div class="defense-tag condition-immunity-tag" style="background: rgba(46, 139, 87, 0.2); border: 1px solid var(--gaia-gold); border-radius: var(--gaia-radius); padding: 2px 6px; display: inline-flex; align-items: center; gap: 4px;" title="Imunidade à Condição">
-          <i class="fa-solid fa-shield-virus" style="color: var(--gaia-gold); font-size: 10px;"></i>
-          <span style="text-transform: capitalize; font-size: 11px; font-weight: 600;">{{cImm}}</span>
+        {{!-- Imunidades a Condição AUTORADAS na ficha (editáveis) --}}
+        {{#each system.conditionImmunity as |cImm index|}}
+        <div class="defense-tag condition-immunity-tag" data-tooltip="{{localize 'GAIA.Banner.ConditionImmunity'}}">
+          <i class="fa-solid fa-shield-virus condition-immunity-icon"></i>
+          <span class="condition-immunity-label">{{#if (lookup ../config.conditionsFlat cImm)}}{{localize (lookup ../config.conditionsFlat cImm)}}{{else}}{{cImm}}{{/if}}</span>
+          <button type="button" class="btn-tag-remove" data-action="removeConditionImmunity" data-index="{{index}}"
+            data-tooltip="{{localize 'GAIA.Banner.Remove'}}">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
         {{/each}}
-        {{#if (and (not system.damageImmunity.length) (not system.conditionImmunities.length))}}
+        {{!-- Imunidades a Condição concedidas por Efeitos Ativos (remova o efeito para desfazer) --}}
+        {{#each system.conditionImmunityFromEffects as |cImm|}}
+        <div class="defense-tag condition-immunity-tag is-from-effect"
+          data-tooltip="{{localize 'GAIA.Banner.ConditionImmunityFromEffect'}}">
+          <i class="fa-solid fa-shield-virus condition-immunity-icon"></i>
+          <span class="condition-immunity-label">{{#if (lookup ../config.conditionsFlat cImm)}}{{localize (lookup ../config.conditionsFlat cImm)}}{{else}}{{cImm}}{{/if}}</span>
+        </div>
+        {{/each}}
+        {{#if (and (not system.damageImmunity.length) (not system.conditionImmunity.length) (not system.conditionImmunityFromEffects.length))}}
         <span class="empty-placeholder">{{localize "GAIA.Banner.None"}}</span>
         {{/if}}
       </div>

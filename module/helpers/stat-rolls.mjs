@@ -168,12 +168,21 @@ export async function promptRollDialog({
     };
   });
 
-  const currentRollMode = game.settings?.get("core", "rollMode") || "publicroll";
+  // PT: No Foundry v14 a setting é `core.messageMode` e as chaves válidas são as de
+  // `CONFIG.ChatMessage.modes` (public / gm / blind / self / ic). `core.rollMode` sobrevive
+  // apenas como shim depreciado que devolve os valores legados (publicroll/gmroll/...),
+  // motivo pelo qual `selected` nunca casava com a chave da opção: o diálogo sempre abria
+  // na primeira opção, ignorando a preferência de visibilidade do usuário.
+  // `ClientSettings#get` lança para chave não registrada, então conferimos o registro antes.
+  const registeredSettings = game.settings?.settings;
+  const currentMode = registeredSettings?.has?.("core.messageMode")
+    ? game.settings.get("core", "messageMode")
+    : "public";
   const rollModeMap = CONFIG.ChatMessage?.modes ?? {
-    publicroll: "CHAT.RollPublic",
-    gmroll: "CHAT.RollPrivate",
-    blindroll: "CHAT.RollBlind",
-    selfroll: "CHAT.RollSelf"
+    public: "CHAT.MODES.public",
+    gm: "CHAT.MODES.gm",
+    blind: "CHAT.MODES.blind",
+    self: "CHAT.MODES.self"
   };
 
   const rollModes = Object.entries(rollModeMap).map(([mKey, mVal]) => {
@@ -182,7 +191,7 @@ export async function promptRollDialog({
     return {
       key: mKey,
       label: mLabel,
-      selected: mKey === currentRollMode
+      selected: mKey === currentMode
     };
   });
 
@@ -229,7 +238,9 @@ export async function promptRollDialog({
   return {
     fitness: dialogResult.fitness || defaultFitness,
     modifier: Number(dialogResult.modifier) || 0,
-    rollMode: dialogResult.rollMode || game.settings?.get("core", "rollMode")
+    // PT: A propriedade mantém o nome `rollMode` por compatibilidade com os call sites
+    // existentes, mas o valor já é uma chave de `CONFIG.ChatMessage.modes` (v14).
+    rollMode: dialogResult.rollMode || currentMode
   };
 }
 
@@ -286,7 +297,7 @@ export async function postStatRollMessage(actor, roll, {
   fitness = "standard",
   modifier = 0,
   exhaustionPenalty = 0,
-  rollMode = "publicroll",
+  rollMode = "public",
   messageMode = null,
   weaponDamageText = null,
   weaponDamageHtml = null,
@@ -356,7 +367,7 @@ export async function rollStat(actor, options = {}) {
       fitness: "standard",
       modifier: 0,
       exhaustionPenalty: statData.exhaustionPenalty,
-      rollMode: "publicroll",
+      rollMode: "public",
       type: statData.type
     });
     return roll;

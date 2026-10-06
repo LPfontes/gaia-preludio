@@ -118,7 +118,7 @@
 }
 
 .ability-meta-bar .meta-row-1 .meta-category {
-  color: var(--gaia-border-parchment);
+  color: var(--gaia-text-parchment);
   font-weight: 600;
 }
 
@@ -128,7 +128,7 @@
 }
 
 .ability-meta-bar .meta-row-1 .meta-divider {
-  color: var(--gaia-border-parchment);
+  color: var(--gaia-text-parchment);
   margin: 0 2px;
 }
 
@@ -232,9 +232,9 @@
 
 .gaia-ability-card .sheet-navigation-tabs.item-tabs .tab-item,
 .gaia-ability-card .ability-navigation-tabs .tab-item {
-  color: var(--gaia-purple-dark, #5d1c8f);
-  font-family: var(--gaia-font-medieval, "Cinzel", serif);
-  font-size: var(--gaia-font-sm, 12px);
+  color: var(--gaia-purple-dark);
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-sm);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -248,7 +248,7 @@
 
 .gaia-ability-card .sheet-navigation-tabs.item-tabs .tab-item:hover,
 .gaia-ability-card .ability-navigation-tabs .tab-item:hover {
-  color: var(--gaia-purple, #942ce4);
+  color: var(--gaia-purple);
   background: rgba(148, 44, 228, 0.12);
   border-color: rgba(148, 44, 228, 0.25);
 }
@@ -256,8 +256,8 @@
 .gaia-ability-card .sheet-navigation-tabs.item-tabs .tab-item.active,
 .gaia-ability-card .ability-navigation-tabs .tab-item.active {
   color: #ffffff;
-  background: var(--gaia-purple-dark, #5d1c8f);
-  border-color: var(--gaia-purple-dark, #5d1c8f);
+  background: var(--gaia-purple-dark);
+  border-color: var(--gaia-purple-dark);
   box-shadow: 0 2px 5px rgba(93, 28, 143, 0.3);
   text-shadow: none;
 }
@@ -274,7 +274,7 @@
   font-size: var(--gaia-font-base);
   text-align: center;
   border: none;
-  border-bottom: 1px dashed var(--gaia-color-accent-purple);
+  border-bottom: 1px dashed var(--gaia-purple);
   background: transparent;
   padding: 4px;
 }
@@ -285,7 +285,7 @@
 
 .ability-quote-field input:focus {
   background: #faf5ff;
-  border-bottom: 1px solid var(--gaia-color-accent-purple);
+  border-bottom: 1px solid var(--gaia-purple);
 }
 
 /* ALVOS E ALCANCE */
@@ -321,7 +321,7 @@
   align-items: center;
   gap: 6px;
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
 }
 
 .has-attribute-bonus-field {
@@ -334,9 +334,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: var(--gaia-font-sm, 12px);
+  font-size: var(--gaia-font-sm);
   font-weight: bold;
-  color: var(--gaia-purple-dark, #5d1c8f);
+  color: var(--gaia-purple-dark);
   cursor: pointer;
   white-space: nowrap;
   user-select: none;
@@ -344,7 +344,7 @@
 
 .has-attribute-bonus-field input[type="checkbox"] {
   cursor: pointer;
-  accent-color: var(--gaia-purple, #7c3aed);
+  accent-color: var(--gaia-purple);
   margin: 0;
 }
 
@@ -354,7 +354,7 @@
 .requirement-field label {
   font-weight: bold;
   white-space: nowrap;
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
 }
 
 .target-field input,
@@ -367,7 +367,7 @@
   padding: 2px 6px;
   border-radius: var(--gaia-radius);
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
 }
 
 /* EFEITO PRINCIPAL / DESCRIÇÃO */
@@ -378,7 +378,7 @@
   padding: 6px 8px;
   font-size: var(--gaia-font-base);
   line-height: 1.5;
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   resize: vertical;
   background: transparent;
   font-family: inherit;
@@ -395,7 +395,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
-  border-bottom: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border-bottom: 1px solid var(--gaia-border-subtle);
   padding-bottom: 4px;
 }
 
@@ -403,7 +403,7 @@
   font-weight: bold;
   font-size: var(--gaia-font-base);
   text-transform: uppercase;
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   letter-spacing: 0.5px;
 }
 
@@ -428,7 +428,7 @@
 
 .subeffect-card:hover {
   background: #f4eeff;
-  border-color: var(--gaia-purple-dark, #5c2d91);
+  border-color: var(--gaia-purple-dark);
 }
 
 .subeffect-card-header {
@@ -448,7 +448,7 @@
 .subeffect-title-text {
   font-size: var(--gaia-font-base);
   font-weight: 700;
-  color: var(--gaia-purple-dark, #4a154b);
+  color: var(--gaia-purple-dark);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -481,16 +481,16 @@
 }
 
 .btn-roll-subeffect {
-  color: var(--gaia-purple-dark, #5c2d91);
+  color: var(--gaia-purple-dark);
 }
 
 .btn-roll-subeffect:hover {
-  color: var(--gaia-purple, #942ce4);
+  color: var(--gaia-purple);
   transform: scale(1.1);
 }
 
 .btn-edit-subeffect {
-  color: var(--gaia-purple-dark, #5c2d91);
+  color: var(--gaia-purple-dark);
 }
 
 .btn-edit-subeffect:hover {
@@ -508,7 +508,7 @@
 .subeffect-preview-desc {
   font-size: 12px;
   line-height: 1.4;
-  color: var(--gaia-text-primary, #333);
+  color: var(--gaia-text-parchment);
   margin-top: 4px;
   white-space: pre-wrap;
 }
@@ -526,7 +526,7 @@
   border: 1px solid #d4cae8;
   border-radius: var(--gaia-radius);
   background: #ffffff;
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
 }
 
 .subeffect-type-action,
@@ -584,14 +584,14 @@
   font-size: var(--gaia-font-base);
   line-height: 1.4;
   resize: vertical;
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
 }
 
 .subeffect-note {
   width: 100%;
   font-size: var(--gaia-font-base);
   font-weight: 600;
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   border: none;
   background: transparent;
   margin-top: 4px;
@@ -624,7 +624,7 @@
   gap: 8px;
   font-weight: 800;
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   text-transform: uppercase;
   margin-bottom: 8px;
 }
@@ -639,7 +639,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   font-size: var(--gaia-font-base);
   cursor: pointer;
 }
@@ -681,7 +681,7 @@
 .improvement-letter {
   font-weight: bold;
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   min-width: 22px;
 }
 
@@ -689,7 +689,7 @@
   flex: 1;
   font-weight: bold;
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   border: none;
   background: transparent;
 }
@@ -713,7 +713,7 @@
   font-size: var(--gaia-font-base);
   line-height: 1.4;
   resize: vertical;
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   margin-top: 4px;
   padding-left: 28px;
 }
@@ -721,7 +721,7 @@
 .improvements-empty-hint {
   text-align: center;
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   font-style: italic;
   margin: 8px 0;
 }
@@ -731,14 +731,14 @@
   background: #ffffff;
   padding: 8px 10px;
   font-family: var(--gaia-font-medieval), Georgia, serif;
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   border-radius: var(--gaia-radius);
 }
 
 .gaia-ability-chat-card .ability-name {
   font-size: var(--gaia-font-xl);
   font-weight: 800;
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   text-align: center;
   text-transform: uppercase;
   margin: 4px 0;
@@ -746,7 +746,7 @@
 
 .gaia-ability-chat-card .ability-meta-bar {
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   text-align: center;
   margin-bottom: 8px;
 }
@@ -768,7 +768,7 @@
 .gaia-ability-chat-card .ability-actions-section,
 .gaia-weapon-chat-card .ability-actions-section {
   margin-top: 10px;
-  border-top: 1px solid var(--gaia-text-primary);
+  border-top: 1px solid var(--gaia-text-parchment);
   padding-top: 6px;
   display: flex;
   flex-direction: column;
@@ -780,7 +780,7 @@
   text-align: center;
   font-weight: bold;
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   margin-bottom: 4px;
 }
 
@@ -789,7 +789,7 @@
   display: flex;
   flex-direction: column;
   background: rgba(0, 0, 0, 0.04);
-  border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
   padding: 4px 6px;
   gap: 3px;
@@ -828,7 +828,7 @@
 
 .gaia-ability-chat-card .ability-action-desc,
 .gaia-weapon-chat-card .ability-action-desc {
-  font-size: var(--gaia-font-base, 12px);
+  font-size: var(--gaia-font-base);
   color: var(--gaia-text-parchment);
   line-height: 1.35;
   margin-top: 2px;
@@ -858,7 +858,7 @@
 }
 
 .gaia-ability-chat-card .subeffect-chat-block {
-  border-top: 1px solid var(--gaia-text-primary);
+  border-top: 1px solid var(--gaia-text-parchment);
   padding-top: 6px;
   margin-top: 8px;
 }
@@ -866,13 +866,13 @@
 .gaia-ability-chat-card .subeffect-chat-title {
   font-weight: bold;
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   text-transform: uppercase;
 }
 
 .gaia-ability-chat-card .improvements-chat-section {
   margin-top: 12px;
-  border-top: 1px dashed var(--gaia-text-primary);
+  border-top: 1px dashed var(--gaia-text-parchment);
   padding-top: 8px;
 }
 
@@ -880,7 +880,7 @@
   text-align: center;
   font-weight: bold;
   font-size: var(--gaia-font-base);
-  color: var(--gaia-text-primary);
+  color: var(--gaia-text-parchment);
   margin-bottom: 6px;
 }
 
@@ -1144,7 +1144,7 @@
 }
 
 .btn-apply-effect-inline.active:hover {
-  background: var(--gaia-purple-light, #7c2dbb);
+  background: var(--gaia-purple-light);
 }
 
 .ability-card-item {
@@ -1540,9 +1540,9 @@
 
 .gaia-ability-card .item-effects-panel .effect-card:hover {
   background: #faf7fd;
-  border-color: var(--gaia-purple-dark, #5d1c8f);
+  border-color: var(--gaia-purple-dark);
 }
 
 .gaia-ability-card .item-effects-panel .effect-name {
-  color: var(--gaia-purple-dark, #5d1c8f);
+  color: var(--gaia-purple-dark);
 }

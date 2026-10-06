@@ -1,0 +1,22 @@
+<form class="gaia-roll-dialog condition-immunity-form">
+  {{#if title}}
+    <div class="dialog-header-info">
+      <span class="dialog-stat-title">{{title}}</span>
+    </div>
+  {{/if}}
+
+  {{!-- 1. Seleção da Condição --}}
+  <div class="form-group">
+    <label for="condition-immunity-select">
+      <i class="fa-solid fa-shield-virus"></i>
+      <strong>{{localize "GAIA.Dialog.ConditionType"}}</strong>
+    </label>
+    <div class="form-fields">
+      <select id="condition-immunity-select" name="condition">
+        {{#each conditions as |cond|}}
+          <option value="{{cond.key}}" title="{{cond.description}}">{{cond.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+</form>

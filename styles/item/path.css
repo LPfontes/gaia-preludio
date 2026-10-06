@@ -131,7 +131,7 @@
 
 .gaia-preludio.sheet.item.caminho .path-ability-card:hover {
   background: rgba(0, 0, 0, 0.25);
-  border-color: var(--gaia-gold-accent, #c9a34b);
+  border-color: var(--gaia-gold-accent);
 }
 
 .gaia-preludio.sheet.item.caminho .path-ability-card:active {
@@ -160,7 +160,7 @@
   height: 60px;
   object-fit: cover;
   border-radius: var(--gaia-radius);
-  border: 1px solid var(--gaia-border-frame, #666);
+  border: 1px solid var(--gaia-border-frame);
   flex-shrink: 0;
 }
 
@@ -208,5 +208,5 @@
 
 .gaia-preludio.sheet.item.caminho .path-abilities-section .empty-hint {
   font-style: italic;
-  color: var(--gaia-text-muted, #888);
+  color: var(--gaia-text-muted);
 }

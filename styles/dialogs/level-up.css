@@ -8,14 +8,14 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  font-family: var(--gaia-font-medieval, Georgia, serif);
-  color: var(--gaia-text-parchment, #2c2416);
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-text-parchment);
 }
 
 /* 1. Header Box */
 .gaia-dialog-level-up .level-up-header-box {
   background: linear-gradient(135deg, rgba(74, 46, 107, 0.15), rgba(201, 163, 75, 0.15));
-  border: 1px solid var(--gaia-border-gold, #8c7355);
+  border: 1px solid var(--gaia-border-gold);
   border-radius: var(--gaia-radius);
   padding: 10px;
   text-align: center;
@@ -24,7 +24,7 @@
 
 .gaia-dialog-level-up .level-up-header-box h3 {
   margin: 0 0 4px 0;
-  font-family: var(--gaia-font-medieval, "Cinzel", Georgia, serif);
+  font-family: var(--gaia-font-medieval);
   color: var(--gaia-purple-dark);
   font-size: var(--gaia-font-base);
   font-weight: bold;
@@ -33,7 +33,7 @@
 .gaia-dialog-level-up .level-up-header-box .level-progression-badge {
   font-size: var(--gaia-font-base);
   font-weight: bold;
-  color: var(--gaia-text-parchment, #2c2416);
+  color: var(--gaia-text-parchment);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,7 +41,7 @@
 }
 
 .gaia-dialog-level-up .level-up-header-box .level-progression-badge i {
-  color: var(--gaia-gold-accent, #c9a34b);
+  color: var(--gaia-gold-accent);
 }
 
 /* 2. Tabs Navigation */
@@ -57,7 +57,7 @@
   font-size: var(--gaia-font-base);
   font-weight: bold;
   background: rgba(0, 0, 0, 0.04);
-  color: var(--gaia-text-parchment, #2c2416);
+  color: var(--gaia-text-parchment);
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -65,7 +65,7 @@
   justify-content: center;
   gap: 4px;
   transition: all 0.2s ease;
-  font-family: var(--gaia-font-medieval, Georgia, serif);
+  font-family: var(--gaia-font-medieval);
 }
 
 .gaia-dialog-level-up .gaia-dialog-tab-btn:hover {
@@ -101,7 +101,7 @@
 
 /* 3. Sections */
 .gaia-dialog-level-up .level-up-section {
-  border: 1px solid var(--gaia-border-frame, #c4b998);
+  border: 1px solid var(--gaia-border-frame);
   border-radius: var(--gaia-radius);
   padding: 8px 12px;
   background: rgba(0, 0, 0, 0.02);
@@ -169,14 +169,14 @@
 }
 
 .gaia-dialog-level-up .btn-roll-hp-gain:hover {
-  background: var(--gaia-purple, #581c87);
+  background: var(--gaia-purple);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .gaia-dialog-level-up .hp-gain-preview {
   font-size: var(--gaia-font-md);
   font-weight: bold;
-  color: var(--gaia-health, #b91c1c);
+  color: var(--gaia-health);
 }
 
 .gaia-dialog-level-up .energy-gain-row {
@@ -243,7 +243,7 @@
   width: 18px;
   text-align: center;
   font-size: var(--gaia-font-md);
-  color: var(--gaia-text-parchment, #2c2416);
+  color: var(--gaia-text-parchment);
 }
 
 .gaia-dialog-level-up .dist-tracker-header {
@@ -264,12 +264,12 @@
 .gaia-dialog-level-up .vigor-hp-bonus-notice {
   margin-top: 8px;
   font-size: var(--gaia-font-md);
-  color: var(--gaia-green, #2e8b57);
+  color: var(--gaia-green);
   font-weight: bold;
   background: rgba(46, 139, 87, 0.1);
   padding: 4px 8px;
   border-radius: var(--gaia-radius);
-  border-left: 3px solid var(--gaia-green, #2e8b57);
+  border-left: 3px solid var(--gaia-green);
 }
 
 /* 6. Ability / Path Input & Browser Button */
@@ -292,11 +292,11 @@
   gap: 6px;
   white-space: nowrap;
   transition: all 0.2s ease;
-  font-family: var(--gaia-font-medieval, Georgia, serif);
+  font-family: var(--gaia-font-medieval);
 }
 
 .gaia-dialog-level-up .btn-open-abilities-browser:hover {
-  background: var(--gaia-purple, #581c87);
+  background: var(--gaia-purple);
   box-shadow: 0 2px 5px rgba(74, 46, 107, 0.3);
 }
 
@@ -313,7 +313,7 @@
   gap: 6px;
   white-space: nowrap;
   transition: all 0.2s ease;
-  font-family: var(--gaia-font-medieval, Georgia, serif);
+  font-family: var(--gaia-font-medieval);
 }
 
 .gaia-dialog-level-up .btn-open-enhance-dialog:hover {
@@ -337,16 +337,16 @@
   gap: 5px;
   padding: 3px 10px;
   background: linear-gradient(135deg, rgba(88, 28, 135, 0.12), rgba(88, 28, 135, 0.06));
-  border: 1px solid var(--gaia-purple-dark, #6b21a8);
+  border: 1px solid var(--gaia-purple-dark);
   border-radius: 999px;
   font-size: var(--gaia-font-sm);
-  font-family: var(--gaia-font-medieval, Georgia, serif);
-  color: var(--gaia-text-parchment, #2c2416);
+  font-family: var(--gaia-font-medieval);
+  color: var(--gaia-text-parchment);
   white-space: nowrap;
 }
 
 .gaia-dialog-level-up .selected-ability-tag i {
-  color: var(--gaia-purple-dark, #6b21a8);
+  color: var(--gaia-purple-dark);
   font-size: var(--gaia-font-xs);
 }
 
@@ -354,10 +354,10 @@
   flex: 1;
   padding: 4px 8px;
   font-size: var(--gaia-font-md);
-  border: 1px solid var(--gaia-border-frame, #c4b998);
+  border: 1px solid var(--gaia-border-frame);
   border-radius: var(--gaia-radius);
   background: rgba(255, 255, 255, 0.8);
-  color: var(--gaia-text-parchment, #2c2416);
+  color: var(--gaia-text-parchment);
   font-family: inherit;
   box-sizing: border-box;
 }
@@ -370,7 +370,7 @@
 
 /* 7. Level Up Chat Card */
 .gaia-preludio.chat-card.level-up-card {
-  border: 2px solid var(--gaia-border-gold, #8c7355);
+  border: 2px solid var(--gaia-border-gold);
   border-radius: var(--gaia-radius);
   padding: 10px;
   background: linear-gradient(135deg, rgba(74, 46, 107, 0.1), rgba(201, 163, 75, 0.1));
@@ -378,7 +378,7 @@
 
 .gaia-preludio.chat-card.level-up-card header h3 {
   margin: 0;
-  font-family: var(--gaia-font-medieval, "Cinzel", Georgia, serif);
+  font-family: var(--gaia-font-medieval);
   color: var(--gaia-purple-dark);
   font-size: 1.2em;
 }

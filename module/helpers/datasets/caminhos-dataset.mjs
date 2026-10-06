@@ -3224,7 +3224,7 @@ export const HABILIDADES_CAMINHO_DATA = [
           },
           "damage": {
             "hasDamage": true,
-            "formula": "@parameters.brutality.value",
+            "formula": "@brutality",
             "type": "physical",
             "criticalBonus": "",
             "scaling": ""
@@ -5482,7 +5482,7 @@ export const HABILIDADES_CAMINHO_DATA = [
           },
           "damage": {
             "hasDamage": true,
-            "formula": "@parameters.spirit.value + 1",
+            "formula": "@spirit + 1",
             "type": "light",
             "criticalBonus": "",
             "scaling": ""
@@ -11102,7 +11102,7 @@ export const CAMINHOS_DATA = [
               },
               "damage": {
                 "hasDamage": true,
-                "formula": "@parameters.brutality.value",
+                "formula": "@brutality",
                 "type": "physical",
                 "criticalBonus": "",
                 "scaling": ""
@@ -12634,7 +12634,7 @@ export const CAMINHOS_DATA = [
               },
               "damage": {
                 "hasDamage": true,
-                "formula": "@parameters.spirit.value + 1",
+                "formula": "@spirit + 1",
                 "type": "light",
                 "criticalBonus": "",
                 "scaling": ""

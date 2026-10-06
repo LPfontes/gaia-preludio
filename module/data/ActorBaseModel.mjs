@@ -113,7 +113,7 @@ class ActorBaseDataModel extends BaseDataModel {
 
       conditionImmunity: new ArrayField(
         new StringField({ required: true }),
-        { required: false, initial: [] }
+        { required: true, initial: [] }
       ),
 
       // PT: Lista de vulnerabilidades a tipos de dano (dano adicional recebido)

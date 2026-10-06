@@ -115,8 +115,8 @@
       <div class="stat-pips-column">
         {{#each knowledge as |know|}}
         <div class="pip-stat-row">
-          <span class="pip-stat-label" data-action="rollKnowledge" data-key="{{know.key}}" title="{{localize "
-            GAIA.Dialog.RollTitle" label=know.label}}">
+          <span class="pip-stat-label" data-action="rollKnowledge" data-key="{{know.key}}"
+            title="{{localize "GAIA.Dialog.RollTitle" label=know.label}}">
             <span class="stat-roll-icon" aria-hidden="true"></span>
             {{know.label}}
           </span>
@@ -137,8 +137,8 @@
     <div class="masteries-panel">
       <div class="masteries-header">
         <h3 class="panel-main-title">Maestrias</h3>
-        <button type="button" class="btn-add-mastery" data-action="addMastery" title="{{localize "
-          GAIA.title.AddMastery"}}">
+        <button type="button" class="btn-add-mastery" data-action="addMastery"
+          title="{{localize "GAIA.title.AddMastery"}}">
           <i class="fa-solid fa-plus"></i>
         </button>
       </div>
@@ -147,12 +147,13 @@
         {{#each unlockedMasteries as |mastery index|}}
         <div class="mastery-item">
           <span class="mastery-name" data-action="rollMastery" data-key="{{mastery.key}}"
-            data-knowledge="{{mastery.knowledgeKey}}" title="{{localize " GAIA.Dialog.RollTitle" label=mastery.label}}">
+            data-knowledge="{{mastery.knowledgeKey}}"
+            title="{{localize "GAIA.Dialog.RollTitle" label=mastery.label}}">
             <span class="stat-roll-icon" aria-hidden="true"></span>
             {{mastery.label}}
           </span>
           <button type="button" class="btn-remove-mastery" data-action="removeMastery" data-index="{{index}}"
-            title="{{localize " GAIA.title.RemoveMastery"}}">
+            title="{{localize "GAIA.title.RemoveMastery"}}">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>

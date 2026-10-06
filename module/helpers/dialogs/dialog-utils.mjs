@@ -86,6 +86,76 @@ export async function promptDefenseTraitDialog(title, isReduction = false, editD
 }
 
 /**
+ * Condições que NÃO podem ser concedidas como imunidade pelo diálogo.
+ * PT: Penumbra e Escuridão são estados de visão/iluminação, tratados pelo sistema via
+ * `hasPenumbra`/`hasDarkness`, e Incapacitado é um estado derivado de PV 0 — conceder
+ * imunidade a ele conflitaria com o fluxo de Dano de Morte.
+ */
+const NON_IMMUNIZABLE_CONDITIONS = new Set(["penumbra", "escuridao", "incapacitado"]);
+
+/**
+ * Obtém a lista de Condições que podem receber imunidade, com rótulos e descrições traduzidos.
+ * @returns {Array<{key: string, label: string, description: string}>}
+ */
+export function getConditionImmunityOptions() {
+  const conditions = CONFIG.GAIA?.conditions ?? {};
+  return Object.values(conditions)
+    .filter(cond => cond?.id && !NON_IMMUNIZABLE_CONDITIONS.has(String(cond.id).toLowerCase()))
+    .map(cond => ({
+      key: String(cond.id),
+      label: game.i18n.localize(cond.name || cond.id) || String(cond.id),
+      description: cond.description ? game.i18n.localize(cond.description) : ""
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, "pt"));
+}
+
+/**
+ * Exibe caixa de diálogo DialogV2 para adicionar uma Imunidade a Condição.
+ * @param {string} [title] - Título da janela
+ * @returns {Promise<string|null>} Id da condição escolhida (ex: "envenenado") ou null se cancelado
+ */
+export async function promptConditionImmunityDialog(title = null) {
+  const conditions = getConditionImmunityOptions();
+  if (!conditions.length) return null;
+
+  const windowTitle = title || game.i18n.localize("GAIA.Dialog.ConditionImmunityTitle");
+  const dialogHtml = await renderTemplate("systems/gaia-preludio/templates/dialog/condition-immunity-dialog.hbs", {
+    title: windowTitle,
+    conditions
+  });
+
+  const result = await DialogV2.wait({
+    classes: ["gaia-preludio", "gaia-dialog", "defense-dialog"],
+    window: { title: windowTitle },
+    position: { width: 380, height: "auto" },
+    content: dialogHtml,
+    buttons: [
+      {
+        action: "confirm",
+        label: "Adicionar",
+        icon: "fa-solid fa-plus",
+        default: true,
+        callback: (event, button, dialog) => {
+          const form = dialog.element.querySelector("form");
+          const data = new FormDataExtended(form).object;
+          return String(data.condition || "").trim().toLowerCase() || null;
+        }
+      },
+      {
+        action: "cancel",
+        label: "Cancelar",
+        icon: "fa-solid fa-xmark",
+        callback: () => null
+      }
+    ],
+    rejectClose: false
+  });
+
+  if (result === "cancel" || !result) return null;
+  return result;
+}
+
+/**
  * Exibe uma caixa de diálogo genérica para alterar o valor de qualquer campo do ator.
  * @param {Actor} actor - Documento do Ator a ser atualizado
  * @param {string} field - Caminho do campo (ex: "system.health.value", "system.exhaustion", "name")

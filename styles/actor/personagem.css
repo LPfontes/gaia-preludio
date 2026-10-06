@@ -8,7 +8,7 @@
   flex-direction: column;
   gap: 8px;
   background: var(--gaia-bg-banner);
-  border: 1px solid var(--gaia-border-);
+  border: 1px solid var(--gaia-border-frame);
   border-radius: var(--gaia-radius);
   padding: 12px;
 }

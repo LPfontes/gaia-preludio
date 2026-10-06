@@ -76,8 +76,8 @@
 }
 
 .banner-field-card select option {
-  background: var(--gaia-bg-window, #1e1b18);
-  color: var(--gaia-text-parchment, #e0d5c1);
+  background: var(--gaia-bg-window);
+  color: var(--gaia-text-parchment);
 }
 
 .banner-field-card.name-field {
@@ -268,7 +268,7 @@
 .shield-title {
   font-size: var(--gaia-font-base);
   font-weight: 700;
-  color: var(--gaia-gold);
+  color: var(--gaia-border-gold);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-align: center;
@@ -354,7 +354,7 @@
 .init-title {
   font-size: var(--gaia-font-base);
   font-weight: 700;
-  color: var(--gaia-gold);
+  color: var(--gaia-border-gold);
   text-transform: uppercase;
 }
 
@@ -383,7 +383,7 @@
 }
 
 .exhaustion-card.dead-state {
-  border-color: var(--gaia-red-crimson, #b02e2e);
+  border-color: var(--gaia-red-crimson);
   box-shadow: 0 0 8px rgba(176, 46, 46, 0.4);
 }
 
@@ -406,7 +406,7 @@
   font-size: var(--gaia-font-base);
   font-weight: bold;
   color: #fff;
-  background: var(--gaia-red-crimson, #b02e2e);
+  background: var(--gaia-red-crimson);
   padding: 2px 6px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -468,16 +468,16 @@
 }
 
 .diamond-pip.pip-death:hover {
-  color: var(--gaia-red-crimson, #b02e2e);
+  color: var(--gaia-red-crimson);
 }
 
 .diamond-pip.pip-death.active {
-  color: var(--gaia-red-crimson, #b02e2e);
+  color: var(--gaia-red-crimson);
   text-shadow: 0 0 6px rgba(176, 46, 46, 0.7);
 }
 
 .exhaustion-penalty-badge {
-  background: var(--gaia-red-crimson, #b02e2e) !important;
+  background: var(--gaia-red-crimson) !important;
   color: #fff !important;
 }
 
@@ -498,12 +498,12 @@
 
 .death-save-trigger-card:hover {
   transform: translateY(-1px);
-  border-color: var(--gaia-border-gold, #8c7355);
+  border-color: var(--gaia-border-gold);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .death-save-trigger-card.dead-state {
-  border-color: var(--gaia-red-crimson, #b02e2e);
+  border-color: var(--gaia-red-crimson);
   box-shadow: 0 0 6px rgba(176, 46, 46, 0.4);
 }
 
@@ -540,7 +540,7 @@
 }
 
 .death-save-banner-card.dead-state {
-  border-color: var(--gaia-red-crimson, #b02e2e);
+  border-color: var(--gaia-red-crimson);
 }
 
 .death-save-banner-card.stabilized-state {
@@ -660,7 +660,7 @@
 }
 
 .btn-roll-death-die:hover {
-  background: var(--gaia-purple, #6a3d8a);
+  background: var(--gaia-purple);
   color: #fff;
   transform: scale(1.03);
 }
@@ -695,7 +695,7 @@
 .defense-item-label {
   font-size: var(--gaia-font-md);
   font-weight: 700;
-  color: var(--gaia-gold);
+  color: var(--gaia-border-gold);
   text-transform: uppercase;
 }
 
@@ -761,7 +761,7 @@
 .reduction-val-label,
 .defense-tag input,
 .defense-tag select {
-  font-size: var(--gaia-font-sm, 12px);
+  font-size: var(--gaia-font-sm);
   border: none;
   background: transparent;
   padding: 0 2px;
@@ -777,7 +777,7 @@
 }
 
 .defense-tag select option {
-  background: var(--gaia-bg-banner, #1c1424);
+  background: var(--gaia-bg-banner);
   color: var(--gaia-text-parchment);
 }
 
@@ -812,4 +812,43 @@
   font-size: var(--gaia-font-md);
   color: var(--gaia-text-parchment);
   font-style: italic;
+}
+
+/* --- Imunidade a Condição: tag distinta da imunidade a dano --- */
+.defense-group-actions {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.condition-immunity-tag {
+  background: var(--gaia-green-translucent);
+  border: 1px solid var(--gaia-border-gold);
+  border-radius: var(--gaia-radius);
+  padding: 2px 6px;
+  gap: 4px;
+}
+
+/* PT: Imunidade concedida por Efeito Ativo — só sai removendo o efeito, não pela ficha. */
+.condition-immunity-tag.is-from-effect {
+  border-style: dashed;
+}
+
+.condition-immunity-icon {
+  color: var(--gaia-border-gold);
+  font-size: var(--gaia-font-2xs);
+}
+
+.condition-immunity-label {
+  font-size: var(--gaia-font-xs);
+  font-weight: 600;
+}
+
+/* PT: Tag concedida por Efeito Ativo (resistência ou imunidade a condição) — não é editável
+   pela ficha; remova o efeito para desfazer. */
+.defense-tag.is-from-effect {
+  border: 1px dashed var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  padding: 2px 6px;
+  gap: 4px;
 }

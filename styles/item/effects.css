@@ -58,7 +58,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border-bottom: 1px solid var(--gaia-border-subtle);
   padding: 6px 0;
 }
 
@@ -118,7 +118,7 @@
 }
 
 .effects-category-block .category-header {
-  border-bottom: 1px dashed var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border-bottom: 1px dashed var(--gaia-border-subtle);
   padding-bottom: 4px;
 }
 
@@ -133,7 +133,7 @@
 }
 
 .effects-category-block .category-title.active-title {
-  color: var(--gaia-purple-dark, #5d1c8f);
+  color: var(--gaia-purple-dark);
 }
 
 .effects-category-block .category-title.passive-title {
@@ -141,12 +141,12 @@
 }
 
 .effects-category-block .category-title.inactive-title {
-  color: var(--gaia-text-muted, #777);
+  color: var(--gaia-text-muted);
 }
 
 .effects-category-block .category-count {
-  font-size: var(--gaia-font-xs, 11px);
-  color: var(--gaia-text-muted, #777);
+  font-size: var(--gaia-font-xs);
+  color: var(--gaia-text-muted);
   font-weight: 500;
 }
 
@@ -162,7 +162,7 @@
   justify-content: space-between;
   align-items: center;
   background: rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
   padding: 6px 10px;
   gap: 8px;
@@ -171,11 +171,11 @@
 
 .effect-card:hover {
   background: rgba(0, 0, 0, 0.09);
-  border-color: var(--gaia-border-gold, #8c7355);
+  border-color: var(--gaia-border-gold);
 }
 
 .effect-card.active-effect-item {
-  border-left: 3px solid var(--gaia-purple-dark, #5d1c8f);
+  border-left: 3px solid var(--gaia-purple-dark);
 }
 
 .effect-card.passive-effect-item {
@@ -199,7 +199,7 @@
   width: 32px;
   height: 32px;
   border-radius: var(--gaia-radius);
-  border: 1px solid var(--gaia-border-frame, #574c43);
+  border: 1px solid var(--gaia-border-frame);
   object-fit: cover;
   flex-shrink: 0;
   background: rgba(0, 0, 0, 0.2);
@@ -225,21 +225,21 @@
 }
 
 .effect-name {
-  font-family: var(--gaia-font-medieval, "Cinzel", serif);
-  font-size: var(--gaia-font-base, 13px);
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-base);
   font-weight: 700;
-  color: var(--gaia-text-parchment, #000);
+  color: var(--gaia-text-parchment);
 }
 
 .effect-source {
   font-size: var(--gaia-font-base);
   font-style: italic;
-  color: var(--gaia-text-muted, #777);
+  color: var(--gaia-text-muted);
 }
 
 .effect-changes-summary {
   font-size: var(--gaia-font-base);
-  color: var(--gaia-purple-dark, #5d1c8f);
+  color: var(--gaia-purple-dark);
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -294,7 +294,7 @@
 }
 
 .btn-delete-effect:hover {
-  color: var(--gaia-health, #b91c1c);
+  color: var(--gaia-health);
 }
 
 .text-success {
@@ -302,7 +302,7 @@
 }
 
 .text-muted {
-  color: var(--gaia-text-muted, #777);
+  color: var(--gaia-text-muted);
 }
 
 /* Dica de Estado Vazio */
@@ -312,6 +312,6 @@
   padding: 6px 10px;
   background: rgba(0, 0, 0, 0.02);
   border-radius: var(--gaia-radius);
-  border: 1px dashed var(--gaia-border-subtle, rgba(140, 115, 85, 0.2));
+  border: 1px dashed var(--gaia-border-subtle);
   text-align: center;
 }

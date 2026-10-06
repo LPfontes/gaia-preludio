@@ -200,7 +200,7 @@
 }
 
 .gaia-dialog-legacy-ability label.active-effect-label {
-  color: var(--gaia-border-gold, #e67e22);
+  color: var(--gaia-border-gold);
 }
 
 .gaia-dialog-legacy-ability input[type="text"],
@@ -323,12 +323,12 @@
 }
 
 .subeffect-dialog button[data-action="confirm"]:hover {
-  background: var(--gaia-purple, #942ce4);
+  background: var(--gaia-purple);
 }
 
 .subeffect-dialog button[data-action="cancel"] {
   background: transparent;
-  color: var(--gaia-purple-dark, #5d1c8f);
+  color: var(--gaia-purple-dark);
   border: 1px solid #b8a6cd;
 }
 
@@ -388,7 +388,7 @@
   padding: 4px 12px;
   border: 1px solid var(--gaia-border-frame);
   border-radius: var(--gaia-radius);
-  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  font-family: var(--gaia-font-medieval);
   font-size: var(--gaia-font-base);
   font-weight: 700;
   cursor: pointer;
@@ -411,7 +411,7 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
-  background: var(--gaia-bg-window, #444);
+  background: var(--gaia-bg-window);
 }
 
 /* ==============================================================================
@@ -451,7 +451,7 @@
  * DIÁLOGO DE CRIAÇÃO / EDIÇÃO DE AÇÃO (.action-dialog)
  * ============================================================================== */
 .action-dialog .action-dialog-form {
-  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  font-family: var(--gaia-font-medieval);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -495,7 +495,7 @@
 }
 
 .action-dialog .action-section-fieldset {
-  border: 1px solid var(--gaia-border-subtle, rgba(140, 115, 85, 0.3));
+  border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
   padding: 6px 10px 8px;
   background: rgba(0, 0, 0, 0.15);
@@ -503,7 +503,7 @@
 }
 
 .action-dialog .action-section-fieldset.active {
-  border-color: var(--gaia-purple, #942ce4);
+  border-color: var(--gaia-purple);
   background: rgba(93, 28, 143, 0.08);
 }
 
@@ -551,7 +551,7 @@
 .action-dialog input:focus,
 .action-dialog select:focus,
 .action-dialog textarea:focus {
-  border-color: var(--gaia-purple, #942ce4);
+  border-color: var(--gaia-purple);
   outline: none;
   box-shadow: 0 0 5px rgba(148, 44, 228, 0.4);
 }
@@ -695,8 +695,8 @@
    DEATH SAVE WINDOW (Janela de Dado de Morte)
    ========================================================================== */
 .death-save-window .window-content {
-  background: var(--gaia-bg-banner, #1c1424);
-  color: var(--gaia-text-parchment, #e0d8c3);
+  background: var(--gaia-bg-banner);
+  color: var(--gaia-text-parchment);
   padding: 8px;
 }
 
@@ -704,7 +704,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-family: var(--gaia-font-medieval, Georgia, serif);
+  font-family: var(--gaia-font-medieval);
 }
 
 .death-dialog-actor-header {
@@ -714,7 +714,7 @@
   background: rgba(0, 0, 0, 0.25);
   padding: 8px 10px;
   border-radius: var(--gaia-radius);
-  border: 1px solid var(--gaia-border-subtle, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--gaia-border-subtle);
 }
 
 .death-dialog-portrait {
@@ -722,7 +722,7 @@
   height: 48px;
   border-radius: var(--gaia-radius);
   object-fit: cover;
-  border: 1px solid var(--gaia-border-gold, #8c7355);
+  border: 1px solid var(--gaia-border-gold);
 }
 
 .death-dialog-actor-info {
@@ -757,7 +757,7 @@
 }
 
 .death-status-badge.dead {
-  background: var(--gaia-red-crimson, #b02e2e);
+  background: var(--gaia-red-crimson);
   color: #fff;
   animation: pulse-dead 2s infinite ease-in-out;
 }
@@ -767,7 +767,7 @@
 }
 
 .death-status-badge.dying {
-  background: var(--gaia-color-death);
+  background: var(--gaia-health);
 }
 
 .death-hp-indicator {
@@ -783,7 +783,7 @@
 .death-dialog-track {
   flex: 1;
   background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--gaia-border-subtle, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--gaia-border-subtle);
   border-radius: var(--gaia-radius);
   padding: 8px;
   display: flex;
@@ -810,7 +810,7 @@
 
 .track-subtext {
   margin: 0;
-  color: var(--gaia-text-muted, #aaa);
+  color: var(--gaia-text-muted);
 }
 
 .track-pips-row {
@@ -915,21 +915,21 @@
 .gaia-chat-card.damage-applied-card {
   padding: 8px;
   background: rgba(0, 0, 0, 0.15);
-  border-left: 4px solid var(--gaia-health, #b91c1c);
+  border-left: 4px solid var(--gaia-health);
   margin-top: 4px;
   border-radius: var(--gaia-radius);
   font-family: inherit;
 }
 
 .gaia-chat-card.damage-applied-card.immune {
-  border-left-color: var(--gaia-border-gold, #8c7355);
+  border-left-color: var(--gaia-border-gold);
 }
 
 .damage-applied-card .damage-applied-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px dashed var(--gaia-border-subtle, #555);
+  border-bottom: 1px dashed var(--gaia-border-subtle);
   padding-bottom: 4px;
   margin-bottom: 6px;
 }
@@ -939,18 +939,18 @@
   align-items: center;
   gap: 6px;
   font-weight: bold;
-  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  font-family: var(--gaia-font-medieval);
   font-size: 1.1em;
-  color: var(--gaia-health, #b91c1c);
+  color: var(--gaia-health);
 }
 
 .damage-applied-card.immune .damage-applied-title {
-  color: var(--gaia-border-gold, #8c7355);
+  color: var(--gaia-border-gold);
 }
 
 .damage-applied-card .damage-applied-badge {
   font-size: 0.85em;
-  color: var(--gaia-text-muted, #888);
+  color: var(--gaia-text-muted);
   font-weight: bold;
   letter-spacing: 0.5px;
 }
@@ -986,13 +986,13 @@
 }
 
 .damage-applied-card .damage-highlight {
-  color: var(--gaia-health, #b91c1c);
+  color: var(--gaia-health);
   font-size: var(--gaia-font-md);
 }
 
 .damage-applied-card .damage-base-info {
   font-size: var(--gaia-font-md);
-  color: var(--gaia-text-muted, #888);
+  color: var(--gaia-text-muted);
 }
 
 .damage-applied-card .damage-applied-vitals {
@@ -1009,14 +1009,14 @@
 }
 
 .damage-applied-card .damage-vitals-new.damage-vitals-zero {
-  color: var(--gaia-health, #b91c1c);
+  color: var(--gaia-health);
 }
 
 .damage-applied-card .damage-knockout-alert {
   margin-top: 6px;
   background: rgba(185, 28, 28, 0.25);
-  border: 1px solid var(--gaia-health, #b91c1c);
-  color: var(--gaia-health, #b91c1c);
+  border: 1px solid var(--gaia-health);
+  color: var(--gaia-health);
   padding: 4px;
   text-align: center;
   font-weight: bold;
@@ -1042,7 +1042,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  font-family: var(--gaia-font-medieval);
 }
 
 .roll-request-card .roll-request-stat {
@@ -1053,7 +1053,7 @@
 
 .roll-request-card .roll-request-dc {
   font-size: var(--gaia-font-md);
-  color: var(--gaia-text-muted, #aaa);
+  color: var(--gaia-text-muted);
   margin-bottom: 8px;
 }
 
@@ -1083,7 +1083,7 @@
   padding: 8px;
   background: rgba(0, 0, 0, 0.15);
   border-radius: var(--gaia-radius);
-  border-left: 4px solid var(--gaia-red-crimson, #b02e2e);
+  border-left: 4px solid var(--gaia-red-crimson);
   margin-top: 4px;
 }
 
@@ -1093,13 +1093,13 @@
   align-items: center;
   flex-direction: column;
   justify-content: space-between;
-  border-bottom: 1px dashed var(--gaia-border-subtle, rgba(255, 255, 255, 0.15));
+  border-bottom: 1px dashed var(--gaia-border-subtle);
   padding-bottom: 4px;
   margin-bottom: 6px;
 }
 
 .death-die-card .death-die-title {
-  font-family: var(--gaia-font-medieval, "Cinzel", serif);
+  font-family: var(--gaia-font-medieval);
   font-size: var(--gaia-font-md);
 }
 

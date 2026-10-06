@@ -1,6 +1,6 @@
 import { GaiaBaseActorSheet } from "./base.mjs";
 import { GAIA } from "../../../helpers/config.mjs";
-import { getBookFolderForFeature, ensureHomunculariumAttacks, HOMUNCULARIUM_BOOKS, syncHomunculariumAttackFormulas } from "../../../helpers/homuncularium-rules.mjs";
+import { getBookFolderForFeature, ensureHomunculariumAttacks, HOMUNCULARIUM_BOOKS } from "../../../helpers/homuncularium-rules.mjs";
 import { calculateWeaponDamage } from "../../../helpers/actor-context.mjs";
 import { CARACTERISTICAS_FOLDERS_DATA } from "../../../helpers/datasets/caracteristicas-dataset.mjs";
 
@@ -61,7 +61,11 @@ export class CreatureSheet extends GaiaBaseActorSheet {
     context.system = this.actor.system;
     context.config = /** @type {any} */ (CONFIG).GAIA;
 
-    // Garante que a criatura com Características do Homuncularium possua Golpe Brutal e Evocação Mística na ficha
+    // PT: Garante que a criatura com Características do Homuncularium possua Golpe Brutal
+    // e Evocação Mística na ficha.
+    // A sincronização de fórmulas/imagens NÃO roda aqui: ela é disparada por mudança de
+    // Nível/Dificuldade/Poder em GaiaActor#_onUpdate (module/documents/actor.mjs), para não
+    // gravar documentos embutidos a cada renderização da ficha.
     const hasHomunculariumFeature = this._hasHomunculariumFeatures();
     if (this.actor.isOwner && hasHomunculariumFeature && !this._ensuringHomunculariumAttacks) {
       const hasGolpe = this.actor.items.some(i => i.name === "Golpe Brutal" || i.flags?.["gaia-preludio"]?.attackType === "golpeBrutal");
@@ -69,12 +73,6 @@ export class CreatureSheet extends GaiaBaseActorSheet {
       if (!hasGolpe || !hasEvocacao) {
         this._ensuringHomunculariumAttacks = true;
         ensureHomunculariumAttacks(this.actor).finally(() => {
-          this._ensuringHomunculariumAttacks = false;
-        });
-      } else {
-        // PT: Itens já existentes podem carregar imagens/fórmulas desatualizadas de versões anteriores.
-        this._ensuringHomunculariumAttacks = true;
-        syncHomunculariumAttackFormulas(this.actor).finally(() => {
           this._ensuringHomunculariumAttacks = false;
         });
       }

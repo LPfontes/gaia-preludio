@@ -374,7 +374,7 @@
 
 .gaia-dialog-creature-wizard .btn-remove-chosen-feature:hover,
 .btn-remove-chosen-feature:hover {
-  color: var(--gaia-health, #b91c1c);
+  color: var(--gaia-health);
 }
 
 .gaia-dialog-creature-wizard .empty-features-hint,

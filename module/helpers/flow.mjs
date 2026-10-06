@@ -17,6 +17,9 @@ export function cleanFormula(formula) {
     .replace(/@pv\.max\b/gi, "@health.max")
     .replace(/@pv\.value\b/gi, "@health.value")
     .replace(/@pv\.temp\b/gi, "@health.temp")
+    // PT: Compatibilidade com fórmulas publicadas que referenciam o ArrayField `system.parameters`
+    // diretamente (ex: "@parameters.brutality.value"). O acesso canônico é "@params.<chave>".
+    .replace(/@parameters\.([A-Za-z0-9_]+)\.value\b/gi, "@params.$1")
     .replace(/Math\.floor\b/gi, "floor")
     .replace(/Math\.ceil\b/gi, "ceil")
     .replace(/Math\.round\b/gi, "round")
@@ -92,6 +95,8 @@ export async function flowRoll(formula, data = {}, options = {}) {
     maxPe: 0,
     pv: 0,
     maxPv: 0,
+    power: 0,
+    powerPoints: 0,
     level: 1,
     nivel: 1,
     ...data
@@ -392,8 +397,14 @@ export function calculateDamage(damage, target, source = null) {
     damageImmunity = [],
     damageResistance = [],
     damageVulnerability = [],
-    damageReduction = []
+    damageReduction = [],
+    effectiveDamageResistance
   } = targetSystem;
+
+  // PT: `effectiveDamageResistance` = lista AUTORADA + o que vem de Efeitos Ativos (montada em
+  // GaiaActor#prepareDerivedData). `damageResistance` sozinho é apenas a lista autorada, então
+  // serve de fallback para alvos que não são Atores preparados (dados simples, macros, testes).
+  const resistances = Array.isArray(effectiveDamageResistance) ? effectiveDamageResistance : damageResistance;
 
   const normalizeType = (t) => {
     const s = String(t || "").trim().toLowerCase();
@@ -454,7 +465,7 @@ export function calculateDamage(damage, target, source = null) {
   let finalDamage = baseDamage;
 
   // 2. Verifica Resistência e Vulnerabilidade
-  const hasResistance = damageResistance.some(matchesType);
+  const hasResistance = resistances.some(matchesType);
   const hasVulnerability = damageVulnerability.some(matchesType);
 
   // Se tiver ambos, eles se anulam mutuamente. Caso contrário, aplica o multiplicador:

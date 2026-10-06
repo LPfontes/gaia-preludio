@@ -24,7 +24,8 @@ import {
   calculateDamage,
   calculateHealing,
   flowDeathDie,
-  flowRegenerateStabilized
+  flowRegenerateStabilized,
+  cleanFormula
 } from "../helpers/flow.mjs";
 
 
@@ -208,6 +209,53 @@ export async function runFlowTests() {
     runner.assertEquals(healMath.total, 5, "Rola cura com Math.floor(@energy.max / 2) = 5");
   } catch (err) {
     runner.assert(false, `Erro inesperado em flowHealing: ${err.message}`);
+  }
+  console.groupEnd();
+
+  // ============================================================================
+  // 3.2. Testes: Fórmulas publicadas nos datasets (compatibilidade e regressão)
+  // ============================================================================
+  console.group("%c3.2. Fórmulas de datasets", "color: #00838F; font-weight: bold;");
+  try {
+    // PT: rollData espelha o que GaiaActor#getRollData expõe (module/documents/actor.mjs).
+    const rollDataPC = {
+      energy: { value: 3, max: 12, temp: 0 },
+      health: { value: 30, max: 40, temp: 0 },
+      pe: 3, maxPe: 12, pv: 30, maxPv: 40,
+      power: 0, powerPoints: 0,
+      params: { brutality: 4, spirit: 3 },
+      brutality: 4, spirit: 3,
+      level: 5, nivel: 5
+    };
+
+    // 3.2.1 Formas canônicas usadas pelos datasets de Caminho
+    runner.assertEquals((await flowRoll("@brutality", rollDataPC)).total, 4,
+      "@brutality resolve o Parâmetro Brutalidade (Ativar Adrenalina)");
+    runner.assertEquals((await flowRoll("@spirit + 1", rollDataPC)).total, 4,
+      "@spirit + 1 resolve o Parâmetro Espírito (Bônus de Dano/Cura)");
+
+    // 3.2.2 Compatibilidade: itens já importados nas fichas usam @parameters.<chave>.value
+    runner.assertEquals(cleanFormula("@parameters.brutality.value"), "@params.brutality",
+      "cleanFormula normaliza @parameters.<chave>.value para @params.<chave>");
+    runner.assertEquals((await flowRoll("@parameters.brutality.value", rollDataPC)).total, 4,
+      "Item antigo com @parameters.brutality.value passa a rolar 4");
+    runner.assertEquals((await flowRoll("@parameters.spirit.value + 1", rollDataPC)).total, 4,
+      "Item antigo com @parameters.spirit.value + 1 passa a rolar 4");
+
+    // 3.2.3 Poder do Homuncularium (Características de Criatura usam @power)
+    const rollDataCreature = { ...rollDataPC, power: 3, powerPoints: 3 };
+    runner.assertEquals((await flowRoll("@power", rollDataCreature)).total, 3,
+      "@power usa os Pontos de Poder da Criatura");
+    runner.assertEquals((await flowRoll("@power", rollDataPC)).total, 0,
+      "@power é 0 para personagens sem powerPoints");
+
+    // 3.2.4 Regressão: atalhos de recurso que já funcionavam
+    runner.assertEquals((await flowRoll("2 * @pe.max", rollDataPC)).total, 24,
+      "@pe.max continua mapeando para @energy.max");
+    runner.assertEquals((await flowRoll("floor(@pe.max / 2)", rollDataPC)).total, 6,
+      "floor(@pe.max / 2) continua resolvendo");
+  } catch (err) {
+    runner.assert(false, `Erro inesperado nas fórmulas de datasets: ${err.message}`);
   }
   console.groupEnd();
 

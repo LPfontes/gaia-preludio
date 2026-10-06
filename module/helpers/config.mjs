@@ -566,6 +566,15 @@ GAIA.conditions = {
 };
 
 /**
+ * PT: Mapa plano id -> chave de i18n da Condição, no mesmo formato de `damageTypesFlat`.
+ * Derivado de `GAIA.conditions` para que os templates exibam o nome traduzido a partir do
+ * id armazenado em `system.conditionImmunity`, sem risco de divergência entre as duas listas.
+ */
+GAIA.conditionsFlat = Object.fromEntries(
+  Object.entries(GAIA.conditions).map(([id, cond]) => [id, cond?.name || id])
+);
+
+/**
  * PT: Legados oficiais de Auroria.
  * EN: Official Legacies of Auroria.
  */

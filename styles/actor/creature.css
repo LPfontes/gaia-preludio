@@ -536,7 +536,7 @@
   gap: 8px;
   padding: 6px 8px;
   background: linear-gradient(90deg, rgba(93, 28, 143, 0.15), transparent);
-  border-left: 3px solid var(--gaia-purple-dark, #5d1c8f);
+  border-left: 3px solid var(--gaia-purple-dark);
   border-radius: 0 var(--gaia-radius) var(--gaia-radius) 0;
   margin-bottom: 6px;
 }
@@ -549,7 +549,7 @@
   gap: 8px;
   padding: 6px 8px;
   background: linear-gradient(90deg, rgba(93, 28, 143, 0.15), transparent);
-  border-left: 3px solid var(--gaia-purple-dark, #5d1c8f);
+  border-left: 3px solid var(--gaia-purple-dark);
   border-radius: 0 var(--gaia-radius) var(--gaia-radius) 0;
 }
 
@@ -573,7 +573,7 @@
 }
 
 .section-count-badge {
-  background: var(--gaia-purple-dark, #5d1c8f);
+  background: var(--gaia-purple-dark);
   color: #ffffff;
   font-size: var(--gaia-font-base);
   font-weight: bold;
@@ -587,8 +587,8 @@
   height: 1px;
   background: linear-gradient(90deg,
       transparent,
-      var(--gaia-border-gold, #8c7355) 20%,
-      var(--gaia-border-gold, #8c7355) 80%,
+      var(--gaia-border-gold) 20%,
+      var(--gaia-border-gold) 80%,
       transparent);
   margin: 12px 8px;
   opacity: 0.5;
@@ -596,7 +596,7 @@
 
 /* Card de Característica — destaque visual sutil diferente de Habilidade */
 .feature-ability-card {
-  border-left-color: var(--gaia-purple-dark, #5d1c8f) !important;
+  border-left-color: var(--gaia-purple-dark) !important;
 }
 
 .feature-ability-card .ability-card-header {

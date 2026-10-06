@@ -4,6 +4,7 @@ const { HandlebarsApplicationMixin } = foundry.applications.api;
 
 import {
   promptDefenseTraitDialog,
+  promptConditionImmunityDialog,
   promptMasteryDialog,
   promptEditFieldDialog,
   promptRollRequestDialog,
@@ -48,6 +49,8 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       addReduction: GaiaBaseActorSheet._onAddReduction,
       removeReduction: GaiaBaseActorSheet._onRemoveReduction,
       editDefense: GaiaBaseActorSheet._onEditDefense,
+      addConditionImmunity: GaiaBaseActorSheet._onAddConditionImmunity,
+      removeConditionImmunity: GaiaBaseActorSheet._onRemoveConditionImmunity,
       setExhaustion: GaiaBaseActorSheet._onSetExhaustion,
       openDeathSave: GaiaBaseActorSheet._onOpenDeathSaveDialog,
       openDeathSaveDialog: GaiaBaseActorSheet._onOpenDeathSaveDialog,
@@ -1640,6 +1643,50 @@ export class GaiaBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     const list = [...(this.actor.system.damageImmunity ?? [])];
     list.splice(index, 1);
     await this.actor.update({ "system.damageImmunity": list });
+  }
+
+  /**
+   * Abre o diálogo para adicionar uma nova Imunidade a Condição ao Ator.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento disparador
+   */
+  static async _onAddConditionImmunity(event, target) {
+    const condition = await promptConditionImmunityDialog();
+    if (!condition) return;
+
+    // PT: `system.conditionImmunity` é a lista AUTORADA (persistida). As imunidades
+    // concedidas por Efeitos Ativos ficam separadas em `system.conditionImmunityFromEffects`
+    // e NÃO podem ser gravadas aqui, sob pena de se tornarem permanentes após o efeito sair.
+    const list = [...(this.actor.system.conditionImmunity ?? [])];
+
+    const already = list.some(c => String(c?.type ?? c ?? "").toLowerCase().trim() === condition);
+    if (already) {
+      const rawLabel = CONFIG.GAIA?.conditions?.[condition]?.name;
+      const label = rawLabel ? (game.i18n.localize(rawLabel) || condition) : condition;
+      ui.notifications?.info(game.i18n.format("GAIA.Notification.ConditionImmunityExists", { condition: label }));
+      return;
+    }
+
+    list.push(condition);
+    await this.actor.update({ "system.conditionImmunity": list });
+  }
+
+  /**
+   * Remove uma Imunidade a Condição autorada do Ator.
+   * @protected
+   * @param {Event} event - Evento de clique
+   * @param {HTMLElement} target - Elemento com `data-index` na lista autorada
+   */
+  static async _onRemoveConditionImmunity(event, target) {
+    const index = Number(target.dataset.index);
+    if (!Number.isInteger(index)) return;
+
+    const list = [...(this.actor.system.conditionImmunity ?? [])];
+    if (index < 0 || index >= list.length) return;
+
+    list.splice(index, 1);
+    await this.actor.update({ "system.conditionImmunity": list });
   }
 
   /**

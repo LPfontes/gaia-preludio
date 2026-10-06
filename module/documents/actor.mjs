@@ -471,17 +471,28 @@ export class GaiaActor extends Actor {
     // PT: Lê as resistências armazenadas e sanitiza entradas inválidas que o Foundry pode injetar
     // EN: Read stored resistances and sanitize invalid entries that Foundry may inject via ActiveEffects on ArrayFields
     // (e.g. { type: "1" }, { type: "" }, { type: "5" } injetados pelo engine quando ch.value é numérico/padrão)
-    const rawResistances = (Array.isArray(system.damageResistance) ? [...system.damageResistance] : [])
+    // PT: A lista AUTORADA vive em `system.damageResistance` (schema, persistida) e NÃO é
+    // alterada aqui. O que os Efeitos Ativos concedem vai para
+    // `system.damageResistanceFromEffects`, e a lista EFETIVA (autorada + efeitos) para
+    // `system.effectiveDamageResistance`, consumida pelo cálculo de dano. Sem esta separação,
+    // adicionar uma Resistência pela ficha gravava no documento as resistências vindas de
+    // efeitos, tornando-as permanentes mesmo depois de o efeito sair.
+    const authoredResistances = (Array.isArray(system.damageResistance) ? [...system.damageResistance] : [])
       .filter(r => {
         const t = String(r?.type ?? r ?? "").toLowerCase().trim();
         return t && t !== "1" && isNaN(Number(t));
       });
-    const activeResistances = [];
-    const conditionImmunities = new Set(
+    const effectResistances = [];
+    // PT: A lista AUTORADA vive em `system.conditionImmunity` (schema, persistida) e NÃO é
+    // alterada aqui. O que os Efeitos Ativos concedem é exposto à parte, em
+    // `system.conditionImmunityFromEffects`, para que a ficha distinga as duas origens e a
+    // interface nunca acabe gravando imunidades derivadas dentro do documento.
+    const authoredConditionImmunities = new Set(
       (Array.isArray(system.conditionImmunity) ? system.conditionImmunity : [])
         .map(c => String(c?.type ?? c ?? "").toLowerCase().trim())
         .filter(t => t && t !== "1" && isNaN(Number(t)))
     );
+    const effectConditionImmunities = new Set();
 
     for (const effect of (this.effects ?? [])) {
       if (effect.disabled) continue;
@@ -491,56 +502,76 @@ export class GaiaActor extends Actor {
         if (ch.key === "system.damageResistance" && ch.value) {
           const val = String(ch.value).toLowerCase().trim();
           if (val && val !== "1" && isNaN(Number(val))) {
-            activeResistances.push(val);
+            effectResistances.push(val);
           }
         }
         if (ch.key === "system.conditionImmunity" && ch.value) {
           const val = String(ch.value).toLowerCase().trim();
           if (val && val !== "1" && isNaN(Number(val))) {
-            conditionImmunities.add(val);
+            effectConditionImmunities.add(val);
           }
         }
       }
 
       const effectImg = String(effect.img || effect.icon || "").toLowerCase();
       if (effectName.includes("proteção da natureza") || effectName.includes("protecao da natureza") || (effectName === "novo efeito" && effectImg.includes("leaf-glowing-green"))) {
-        activeResistances.push("nature");
-        conditionImmunities.add("envenenado");
+        effectResistances.push("nature");
+        effectConditionImmunities.add("envenenado");
       }
       if (effectName.includes("abraço da treva") || effectName.includes("abraco da treva") || (effectName === "novo efeito" && effectImg.includes("skull-horned-goat-purple"))) {
-        activeResistances.push("dark");
-        conditionImmunities.add("enfraquecido");
+        effectResistances.push("dark");
+        effectConditionImmunities.add("enfraquecido");
       }
       if (effectName.includes("corpo de ferro") || (effectName === "novo efeito" && effectImg.includes("breastplate-helmet-metal"))) {
-        conditionImmunities.add("envenenado");
-        conditionImmunities.add("sangramento");
+        effectConditionImmunities.add("envenenado");
+        effectConditionImmunities.add("sangramento");
       }
       if (effectName.includes("filho de nolgadan") || (effectName === "novo efeito" && effectImg.includes("weapons-crossed-axes-bull"))) {
-        conditionImmunities.add("lentidao");
-        conditionImmunities.add("terreno dificil");
+        effectConditionImmunities.add("lentidao");
+        effectConditionImmunities.add("terreno dificil");
       }
     }
 
-    for (const rType of activeResistances) {
-      if (!rawResistances.some(r => String(r?.type || r).toLowerCase().trim() === rType)) {
-        rawResistances.push({ type: rType });
-      }
+    // PT: Efeitos só entram na lista derivada se o tipo ainda não estiver autorado, e sem
+    // repetir entre si — o mesmo par que a versão anterior fazia ao mesclar tudo numa lista só.
+    const authoredResistanceTypes = new Set(authoredResistances.map(r => String(r?.type || r).toLowerCase().trim()));
+    const derivedResistances = [];
+    for (const rType of effectResistances) {
+      const key = String(rType).toLowerCase().trim();
+      if (!key || authoredResistanceTypes.has(key)) continue;
+      if (derivedResistances.some(r => r.type === key)) continue;
+      derivedResistances.push({ type: key });
     }
-    system.damageResistance = rawResistances.map(r => typeof r === "string" ? { type: r } : r);
-    system.conditionImmunities = Array.from(conditionImmunities);
-    const isImmunePoison = conditionImmunities.has("envenenado") || conditionImmunities.has("poisoned");
-    const isImmuneWeakened = conditionImmunities.has("enfraquecido") || conditionImmunities.has("weakened");
-    const isImmuneSlowed = conditionImmunities.has("lentidao") || conditionImmunities.has("lentidão") || conditionImmunities.has("slowed");
-    const isImmuneBleeding = conditionImmunities.has("sangramento") || conditionImmunities.has("bleeding");
-    const isImmuneDifficultTerrain = conditionImmunities.has("terreno dificil") || conditionImmunities.has("terrenos dificeis") || conditionImmunities.has("difficult-terrain") ;
+    system.damageResistanceFromEffects = derivedResistances;
+    system.effectiveDamageResistance = [
+      ...authoredResistances.map(r => (typeof r === "string" ? { type: r } : r)),
+      ...derivedResistances
+    ];
+    const allConditionImmunities = new Set([...authoredConditionImmunities, ...effectConditionImmunities]);
+    // PT: Somente o que vem de efeitos e NÃO já está autorado — evita duplicar a tag na ficha.
+    system.conditionImmunityFromEffects = Array.from(effectConditionImmunities)
+      .filter(cond => !authoredConditionImmunities.has(cond));
+    const isImmunePoison = allConditionImmunities.has("envenenado") || allConditionImmunities.has("poisoned");
+    const isImmuneWeakened = allConditionImmunities.has("enfraquecido") || allConditionImmunities.has("weakened");
+    const isImmuneSlowed = allConditionImmunities.has("lentidao") || allConditionImmunities.has("lentidão") || allConditionImmunities.has("slowed");
+    const isImmuneBleeding = allConditionImmunities.has("sangramento") || allConditionImmunities.has("bleeding");
+    const isImmuneDifficultTerrain = allConditionImmunities.has("terreno dificil") || allConditionImmunities.has("terrenos dificeis") || allConditionImmunities.has("difficult-terrain") ;
+    const isImmuneStunned = allConditionImmunities.has("atordoado") || allConditionImmunities.has("stunned");
+    const isImmuneProne = allConditionImmunities.has("caido") || allConditionImmunities.has("caído") || allConditionImmunities.has("prone");
+    const isImmuneImmobilized = allConditionImmunities.has("imovel") || allConditionImmunities.has("imóvel") || allConditionImmunities.has("immobilized");
+    const isImmuneFracture = allConditionImmunities.has("fratura") || allConditionImmunities.has("fracture");
 
     system.isImmunePoison = isImmunePoison;
     system.isImmuneWeakened = isImmuneWeakened;
     system.isImmuneSlowed = isImmuneSlowed;
     system.isImmuneBleeding = isImmuneBleeding;
-    system.isImmuneDifficultTerrain = conditionImmunities.has("terreno dificil") || conditionImmunities.has("terrenos dificeis");
+    system.isImmuneDifficultTerrain = allConditionImmunities.has("terreno dificil") || allConditionImmunities.has("terrenos dificeis");
+    system.isImmuneStunned = isImmuneStunned;
+    system.isImmuneProne = isImmuneProne;
+    system.isImmuneImmobilized = isImmuneImmobilized;
+    system.isImmuneFracture = isImmuneFracture;
 
-    const hasStunned = Boolean(
+    const hasStunned = !isImmuneStunned && Boolean(
       this.statuses?.has?.("atordoado") || 
       this.statuses?.has?.("stunned") || 
       this.effects?.some(e => {
@@ -565,7 +596,7 @@ export class GaiaActor extends Actor {
         return n === "lentidão" || n === "lentidao" || n === "slowed";
       })
     );
-    const hasProne = Boolean(
+    const hasProne = !isImmuneProne && Boolean(
       this.statuses?.has?.("caido") || 
       this.statuses?.has?.("caído") || 
       this.statuses?.has?.("prone") || 
@@ -583,7 +614,7 @@ export class GaiaActor extends Actor {
         return n === "envenenado" || n === "poisoned";
       })
     );
-    const hasImmobilized = Boolean(
+    const hasImmobilized = !isImmuneImmobilized && Boolean(
       this.statuses?.has?.("imovel") || 
       this.statuses?.has?.("imóvel") || 
       this.statuses?.has?.("immobilized") || 
@@ -606,7 +637,8 @@ export class GaiaActor extends Actor {
       const n = String(e.name || "").toLowerCase();
       return n.includes("fratura") || n.includes("fracture");
     });
-    const fracturePoints = Number(
+    // PT: Imunidade a Fratura zera a contagem antes do cálculo da penalidade.
+    const fracturePoints = isImmuneFracture ? 0 : Number(
       this.system?.fractures ?? 
       this.system?.fraturas ?? 
       this.system?.fracture ?? 
@@ -689,29 +721,29 @@ export class GaiaActor extends Actor {
     const maxActionRange = hasDarkness ? 4 : (hasPenumbra ? 10 : null);
     system.maxActionRange = maxActionRange;
 
-    system.vision = {
-      base: 40,
-      perception: perceptionScore,
-      perceptionBonus: 10 * perceptionScore,
-      total: visionTotal,
-      precise: visionPrecise,
-      hasPenumbra,
-      hasDarkness,
-      maxActionRange
-    };
+    // PT: `system.vision` é um ArrayField AUTORADO (tipos de visão do personagem, ex:
+    // ["normal"]) e NÃO pode ser sobrescrito por um objeto derivado. Os valores derivados vão
+    // para propriedades próprias — `visionTotal`/`visionPrecise` já existiam, e agora também
+    // `visionBase` e `visionPerceptionBonus`.
+    system.visionBase = 40;
+    system.visionPerceptionBonus = 10 * perceptionScore;
     system.visionTotal = visionTotal;
     system.visionPrecise = visionPrecise;
 
-    // PT: Ajuste da Percepção Passiva (Penumbra: -1 | Escuridão: metade)
-    // EN: Passive Perception Adjustment (Penumbra: -1 | Darkness: halved)
-    if (system.passivePerception !== undefined) {
-      const rawPassive = Number(system.passivePerception) || 0;
-      if (hasDarkness) {
-        system.passivePerception = Math.floor(rawPassive / 2);
-      } else if (hasPenumbra) {
-        system.passivePerception = Math.max(0, rawPassive - 1);
-      }
+    // PT: A Percepção Passiva sob Penumbra/Escuridão é uma penalidade SITUACIONAL, exposta em
+    // `passivePerceptionPenalty` e `effectivePassivePerception`. Ela NÃO é gravada dentro de
+    // `system.passivePerception` (campo autorado): como a ficha o expõe como input, editar o
+    // valor sob Escuridão persistia o número penalizado — e nada o restaurava quando a
+    // condição terminava.
+    const rawPassivePerception = Number(system.passivePerception) || 0;
+    let effectivePassivePerception = rawPassivePerception;
+    if (hasDarkness) {
+      effectivePassivePerception = Math.floor(rawPassivePerception / 2);
+    } else if (hasPenumbra) {
+      effectivePassivePerception = Math.max(0, rawPassivePerception - 1);
     }
+    system.passivePerceptionPenalty = rawPassivePerception - effectivePassivePerception;
+    system.effectivePassivePerception = effectivePassivePerception;
 
     // PT: Sincroniza o alcance da visão no protótipo de token do ator e no token da cena
     // EN: Synchronizes vision range in actor's prototype token and active scene token
@@ -779,6 +811,12 @@ export class GaiaActor extends Actor {
     data.maxPe = data.energy.max;
     data.pv = data.health.value;
     data.maxPv = data.health.max;
+
+    // PT: Poder da Criatura / Legado NPC (Pontos de Poder), consumido por fórmulas de
+    // características do Homuncularium como "@power". Personagens comuns não possuem o
+    // campo (`powerPoints`), então recebem 0 — que é o comportamento correto.
+    data.power = Number(system?.powerPoints ?? 0);
+    data.powerPoints = data.power;
     data.nivel = Number(system?.nivel ?? 1);
     data.level = data.nivel;
 
