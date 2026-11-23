@@ -364,7 +364,8 @@
 .unawakened-additional-language-select {
   width: 100%;
   padding: 6px 10px;
-  background: var(--gaia-bg-input);
+  background: var(--gaia-bg-window);
+  color: var(--gaia-text-parchment);
   border: 1px solid var(--gaia-border-frame);
   border-radius: var(--gaia-radius);
   font-family: inherit;
@@ -513,8 +514,8 @@
 
 .gaia-awakening-legacy-select {
   flex: 1;
-  background: var(--gaia-bg-input);
-  color: var(--gaia-text-dim);
+  background: var(--gaia-bg-window);
+  color: var(--gaia-text-parchment);
   border: 1px solid var(--gaia-border-frame);
   border-radius: var(--gaia-radius);
   font-family: inherit;

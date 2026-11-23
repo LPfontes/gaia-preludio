@@ -87,7 +87,7 @@
 .filter-select-box select {
   width: 100%;
   padding: 6px 8px;
-  background: transparent;
+  background: var(--gaia-bg-window);
   border: 1px solid var(--gaia-border-frame);
   color: var(--gaia-text-parchment);
   font-family: var(--gaia-font-medieval);

@@ -131,6 +131,11 @@
   font-size: var(--gaia-font-base);
 }
 
+.gaia-dialog-create-actor select {
+  background: var(--gaia-bg-window);
+  color: var(--gaia-text-parchment);
+}
+
 .gaia-dialog-create-actor input[type="text"]:focus,
 .gaia-dialog-create-actor select:focus {
   border-color: var(--gaia-purple);
@@ -539,6 +544,11 @@
   padding: 4px 6px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--gaia-border-subtle);
+  color: var(--gaia-text-parchment);
+}
+
+.action-dialog select {
+  background: var(--gaia-bg-window);
   color: var(--gaia-text-parchment);
 }
 

@@ -5,7 +5,6 @@
  */
 
 .gaia-ability-sheet {
-  padding: 8px;
   font-family: var(--gaia-font-medieval), Georgia, serif;
   color: var(--gaia-text-parchment);
   overflow-y: auto !important;
@@ -525,7 +524,7 @@
   padding: 2px 4px;
   border: 1px solid #d4cae8;
   border-radius: var(--gaia-radius);
-  background: #ffffff;
+  background: var(--gaia-bg-window);
   color: var(--gaia-text-parchment);
 }
 

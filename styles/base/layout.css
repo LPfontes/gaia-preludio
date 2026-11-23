@@ -13,6 +13,10 @@
   display: block;
 }
 
+.application.gaia-preludio .window-content {
+  padding: 0;
+}
+
 /* ==============================================================================
  * ESTRUTURA GERAL DA FICHA DE ATOR
  * ============================================================================== */
@@ -305,5 +309,20 @@
 .badge-hp-die i,
 .badge.badge-hp-die i {
   font-size: 0.9em;
+}
+
+/* ==============================================================================
+ * MENUS DE SELEÇÃO (<select> e <option>) / SELECT MENUS
+ * ============================================================================== */
+.gaia-preludio select,
+.gaia-dialog select {
+  background-color: var(--gaia-bg-window);
+  color: var(--gaia-text-parchment);
+}
+
+.gaia-preludio select option,
+.gaia-dialog select option {
+  background-color: var(--gaia-bg-window);
+  color: var(--gaia-text-parchment);
 }
 
