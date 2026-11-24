@@ -144,14 +144,19 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  width: calc(100% - 12px);
+  box-sizing: border-box;
   background: rgba(93, 28, 143, 0.08);
-  border-left: 4px solid var(--gaia-purple-dark);
-  border-radius: var(--gaia-radius);
-  padding: 6px 12px;
+  padding: 30px 12px;
   margin: 6px 6px 8px 6px;
-  border-top: 1px solid var(--gaia-border-subtle);
-  border-bottom: 1px solid var(--gaia-border-subtle);
-  border-right: 1px solid var(--gaia-border-subtle);
+  border-radius: var(--gaia-radius);
+  cursor: pointer;
+  text-align: left;
+}
+
+.browser-path-header:hover {
+  background: rgba(93, 28, 143, 0.15);
+  border-color: var(--gaia-border-gold);
 }
 
 .browser-path-title-group {
@@ -167,8 +172,8 @@
 }
 
 .browser-book-icon {
-  width: 22px;
-  height: 22px;
+  width: 45px;
+  height: 45px;
   object-fit: cover;
   border-radius: 3px;
   border: 1px solid var(--gaia-border-subtle);
@@ -210,6 +215,84 @@
   height: 1px;
   background: linear-gradient(90deg, var(--gaia-border-gold), transparent);
   opacity: 0.4;
+}
+
+/* Subgrupos por Tier (Dificuldade) dentro dos Livros */
+.browser-tier-section {
+  margin: 4px 0 10px 0;
+}
+
+.browser-tier-section:last-child {
+  margin-bottom: 0;
+}
+
+.browser-tier-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 16px);
+  box-sizing: border-box;
+  padding: 4px 10px;
+  margin: 4px 6px 2px 10px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid var(--gaia-border-gold);
+  border-bottom: 1px solid var(--gaia-border-subtle);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.browser-tier-header:hover {
+  background: rgba(140, 115, 85, 0.12);
+}
+
+.browser-tier-spacer {
+  flex: 1;
+}
+
+.browser-accordion-chevron {
+  font-size: var(--gaia-font-xs);
+  color: var(--gaia-text-muted);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.browser-path-header[aria-expanded="false"] .browser-accordion-chevron,
+.browser-tier-header[aria-expanded="false"] .browser-accordion-chevron {
+  transform: rotate(-90deg);
+}
+
+.browser-group-section.is-collapsed > .browser-group-body,
+.browser-tier-section.is-collapsed > .browser-items-grid {
+  display: none;
+}
+
+.browser-tier-title {
+  font-family: var(--gaia-font-medieval);
+  font-size: var(--gaia-font-md);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gaia-text-parchment);
+}
+
+.browser-tier-count {
+  background: var(--gaia-bg-banner);
+  border: 1px solid var(--gaia-border-gold);
+  color: var(--gaia-text-parchment);
+  font-size: var(--gaia-font-2xs);
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  line-height: 1.1;
+}
+
+.badge.tier-badge {
+  background: rgba(140, 115, 85, 0.16);
+  border: 1px solid var(--gaia-border-gold);
+  border-radius: var(--gaia-radius);
+  color: var(--gaia-text-parchment);
 }
 
 .browser-items-grid {
@@ -268,6 +351,8 @@
 
 .browser-item-card .item-badges {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
 }
 

@@ -548,9 +548,6 @@
   flex-wrap: wrap;
   gap: 8px;
   padding: 6px 8px;
-  background: linear-gradient(90deg, rgba(93, 28, 143, 0.15), transparent);
-  border-left: 3px solid var(--gaia-purple-dark);
-  border-radius: 0 var(--gaia-radius) var(--gaia-radius) 0;
 }
 
 .features-section .header-buttons .section-title {

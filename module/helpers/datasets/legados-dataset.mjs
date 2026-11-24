@@ -2245,7 +2245,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00010000000000",
     "name": "Filhos de Darnawel",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Filhos de Darnawel.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/filhos-de-darnawel.webp",
     "folder": "fldhl00010000000",
     "_key": "!items!hl00010000000000",
     "system": {
@@ -2273,7 +2273,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00020000000000",
     "name": "Proteção da Natureza",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Proteção da Natureza.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/protecao-da-natureza.webp",
     "folder": "fldhl00010000000",
     "_key": "!items!hl00020000000000",
     "effects": [
@@ -2281,8 +2281,8 @@ export const HABILIDADES_LEGADO_DATA = [
         "_id": "eff_00020000000000",
         "_key": "!items.effects!hl00020000000000.eff_00020000000000",
         "name": "Proteção da Natureza",
-        "img": "modules/gaia-compendium-manager/assets/legados/Proteção da Natureza.png",
-        "icon": "modules/gaia-compendium-manager/assets/legados/Proteção da Natureza.png",
+        "img": "modules/gaia-compendium-manager/assets/legados/protecao-da-natureza.webp",
+        "icon": "modules/gaia-compendium-manager/assets/legados/protecao-da-natureza.webp",
         "origin": "!items!hl00020000000000",
         "disabled": false,
         "transfer": true,
@@ -2330,7 +2330,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00030000000000",
     "name": "Essência Revigorante",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Essência Revigorante.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/essencia-revigorante.webp",
     "folder": "fldhl00010000000",
     "_key": "!items!hl00030000000000",
     "system": {
@@ -2394,7 +2394,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00040000000000",
     "name": "Herança dos Três Irmãos",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Herança dos Três Irmãos.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/heranca-dos-tres-irmaos.webp",
     "folder": "fldhl00020000000",
     "_key": "!items!hl00040000000000",
     "system": {
@@ -2422,7 +2422,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00050000000000",
     "name": "Modelador Natural",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Modelador Natural.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/modelador-natural.webp",
     "folder": "fldhl00020000000",
     "_key": "!items!hl00050000000000",
     "system": {
@@ -2450,7 +2450,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00060000000000",
     "name": "Fortitude Ampliada",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Fortitude Ampliada.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/fortitude-ampliada.webp",
     "folder": "fldhl00020000000",
     "_key": "!items!hl00060000000000",
     "effects": [
@@ -2458,8 +2458,8 @@ export const HABILIDADES_LEGADO_DATA = [
         "_id": "eff_00060000000000",
         "_key": "!items.effects!hl00060000000000.eff_00060000000000",
         "name": "Fortitude Ampliada",
-        "img": "modules/gaia-compendium-manager/assets/legados/Fortitude Ampliada.png",
-        "icon": "modules/gaia-compendium-manager/assets/legados/Fortitude Ampliada.png",
+        "img": "modules/gaia-compendium-manager/assets/legados/fortitude-ampliada.webp",
+        "icon": "modules/gaia-compendium-manager/assets/legados/fortitude-ampliada.webp",
         "origin": "!items!hl00060000000000",
         "disabled": false,
         "transfer": true,
@@ -2507,7 +2507,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00070000000000",
     "name": "Essência Abissal",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Essência Abissal.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/essencia-abissal.webp",
     "folder": "fldhl00030000000",
     "_key": "!items!hl00070000000000",
     "system": {
@@ -2535,7 +2535,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00080000000000",
     "name": "Abraço da Treva",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Abraço da Treva.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/abraco-da-treva.webp",
     "folder": "fldhl00030000000",
     "_key": "!items!hl00080000000000",
     "effects": [
@@ -2543,8 +2543,8 @@ export const HABILIDADES_LEGADO_DATA = [
         "_id": "eff_00080000000000",
         "_key": "!items.effects!hl00080000000000.eff_00080000000000",
         "name": "Abraço da Treva",
-        "img": "modules/gaia-compendium-manager/assets/legados/Abraço da Treva.png",
-        "icon": "modules/gaia-compendium-manager/assets/legados/Abraço da Treva.png",
+        "img": "modules/gaia-compendium-manager/assets/legados/abraco-da-treva.webp",
+        "icon": "modules/gaia-compendium-manager/assets/legados/abraco-da-treva.webp",
         "origin": "!items!hl00080000000000",
         "disabled": false,
         "transfer": true,
@@ -2592,7 +2592,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00090000000000",
     "name": "Pacto Originário",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Pacto Originário.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/pacto-originario.webp",
     "folder": "fldhl00030000000",
     "_key": "!items!hl00090000000000",
     "system": {
@@ -2620,7 +2620,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl000a0000000000",
     "name": "Versatilidade",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Versatilidade.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/versatilidade.webp",
     "folder": "fldhl00040000000",
     "_key": "!items!hl000a0000000000",
     "system": {
@@ -2648,7 +2648,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl000b0000000000",
     "name": "Miragem",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Miragem.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/miragem.webp",
     "folder": "fldhl00040000000",
     "_key": "!items!hl000b0000000000",
     "system": {
@@ -2708,7 +2708,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl000c0000000000",
     "name": "Malabarismo",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Malabarismo.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/malabarismo.webp",
     "folder": "fldhl00040000000",
     "_key": "!items!hl000c0000000000",
     "system": {
@@ -2768,7 +2768,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl000d0000000000",
     "name": "Presente das Sombras",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Presente das Sombras.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/presente-das-sombras.webp",
     "folder": "fldhl00050000000",
     "_key": "!items!hl000d0000000000",
     "system": {
@@ -2796,7 +2796,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl000e0000000000",
     "name": "Herança da Eterna Escuridão",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Herança da Eterna Escuridão.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/heranca-da-eterna-escuridao.webp",
     "folder": "fldhl00050000000",
     "_key": "!items!hl000e0000000000",
     "system": {
@@ -2824,7 +2824,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl000f0000000000",
     "name": "Manto Noturno",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Manto Noturno.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/manto-noturno.webp",
     "folder": "fldhl00050000000",
     "_key": "!items!hl000f0000000000",
     "system": {
@@ -2890,7 +2890,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00100000000000",
     "name": "Essência Elemental",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Essência Elemental.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/essencia-elemental.webp",
     "folder": "fldhl00060000000",
     "_key": "!items!hl00100000000000",
     "system": {
@@ -2918,7 +2918,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00110000000000",
     "name": "Um com o Elemento",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Um com o Elemento.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/um-com-o-elemento.webp",
     "folder": "fldhl00060000000",
     "_key": "!items!hl00110000000000",
     "system": {
@@ -2946,8 +2946,8 @@ export const HABILIDADES_LEGADO_DATA = [
         "_id": "eff_00110000000000",
         "_key": "!items.effects!hl00110000000000.eff_00110000000000",
         "name": "Um com o Elemento",
-        "img": "modules/gaia-compendium-manager/assets/legados/Um com o Elemento.png",
-        "icon": "modules/gaia-compendium-manager/assets/legados/Um com o Elemento.png",
+        "img": "modules/gaia-compendium-manager/assets/legados/um-com-o-elemento.webp",
+        "icon": "modules/gaia-compendium-manager/assets/legados/um-com-o-elemento.webp",
         "origin": "!items!hl00110000000000",
         "disabled": false,
         "transfer": true,
@@ -2970,7 +2970,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00120000000000",
     "name": "Encarnação Elemental",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Encarnação Elemental.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/encarnacao-elemental.webp",
     "folder": "fldhl00060000000",
     "_key": "!items!hl00120000000000",
     "system": {
@@ -3035,7 +3035,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00130000000000",
     "name": "Sabedoria Antiga",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Sabedoria Antiga.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/sabedoria-antiga.webp",
     "folder": "fldhl00070000000",
     "_key": "!items!hl00130000000000",
     "system": {
@@ -3063,7 +3063,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00140000000000",
     "name": "Herança de Haladar",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Herança de Haladar.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/heranca-de-haladar.webp",
     "folder": "fldhl00070000000",
     "_key": "!items!hl00140000000000",
     "system": {
@@ -3123,7 +3123,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00150000000000",
     "name": "Pensamento Célere",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Pensamento Célere.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/pensamento-celere.webp",
     "folder": "fldhl00070000000",
     "_key": "!items!hl00150000000000",
     "system": {
@@ -3212,7 +3212,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00170000000000",
     "name": "Armadura Viva",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Armadura Viva.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/armadura-viva.webp",
     "folder": "fldhl00080000000",
     "_key": "!items!hl00170000000000",
     "system": {
@@ -3240,7 +3240,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00180000000000",
     "name": "Corpo de Ferro",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Corpo de Ferro.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/corpo-de-ferro.webp",
     "folder": "fldhl00080000000",
     "_key": "!items!hl00180000000000",
     "effects": [
@@ -3248,8 +3248,8 @@ export const HABILIDADES_LEGADO_DATA = [
         "_id": "eff_00180000000000",
         "_key": "!items.effects!hl00180000000000.eff_00180000000000",
         "name": "Corpo de Ferro",
-        "img": "modules/gaia-compendium-manager/assets/legados/Corpo de Ferro.png",
-        "icon": "modules/gaia-compendium-manager/assets/legados/Corpo de Ferro.png",
+        "img": "modules/gaia-compendium-manager/assets/legados/corpo-de-ferro.webp",
+        "icon": "modules/gaia-compendium-manager/assets/legados/corpo-de-ferro.webp",
         "origin": "!items!hl00180000000000",
         "disabled": false,
         "transfer": true,
@@ -3297,7 +3297,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00190000000000",
     "name": "Especialista",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Especialista.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/especialista.webp",
     "folder": "fldhl00090000000",
     "_key": "!items!hl00190000000000",
     "system": {
@@ -3325,7 +3325,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl001a0000000000",
     "name": "Aprimorar Resultados",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Aprimorar Resultados.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/aprimorar-resultados.webp",
     "folder": "fldhl00090000000",
     "_key": "!items!hl001a0000000000",
     "system": {
@@ -3353,7 +3353,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl001b0000000000",
     "name": "Determinação",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Determinação.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/determinacao.webp",
     "folder": "fldhl00090000000",
     "_key": "!items!hl001b0000000000",
     "system": {
@@ -3381,7 +3381,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl001c0000000000",
     "name": "Sempre Alerta",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Sempre Alerta.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/sempre-alerta.webp",
     "folder": "fldhl000a0000000",
     "_key": "!items!hl001c0000000000",
     "system": {
@@ -3409,7 +3409,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl001d0000000000",
     "name": "Sagacidade Mística",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Sagacidade Mística.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/sagacidade-mistica.webp",
     "folder": "fldhl000a0000000",
     "_key": "!items!hl001d0000000000",
     "system": {
@@ -3470,7 +3470,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl001e0000000000",
     "name": "Instinto Natural",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Instinto Natural.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/instinto-natural.webp",
     "folder": "fldhl000a0000000",
     "_key": "!items!hl001e0000000000",
     "effects": [
@@ -3478,8 +3478,8 @@ export const HABILIDADES_LEGADO_DATA = [
         "_id": "eff_001e0000000000",
         "_key": "!items.effects!hl001e0000000000.eff_001e0000000000",
         "name": "Instinto Natural",
-        "img": "modules/gaia-compendium-manager/assets/legados/Instinto Natural.png",
-        "icon": "modules/gaia-compendium-manager/assets/legados/Instinto Natural.png",
+        "img": "modules/gaia-compendium-manager/assets/legados/instinto-natural.webp",
+        "icon": "modules/gaia-compendium-manager/assets/legados/instinto-natural.webp",
         "origin": "!items!hl001e0000000000",
         "disabled": false,
         "transfer": true,
@@ -3522,7 +3522,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl001f0000000000",
     "name": "Detectar Magia",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Detectar Magia.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/detectar-magia.webp",
     "folder": "fldhl000b0000000",
     "_key": "!items!hl001f0000000000",
     "system": {
@@ -3583,7 +3583,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00200000000000",
     "name": "Conectado com o Véu",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Conectado com o Véu.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/conectado-com-o-veu.webp",
     "folder": "fldhl000b0000000",
     "_key": "!items!hl00200000000000",
     "system": {
@@ -3644,7 +3644,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00210000000000",
     "name": "Magia Antiga",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Magia Antiga.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/magia-antiga.webp",
     "folder": "fldhl000b0000000",
     "_key": "!items!hl00210000000000",
     "system": {
@@ -3672,7 +3672,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00220000000000",
     "name": "Mobilidade Felina",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Mobilidade Felina.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/mobilidade-felina.webp",
     "folder": "fldhl000c0000000",
     "_key": "!items!hl00220000000000",
     "system": {
@@ -3700,7 +3700,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00230000000000",
     "name": "Improviso Natural",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Improviso Natural.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/improviso-natural.webp",
     "folder": "fldhl000c0000000",
     "_key": "!items!hl00230000000000",
     "system": {
@@ -3728,7 +3728,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00240000000000",
     "name": "Sorte",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Sorte.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/sorte.webp",
     "folder": "fldhl000c0000000",
     "_key": "!items!hl00240000000000",
     "system": {
@@ -3756,7 +3756,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00250000000000",
     "name": "Nômade",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Nômade.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/nomade.webp",
     "folder": "fldhl000d0000000",
     "_key": "!items!hl00250000000000",
     "system": {
@@ -3817,7 +3817,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00260000000000",
     "name": "Filho de Nolgadan",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Filho de Nolgadan.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/filho-de-nolgadan.webp",
     "folder": "fldhl000d0000000",
     "_key": "!items!hl00260000000000",
     "effects": [
@@ -3825,8 +3825,8 @@ export const HABILIDADES_LEGADO_DATA = [
         "_id": "eff_00260000000000",
         "_key": "!items.effects!hl00260000000000.eff_00260000000000",
         "name": "Filho de Nolgadan",
-        "img": "modules/gaia-compendium-manager/assets/legados/Filho de Nolgadan.png",
-        "icon": "modules/gaia-compendium-manager/assets/legados/Filho de Nolgadan.png",
+        "img": "modules/gaia-compendium-manager/assets/legados/filho-de-nolgadan.webp",
+        "icon": "modules/gaia-compendium-manager/assets/legados/filho-de-nolgadan.webp",
         "origin": "!items!hl00260000000000",
         "disabled": false,
         "transfer": true,
@@ -3874,7 +3874,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00270000000000",
     "name": "Corrida Aprimorada",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Corrida Aprimorada.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/corrida-aprimorada.webp",
     "folder": "fldhl000d0000000",
     "_key": "!items!hl00270000000000",
     "system": {
@@ -3902,7 +3902,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00280000000000",
     "name": "Adaptação dos Oceanos",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Adaptação dos Oceanos.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/adaptacao-dos-oceanos.webp",
     "folder": "fldhl000e0000000",
     "_key": "!items!hl00280000000000",
     "system": {
@@ -3930,7 +3930,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00290000000000",
     "name": "Conexão Psíquica",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Conexão Psíquica.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/conexao-psiquica.webp",
     "folder": "fldhl000e0000000",
     "_key": "!items!hl00290000000000",
     "system": {
@@ -3990,7 +3990,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl002a0000000000",
     "name": "Recompensa da Caçada",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Recompensa da Caçada.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/recompensa-da-cacada.webp",
     "folder": "fldhl000e0000000",
     "_key": "!items!hl002a0000000000",
     "system": {
@@ -4058,7 +4058,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl002b0000000000",
     "name": "Agraciado pelos Rituais",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Agraciado pelos Rituais.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/agraciado-pelos-rituais.webp",
     "folder": "fldhl000f0000000",
     "_key": "!items!hl002b0000000000",
     "system": {
@@ -4086,7 +4086,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl002c0000000000",
     "name": "Marca Ritualística",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Marca Ritualística.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/marca-ritualistica.webp",
     "folder": "fldhl000f0000000",
     "_key": "!items!hl002c0000000000",
     "system": {
@@ -4150,7 +4150,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl002d0000000000",
     "name": "Fúria dos Antigos",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Fúria dos Antigos.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/furia-dos-antigos.webp",
     "folder": "fldhl000f0000000",
     "_key": "!items!hl002d0000000000",
     "system": {
@@ -4212,7 +4212,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl002e0000000000",
     "name": "Vontade das Brumas",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Vontade das Brumas.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/vontade-das-brumas.webp",
     "folder": "fldhl00100000000",
     "_key": "!items!hl002e0000000000",
     "system": {
@@ -4240,7 +4240,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl002f0000000000",
     "name": "Espelho da Alma",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Espelho da Alma.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/espelho-da-alma.webp",
     "folder": "fldhl00100000000",
     "_key": "!items!hl002f0000000000",
     "system": {
@@ -4300,7 +4300,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00300000000000",
     "name": "Resguardo de Energia",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Resguardo de Energia.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/resguardo-de-energia.webp",
     "folder": "fldhl00100000000",
     "_key": "!items!hl00300000000000",
     "system": {
@@ -4328,7 +4328,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00310000000000",
     "name": "Virtude do Primeiro Povo",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Virtude do Primeiro Povo.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/virtude-do-primeiro-povo.webp",
     "folder": "fldhl00110000000",
     "_key": "!items!hl00310000000000",
     "system": {
@@ -4356,7 +4356,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00320000000000",
     "name": "Energia Pacífica",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Energia Pacífica.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/energia-pacifica.webp",
     "folder": "fldhl00110000000",
     "_key": "!items!hl00320000000000",
     "system": {
@@ -4384,7 +4384,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00330000000000",
     "name": "Presente de Norduk",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Presente de Norduk.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/presente-de-norduk.webp",
     "folder": "fldhl00110000000",
     "_key": "!items!hl00330000000000",
     "system": {
@@ -4447,7 +4447,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00340000000000",
     "name": "Força de Gruneak",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Força de Gruneak.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/forca-de-gruneak.webp",
     "folder": "fldhl00120000000",
     "_key": "!items!hl00340000000000",
     "effects": [
@@ -4455,8 +4455,8 @@ export const HABILIDADES_LEGADO_DATA = [
         "_id": "eff_00340000000000",
         "_key": "!items.effects!hl00340000000000.eff_00340000000000",
         "name": "Força de Gruneak",
-        "img": "modules/gaia-compendium-manager/assets/legados/Força de Gruneak.png",
-        "icon": "modules/gaia-compendium-manager/assets/legados/Força de Gruneak.png",
+        "img": "modules/gaia-compendium-manager/assets/legados/forca-de-gruneak.webp",
+        "icon": "modules/gaia-compendium-manager/assets/legados/forca-de-gruneak.webp",
         "origin": "!items!hl00340000000000",
         "disabled": false,
         "transfer": true,
@@ -4499,7 +4499,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00350000000000",
     "name": "Resiliência",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Resiliência.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/resiliencia.webp",
     "folder": "fldhl00120000000",
     "_key": "!items!hl00350000000000",
     "system": {
@@ -4527,7 +4527,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00360000000000",
     "name": "Incansável",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Incansável.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/incansavel.webp",
     "folder": "fldhl00120000000",
     "_key": "!items!hl00360000000000",
     "system": {
@@ -4588,7 +4588,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00370000000000",
     "name": "Ver a Verdade",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Ver a Verdade.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/ver-a-verdade.webp",
     "folder": "fldhl00130000000",
     "_key": "!items!hl00370000000000",
     "system": {
@@ -4616,7 +4616,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00380000000000",
     "name": "Resplendor",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Resplendor.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/resplendor.webp",
     "folder": "fldhl00130000000",
     "_key": "!items!hl00380000000000",
     "system": {
@@ -4677,7 +4677,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl00390000000000",
     "name": "Toque da Salvação",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Toque da Salvação.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/toque-da-salvacao.webp",
     "folder": "fldhl00130000000",
     "_key": "!items!hl00390000000000",
     "system": {
@@ -4705,7 +4705,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl003a0000000000",
     "name": "Elevar a Grandeza",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Elevar a Grandeza.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/elevar-a-grandeza.webp",
     "folder": "fldhl00140000000",
     "_key": "!items!hl003a0000000000",
     "system": {
@@ -4733,7 +4733,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl003b0000000000",
     "name": "Dinastia Narzepiana",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Dinastia Narzepiana.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/dinastia-narzepiana.webp",
     "folder": "fldhl00140000000",
     "_key": "!items!hl003b0000000000",
     "system": {
@@ -4761,7 +4761,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl003c0000000000",
     "name": "Poder Oculto",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Poder Oculto.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/poder-oculto.webp",
     "folder": "fldhl00140000000",
     "_key": "!items!hl003c0000000000",
     "system": {
@@ -4822,7 +4822,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl003d0000000000",
     "name": "Corpo Fechado",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Corpo Fechado.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/corpo-fechado.webp",
     "folder": "fldhl00150000000",
     "_key": "!items!hl003d0000000000",
     "system": {
@@ -4850,7 +4850,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl003e0000000000",
     "name": "Superar a Dor",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Superar a Dor.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/superar-a-dor.webp",
     "folder": "fldhl00150000000",
     "_key": "!items!hl003e0000000000",
     "system": {
@@ -4878,7 +4878,7 @@ export const HABILIDADES_LEGADO_DATA = [
     "_id": "hl003f0000000000",
     "name": "Furor das Brumas",
     "type": "ability",
-    "img": "modules/gaia-compendium-manager/assets/legados/Furor das Brumas.png",
+    "img": "modules/gaia-compendium-manager/assets/legados/furor-das-brumas.webp",
     "folder": "fldhl00150000000",
     "_key": "!items!hl003f0000000000",
     "system": {

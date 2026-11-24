@@ -1,5 +1,5 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
-import { HOMUNCULARIUM_BOOKS } from "../helpers/homuncularium-rules.mjs";
+import { HOMUNCULARIUM_BOOKS, getBookFolderForFeature } from "../helpers/homuncularium-rules.mjs";
 import { CARACTERISTICAS_FOLDERS_DATA } from "../helpers/datasets/caracteristicas-dataset.mjs";
 import {
   CANONICAL_PATHS,
@@ -99,13 +99,125 @@ const BOOK_FOLDER_MAP = (() => {
 })();
 
 /**
- * Resolve o Livro ao qual uma característica pertence, baseado no folderId.
- * @param {string} folderId
+ * Ordem canônica dos Tiers (dificuldades) das Características do Homuncularium.
+ */
+const FEATURE_TIERS = [
+  { key: "adicional", label: "Adicional", order: 1 },
+  { key: "facil", label: "Fácil", order: 2 },
+  { key: "normal", label: "Normal", order: 3 },
+  { key: "dificil", label: "Difícil", order: 4 },
+  { key: "extrema", label: "Extrema", order: 5 }
+];
+
+const FEATURE_TIER_MAP = new Map(FEATURE_TIERS.map(t => [t.key, t]));
+
+/**
+ * Normaliza chave textual removendo acentos, espaços extras e caixa alta.
+ * @param {string} value
+ * @returns {string}
+ */
+function normalizeLookupKey(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+/**
+ * Resolve o descritor de Tier de uma característica.
+ * @param {string} rawTier
+ * @returns {{key: string, label: string, order: number}}
+ */
+function resolveFeatureTier(rawTier) {
+  const clean = String(rawTier || "").trim();
+  const key = normalizeLookupKey(clean);
+  if (key && FEATURE_TIER_MAP.has(key)) {
+    return FEATURE_TIER_MAP.get(key);
+  }
+  return {
+    key: key || "other",
+    label: clean || "Sem Tier",
+    order: 99
+  };
+}
+
+/**
+ * Mapa reverso: nome normalizado do Livro -> descritor do Livro.
+ */
+const BOOK_BY_NAME_MAP = (() => {
+  const map = new Map();
+  for (const book of BOOK_FOLDER_MAP.values()) {
+    map.set(normalizeLookupKey(book.name), book);
+  }
+  return map;
+})();
+
+/**
+ * Resolve o Livro ao qual uma característica pertence, verificando pasta, ID/nome
+ * do dataset canônico, campo `system.book` e nome da pasta.
+ * @param {object} itemOrEntry
+ * @param {Map<string, string>} [folderMap]
  * @returns {object|null}
  */
-function resolveItemBook(folderId) {
-  if (!folderId) return null;
-  return BOOK_FOLDER_MAP.get(folderId) || null;
+function resolveFeatureBook(itemOrEntry, folderMap = null) {
+  if (!itemOrEntry) return null;
+
+  const folderId = typeof itemOrEntry.folder === "string"
+    ? itemOrEntry.folder
+    : (itemOrEntry.folder?.id || itemOrEntry.folderId || "");
+
+  if (folderId && BOOK_FOLDER_MAP.has(folderId)) {
+    return BOOK_FOLDER_MAP.get(folderId);
+  }
+
+  const canonicalFolderId = getBookFolderForFeature(itemOrEntry);
+  if (canonicalFolderId && BOOK_FOLDER_MAP.has(canonicalFolderId)) {
+    return BOOK_FOLDER_MAP.get(canonicalFolderId);
+  }
+
+  const rawBookName = itemOrEntry.system?.book || itemOrEntry.book || "";
+  if (rawBookName) {
+    const byName = BOOK_BY_NAME_MAP.get(normalizeLookupKey(rawBookName));
+    if (byName) return byName;
+  }
+
+  if (folderId && folderMap?.has(folderId)) {
+    const byFolderName = BOOK_BY_NAME_MAP.get(normalizeLookupKey(folderMap.get(folderId)));
+    if (byFolderName) return byFolderName;
+  }
+
+  return null;
+}
+
+/**
+ * Agrupa uma lista de características por Tier mantendo a ordem canônica.
+ * @param {Array<object>} bookItems
+ * @returns {Array<{key: string, title: string, count: number, items: Array<object>}>}
+ */
+function buildTierSubgroups(bookItems) {
+  const tierGroups = new Map();
+  for (const item of bookItems) {
+    const tierKey = item.tierKey || "other";
+    if (!tierGroups.has(tierKey)) {
+      tierGroups.set(tierKey, {
+        key: tierKey,
+        title: item.tier || "Sem Tier",
+        order: item.tierOrder ?? 99,
+        items: []
+      });
+    }
+    tierGroups.get(tierKey).items.push(item);
+  }
+
+  return Array.from(tierGroups.values())
+    .sort((a, b) => (a.order - b.order) || a.title.localeCompare(b.title, "pt"))
+    .map(group => ({
+      key: group.key,
+      title: group.title,
+      count: group.items.length,
+      items: group.items.sort((a, b) => a.name.localeCompare(b.name, "pt"))
+    }));
 }
 
 /**
@@ -170,7 +282,9 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
       importItem: GaiaItemBrowser.#onImportItem,
       createItem: GaiaItemBrowser.#onCreateItem,
       toggleSelectItem: GaiaItemBrowser.#onToggleSelectItem,
-      confirmSelection: GaiaItemBrowser.#onConfirmSelection
+      confirmSelection: GaiaItemBrowser.#onConfirmSelection,
+      toggleGroupCollapse: GaiaItemBrowser.#onToggleGroupCollapse,
+      toggleTierCollapse: GaiaItemBrowser.#onToggleTierCollapse
     }
   };
 
@@ -196,6 +310,12 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
 
   /** @type {Map<string, object>} */
   #selectedMap = new Map();
+
+  /** @type {Set<string>} */
+  #collapsedGroups = new Set();
+
+  /** @type {Set<string>} */
+  #collapsedTiers = new Set();
 
   /** @type {string} */
   searchTerm = "";
@@ -368,13 +488,15 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
         if (categoryKey !== this.selectedFeatureCategory) return false;
       }
 
-      // 5. Filtro por Busca Textual (com suporte a busca por nome, descrição, tipo e caminho)
+      // 5. Filtro por Busca Textual (com suporte a busca por nome, descrição, tipo, caminho, livro e tier)
       if (cleanSearch.length > 0) {
         const nameMatch = cleanStr(item.name).includes(cleanSearch);
         const descMatch = cleanStr(item.rawDescription).includes(cleanSearch);
         const typeMatch = cleanStr(item.typeLabel).includes(cleanSearch) || cleanStr(item.type).includes(cleanSearch);
         const pathMatch = item.pathName && cleanStr(item.pathName).includes(cleanSearch);
-        if (!nameMatch && !descMatch && !typeMatch && !pathMatch) return false;
+        const bookMatch = item.bookName && cleanStr(item.bookName).includes(cleanSearch);
+        const tierMatch = item.tier && cleanStr(item.tier).includes(cleanSearch);
+        if (!nameMatch && !descMatch && !typeMatch && !pathMatch && !bookMatch && !tierMatch) return false;
       }
 
       return true;
@@ -402,9 +524,10 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     const availablePaths = Array.from(availablePathsMap.values())
       .sort((a, b) => (a.order || 99) - (b.order || 99));
 
-    // Determina se devemos agrupar visualmente por Livro (características)
-    const isFeatureType = this.selectedType === "feature" || (this.selectedType === "all" && filtered.every(i => i.type === "feature" || i.category === "caracteristica"));
-    const shouldGroupByBook = isFeatureType && filtered.some(i => i.bookKey);
+    // Determina se devemos agrupar visualmente por Livro e Tier (características)
+    const isFeatureType = this.selectedType === "feature"
+      || (this.selectedType === "all" && filtered.length > 0 && filtered.every(i => i.type === "feature" || i.category === "caracteristica"));
+    const shouldGroupByBook = isFeatureType && filtered.length > 0;
 
     // Determina se devemos agrupar visualmente por Caminho
     const shouldGroupByPath = !shouldGroupByBook && (this.selectedType === "ability" || this.selectedSource.includes("habilidades-caminho") || (this.selectedType === "all" && filtered.some(i => i.pathKey)));
@@ -426,9 +549,9 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
       }
       const sortedBooks = Array.from(booksInResults.values()).sort((a, b) => a.order - b.order);
 
-      // 1. Grupos por livro, ordenados canonicamente
+      // 1. Grupos por livro, ordenados canonicamente, subdivididos por Tier
       for (const book of sortedBooks) {
-        const bookItems = filtered.filter(i => i.bookKey === book.id).sort((a, b) => a.name.localeCompare(b.name, "pt"));
+        const bookItems = filtered.filter(i => i.bookKey === book.id);
         if (bookItems.length > 0) {
           groupedItems.push({
             key: book.id,
@@ -437,13 +560,18 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
             icon: book.icon ? null : "fa-solid fa-book",
             iconImg: book.icon || null,
             count: bookItems.length,
+            isCollapsed: this.#collapsedGroups.has(book.id),
+            subgroups: buildTierSubgroups(bookItems).map(sub => ({
+              ...sub,
+              isCollapsed: this.#collapsedTiers.has(`${book.id}::${sub.key}`)
+            })),
             items: bookItems
           });
         }
       }
 
-      // 2. Características sem livro definido
-      const noBookItems = filtered.filter(i => !i.bookKey).sort((a, b) => a.name.localeCompare(b.name, "pt"));
+      // 2. Características sem livro definido, subdivididas por Tier
+      const noBookItems = filtered.filter(i => !i.bookKey);
       if (noBookItems.length > 0) {
         groupedItems.push({
           key: "other",
@@ -452,6 +580,11 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
           icon: "fa-solid fa-layer-group",
           iconImg: null,
           count: noBookItems.length,
+          isCollapsed: this.#collapsedGroups.has("other"),
+          subgroups: buildTierSubgroups(noBookItems).map(sub => ({
+            ...sub,
+            isCollapsed: this.#collapsedTiers.has(`other::${sub.key}`)
+          })),
           items: noBookItems
         });
       }
@@ -467,6 +600,7 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
             icon: p.icon,
             iconImg: null,
             count: pathItems.length,
+            isCollapsed: this.#collapsedGroups.has(p.id),
             items: pathItems
           });
         }
@@ -482,6 +616,7 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
           icon: "fa-solid fa-sparkles",
           iconImg: null,
           count: noPathItems.length,
+          isCollapsed: this.#collapsedGroups.has("other"),
           items: noPathItems
         });
       }
@@ -607,6 +742,9 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
         { name: item.name, pathId: rawPathId, folderId: item.folder },
         pathContext
       );
+      const isFeature = item.type === "feature" || item.system?.category === "caracteristica";
+      const itemBook = isFeature ? resolveFeatureBook(item, folderMap) : null;
+      const tierInfo = isFeature ? resolveFeatureTier(item.system?.tier) : null;
 
       items.push({
         id: item.id,
@@ -620,6 +758,13 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
         pathShortName: resolved?.name || "",
         pathIcon: resolved?.icon || "",
         pathOrder: resolved?.order ?? 99,
+        bookKey: itemBook?.id || "",
+        bookName: itemBook?.name || "",
+        bookIcon: itemBook?.icon || "",
+        bookOrder: itemBook?.order ?? 99,
+        tier: tierInfo?.label || "",
+        tierKey: tierInfo?.key || "",
+        tierOrder: tierInfo?.order ?? 99,
         typeLabel: typeLoc,
         img: item.img || "icons/svg/item-bag.svg",
         sourceId: "world",
@@ -632,7 +777,7 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
     // 5. Varre todos os compêndios de itens
     for (const pack of itemPacks) {
       const index = await pack.getIndex({
-        fields: ["img", "type", "folder", "system.description", "system.category", "system.pathId"]
+        fields: ["img", "type", "folder", "system.description", "system.category", "system.pathId", "system.book", "system.tier"]
       });
       for (const entry of index) {
         const typeLoc = game.i18n.localize(CONFIG.Item?.typeLabels?.[entry.type] ?? entry.type);
@@ -642,9 +787,9 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
           pathContext
         );
 
-        const entryBook = (entry.type === "feature" || entry.system?.category === "caracteristica")
-          ? resolveItemBook(entry.folder)
-          : null;
+        const isFeature = entry.type === "feature" || entry.system?.category === "caracteristica";
+        const entryBook = isFeature ? resolveFeatureBook({ ...entry, uuid: pack.getUuid(entry._id) }, folderMap) : null;
+        const tierInfo = isFeature ? resolveFeatureTier(entry.system?.tier) : null;
 
         items.push({
           id: entry._id,
@@ -663,6 +808,9 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
           bookName: entryBook?.name || "",
           bookIcon: entryBook?.icon || "",
           bookOrder: entryBook?.order ?? 99,
+          tier: tierInfo?.label || "",
+          tierKey: tierInfo?.key || "",
+          tierOrder: tierInfo?.order ?? 99,
           typeLabel: typeLoc,
           img: entry.img || "icons/svg/item-bag.svg",
           sourceId: pack.collection,
@@ -711,6 +859,42 @@ export class GaiaItemBrowser extends HandlebarsApplicationMixin(ApplicationV2) {
       this.onSelect(Array.from(this.#selectedMap.values()));
     }
     await this.close();
+  }
+
+  static #onToggleGroupCollapse(event, target) {
+    const groupKey = target.dataset.groupKey;
+    if (!groupKey) return;
+
+    const section = target.closest(".browser-group-section");
+    const isCollapsed = this.#collapsedGroups.has(groupKey);
+    if (isCollapsed) {
+      this.#collapsedGroups.delete(groupKey);
+    } else {
+      this.#collapsedGroups.add(groupKey);
+    }
+
+    const nextCollapsed = !isCollapsed;
+    section?.classList.toggle("is-collapsed", nextCollapsed);
+    target.setAttribute("aria-expanded", String(!nextCollapsed));
+  }
+
+  static #onToggleTierCollapse(event, target) {
+    const groupKey = target.dataset.groupKey || "";
+    const tierKey = target.dataset.tierKey;
+    if (!tierKey) return;
+
+    const compositeKey = `${groupKey}::${tierKey}`;
+    const section = target.closest(".browser-tier-section");
+    const isCollapsed = this.#collapsedTiers.has(compositeKey);
+    if (isCollapsed) {
+      this.#collapsedTiers.delete(compositeKey);
+    } else {
+      this.#collapsedTiers.add(compositeKey);
+    }
+
+    const nextCollapsed = !isCollapsed;
+    section?.classList.toggle("is-collapsed", nextCollapsed);
+    target.setAttribute("aria-expanded", String(!nextCollapsed));
   }
 
   /**

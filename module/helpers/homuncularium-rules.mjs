@@ -15,56 +15,56 @@ export const HOMUNCULARIUM_BOOKS = {
     bookName: "Seres Ferais",
     bonusFeatureId: "feat001800000000",
     bonusFeatureName: "Selvageria",
-    icon: "modules/gaia-compendium-manager/assets/caracteristicas/Seres Ferais.png"
+    icon: "modules/gaia-compendium-manager/assets/caracteristicas/seres-ferais.webp"
   },
   "fldfeat030000000": {
     folderId: "fldfeat030000000",
     bookName: "Seres do Véu",
     bonusFeatureId: "feat003900000000",
     bonusFeatureName: "Cria do Véu",
-    icon: "modules/gaia-compendium-manager/assets/caracteristicas/Seres do Veu.png"
+    icon: "modules/gaia-compendium-manager/assets/caracteristicas/seres-do-veu.webp"
   },
   "fldfeat040000000": {
     folderId: "fldfeat040000000",
     bookName: "Seres Não-Vivos",
     bonusFeatureId: "feat005900000000",
     bonusFeatureName: "Corpo Apodrecido",
-    icon: "modules/gaia-compendium-manager/assets/caracteristicas/Seres Nao-Vivos.png"
+    icon: "modules/gaia-compendium-manager/assets/caracteristicas/seres-nao-vivos.webp"
   },
   "fldfeat050000000": {
     folderId: "fldfeat050000000",
     bookName: "Seres Elementais",
     bonusFeatureId: "feat008000000000",
     bonusFeatureName: "Núcleo Elemental",
-    icon: "modules/gaia-compendium-manager/assets/caracteristicas/Seres Elementais.png"
+    icon: "modules/gaia-compendium-manager/assets/caracteristicas/seres-elementais.webp"
   },
   "fldfeat060000000": {
     folderId: "fldfeat060000000",
     bookName: "Seres Primais",
     bonusFeatureId: "feat010000000000",
     bonusFeatureName: "Nascido da Natureza",
-    icon: "modules/gaia-compendium-manager/assets/caracteristicas/Seres Primais.png"
+    icon: "modules/gaia-compendium-manager/assets/caracteristicas/seres-primais.webp"
   },
   "fldfeat070000000": {
     folderId: "fldfeat070000000",
     bookName: "Seres Artificiais",
     bonusFeatureId: "feat012000000000",
     bonusFeatureName: "Armamentos Naturais",
-    icon: "modules/gaia-compendium-manager/assets/caracteristicas/Seres Artificiais.png"
+    icon: "modules/gaia-compendium-manager/assets/caracteristicas/seres-artificiais.webp"
   },
   "fldfeat080000000": {
     folderId: "fldfeat080000000",
     bookName: "Seres Abissais",
     bonusFeatureId: "feat020300000000",
     bonusFeatureName: "Ascensão Abissal",
-    icon: "modules/gaia-compendium-manager/assets/caracteristicas/Seres Abissais.png"
+    icon: "modules/gaia-compendium-manager/assets/caracteristicas/seres-abissais.webp"
   },
   "fldfeat090000000": {
     folderId: "fldfeat090000000",
     bookName: "Seres Celestiais",
     bonusFeatureId: "feat020600000000",
     bonusFeatureName: "Ascensão Celestial",
-    icon: "modules/gaia-compendium-manager/assets/caracteristicas/Seres Celestiais.png"
+    icon: "modules/gaia-compendium-manager/assets/caracteristicas/seres-celestiais.webp"
   }
 };
 
